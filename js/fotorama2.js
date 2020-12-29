@@ -1187,6 +1187,7 @@ function getDataFromHtml ($el) {
     var $child = $img.children('img').eq(0),
         _imgHref = $img.attr('href'),
         _imgSrc = $img.attr('src'),
+        _imgSrcset = $img.attr('srcset'), // Martin
         _thumbSrc = $child.attr('src'),
         _video = imgData.video,
         video = checkVideo ? findVideoId(_imgHref, _video === true) : false;
@@ -1200,7 +1201,8 @@ function getDataFromHtml ($el) {
     getDimensions($img, $child, $.extend(imgData, {
       video: video,
       img: imgData.img || _imgHref || _imgSrc || _thumbSrc,
-      thumb: imgData.thumb || _thumbSrc || _imgSrc || _imgHref
+      thumb: imgData.thumb || _thumbSrc || _imgSrc || _imgHref,
+      srcset: _imgSrcset
     }));
   }
 
@@ -2106,8 +2108,10 @@ jQuery.Fotorama = function ($fotorama, opts) {
                 that.cancelFullScreen();
               } else if ((e.shiftKey && e.keyCode === 32 && allowKey('space')) || (e.keyCode === 37 && allowKey('left')) || (e.keyCode === 38 && allowKey('up'))) {
                 index = '<';
+                console.log('to the left');
               } else if ((e.keyCode === 32 && allowKey('space')) || (e.keyCode === 39 && allowKey('right')) || (e.keyCode === 40 && allowKey('down'))) {
                 index = '>';
+                console.log('to the right');
               } else if (e.keyCode === 36 && allowKey('home')) {
                 index = '<<';
               } else if (e.keyCode === 35 && allowKey('end')) {
@@ -2513,6 +2517,10 @@ jQuery.Fotorama = function ($fotorama, opts) {
       if ( frameData.data.hasOwnProperty('title') ) { img.title = frameData.data.title; }
 
       img.src = src;
+      if (dataFrame.srcset) { // Martin: 3 lines for image srcset
+        img.srcset = dataFrame.srcset;
+        img.loading = 'Lazy';
+      }
     });
   }
 
@@ -2948,7 +2956,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
   };
 
   that.show = function (options) {
-    ////console.log('that.show');
+    console.log('that.show');
     //////console.time('that.show prepare');
     var index;
 

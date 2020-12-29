@@ -3,20 +3,20 @@
 /**
  *
  * @link              https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
- * @since             0.11.0
+ * @since             0.0.1
  * @package           wp_fotorama_gpxviewer
  *
  * @wordpress-plugin
- * Plugin Name:       Fotorama-Slider + Openstreetmap 
+ * Plugin Name:       Fotorama 2
  * Plugin URI:        https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
- * Description:       Shows an Image-Slider with Thumbnails. Under the Slider an Openstreetmap is shown with Icons at images GPS-position. Additionally a GPX-Track including its height chart is shown.
- * Version:           0.11.0
+ * Description:       Fotorama Multi Slider
+ * Version:           0.0.1
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
-namespace mvbplugins\fotoramagpxviewer;
+namespace mvbplugins\fotoramamulti;
 
 // fallback for wordpress security
 defined('ABSPATH') || die('Are you ok?');
@@ -34,7 +34,7 @@ if (doYoastXmlSitemap) {
 }
 
 // define the shortcode to generate the image-slider with map
-add_shortcode('gpxview', '\mvbplugins\fotoramagpxviewer\show_gpxview');
+add_shortcode('fotomulti', '\mvbplugins\fotoramamulti\show_gpxview');
 
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
 function show_gpxview($attr, $content = null)
@@ -60,10 +60,13 @@ function show_gpxview($attr, $content = null)
 		'mapheight' => '450',
 		'chartheight' => '150',
 		'imgpath' => 'Bilder',
-		'dload' => 'yes',
+		'dload' => 'no',
 		'alttext' => '',
 		'scale' => 1.0, // map-scale factor for GPXViewer
 		'ignoresort' => false, // ignore custom sort even if provided by Wordpress, then sort by date ascending
+		'showadress' => false,
+		'adresstext' => 'Startadresse',
+		'showmap' => false,
 	), $attr));
 
 	// Detect Language of Website and set the Javascript-Variable for the Language used in GPXViewer
@@ -222,15 +225,56 @@ function show_gpxview($attr, $content = null)
 			if ($i == 0) {
 				$gpxfile .= $f;
 
-				// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
-				if ($draft_2_pub and setCustomFields) { 
+				if ($draft_2_pub and setCustomFields) {
+					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
 					$gpxdata = simplexml_load_file($gpx_url . $f);
+					if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] )) {
+						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
 					$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat'];
-					if (strlen($lat)<1) {$lat = (string) $gpxdata->trk->trkpt[0]['lat'];}
+						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
+					$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat'];
+						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
+					$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat'];
+						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
+					$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat'];
+						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
+					} else {
+						$lat = (string) $gpxdata->trk->trkpt[0]['lat'];
+					}
+					if (isset( $gpxdata->trk->trkseg->trkpt[0]['lon'] )) {
+						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
 					$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-					if (strlen($lon)<1) {$lon = (string) $gpxdata->trk->trkpt[0]['lon'];}
-					gpxview_setpostgps($postid, $lat, $lon);			
-				}
+						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
+					$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
+						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
+					$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
+						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
+					$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
+						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
+					} else {
+						$lon = (string) $gpxdata->trk->trkpt[0]['lon'];
+					}
+					
+					gpxview_setpostgps($postid, $lat, $lon);
+
+					// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
+					// only done for the first track
+					if ($showadress) {
+						$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
+						$opts = array(
+							'http'=>array(
+							'method'=>"GET",
+							'header'=>'User-Agent: PostmanRuntime/7.26.8' // just any user-agent to fake a human access
+							)
+						);
+						$context = stream_context_create($opts);
+						$geojson = json_decode(file_get_contents( $url , false, $context ));
+						$geoadress = (array) $geojson->address;
+						$geoadressfield = maybe_serialize($geoadress);
+						delete_post_meta($postid,'geoadress');
+						update_post_meta($postid,'geoadress', $geoadressfield,'');
+					}	
+				}		
 
 			} else {
 				$gpxfile .= ',' . $f;
@@ -246,7 +290,7 @@ function show_gpxview($attr, $content = null)
 	// Generate Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		$htmlstring  .= '<div id="Bilder" style="display : none"><figure><img loading="lazy" alt="' . $alttext . '"><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
-		$htmlstring  .= '<div id="fotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-fit="contain" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="true" data-hash="true">';
+		$htmlstring  .= '<div id="fotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-fit="contain" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
 		
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
@@ -259,20 +303,20 @@ function show_gpxview($attr, $content = null)
 			$srcset = '';
 			if ( $data['wpid'] > 0) {
 				$srcset = wp_get_attachment_image_srcset( $data['wpid'] );
-				$srcset = str_replace('http', 'img/http', $srcset);
+				//$srcset = str_replace('http', 'img/http', $srcset);
 			}
 
 			if ($data['thumbinsubdir']) {
 				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg"' . ' srcset="'. $srcset .'"' . ' data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
-				'<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
+				'<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">\r\n';
 				// code for the thumbnails
-				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs . '"></a>'; 
+				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
 			
 			} elseif ($data['thumbavail']) {
-				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg"' . ' srcset="'. $srcset .'"' . ' data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
-				'<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
+				$htmlstring .= '<a loading="lazy" href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg"' . ' srcset="'. $srcset .'"' . ' data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
+				'<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">\r\n';
 				// this is for the thumbnails
-				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>'; 
+				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
 				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg' . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
@@ -284,54 +328,100 @@ function show_gpxview($attr, $content = null)
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
+	if ($showmap) {
+		$mapid = 'map' . strval($shortcodecounter); 
 	$mapid = 'map' . strval($shortcodecounter); 
-	if (strlen($gpxfile) > 3 && ($i > 0)) {
-		$htmlstring  .= '<div id=box' . $mapid .'>';
-		$htmlstring  .= '<div id='.$mapid.' class="map gpxview:' . $gpxfile . ':OPENTOPO" style="width:100%;height:' . $mapheight . 'px"></div>';
-		$htmlstring  .= '<div id="'.$mapid.'_profiles" style="width:100%;height:' . $chartheight . 'px"><div id="'.$mapid.'_hp" class="map" style="width:100%;height:' . $chartheight . 'px"></div></div>';
-		$htmlstring  .= '<div id="'.$mapid.'_img">';
-	} elseif ($imageNumber > 0){
-		$htmlstring  .= '<div id=box' . $mapid .'>';
-		$htmlstring  .= '<div id='.$mapid.' class="gpxview::OPENTOPO" style="width:100%;height:' . $mapheight . 'px"></div>';
-		$htmlstring  .= '<div id="'.$mapid.'_img">';
-		$gpx_url = "";
-	}
+		$mapid = 'map' . strval($shortcodecounter); 
+	$mapid = 'map' . strval($shortcodecounter); 
+		$mapid = 'map' . strval($shortcodecounter); 
+	$mapid = 'map' . strval($shortcodecounter); 
+		$mapid = 'map' . strval($shortcodecounter); 
+	$mapid = 'map' . strval($shortcodecounter); 
+		$mapid = 'map' . strval($shortcodecounter); 
+		if (strlen($gpxfile) > 3 && ($i > 0)) {
+			$htmlstring  .= '<div id=box' . $mapid .'>';
+			$htmlstring  .= '<div id='.$mapid.' class="map gpxview:' . $gpxfile . ':OPENTOPO" style="width:100%;height:' . $mapheight . 'px"></div>';
+			$htmlstring  .= '<div id="'.$mapid.'_profiles" style="width:100%;height:' . $chartheight . 'px"><div id="'.$mapid.'_hp" class="map" style="width:100%;height:' . $chartheight . 'px"></div></div>';
+			$htmlstring  .= '<div id="'.$mapid.'_img">';
+		} elseif ($imageNumber > 0){
+			$htmlstring  .= '<div id=box' . $mapid .'>';
+			$htmlstring  .= '<div id='.$mapid.' class="gpxview::OPENTOPO" style="width:100%;height:' . $mapheight . 'px"></div>';
+			$htmlstring  .= '<div id="'.$mapid.'_img">';
+			$gpx_url = "";
+		}
 
+		// define the marker images for the map. this is for GPXviewer  
 	// define the marker images for the map. this is for GPXviewer  
-	if ($imageNumber > 0) {
-		foreach ($data2 as $data) {
-			$htmlstring  .= '<a class="gpxpluga"  href="' . $up_url . '/' . $imgpath . '/';
-		
-			if ($data['thumbinsubdir']) {
-					$htmlstring  .= $thumbsdir . '/' . $data["file"] . $thumbs;
-			} elseif ($data['thumbavail']) {
-					$htmlstring  .= $data["file"] . $thumbs;
-			} else {
-					$htmlstring  .= $data["file"] . '.jpg';
+		// define the marker images for the map. this is for GPXviewer  
+	// define the marker images for the map. this is for GPXviewer  
+		// define the marker images for the map. this is for GPXviewer  
+	// define the marker images for the map. this is for GPXviewer  
+		// define the marker images for the map. this is for GPXviewer  
+	// define the marker images for the map. this is for GPXviewer  
+		// define the marker images for the map. this is for GPXviewer  
+		if ($imageNumber > 0) {
+			foreach ($data2 as $data) {
+				$htmlstring  .= '<a class="gpxpluga"  href="' . $up_url . '/' . $imgpath . '/';
+			
+				if ($data['thumbinsubdir']) {
+						$htmlstring  .= $thumbsdir . '/' . $data["file"] . $thumbs;
+				} elseif ($data['thumbavail']) {
+						$htmlstring  .= $data["file"] . $thumbs;
+				} else {
+						$htmlstring  .= $data["file"] . '.jpg';
+				}
+			
+				$htmlstring .= '" data-geo="lat:' . $data["lat"] . ',lon:' . $data["lon"] . '"></a>';
 			}
-		
-			$htmlstring .= '" data-geo="lat:' . $data["lat"] . ',lon:' . $data["lon"] . '"></a>';
 		}
 	}
-	
 	// close all html-divs
-	$htmlstring  .= '</div></div></div>';
+	//$htmlstring  .= '</div></div></div>';
+	$htmlstring  .= '</div></div>';
 
 	// provide GPX-download if defined
 	if (($dload == 'yes') && ($i == 1)) {
 		$htmlstring .= '<p><strong>GPX-Datei: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">Download GPX-Datei</a></strong></p>';
 	}
 	
-	// provide javascript-variables for GPXviewer. There are better solutions, but it works
-	if (0 == $shortcodecounter){
-		$htmlstring .= '<script> ';
-		$htmlstring .= 'var g_numb_gpxfiles = new Array(); var Gpxpfad = new Array(); var Fullscreenbutton = new Array(); var Arrowtrack = new Array(); var Doclang="' . $lang . '"; var g_maprescale = new Array();';
-		$htmlstring .= '</script> ';
+	// produce starting point description
+	if ($showadress) {
+		$geoadresstest =  get_post_meta($postid,'geoadress');
+		if ( ! empty($geoadresstest) ) {
+			$test = $geoadresstest[0]; // we need only the first index
+			$geoadress = maybe_unserialize($test);	// type conversion to array
+			$htmlstring .= '<h4>'. $adresstext .'</h4>';
+			$v = array_key_exists('village', $geoadress) ? $geoadress['village'] . ', ' : ''; // city // array_key_exists ist veraltet! Use isset() or property_exists() instead
+			$v = array_key_exists('city', $geoadress) ? $geoadress['city'] . ', ' : ''; // city
+			$m = array_key_exists('municipality', $geoadress) ? $geoadress['municipality'] . ', ' : '';
+			$c = array_key_exists('county', $geoadress) ? $geoadress['county'] . ', ' : '';
+			$s = array_key_exists('state', $geoadress) ? $geoadress['state'] . ', ' : '';
+			$cy = array_key_exists('country', $geoadress) ? $geoadress['country'] : '';
+
+			// https://www.google.com/maps/search/?api=1&query=47.5951518,-122.3316393
+			//https://www.google.com/maps/search/@?api=1&map_action=map&center=44.757601666667,6.7916916666667&zoom=12
+			//https://www.google.com/maps/       @?api=1&map_action=map&center=-33.712206,150.311941&zoom=12&basemap=terrain
+
+			$lat = get_post_meta($postid,'lat');
+			$lon = get_post_meta($postid,'lon');
+			$googleurl = 'https://www.google.com/maps/@?api=1&map_action=map&center=' . $lat[0] . ',' . $lon[0] . '&zoom=10';
+			$v2 = '<a href="' .$googleurl. '" target="_blank">'. $v .'</a>';
+			$htmlstring .= '<p>'. $v2 . $m . $c . $s . $cy . '</p>';
+		}
 	}
-	$k = $shortcodecounter;
-	$htmlstring .= '<script> ';
-	$htmlstring .= 'g_numb_gpxfiles['. $k .'] = "' . $i . '"; Gpxpfad['. $k .'] = "' . $gpx_url . '"; Fullscreenbutton['. $k .'] = false; Arrowtrack['. $k .'] = true; g_maprescale['. $k .'] = '. $scale .'';
-	$htmlstring .= '</script>';
+	
+	// provide javascript-variables for GPXviewer. There are better solutions, but it works
+	if ($showmap) {
+		if (0 == $shortcodecounter){
+			$htmlstring .= '<script> ';
+			$htmlstring .= 'var g_numb_gpxfiles = new Array(); var Gpxpfad = new Array(); var Fullscreenbutton = new Array(); var Arrowtrack = new Array(); var Doclang="' . $lang . '"; var g_maprescale = new Array();';
+			$htmlstring .= '</script> ';
+		}
+		$k = $shortcodecounter;
+		$htmlstring .= '<script> ';
+		$htmlstring .= 'g_numb_gpxfiles['. $k .'] = "' . $i . '"; Gpxpfad['. $k .'] = "' . $gpx_url . '"; Fullscreenbutton['. $k .'] = false; Arrowtrack['. $k .'] = true; g_maprescale['. $k .'] = '. $scale .'';
+		$htmlstring .= '</script>';
+	}
 
 	$shortcodecounter++;
 	return $htmlstring;

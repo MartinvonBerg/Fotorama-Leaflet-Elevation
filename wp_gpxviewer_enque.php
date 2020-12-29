@@ -1,7 +1,7 @@
 <?php
-namespace mvbplugins\fotoramagpxviewer;
+namespace mvbplugins\fotoramamulti;
 
-add_action('wp_enqueue_scripts', '\mvbplugins\fotoramagpxviewer\wp_gpxviewer_scripts');
+add_action('wp_enqueue_scripts', '\mvbplugins\fotoramamulti\wp_gpxviewer_scripts');
 
 function wp_gpxviewer_scripts()
 {
@@ -15,9 +15,9 @@ function wp_gpxviewer_scripts()
     wp_enqueue_style('fr-style1', $plugin_url . 'css/fotorama.css');
 
     // Load Scripts
-    wp_enqueue_script('wp_gpxviewer_script1', $plugin_url . 'GM_Utils/GPX2GM.js', array('jquery'), '1.10.2', true);
+    //wp_enqueue_script('wp_gpxviewer_script1', $plugin_url . 'GM_Utils/GPX2GM.js', array('jquery'), '1.10.2', true);
     //wp_enqueue_script('fr-script1', $plugin_url . 'js/fotorama.js', array('jquery'), '1.10.2', true);
-    wp_enqueue_script('fr-script1', $plugin_url . 'js/fotorama2.min.js', array('jquery'), '1.10.2', true);
+    wp_enqueue_script('fr-script1', $plugin_url . 'js/fotorama2.js', array('jquery'), '1.10.2', true);
     wp_enqueue_script('wp_gpxviewer_script2', $plugin_url . 'js/wp_gpxviewer.js', array('jquery'), '1.10.2', true);
   }
 }

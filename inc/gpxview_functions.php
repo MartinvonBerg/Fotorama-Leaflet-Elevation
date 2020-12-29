@@ -1,5 +1,5 @@
 <?php
-namespace mvbplugins\fotoramagpxviewer;
+namespace mvbplugins\fotoramamulti;
 
 /**
  * Get the upload URL/path in right way (works with SSL).
@@ -167,7 +167,7 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 	}
 
 	// get lens data. $make is obsolete now!
-	$lens = $Exif["EXIF"]["UndefinedTag:0xA434"];
+	$lens = array_key_exists("UndefinedTag:0xA434", $Exif["EXIF"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
 	
 	// get the camera model
 	if (array_key_exists('Model', $Exif['IFD0'])) {
@@ -188,7 +188,7 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 	$datetaken = strtok((string) $datetaken[2], ' ') . '.' . (string) $datetaken[1] . '.' . (string) $datetaken[0];
 
 	// get tags and $description
-	$tags = $iptc["2#025"]; 
+	$tags = \array_key_exists("2#025", $iptc) ? $iptc["2#025"] : ''; 
 	if (array_key_exists('ImageDescription', $Exif["IFD0"])) {
 		$description = $Exif["IFD0"]["ImageDescription"];
 	} else {
