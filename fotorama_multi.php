@@ -4,7 +4,7 @@
  *
  * @link              https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
  * @since             0.0.1
- * @package           wp_fotorama_gpxviewer
+ * @package           fotorama-multi
  *
  * @wordpress-plugin
  * Plugin Name:       Fotorama 2
@@ -34,10 +34,10 @@ if (doYoastXmlSitemap) {
 }
 
 // define the shortcode to generate the image-slider with map
-add_shortcode('fotomulti', '\mvbplugins\fotoramamulti\show_gpxview');
+add_shortcode('fotomulti', '\mvbplugins\fotoramamulti\showmulti');
 
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
-function show_gpxview($attr, $content = null)
+function showmulti($attr, $content = null)
 {
 	// Define global Values and Variables. We need the globals for the state-transition of the post
 	global $post_state_pub_2_draft;
@@ -230,27 +230,11 @@ function show_gpxview($attr, $content = null)
 					$gpxdata = simplexml_load_file($gpx_url . $f);
 					if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] )) {
 						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
-					$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat'];
-						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
-					$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat'];
-						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
-					$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat'];
-						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
-					$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat'];
-						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
 					} else {
 						$lat = (string) $gpxdata->trk->trkpt[0]['lat'];
 					}
 					if (isset( $gpxdata->trk->trkseg->trkpt[0]['lon'] )) {
-						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-					$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-					$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-					$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-					$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
-						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon']; 
+						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon'];  
 					} else {
 						$lon = (string) $gpxdata->trk->trkpt[0]['lon'];
 					}
@@ -313,10 +297,10 @@ function show_gpxview($attr, $content = null)
 				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
 			
 			} elseif ($data['thumbavail']) {
-				$htmlstring .= '<a loading="lazy" href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg"' . ' srcset="'. $srcset .'"' . ' data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
+				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg"' . ' srcset="'. $srcset .'"' . ' data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
 				'<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">\r\n';
 				// this is for the thumbnails
-				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
+				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
 				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg' . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
@@ -330,14 +314,6 @@ function show_gpxview($attr, $content = null)
 	// show Map only with valid gpx-tracks and if so, generate the div
 	if ($showmap) {
 		$mapid = 'map' . strval($shortcodecounter); 
-	$mapid = 'map' . strval($shortcodecounter); 
-		$mapid = 'map' . strval($shortcodecounter); 
-	$mapid = 'map' . strval($shortcodecounter); 
-		$mapid = 'map' . strval($shortcodecounter); 
-	$mapid = 'map' . strval($shortcodecounter); 
-		$mapid = 'map' . strval($shortcodecounter); 
-	$mapid = 'map' . strval($shortcodecounter); 
-		$mapid = 'map' . strval($shortcodecounter); 
 		if (strlen($gpxfile) > 3 && ($i > 0)) {
 			$htmlstring  .= '<div id=box' . $mapid .'>';
 			$htmlstring  .= '<div id='.$mapid.' class="map gpxview:' . $gpxfile . ':OPENTOPO" style="width:100%;height:' . $mapheight . 'px"></div>';
@@ -350,14 +326,6 @@ function show_gpxview($attr, $content = null)
 			$gpx_url = "";
 		}
 
-		// define the marker images for the map. this is for GPXviewer  
-	// define the marker images for the map. this is for GPXviewer  
-		// define the marker images for the map. this is for GPXviewer  
-	// define the marker images for the map. this is for GPXviewer  
-		// define the marker images for the map. this is for GPXviewer  
-	// define the marker images for the map. this is for GPXviewer  
-		// define the marker images for the map. this is for GPXviewer  
-	// define the marker images for the map. this is for GPXviewer  
 		// define the marker images for the map. this is for GPXviewer  
 		if ($imageNumber > 0) {
 			foreach ($data2 as $data) {
@@ -427,8 +395,8 @@ function show_gpxview($attr, $content = null)
 	return $htmlstring;
 }
 
-require_once __DIR__ . '/wp_gpxviewer_enque.php';
+require_once __DIR__ . '/fotorama_multi_enque.php';
 
 // --------------- load additonal functions ------------------------------
-require_once __DIR__ . '/inc/gpxview_functions.php';
+require_once __DIR__ . '/inc/fm_functions.php';
 

@@ -2108,10 +2108,10 @@ jQuery.Fotorama = function ($fotorama, opts) {
                 that.cancelFullScreen();
               } else if ((e.shiftKey && e.keyCode === 32 && allowKey('space')) || (e.keyCode === 37 && allowKey('left')) || (e.keyCode === 38 && allowKey('up'))) {
                 index = '<';
-                console.log('to the left');
+                //console.log('to the left');
               } else if ((e.keyCode === 32 && allowKey('space')) || (e.keyCode === 39 && allowKey('right')) || (e.keyCode === 40 && allowKey('down'))) {
                 index = '>';
-                console.log('to the right');
+                //console.log('to the right');
               } else if (e.keyCode === 36 && allowKey('home')) {
                 index = '<<';
               } else if (e.keyCode === 35 && allowKey('end')) {
@@ -2519,7 +2519,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
       img.src = src;
       if (dataFrame.srcset) { // Martin: 3 lines for image srcset
         img.srcset = dataFrame.srcset;
-        img.loading = 'Lazy';
+        //img.loading = 'Lazy';
       }
     });
   }
@@ -2956,7 +2956,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
   };
 
   that.show = function (options) {
-    console.log('that.show');
+    //console.log('that.show');
     //////console.time('that.show prepare');
     var index;
 
