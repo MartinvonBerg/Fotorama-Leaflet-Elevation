@@ -89,7 +89,7 @@ function gpxview_setpostgps($pid, $lat, $lon)
 		update_post_meta($pid,'lat',$lat,''); 
 		update_post_meta($pid,'lon',$lon,'');
 		echo ('Update Post-Meta lat und lon');
-	} elseif (strlen($oldlon[0]<1) && strlen($oldlat[0]<1)) {
+	} elseif (strlen($oldlon[0]>1) && strlen($oldlat[0]>1)) {
 		delete_post_meta($pid,'lat');
 		delete_post_meta($pid,'lon');
 		update_post_meta($pid,'lat',$lat,''); 

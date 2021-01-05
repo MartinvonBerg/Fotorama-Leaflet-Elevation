@@ -7,10 +7,10 @@
  * @package           fotorama-multi
  *
  * @wordpress-plugin
- * Plugin Name:       Fotorama 2
+ * Plugin Name:       Fotorama-Multi
  * Plugin URI:        https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
  * Description:       Fotorama Multi Slider
- * Version:           0.0.1
+ * Version:           0.0.2
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -21,14 +21,16 @@ namespace mvbplugins\fotoramamulti;
 // fallback for wordpress security
 defined('ABSPATH') || die('Are you ok?');
 
+const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. But where?
+
 // load globals and functions for status transitions only if needed or intended
-const setCustomFields = true;
+const setCustomFields = false;
 if (setCustomFields) {
 	require_once __DIR__ . '/inc/stateTransitions.php';
 }
 
 // load the wpseo_sitemap_url-images callback to add images of post to the sitemap only if needed or intended
-const doYoastXmlSitemap = true;
+const doYoastXmlSitemap = false;
 if (doYoastXmlSitemap) {
 	require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 }
@@ -64,9 +66,10 @@ function showmulti($attr, $content = null)
 		'alttext' => '',
 		'scale' => 1.0, // map-scale factor for GPXViewer
 		'ignoresort' => false, // ignore custom sort even if provided by Wordpress, then sort by date ascending
-		'showadress' => false,
+		'showadress' => 'false',
 		'adresstext' => 'Startadresse',
 		'showmap' => false,
+		'requireGPS' => false,
 	), $attr));
 
 	// Detect Language of Website and set the Javascript-Variable for the Language used in GPXViewer
@@ -146,7 +149,7 @@ function showmulti($attr, $content = null)
 			$Exif = exif_read_data($file, 0, true);
 			list($lon,$lat) = gpxview_getLonLat($Exif);	
 			
-			if ((is_null($lon)) || (is_null($lat))) {
+			if ( ( (is_null($lon) ) || (is_null($lat)) ) && $requireGPS ) {
 				// do nothing, GPS-data invalid;
 			} 
 
@@ -163,7 +166,7 @@ function showmulti($attr, $content = null)
 					'datesort' => $datesort, 'descr' => $description, 'thumbavail' => $thumbavail, 'thumbinsubdir' => $thumbinsubdir, 'alt' => $alt, 'caption' => $caption, 'sort' => $sort,
 				);
 			
-				// create array to add the image-urls to Yoast-seo xml-sitemap 
+				// create array to add the image-urls to Yoast-seo xml-sitemap // TODO: anpassung für multi!!!
 				if (doYoastXmlSitemap) {
 					$img2add = $up_url . '/' . $imgpath . '/' . $jpgfile . '.jpg';
 					$postimages[] = array('src' => $img2add , 'alt' => $title, );
@@ -204,7 +207,7 @@ function showmulti($attr, $content = null)
 	// on the status transition of the post from 'draft' to 'published'.
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
-	if ($draft_2_pub)  {
+	if ($draft_2_pub)  { // TODO: anpassung für multi!!!
 		if (setCustomFields) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 		}
@@ -227,6 +230,7 @@ function showmulti($attr, $content = null)
 
 				if ($draft_2_pub and setCustomFields) {
 					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
+					//TODO: anpassung für multi!!!
 					$gpxdata = simplexml_load_file($gpx_url . $f);
 					if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] )) {
 						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
@@ -274,7 +278,7 @@ function showmulti($attr, $content = null)
 	// Generate Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		$htmlstring  .= '<div id="Bilder" style="display : none"><figure><img loading="lazy" alt="' . $alttext . '"><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
-		$htmlstring  .= '<div id="fotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-fit="contain" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
+		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-fit="contain" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
 		
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
@@ -284,10 +288,20 @@ function showmulti($attr, $content = null)
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not.
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
 			// <a href="img/large.jpg" srcset="img/large.jpg 1920w, img/medium.jpg 960w, img/little.jpg 480w"> <img src="img/thumb.jpg">
-			$srcset = '';
+			$srcset2 = '';
 			if ( $data['wpid'] > 0) {
-				$srcset = wp_get_attachment_image_srcset( $data['wpid'] );
-				//$srcset = str_replace('http', 'img/http', $srcset);
+				$srcset2 = wp_get_attachment_image_srcset( $data['wpid'] );
+				$srcarr = explode(',', $srcset2);
+
+				foreach( $srcarr as $val){
+					$val = trim($val);
+					$tmp = \explode(' ', $val);
+					$tmp[1] = \str_replace('w', '', $tmp[1]);
+					$finalArray[ $tmp[1] ] = $tmp[0];
+				}
+				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg';
+				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
+				$phpimgdata[$imgnr-1]['id'] = $imgnr;
 			}
 
 			if ($data['thumbinsubdir']) {
@@ -297,10 +311,11 @@ function showmulti($attr, $content = null)
 				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
 			
 			} elseif ($data['thumbavail']) {
-				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg"' . ' srcset="'. $srcset .'"' . ' data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
-				'<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">\r\n';
+				$imgurl = $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs;
+				$htmlstring .= '<a href="' . $imgurl . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . 
+				' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
 				// this is for the thumbnails
-				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
+				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>'; 
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
 				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg' . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
@@ -312,7 +327,7 @@ function showmulti($attr, $content = null)
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
-	if ($showmap) {
+	if ($showadress  == 'true') {
 		$mapid = 'map' . strval($shortcodecounter); 
 		if (strlen($gpxfile) > 3 && ($i > 0)) {
 			$htmlstring  .= '<div id=box' . $mapid .'>';
@@ -344,58 +359,76 @@ function showmulti($attr, $content = null)
 		}
 	}
 	// close all html-divs
-	//$htmlstring  .= '</div></div></div>';
-	$htmlstring  .= '</div></div>';
+	//$htmlstring  .= '</div>';
 
 	// provide GPX-download if defined
 	if (($dload == 'yes') && ($i == 1)) {
 		$htmlstring .= '<p><strong>GPX-Datei: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">Download GPX-Datei</a></strong></p>';
 	}
 	
-	// produce starting point description
-	if ($showadress) {
+	// produce starting point description,  TODO: anpassung für multi!!!
+	if ($showadress  == 'true') {
 		$geoadresstest =  get_post_meta($postid,'geoadress');
 		if ( ! empty($geoadresstest) ) {
 			$test = $geoadresstest[0]; // we need only the first index
 			$geoadress = maybe_unserialize($test);	// type conversion to array
 			$htmlstring .= '<h4>'. $adresstext .'</h4>';
-			$v = array_key_exists('village', $geoadress) ? $geoadress['village'] . ', ' : ''; // city // array_key_exists ist veraltet! Use isset() or property_exists() instead
-			$v = array_key_exists('city', $geoadress) ? $geoadress['city'] . ', ' : ''; // city
-			$m = array_key_exists('municipality', $geoadress) ? $geoadress['municipality'] . ', ' : '';
-			$c = array_key_exists('county', $geoadress) ? $geoadress['county'] . ', ' : '';
-			$s = array_key_exists('state', $geoadress) ? $geoadress['state'] . ', ' : '';
-			$cy = array_key_exists('country', $geoadress) ? $geoadress['country'] : '';
+		
+			$v = '';
+			foreach ($geoadress as $key => $value) {
+				if ($key != 'country') {
+					$v .= $value . ', ';
+				} else {
+					$v .= $value;
+					break;
+				}
+			}
 
 			// https://www.google.com/maps/search/?api=1&query=47.5951518,-122.3316393
 			//https://www.google.com/maps/search/@?api=1&map_action=map&center=44.757601666667,6.7916916666667&zoom=12
 			//https://www.google.com/maps/       @?api=1&map_action=map&center=-33.712206,150.311941&zoom=12&basemap=terrain
+			//$googleurl = 'https://www.google.com/maps/@?api=1&map_action=map&center=' . $lat[0] . ',' . $lon[0] . '&zoom=10';
+			//http://www.google.com/maps/place/<lat>,<lng>/@<lat>,<lng>,<zoom>z
 
 			$lat = get_post_meta($postid,'lat');
 			$lon = get_post_meta($postid,'lon');
-			$googleurl = 'https://www.google.com/maps/@?api=1&map_action=map&center=' . $lat[0] . ',' . $lon[0] . '&zoom=10';
+			$googleurl = 'https://www.google.com/maps/place/' . $lat[0] . ',' . $lon[0] . '/@' . $lat[0] . ',' . $lon[0] . ',9z';
 			$v2 = '<a href="' .$googleurl. '" target="_blank">'. $v .'</a>';
-			$htmlstring .= '<p>'. $v2 . $m . $c . $s . $cy . '</p>';
+			$htmlstring .= '<p>'. $v2 . '</p>';
 		}
 	}
 	
-	// provide javascript-variables for GPXviewer. There are better solutions, but it works
-	if ($showmap) {
-		if (0 == $shortcodecounter){
-			$htmlstring .= '<script> ';
-			$htmlstring .= 'var g_numb_gpxfiles = new Array(); var Gpxpfad = new Array(); var Fullscreenbutton = new Array(); var Arrowtrack = new Array(); var Doclang="' . $lang . '"; var g_maprescale = new Array();';
-			$htmlstring .= '</script> ';
-		}
-		$k = $shortcodecounter;
-		$htmlstring .= '<script> ';
-		$htmlstring .= 'g_numb_gpxfiles['. $k .'] = "' . $i . '"; Gpxpfad['. $k .'] = "' . $gpx_url . '"; Fullscreenbutton['. $k .'] = false; Arrowtrack['. $k .'] = true; g_maprescale['. $k .'] = '. $scale .'';
-		$htmlstring .= '</script>';
-	}
+	// pass php variabls to javascript-file for fotorama
+	wp_localize_script('fm_script2', 'wpfm_phpvars' . $shortcodecounter, array(
+		'ngpxfiles'  => $i,
+		'maprescale' => $scale,
+		'imgdata' => $phpimgdata ?? [],
+		) 
+	);
+
 
 	$shortcodecounter++;
 	return $htmlstring;
 }
 
-require_once __DIR__ . '/fotorama_multi_enque.php';
+//bind and call scripts and styles
+function fotomulti_scripts()
+{
+  wp_reset_query();
+  $plugin_url = plugins_url('/', __FILE__);
+
+  if (!is_front_page() || !is_home()) {
+    // Load Styles
+    wp_enqueue_style('fm_style1', $plugin_url . 'css/fotorama_multi.css');
+    wp_enqueue_style('fm-style2', $plugin_url . 'css/fotorama3.css');
+
+    // Load Scripts
+    wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.js', array('jquery'), '1.10.2', true);
+	wp_enqueue_script('fm_script2', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '1.10.2', true);
+  }
+}
+
+add_action('wp_enqueue_scripts', 'mvbplugins\fotoramamulti\fotomulti_scripts');
 
 // --------------- load additonal functions ------------------------------
 require_once __DIR__ . '/inc/fm_functions.php';

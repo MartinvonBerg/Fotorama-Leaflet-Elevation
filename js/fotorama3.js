@@ -1461,7 +1461,7 @@ function getRatio (_ratio) {
 
 function addEvent (el, e, fn, bool) {
   if (!e) return;
-  el.addEventListener ? el.addEventListener(e, fn, !!bool) : el.attachEvent('on'+e, fn);
+  el.addEventListener ? el.addEventListener(e, fn, {passive: true}) : el.attachEvent('on'+e, fn); // Martin
 }
 
 function elIsDisabled (el) {
