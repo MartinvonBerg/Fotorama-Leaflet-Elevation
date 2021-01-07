@@ -138,20 +138,21 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 	
 	// get title from IPTC-data
 	getimagesize($file, $info);
+
+	$title = 'Galeriebild ' . strval($imageNumber+1);
 	if (isset($info['APP13'])) {
 		$iptc = iptcparse($info['APP13']);
-		if (array_key_exists('2#005', $iptc)) {
+		if (isset($iptc["2#005"][0])) {
 			$title =  htmlspecialchars($iptc["2#005"][0]);
-		} else {
-			$title = 'Galeriebild ' . strval($imageNumber+1);
-		}
-	}
+		} 
+	} 
 	
 	// get foto capture data
 	$exptime = $Exif["EXIF"]["ExposureTime"] ?? '--';
 	$apperture = strtok(($Exif["EXIF"]["FNumber"] ?? '-'), ' / ');
 	$iso = $Exif["EXIF"]["ISOSpeedRatings"] ?? '--';
-	if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
+	if (isset($Exif["EXIF"]["FocalLengthIn35mmFilm"])) {
+	//if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
 		$focal = $Exif["EXIF"]["FocalLengthIn35mmFilm"] . 'mm';
 	} else {
 		$focal = '--mm';
@@ -159,7 +160,8 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 
 	// Check setting of exif-field make (the lens information, written by my Ligtroom-Plugin)
 	// alternatively I wrote lens information to the make.
-	if (array_key_exists('Make', $Exif['IFD0'])) {
+	if (isset($Exif["IFD0"]["Make"])) {
+	//if (array_key_exists('Make', $Exif['IFD0'])) {
 		$make = $Exif["IFD0"]["Make"] ?? '';
 		$make = preg_replace('/\s+/', ' ', $make);
 	} else {
@@ -167,10 +169,12 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 	}
 
 	// get lens data. $make is obsolete now!
-	$lens = array_key_exists("UndefinedTag:0xA434", $Exif["EXIF"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
+	$lens = isset($Exif["EXIF"]["UndefinedTag:0xA434"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
+	//$lens = array_key_exists("UndefinedTag:0xA434", $Exif["EXIF"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
 	
 	// get the camera model
-	if (array_key_exists('Model', $Exif['IFD0'])) {
+	if (isset($Exif["IFD0"]["Model"])) {
+	//if (array_key_exists('Model', $Exif['IFD0'])) {
 		$model = $Exif["IFD0"]["Model"];
 	} else {
 		$model = '';
@@ -183,17 +187,18 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 	}
 
 	// get date-taken information
-	$datetaken = explode(":", $Exif["EXIF"]["DateTimeOriginal"]);
-	$datesort = $Exif["EXIF"]["DateTimeOriginal"];
-	$datetaken = strtok((string) $datetaken[2], ' ') . '.' . (string) $datetaken[1] . '.' . (string) $datetaken[0];
+	if (isset($Exif["EXIF"]["DateTimeOriginal"])) {
+		$datetaken = explode(":", $Exif["EXIF"]["DateTimeOriginal"]);
+		$datesort = $Exif["EXIF"]["DateTimeOriginal"];
+		$datetaken = strtok((string) $datetaken[2], ' ') . '.' . (string) $datetaken[1] . '.' . (string) $datetaken[0];
+	} else {
+		$datetaken = '';
+		$datesort = '';
+	}
 
 	// get tags and $description
-	$tags = \array_key_exists("2#025", $iptc) ? $iptc["2#025"] : ''; 
-	if (array_key_exists('ImageDescription', $Exif["IFD0"])) {
-		$description = $Exif["IFD0"]["ImageDescription"];
-	} else {
-		$description = ""; // sonst steht der Titel 2-mal im Alt-Tag
-	}
+	$tags = isset($iptc["2#025"]) ? $iptc["2#025"] : ''; 
+	$description = isset($Exif["IFD0"]["ImageDescription"]) ? $Exif["IFD0"]["ImageDescription"] : '';
 	
 	// get data fromt the wp database, if it is there
 	$sort = 0; $alt = ''; $caption = '';

@@ -65,11 +65,12 @@ function showmulti($attr, $content = null)
 		'dload' => 'no',
 		'alttext' => '',
 		'scale' => 1.0, // map-scale factor for GPXViewer
-		'ignoresort' => false, // ignore custom sort even if provided by Wordpress, then sort by date ascending
+		'ignoresort' => 'true', // ignore custom sort even if provided by Wordpress, then sort by date ascending
 		'showadress' => 'false',
 		'adresstext' => 'Startadresse',
-		'showmap' => false,
-		'requireGPS' => false,
+		'requiregps' => 'true',
+		'maxwidth' => '800',
+		'showcaption' => 'true',
 	), $attr));
 
 	// Detect Language of Website and set the Javascript-Variable for the Language used in GPXViewer
@@ -100,11 +101,12 @@ function showmulti($attr, $content = null)
 	
 	// Loop through all jpg-files in the given folder, and get the required data
 	$imageNumber = 0;
-	foreach (glob($imagepath . "/*.jpg") as $file) {
+	foreach (glob($imagepath . "/*.[jJ][pP][gG]") as $file) {
 		// check wether current $file of the $path (=folder) is a unscaled jpg-file and not a thumbnail or a rescaled file
 		// This means: The filename must not contain 'thumb' or '[0-9]x[0-9]'. All other additions to the filename will be treated as 
 		// full scaled image-file that will be shown in the image-slider
-		$jpgfile = basename($file, ".jpg"); 
+		$extension = pathinfo($file)['extension'];
+		$jpgfile = basename($file, '.'.$extension); 
 		$isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile); 
 		
 		if ( ! $isthumb) {
@@ -149,7 +151,7 @@ function showmulti($attr, $content = null)
 			$Exif = exif_read_data($file, 0, true);
 			list($lon,$lat) = gpxview_getLonLat($Exif);	
 			
-			if ( ( (is_null($lon) ) || (is_null($lat)) ) && $requireGPS ) {
+			if ( ( (is_null($lon) ) || (is_null($lat)) ) && ('true' == $requiregps) ) {
 				// do nothing, GPS-data invalid;
 			} 
 
@@ -185,7 +187,7 @@ function showmulti($attr, $content = null)
 		$csort = array_column($data2, 'sort'); // $customsort
 		$arraysum = array_sum($csort);
 	
-		if ( ($rowsum != $arraysum) or $ignoresort) {
+		if ( ($rowsum != $arraysum) or ('true' == $ignoresort) ) {
 			$csort = array_column($data2, 'datesort');
 		}
 	}
@@ -247,7 +249,7 @@ function showmulti($attr, $content = null)
 
 					// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
 					// only done for the first track
-					if ($showadress) {
+					if ('true' == $showadress) {
 						$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
 						$opts = array(
 							'http'=>array(
@@ -272,13 +274,13 @@ function showmulti($attr, $content = null)
 	}
 
 	// Generate the html-code start with the surrounding Div
-	$htmlstring .= '<div id=box'.$shortcodecounter.'>';
+	$htmlstring .= '<div id=box'.$shortcodecounter.' style="max-width:'. $maxwidth .'px;">';
 	$imgnr = 1;
 
 	// Generate Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		$htmlstring  .= '<div id="Bilder" style="display : none"><figure><img loading="lazy" alt="' . $alttext . '"><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
-		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-fit="contain" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
+		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="cover" data-shadows="true" data-captions="'. $showcaption .'" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
 		
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
@@ -305,7 +307,7 @@ function showmulti($attr, $content = null)
 			}
 
 			if ($data['thumbinsubdir']) {
-				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg"' . ' srcset="'. $srcset .'"' . ' data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
+				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
 				'<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">\r\n';
 				// code for the thumbnails
 				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
@@ -359,7 +361,7 @@ function showmulti($attr, $content = null)
 		}
 	}
 	// close all html-divs
-	//$htmlstring  .= '</div>';
+	$htmlstring  .= '</div>';
 
 	// provide GPX-download if defined
 	if (($dload == 'yes') && ($i == 1)) {
@@ -420,11 +422,14 @@ function fotomulti_scripts()
   if (!is_front_page() || !is_home()) {
     // Load Styles
     wp_enqueue_style('fm_style1', $plugin_url . 'css/fotorama_multi.css');
-    wp_enqueue_style('fm-style2', $plugin_url . 'css/fotorama3.css');
+	wp_enqueue_style('fm-style2', $plugin_url . 'css/fotorama3.css');
+	//wp_enqueue_style('fm-style3', $plugin_url . 'css/image-zoom.css');
 
     // Load Scripts
     wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.js', array('jquery'), '1.10.2', true);
 	wp_enqueue_script('fm_script2', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '1.10.2', true);
+	//wp_enqueue_script('fm_script3', $plugin_url . 'js/wheelzoom.js', array('jquery'), '1.10.2', true);
+	
   }
 }
 

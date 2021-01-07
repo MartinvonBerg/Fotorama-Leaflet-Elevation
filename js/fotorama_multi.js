@@ -3,18 +3,10 @@
 (function (window, document, undefined) {
     var numberOfFotorama = document.querySelectorAll('[id^=mfotorama]').length;
     var numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
+    let mobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
 
     var mapdiv = new Array();
-    var images = new Array();
-    var marker = new Array();
-    var map = new Array();
-    var makemap = new Array();
-    var nr = new Array();
-    var ct = new Array();
-    var img = new Array();
-    var figcaption = new Array();
-
-  
+    
     for (var i = 0; i < numberOfFotorama; i++) {
         // 1. Initialize fotorama manually.
         var $fotoramaDiv = jQuery('#mfotorama' + i ).fotorama();
@@ -36,7 +28,6 @@
             let newimages = phpvars.imgdata; 
             let olddata = fotorama.data;
             let newdata = [];
-            let mobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
             var width = $fotoramaDiv[0].parentElement.clientWidth;
     
             if (newimages) {
@@ -76,5 +67,25 @@
         var nr = fotorama.activeIndex;
         console.log('change in: ' + e.currentTarget.id + ' index: ' + nr);               
     });
+
+    
+    jQuery('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', function (e, fotorama) {
+        if (e.type === 'fotorama:fullscreenenter') {
+            // Options for the fullscreen
+            fotorama.setOptions({
+                fit: 'contain'
+            });
+        } else {
+            // Back to normal settings
+            fotorama.setOptions({
+                fit: 'cover'
+            });
+        }
+    });
+
+    jQuery(document).contextmenu(function() {
+       return false;
+    });   
+
         
 })(window, document);
