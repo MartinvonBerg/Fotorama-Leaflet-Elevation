@@ -51,6 +51,7 @@ function showmulti($attr, $content = null)
 	$postid = get_the_ID();
 	$htmlstring = ''; 
 	$files = [];
+	$tracks = [];
 	$postimages = []; // array with images for the Yoast XML Sitemap
 	$thumbsdir = 'thumbs'; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter=0; // counts the number of shortcodes on ONE page!
@@ -66,7 +67,7 @@ function showmulti($attr, $content = null)
 		'alttext' => '',
 		'scale' => 1.0, // map-scale factor for GPXViewer
 		'ignoresort' => 'true', // ignore custom sort even if provided by Wordpress, then sort by date ascending
-		'showadress' => 'false',
+		'showadress' => 'true', // wird auch als showmap genutzt
 		'adresstext' => 'Startadresse',
 		'requiregps' => 'true',
 		'maxwidth' => '800',
@@ -224,9 +225,11 @@ function showmulti($attr, $content = null)
 	$files = explode(",", $gpxfile);
 	$i = 0; // i : gpxfilenumber
 	$gpxfile = ''; // string to pass to javascript
-	foreach ($files as $f) { 
-		if (is_file($gpx_dir . $f)) { 
-			
+	foreach ($files as $file) { 
+		$f = trim($file);
+		if (is_file($gpx_dir . $f)) {
+			$tracks[$shortcodecounter]['track_' . $i]['url'] = $gpx_url . $f;
+
 			if ($i == 0) {
 				$gpxfile .= $f;
 
@@ -331,37 +334,14 @@ function showmulti($attr, $content = null)
 	// show Map only with valid gpx-tracks and if so, generate the div
 	if ($showadress  == 'true') {
 		$mapid = 'map' . strval($shortcodecounter); 
-		if (strlen($gpxfile) > 3 && ($i > 0)) {
-			$htmlstring  .= '<div id=box' . $mapid .'>';
-			$htmlstring  .= '<div id='.$mapid.' class="map gpxview:' . $gpxfile . ':OPENTOPO" style="width:100%;height:' . $mapheight . 'px"></div>';
-			$htmlstring  .= '<div id="'.$mapid.'_profiles" style="width:100%;height:' . $chartheight . 'px"><div id="'.$mapid.'_hp" class="map" style="width:100%;height:' . $chartheight . 'px"></div></div>';
-			$htmlstring  .= '<div id="'.$mapid.'_img">';
-		} elseif ($imageNumber > 0){
-			$htmlstring  .= '<div id=box' . $mapid .'>';
-			$htmlstring  .= '<div id='.$mapid.' class="gpxview::OPENTOPO" style="width:100%;height:' . $mapheight . 'px"></div>';
-			$htmlstring  .= '<div id="'.$mapid.'_img">';
-			$gpx_url = "";
-		}
-
-		// define the marker images for the map. this is for GPXviewer  
-		if ($imageNumber > 0) {
-			foreach ($data2 as $data) {
-				$htmlstring  .= '<a class="gpxpluga"  href="' . $up_url . '/' . $imgpath . '/';
-			
-				if ($data['thumbinsubdir']) {
-						$htmlstring  .= $thumbsdir . '/' . $data["file"] . $thumbs;
-				} elseif ($data['thumbavail']) {
-						$htmlstring  .= $data["file"] . $thumbs;
-				} else {
-						$htmlstring  .= $data["file"] . '.jpg';
-				}
-			
-				$htmlstring .= '" data-geo="lat:' . $data["lat"] . ',lon:' . $data["lon"] . '"></a>';
-			}
-		}
+		$htmlstring  .= '<div id=box' . $mapid .' class="boxmap">';
+		$htmlstring  .= '<div id="'. $mapid .'" class="leafmap" style="height:'. $mapheight .'px;"></div>';
+		$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" class="leaflet-control elevation"></div>';
+		$htmlstring  .= '</div>';
+	
 	}
 	// close all html-divs
-	$htmlstring  .= '</div>';
+	//$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
 
 	// provide GPX-download if defined
 	if (($dload == 'yes') && ($i == 1)) {
@@ -371,7 +351,7 @@ function showmulti($attr, $content = null)
 	// produce starting point description,  TODO: anpassung für multi!!!
 	if ($showadress  == 'true') {
 		$geoadresstest =  get_post_meta($postid,'geoadress');
-		if ( ! empty($geoadresstest) ) {
+		if ( ! empty($geoadresstest[0]) ) {
 			$test = $geoadresstest[0]; // we need only the first index
 			$geoadress = maybe_unserialize($test);	// type conversion to array
 			$htmlstring .= '<h4>'. $adresstext .'</h4>';
@@ -399,12 +379,16 @@ function showmulti($attr, $content = null)
 			$htmlstring .= '<p>'. $v2 . '</p>';
 		}
 	}
+
+	// close all html-divs
+	$htmlstring  .= '</div><!--div id=box'.$shortcodecounter.'-->';
 	
 	// pass php variabls to javascript-file for fotorama
-	wp_localize_script('fm_script2', 'wpfm_phpvars' . $shortcodecounter, array(
+	wp_localize_script('fm_script9', 'wpfm_phpvars' . $shortcodecounter, array(
 		'ngpxfiles'  => $i,
 		'maprescale' => $scale,
 		'imgdata' => $phpimgdata ?? [],
+		'tracks' => $tracks,
 		) 
 	);
 
@@ -424,11 +408,22 @@ function fotomulti_scripts()
     wp_enqueue_style('fm_style1', $plugin_url . 'css/fotorama_multi.css');
 	wp_enqueue_style('fm-style2', $plugin_url . 'css/fotorama3.css');
 	//wp_enqueue_style('fm-style3', $plugin_url . 'css/image-zoom.css');
+	wp_enqueue_style('fm-style3', "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css");
+	wp_enqueue_style('fm-style4', "https://unpkg.com/@raruto/leaflet-elevation@1.5.1/dist/leaflet-elevation.min.css");
+	wp_enqueue_style('fm-style5', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css");
+	wp_enqueue_style('fm-style6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css");
+	wp_enqueue_style('fm-style7', "https://unpkg.com/leaflet-gesture-handling@1.2.1/dist/leaflet-gesture-handling.min.css" );
 
     // Load Scripts
-    wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.js', array('jquery'), '1.10.2', true);
-	wp_enqueue_script('fm_script2', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '1.10.2', true);
-	//wp_enqueue_script('fm_script3', $plugin_url . 'js/wheelzoom.js', array('jquery'), '1.10.2', true);
+	wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.js', array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script2', "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script3', "https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script4', "https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script5', "https://unpkg.com/@raruto/leaflet-elevation@1.5.1/dist/leaflet-elevation.min.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script7', $plugin_url . "js/leaflet.markercluster.layersupport.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script8', "https://unpkg.com/leaflet-gesture-handling@1.2.1/dist/leaflet-gesture-handling.min.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm_script9', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '3.1.0', true);
 	
   }
 }

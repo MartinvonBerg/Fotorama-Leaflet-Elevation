@@ -2,7 +2,6 @@
 #map0_hp { margin-top:10px; }
 #map0_img {display: none;}
 #map0 { border-top: 1px solid lightslategray; padding-top: 8px;}
-#boxmap {border-bottom: 1px solid lightslategray; padding: 0 5px 10px 5px; background: rgba(0,0,0,0.03);}
 
 /*------------- fotorama -----------------------*/
 .fotorama__nav__shaft {
@@ -45,6 +44,13 @@
   }
 
 /*------------------ leaflet ------------------------------*/
+.boxmap {
+  border-bottom: 1px solid lightslategray; 
+  padding: 5px 5px 5px 5px; }
+
+.leafmap {
+  /*height: 400px; */
+}
 #elevation-div {
     height: 250px;
     font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
