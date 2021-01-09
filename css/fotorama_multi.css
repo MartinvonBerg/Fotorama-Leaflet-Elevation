@@ -72,6 +72,8 @@
   border-width: 1px;
   padding-left: 10px;
   border:inset;
+  margin-top: 1px;
+  margin-bottom: 1px;
 }
 
 .data-summary .summaryvalue {

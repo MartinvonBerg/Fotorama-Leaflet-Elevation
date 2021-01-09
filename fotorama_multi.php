@@ -308,12 +308,11 @@ function showmulti($attr, $content = null)
 				}
 				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg';
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
-				$phpimgdata[$imgnr-1]['id'] = $imgnr;
-				$phpimgdata[$imgnr-1]['title'] = $data['title'];
-				$phpimgdata[$imgnr-1]['coord'][0] = $data['lat'];
-				$phpimgdata[$imgnr-1]['coord'][1] = $data['lon'];
-
 			}
+			$phpimgdata[$imgnr-1]['id'] = $imgnr;
+			$phpimgdata[$imgnr-1]['title'] = $data['title'];
+			$phpimgdata[$imgnr-1]['coord'][0] = $data['lat'];
+			$phpimgdata[$imgnr-1]['coord'][1] = $data['lon'];
 
 			if ($data['thumbinsubdir']) {
 				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
