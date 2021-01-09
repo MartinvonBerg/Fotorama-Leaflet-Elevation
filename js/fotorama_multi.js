@@ -132,9 +132,12 @@
     var eleopts = new Array();
     var traces = new Array();
     let tracks = new Array(); 
-    //var trace = new Array();
+    let lupe = new Array();
 
     for (var m = 0; m < numberOfMaps; m++) {
+        // get js-variable from php-output
+        var phptracks = eval('wpfm_phpvars'+m);
+
         // Kartenlayer definieren 
         layer1[m] = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -170,11 +173,44 @@
         maps[m].addLayer(baseLayers[m].OpenTopoMap);
         bounds[m] = maps[m].getBounds;  
     
-        // create scale control top left
-        if ( ! mobile ) { // mobile: zoom deactivate. use fingers!
+        // create scale control top left // mobile: zoom deactivate. use fingers!
+        if ( ! mobile ) { 
             controlZoom[m] = new L.Control.Zoom(opts.zoomControl); 
             controlZoom[m].addTo(maps[m]); 
         }
+
+        //------- Lupe, Image-Marker und Base-Layer-Change handling --------------------------------
+        // Functions and Overlays for Show-all in the topleft corner
+        //lupe[m] = new L.Control.Watermark( { position: 'topleft' } );
+        //lupe[m].addTo(maps[m]);
+
+        L.Control.Watermark = L.Control.extend({
+            onAdd: function () {
+                var img = L.DomUtil.create('img');
+                //img.src = g_wp_postmap_path + 'lupe_p_32.png';
+                img.src = phptracks.imagepath + "/lupe_p_32.png";
+                img.style.background = 'white';
+                img.style.width = '32px';
+                img.style.height = '32px';
+                img.style.cursor = 'pointer';
+                img.title = 'Alles anzeigen';
+                img.id = m;
+                img.onclick = function (e) {
+                    var m = parseInt(e.srcElement.id);
+                    maps[m].fitBounds(bounds[m]); 
+                    //map.flyTo([40.737, -73.923]) // für fotorama nur Center, ohne Zoom-Änderung
+                };
+                return img;
+            },
+        });
+      
+
+        L.control.watermark = function (opts) {
+            return new L.Control.Watermark(opts);
+        }
+
+        L.control.watermark({ position: 'topleft' }).addTo(maps[m]);
+    
 
         // Creating scale control bottom left
         scale[m] = L.control.scale();
@@ -187,40 +223,41 @@
 
         // create Track selector bottom right
         baseLayers2[m] = {};
-        controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
-        controlLayer2[m].setPosition('bottomright')
-        controlLayer2[m].addTo(maps[m]);
+        if (parseInt(phptracks.ngpxfiles) > 0) {
+            controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
+            controlLayer2[m].setPosition('bottomright')
+            controlLayer2[m].addTo(maps[m]);
 
-        // create elevation chart(s) -----------------------
-        eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
-            elevationControl: {
-              //data: glob_leaf_gpxfile,
-              options: {
-                theme: "yellow-theme", // CHANGE: theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
-                elevationDiv: "#elevation-div" + m, // zähler verwenden
-                detachedView: true,
-                summary: true,
-                downloadLink:true,
-                followMarker: false,
-                skipNullZCoords: true,
-                legend: true,
-              }
-            }
-        };
+            // create elevation chart(s) -----------------------
+            eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
+                elevationControl: {
+                //data: glob_leaf_gpxfile,
+                options: {
+                    theme: "martin-theme", // CHANGE: theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
+                    elevationDiv: "#elevation-div" + m, // zähler verwenden
+                    detachedView: true,
+                    summary: true,
+                    downloadLink:false,
+                    followMarker: false,
+                    skipNullZCoords: true,
+                    legend: true,
+                }
+                }
+            };
 
-        controlElevation[m] = L.control.elevation(eleopts[m].elevationControl.options); 
-        controlElevation[m].addTo(maps[m]);
-        controlElevation[m].loadChart(maps[m]);
+            controlElevation[m] = L.control.elevation(eleopts[m].elevationControl.options); 
+            controlElevation[m].addTo(maps[m]);
+            controlElevation[m].loadChart(maps[m]);
 
-        // load all tracks from array
-        traces[m] = [];
-        var phptracks = eval('wpfm_phpvars'+m);
-        tracks[m] = phptracks.tracks[0]; 
-       
-		var i = 0;
-		for (var track in tracks[m]) {
-			loadTrace(m, track, i++)
-        } 
+            // load all tracks from array
+            traces[m] = [];
+            tracks[m] = phptracks.tracks; 
+        
+            var i = 0;
+            for (var track in tracks[m]) {
+                loadTrace(m, track, i++)
+            } 
+        }
 
         // change elevation chart on change
         maps[m].on('baselayerchange', function(e) {
@@ -313,5 +350,15 @@
         //q('.gain .summaryvalue').innerHTML = "+" + trace.gpx.get_elevation_gain().toFixed(0) + " m";
         //q('.loss .summaryvalue').innerHTML = "-" + trace.gpx.get_elevation_loss().toFixed(0) + " m";
     }
+
+    jQuery(window).on("load", function() {  
+        jQuery('.leaflet-control-layers-toggle').css('background-image','');
+
+        if (mobile) {
+          jQuery('.leaflet-right .leaflet-control').css('margin-right', '0px');
+          jQuery('.leaflet-bottom .leaflet-control').css('margin-bottom', '0px');
+          
+        }
+      });
     
 })(window, document);

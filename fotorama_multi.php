@@ -99,6 +99,8 @@ function showmulti($attr, $content = null)
 	$thumbheight = (string) get_option('thumbnail_size_h');
 	$thumbwidth = (string) get_option('thumbnail_size_w');
 	$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . '.jpg';
+	$plugin_path = plugins_url('/', __FILE__);
+	$wp_fotomulti_path = $plugin_path . 'images/';
 	
 	// Loop through all jpg-files in the given folder, and get the required data
 	$imageNumber = 0;
@@ -228,7 +230,7 @@ function showmulti($attr, $content = null)
 	foreach ($files as $file) { 
 		$f = trim($file);
 		if (is_file($gpx_dir . $f)) {
-			$tracks[$shortcodecounter]['track_' . $i]['url'] = $gpx_url . $f;
+			$tracks['track_' . $i]['url'] = $gpx_url . $f;
 
 			if ($i == 0) {
 				$gpxfile .= $f;
@@ -386,6 +388,7 @@ function showmulti($attr, $content = null)
 	// pass php variabls to javascript-file for fotorama
 	wp_localize_script('fm_script9', 'wpfm_phpvars' . $shortcodecounter, array(
 		'ngpxfiles'  => $i,
+		'imagepath' => $wp_fotomulti_path,
 		'maprescale' => $scale,
 		'imgdata' => $phpimgdata ?? [],
 		'tracks' => $tracks,

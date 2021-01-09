@@ -79,7 +79,9 @@
   }
 
 .martin-theme.elevation-control.elevation .background {
-  background-color: rgb(46 53 60 / 20%)
+  background-color:  rgba(144,144,144,1) 0%;
+  background:   linear-gradient(0deg, rgba(249,249,249,1) 40%, rgba(58, 120, 255, 0.87) 100%);
+  /*background: linear-gradient(0deg,   rgba(144,144,144,1) 0%,   rgba(249,249,249,1) 91%);*/
   }
 
 .martin-theme.elevation-control.elevation .axis line,.martin-theme.elevation-control.elevation .axis path {
@@ -95,7 +97,7 @@
   }
 
 .martin-theme.elevation-control.elevation .area {
-      fill: #a3b6c5
+      fill: #cd8954;
   }
 
 .martin-theme.elevation-control.elevation .mouse-focus-line {
@@ -104,7 +106,7 @@
 
 .martin-theme.height-focus {
       stroke: #000;
-      fill: #ff0000;
+      fill: #c21010;
   }
 
 .martin-theme.elevation-polyline {
