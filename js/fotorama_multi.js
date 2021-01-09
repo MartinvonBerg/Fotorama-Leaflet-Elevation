@@ -99,12 +99,16 @@
             zoomControl: false,
             gestureHandling: true,
             gestureHandlingOptions: {
-            text: {
-                touch: "Use two Fingers to move the Map",
-                scroll: "Use Ctrl + Scrollwheel to zoom the Map",
-                scrollMac: "use \u2318 + scroll to zoom the map"
-                }
-            }
+                text: {
+                    touch: "Use two Fingers to move the Map",
+                    scroll: "Use Ctrl + Scrollwheel to zoom the Map",
+                    scrollMac: "use \u2318 + scroll to zoom the map"
+                    }
+            },
+            //fullscreenControl: true,
+            //fullscreenControlOptions: {
+            //    position: 'topleft',
+            //}
         },
         zoomControl: {
             position: 'topleft',
@@ -180,10 +184,7 @@
         }
 
         //------- Lupe, Image-Marker und Base-Layer-Change handling --------------------------------
-        // Functions and Overlays for Show-all in the topleft corner
-        //lupe[m] = new L.Control.Watermark( { position: 'topleft' } );
-        //lupe[m].addTo(maps[m]);
-
+        // Functions and Overlays for Show-all in the top left corner
         L.Control.Watermark = L.Control.extend({
             onAdd: function () {
                 var img = L.DomUtil.create('img');
@@ -203,14 +204,10 @@
                 return img;
             },
         });
-      
-
         L.control.watermark = function (opts) {
             return new L.Control.Watermark(opts);
         }
-
         L.control.watermark({ position: 'topleft' }).addTo(maps[m]);
-    
 
         // Creating scale control bottom left
         scale[m] = L.control.scale();
@@ -233,10 +230,10 @@
                 elevationControl: {
                 //data: glob_leaf_gpxfile,
                 options: {
-                    theme: "martin-theme", // CHANGE: theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
+                    theme: "lime-theme", // CHANGE: theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
                     elevationDiv: "#elevation-div" + m, // zähler verwenden
                     detachedView: true,
-                    summary: true,
+                    summary: false,
                     downloadLink:false,
                     followMarker: false,
                     skipNullZCoords: true,
@@ -282,6 +279,71 @@
                 }
             }
         });
+
+        // ---------Foto Marker Cluster ------------------
+        // Creating markergroups ----------------------- 
+        var LayerSupportGroup = L.markerClusterGroup.layerSupport(), 
+        group1 = L.layerGroup(); // hiking     $icon = "hiking";
+        LayerSupportGroup.addTo(maps[m]);
+
+        // Creating markers -----------------------
+        // TODO: fotorama setzt mapcenter und kreis um das aktive Bild bzw. cluster
+        // TODO: click auf marker setzt fotorama
+        // Icons definieren, TODO: besser als Klasse und als LOOP, abhängig von der Anzahl der Kategorien!
+        var icnh = 32;
+        var icnw = 32;
+
+        var myIcon1 = L.icon({ // hiking     $icon = "hiking";
+            iconUrl: "./js/images/hiking2.png",
+            iconSize: [icnh, icnw],
+            iconAnchor: [0, 0],
+            popupAnchor: [0, 0],
+            //shadowUrl: 'icon-shadow.png',
+            //shadowSize: [100, 95],
+            //shadowAnchor: [22, 94]
+        });
+        /*
+        var marker = new Array();
+        var nposts = [0]; 
+        var j = 0;
+        var icn, grp;
+
+        imgmarker.forEach(tour => { // TODO: Loop
+            switch (tour["category"]) {
+            default:
+                icn = myIcon1;
+                grp = group1;
+                nposts[0] = nposts[0] +1;
+                    break;
+            }
+            marker.push(new L.Marker(tour["coord"], { title: tour["title"], icon: icn, id: j, })); 
+            marker[j].bindPopup('Marker ' + j + ' ' + tour["title"]);
+            marker[j].addTo(grp);
+            marker[j].on('click', function (a) {
+            var title = this.options.title;
+            console.log('Marker Nr.' + this.options.id + ' clicked');
+            // fotorama aktion für den Marker mit Nr.
+            });
+            j++;
+        });
+
+        LayerSupportGroup.checkIn([group1]); 
+
+        controlLayer.addOverlay(group1, 'Fotos (' + nposts[0] + ')');               // hiking     $icon = "hiking";; 
+
+        group1.addTo(map); 
+
+        LayerSupportGroup.on('clustermouseover', function (a) {
+            var children = a.layer.getAllChildMarkers();
+            var max = children.length;
+            var string = 'Zeige ' + max + ' Fotos';
+            a.propagatedFrom.bindTooltip(string).openTooltip();
+        });
+
+        LayerSupportGroup.on('clustermouseout', function (a) {
+            a.propagatedFrom.bindTooltip('').closeTooltip();
+        });
+        */
 
     } // end for m maps
 
@@ -345,10 +407,10 @@
             weight: 4,
             opacity: 0.8,
         });
-
-        //q('.totlen .summaryvalue').innerHTML = (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
-        //q('.gain .summaryvalue').innerHTML = "+" + trace.gpx.get_elevation_gain().toFixed(0) + " m";
-        //q('.loss .summaryvalue').innerHTML = "-" + trace.gpx.get_elevation_loss().toFixed(0) + " m";
+        // TODO: ascent / descent calculation is wrong. Mine is better
+        q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
+        q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + trace.gpx.get_elevation_gain().toFixed(0) + " m";
+        q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + trace.gpx.get_elevation_loss().toFixed(0) + " m";
     }
 
     jQuery(window).on("load", function() {  

@@ -63,7 +63,7 @@ function showmulti($attr, $content = null)
 		'mapheight' => '450',
 		'chartheight' => '150',
 		'imgpath' => 'Bilder',
-		'dload' => 'no',
+		'dload' => 'yes',
 		'alttext' => '',
 		'scale' => 1.0, // map-scale factor for GPXViewer
 		'ignoresort' => 'true', // ignore custom sort even if provided by Wordpress, then sort by date ascending
@@ -309,6 +309,10 @@ function showmulti($attr, $content = null)
 				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg';
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
 				$phpimgdata[$imgnr-1]['id'] = $imgnr;
+				$phpimgdata[$imgnr-1]['title'] = $data['title'];
+				$phpimgdata[$imgnr-1]['coord'][0] = $data['lat'];
+				$phpimgdata[$imgnr-1]['coord'][1] = $data['lon'];
+
 			}
 
 			if ($data['thumbinsubdir']) {
@@ -338,6 +342,20 @@ function showmulti($attr, $content = null)
 		$mapid = 'map' . strval($shortcodecounter); 
 		$htmlstring  .= '<div id=box' . $mapid .' class="boxmap">';
 		$htmlstring  .= '<div id="'. $mapid .'" class="leafmap" style="height:'. $mapheight .'px;"></div>';
+		// Custom Summary
+		if ($i > 0) { // number of gpxtracks at least 1 !
+			$htmlstring  .= '<div id="data-summary'.strval($shortcodecounter) .'" class="data-summary">';
+			$htmlstring  .= '<span class="totlen">';
+			$htmlstring  .= '<span class="summarylabel">Strecke: </span>';
+			$htmlstring  .= '<span class="summaryvalue">0</span></span> ';
+			$htmlstring  .= '<span class="gain">';
+			$htmlstring  .= '<span class="summarylabel">Anstieg: </span>';
+			$htmlstring  .= '<span class="summaryvalue">0</span> </span> ';
+			$htmlstring  .= '<span class="loss">';
+			$htmlstring  .= '<span class="summarylabel">Abstieg: </span>';
+			$htmlstring  .= '<span class="summaryvalue">0</span> </span> </div>';
+		}
+		// ------------------------
 		$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" class="leaflet-control elevation"></div>';
 		$htmlstring  .= '</div>';
 	
@@ -346,8 +364,17 @@ function showmulti($attr, $content = null)
 	//$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
 
 	// provide GPX-download if defined
-	if (($dload == 'yes') && ($i == 1)) {
-		$htmlstring .= '<p><strong>GPX-Datei: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">Download GPX-Datei</a></strong></p>';
+	if ($dload == 'yes')  {
+		if ($i == 1) {
+			$htmlstring .= '<p><strong>Download GPX-Datei: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></strong></p>';
+		} else {
+			$gpxf = explode(',',$gpxfile);
+			$htmlstring .= '<p><strong>Download GPX-Dateien: '; // <a download=""</a>
+			foreach ($gpxf as $f){
+				$htmlstring .= ' <a download="' . $f . '" href="' . $gpx_url . $f . '">'. $f .' --- </a>';
+			}
+			$htmlstring .= '</strong></p>';
+		}
 	}
 	
 	// produce starting point description,  TODO: anpassung für multi!!!
@@ -416,6 +443,7 @@ function fotomulti_scripts()
 	wp_enqueue_style('fm-style5', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css");
 	wp_enqueue_style('fm-style6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css");
 	wp_enqueue_style('fm-style7', "https://unpkg.com/leaflet-gesture-handling@1.2.1/dist/leaflet-gesture-handling.min.css" );
+	//wp_enqueue_style('fm-style8', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.css");
 
     // Load Scripts
 	wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.js', array('jquery'), '3.1.0', true);
@@ -426,6 +454,7 @@ function fotomulti_scripts()
 	wp_enqueue_script('fm-script6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js", array('jquery'), '3.1.0', true);
 	wp_enqueue_script('fm-script7', $plugin_url . "js/leaflet.markercluster.layersupport.js", array('jquery'), '3.1.0', true);
 	wp_enqueue_script('fm-script8', "https://unpkg.com/leaflet-gesture-handling@1.2.1/dist/leaflet-gesture-handling.min.js", array('jquery'), '3.1.0', true);
+	//wp_enqueue_script('fm-script10', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.min.js");
 	wp_enqueue_script('fm_script9', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '3.1.0', true);
 	
   }
