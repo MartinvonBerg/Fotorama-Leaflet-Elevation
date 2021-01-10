@@ -5,11 +5,12 @@
     var numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
     let mobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
 
-    var mapdiv = new Array();
+    var fotorama = new Array();
     var phpvars = new Array();
     var circlemarker = new Array();
-    var storemarker;
-    var newmarker;
+    var storemarker = new Array();
+    var newmarker = new Array();
+    var mrk = new Array();
 
     // Icons definieren, TODO: besser als Klasse und als LOOP, abhängig von der Anzahl der Kategorien!
     var myIcon1 = L.icon({ 
@@ -21,7 +22,7 @@
         shadowSize: [72, 48],
         shadowAnchor: [24, 48]
     });
-
+    /*
     var myIcon2 = L.icon({ // hiking     $icon = "hiking";
         iconUrl: wpfm_phpvars0.imagepath + "circle-big.png",
         iconSize: [48, 48],
@@ -29,7 +30,7 @@
         keyboard: false,
         interactive: false,
     });
-
+    */
     var myIcon3 = L.icon({ 
         iconUrl: wpfm_phpvars0.imagepath + "active.png",
         iconSize: [48, 48],
@@ -44,15 +45,15 @@
         // 1. Initialize fotorama manually.
         var $fotoramaDiv = jQuery('#mfotorama' + i ).fotorama();
         // 2. Get the API object.
-        var fotorama = eval('mfotorama'+i);
-        fotorama = $fotoramaDiv.data('fotorama');
+        //var fotorama = eval('mfotorama'+i);
+        fotorama[i] = $fotoramaDiv.data('fotorama');
         // get the mapdiv
-        var mapdiv = document.getElementById("map" + i);
+        //var mapdiv = document.getElementById("map" + i);
         phpvars[i] = eval('wpfm_phpvars'+i);
 
-        if (fotorama) {
+        if (fotorama[i]) {
             let newimages = phpvars[i].imgdata; 
-            let olddata = fotorama.data;
+            let olddata = fotorama[i].data;
             let newdata = [];
             var width = $fotoramaDiv[0].parentElement.clientWidth;
     
@@ -84,7 +85,7 @@
             }
     
         // nur ausführen wenn images vorhanden! ansonsten das ursprüngliche belassen! php liefert reduzierte bilder nur mit wpid also wenn in wp medialib
-            fotorama.load(newdata);
+            fotorama[i].load(newdata);
         }
     }
 
@@ -102,25 +103,25 @@
         if (maps[m] && phpvars[m].imgdata[nr].coord[0]) {
             //console.log('change in: ' + e.currentTarget.id + ' index: ' + nr + 'Koord: ' + phpvars[m].imgdata[nr].coord[0] + ':' + phpvars[m].imgdata[nr].coord[1] ); 
             if (e.type === 'fotorama:load') {
-                storemarker = marker[nr];
-                newmarker = marker[nr];
-                maps[m].removeLayer(marker[nr]);
-                newmarker.setIcon(myIcon3);
-                newmarker.addTo(maps[m]);
+                storemarker[m] = mrk[m][nr];
+                newmarker[m] = mrk[m][nr];
+                maps[m].removeLayer(mrk[m][nr]);
+                newmarker[m].setIcon(myIcon3);
+                newmarker[m].addTo(maps[m]);
             }
             if (e.type === 'fotorama:showend') {
                 maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
             }
             //circlemarker[m] = L.marker([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ], { icon: myIcon2  }).addTo(maps[m]);
-            if (storemarker.options.id != marker[nr].options.id) {
-                maps[m].removeLayer(newmarker);
-                storemarker.setIcon(myIcon1);
-                storemarker.addTo(maps[m]);
-                storemarker = marker[nr]
-                newmarker = marker[nr];
-                maps[m].removeLayer(marker[nr]);
-                newmarker.setIcon(myIcon3);
-                newmarker.addTo(maps[m]);
+            if (storemarker[m].options.id != mrk[m][nr].options.id) {
+                maps[m].removeLayer(newmarker[m]);
+                storemarker[m].setIcon(myIcon1);
+                storemarker[m].addTo(maps[m]);
+                storemarker[m] = mrk[m][nr]
+                newmarker[m] = mrk[m][nr];
+                maps[m].removeLayer(mrk[m][nr]);
+                newmarker[m].setIcon(myIcon3);
+                newmarker[m].addTo(maps[m]);
             }
 
         }
@@ -190,7 +191,8 @@
     var eleopts = new Array();
     var traces = new Array();
     let tracks = new Array(); 
-    let lupe = new Array();
+    let group1 = new Array();
+    //let marker = new Array();
 
     for (var m = 0; m < numberOfMaps; m++) {
         // get js-variable from php-output
@@ -333,7 +335,7 @@
                 }
             }
         });
-
+        
         // ---------Foto Marker Cluster ------------------
         // Creating markergroups ----------------------- 
         //var LayerSupportGroup = L.markerClusterGroup.layerSupport({
@@ -342,20 +344,24 @@
             //zoomToBoundsOnClick: true,
             //spiderfyOnMaxZoom: true,
         //}), 
-        var group1 = L.layerGroup(); // hiking     $icon = "hiking";
+        group1[m] = L.layerGroup(); // hiking     $icon = "hiking";
         //LayerSupportGroup.addTo(maps[m]);
 
         // Creating markers -----------------------
         var marker = new Array();
-        var nposts = [0]; 
         var j = 0;
       
         phptracks.imgdata.forEach(tour => { 
-            nposts[0] = nposts[0] +1;
-            var key = Object.keys(tour.srcset)[0];
             marker.push(new L.Marker(tour["coord"], { title: tour["title"], icon: myIcon1, id: j, })); 
-            marker[j].bindPopup( tour["title"] + '<br><img src="' + tour.srcset[key] + '">' );
-            marker[j].addTo(group1);
+            
+            if ("srcset" in tour) { 
+                var key = Object.keys(tour.srcset)[0];
+                marker[j].bindPopup( tour["title"] + '<br><img src="' + tour.srcset[key] + '">' );
+            } else {
+                marker[j].bindPopup( tour["title"]  );
+            }
+
+            marker[j].addTo(group1[m]);
             marker[j].on('click', function (a) {
                 //var title = this.options.title;
                 //console.log('Marker Nr.' + this.options.id + ' clicked');
@@ -371,12 +377,12 @@
             j++;
         });
 
+        mrk[m] = marker;
         //LayerSupportGroup.checkIn([group1]); 
 
-        controlLayer[m].addOverlay(group1, 'Fotos (' + nposts[0] + ')');               // hiking     $icon = "hiking";; 
-
-        group1.addTo(maps[m]); 
-
+        controlLayer[m].addOverlay(group1[m], 'Fotos (' + j + ')');    
+        group1[m].addTo(maps[m]); 
+        
     } // end for m maps
 
       

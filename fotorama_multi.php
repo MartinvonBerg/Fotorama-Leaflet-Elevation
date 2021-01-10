@@ -69,7 +69,7 @@ function showmulti($attr, $content = null)
 		'showadress' => 'true', // wird auch als showmap genutzt
 		'adresstext' => 'Startadresse',
 		'requiregps' => 'true',
-		'maxwidth' => '800',
+		'maxwidth' => '600', // grid verwenden bei großer Breite
 		'showcaption' => 'true',
 	), $attr));
 
@@ -437,19 +437,19 @@ function fotomulti_scripts()
 	//wp_enqueue_style('fm-style3', $plugin_url . 'css/image-zoom.css');
 	wp_enqueue_style('fm-style3', "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css");
 	wp_enqueue_style('fm-style4', "https://unpkg.com/@raruto/leaflet-elevation@1.5.1/dist/leaflet-elevation.min.css");
-	wp_enqueue_style('fm-style5', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css");
-	wp_enqueue_style('fm-style6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css");
+	//wp_enqueue_style('fm-style5', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css");
+	//wp_enqueue_style('fm-style6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css");
 	wp_enqueue_style('fm-style7', "https://unpkg.com/leaflet-gesture-handling@1.2.1/dist/leaflet-gesture-handling.min.css" );
 	//wp_enqueue_style('fm-style8', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.css");
 
     // Load Scripts
-	wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.js', array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '3.1.0', true);
 	wp_enqueue_script('fm-script2', "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js", array('jquery'), '3.1.0', true);
 	wp_enqueue_script('fm-script3', "https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js", array('jquery'), '3.1.0', true);
 	wp_enqueue_script('fm-script4', "https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js", array('jquery'), '3.1.0', true);
 	wp_enqueue_script('fm-script5', "https://unpkg.com/@raruto/leaflet-elevation@1.5.1/dist/leaflet-elevation.min.js", array('jquery'), '3.1.0', true);
-	wp_enqueue_script('fm-script6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js", array('jquery'), '3.1.0', true);
-	wp_enqueue_script('fm-script7', $plugin_url . "js/leaflet.markercluster.layersupport.js", array('jquery'), '3.1.0', true);
+	//wp_enqueue_script('fm-script6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js", array('jquery'), '3.1.0', true);
+	//wp_enqueue_script('fm-script7', $plugin_url . "js/leaflet.markercluster.layersupport.js", array('jquery'), '3.1.0', true);
 	wp_enqueue_script('fm-script8', "https://unpkg.com/leaflet-gesture-handling@1.2.1/dist/leaflet-gesture-handling.min.js", array('jquery'), '3.1.0', true);
 	//wp_enqueue_script('fm-script10', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.min.js");
 	wp_enqueue_script('fm_script9', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '3.1.0', true);
