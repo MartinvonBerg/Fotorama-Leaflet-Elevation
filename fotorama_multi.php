@@ -65,7 +65,6 @@ function showmulti($attr, $content = null)
 		'imgpath' => 'Bilder',
 		'dload' => 'yes',
 		'alttext' => '',
-		'scale' => 1.0, // map-scale factor for GPXViewer
 		'ignoresort' => 'false', // ignore custom sort even if provided by Wordpress, then sort by date ascending
 		'showadress' => 'true', // wird auch als showmap genutzt
 		'adresstext' => 'Startadresse',
