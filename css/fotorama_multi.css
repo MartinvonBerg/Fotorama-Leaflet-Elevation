@@ -33,13 +33,16 @@
   .fotorama__nav--thumbs {
     background: rgb(144,144,144);
     background: linear-gradient(0deg, rgba(144,144,144,1) 0%, rgba(249,249,249,1) 91%);
-  }
+  } 
   @media only screen and (max-width:479px){
   .fotorama__caption__wrap {
     display:none;
   }
   .fotorama__caption {
     display:none;
+  }
+  .leafmap {
+    height: 300px; 
   }
   }
 

@@ -444,7 +444,7 @@
         q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + trace.gpx.get_elevation_gain().toFixed(0) + " m";
         q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + trace.gpx.get_elevation_loss().toFixed(0) + " m";
     }
-
+    /*
     jQuery(window).on("load", function() {  
         jQuery('.leaflet-control-layers-toggle').css('background-image','');
         //jQuery('.leaflet-container').css('cursor','crosshair');
@@ -455,5 +455,5 @@
           
         }
       });
-    
+    */
 })(window, document);

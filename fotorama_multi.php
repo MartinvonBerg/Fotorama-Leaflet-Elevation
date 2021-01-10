@@ -61,12 +61,12 @@ function showmulti($attr, $content = null)
 		'gpxpath' => 'gpx',
 		'gpxfile' => 'test.gpx',
 		'mapheight' => '450',
-		'chartheight' => '150',
+		'chartheight' => '200',
 		'imgpath' => 'Bilder',
 		'dload' => 'yes',
 		'alttext' => '',
 		'scale' => 1.0, // map-scale factor for GPXViewer
-		'ignoresort' => 'true', // ignore custom sort even if provided by Wordpress, then sort by date ascending
+		'ignoresort' => 'false', // ignore custom sort even if provided by Wordpress, then sort by date ascending
 		'showadress' => 'true', // wird auch als showmap genutzt
 		'adresstext' => 'Startadresse',
 		'requiregps' => 'true',
@@ -355,7 +355,7 @@ function showmulti($attr, $content = null)
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> </div>';
 		}
 		// ------------------------
-		$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" class="leaflet-control elevation"></div>';
+		$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" style="height:'. $chartheight .'px;" class="leaflet-control elevation"></div>';
 		$htmlstring  .= '</div>';
 	
 	}
@@ -415,7 +415,6 @@ function showmulti($attr, $content = null)
 	wp_localize_script('fm_script9', 'wpfm_phpvars' . $shortcodecounter, array(
 		'ngpxfiles'  => $i,
 		'imagepath' => $wp_fotomulti_path,
-		'maprescale' => $scale,
 		'imgdata' => $phpimgdata ?? [],
 		'tracks' => $tracks,
 		) 
