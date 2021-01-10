@@ -364,9 +364,12 @@
             marker[j].addTo(group1[m]);
             marker[j].on('click', function (a) {
                 //var title = this.options.title;
-                //console.log('Marker Nr.' + this.options.id + ' clicked');
+                var source = a.originalEvent.currentTarget.id;
+                source = source.replace('map','');
+                m = parseInt( source);
+                //console.log('Map '+ m +' Marker Nr.' + this.options.id + ' clicked');
                 // remove circlemarker[m]
-                fotorama.show(this.options.id);
+                fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
             });
             marker[j].on('mouseover', function (e) {
                 this.openPopup();
