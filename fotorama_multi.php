@@ -278,7 +278,7 @@ function showmulti($attr, $content = null)
 	}
 
 	// Generate the html-code start with the surrounding Div
-	$htmlstring .= '<div id=box'.$shortcodecounter.' style="max-width:'. $maxwidth .'px;">';
+	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' style="max-width:'. $maxwidth .'px;">';
 	$imgnr = 1;
 
 	// Generate Fotorama images for fotorama-javascript-rendering
