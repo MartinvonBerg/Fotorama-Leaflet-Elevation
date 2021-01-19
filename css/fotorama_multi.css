@@ -1,7 +1,7 @@
 /* special CSS for the wp_fotorama_gpxviewer */
 #map0_hp { margin-top:10px; }
 #map0_img {display: none;}
-#map0 { border-top: 1px solid lightslategray; padding-top: 8px;}
+/*#map0 { border-top: 1px solid lightslategray; padding-top: 8px;}*/
 
 /*------------- fotorama -----------------------*/
 .fotorama__nav__shaft {
@@ -49,6 +49,7 @@
 /*------------------ leaflet ------------------------------*/
 .boxmap {
   border-bottom: 1px solid lightslategray; 
+  border-top: 1px solid lightslategray; 
   padding: 5px 5px 5px 5px; }
 
 .leafmap {

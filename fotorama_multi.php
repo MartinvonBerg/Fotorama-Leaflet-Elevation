@@ -71,6 +71,7 @@ function showmulti($attr, $content = null)
 		'requiregps' => 'true',
 		'maxwidth' => '600', // grid verwenden bei großer Breite
 		'showcaption' => 'true',
+		'eletheme' => 'lime-theme', // theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
 	), $attr));
 
 	// Detect Language of Website and set the Javascript-Variable for the Language used in GPXViewer
@@ -298,6 +299,7 @@ function showmulti($attr, $content = null)
 			if ( $data['wpid'] > 0) {
 				$srcset2 = wp_get_attachment_image_srcset( $data['wpid'] );
 				$srcarr = explode(',', $srcset2);
+				$finalArray = [];
 
 				foreach( $srcarr as $val){
 					$val = trim($val);
@@ -416,7 +418,8 @@ function showmulti($attr, $content = null)
 		'imagepath' => $wp_fotomulti_path,
 		'imgdata' => $phpimgdata ?? [],
 		'tracks' => $tracks,
-		) 
+		'eletheme' => $eletheme,
+ 		) 
 	);
 
 
