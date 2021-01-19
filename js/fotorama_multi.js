@@ -24,7 +24,7 @@
                 popupAnchor: [0, -24],
                 shadowUrl: wpfm_phpvars0.imagepath + 'shadow.png',
                 shadowSize: [72, 48],
-                shadowAnchor: [24, 48]
+                shadowAnchor: [24, 48],
             });
             /*
             var myIcon2 = L.icon({ // hiking     $icon = "hiking";
@@ -94,7 +94,7 @@
                 //var chartheight = jQuery('#elevation-div0').clientHeight;
                 var chartheight = document.getElementById('elevation-div0').clientHeight;
                 $('.elevation-control.elevation .background').css("height", chartheight);
-                console.log(chartheight);
+                //console.log(chartheight);
             });
         }
         
@@ -300,7 +300,7 @@
                         //zoomToBoundsOnClick: true,
                         //spiderfyOnMaxZoom: true,
                     //}), 
-                    group1[m] = L.layerGroup(); // hiking     $icon = "hiking";
+                    group1[m] = L.layerGroup(); 
                     let testgroup = L.featureGroup();
                     //LayerSupportGroup.addTo(maps[m]);
 
@@ -313,7 +313,7 @@
                             // do nothing
                         }
                         else {
-                            marker.push(new L.Marker(tour["coord"], { title: tour["title"], icon: myIcon1, id: j, })); 
+                            marker.push(new L.Marker(tour["coord"], { title: tour["title"], icon: myIcon1, id: j, riseOnHover: true, })); 
                             
                             if ("srcset" in tour) { 
                                 var key = Object.keys(tour.srcset)[0];
@@ -328,7 +328,7 @@
                                 var source = a.originalEvent.currentTarget.id;
                                 source = source.replace('map','');
                                 m = parseInt( source);
-                                console.log('Map '+ m +' Marker Nr.' + this.options.id + ' clicked');
+                                //console.log('Map '+ m +' Marker Nr.' + this.options.id + ' clicked');
                                 // remove circlemarker[m]
                                 fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
                             });
@@ -383,6 +383,7 @@
                             newmarker[m] = mrk[m][nr];
                             maps[m].removeLayer(mrk[m][nr]);
                             newmarker[m].setIcon(myIcon3);
+                            newmarker[m].setZIndexOffset(500);
                             newmarker[m].addTo(maps[m]);
                         }
                         if (e.type === 'fotorama:showend') {
@@ -392,11 +393,13 @@
                         if (storemarker[m].options.id != mrk[m][nr].options.id) {
                             maps[m].removeLayer(newmarker[m]);
                             storemarker[m].setIcon(myIcon1);
+                            newmarker[m].setZIndexOffset(-500);
                             storemarker[m].addTo(maps[m]);
                             storemarker[m] = mrk[m][nr]
                             newmarker[m] = mrk[m][nr];
                             maps[m].removeLayer(mrk[m][nr]);
                             newmarker[m].setIcon(myIcon3);
+                            newmarker[m].setZIndexOffset(500);
                             newmarker[m].addTo(maps[m]);
                         }
 
