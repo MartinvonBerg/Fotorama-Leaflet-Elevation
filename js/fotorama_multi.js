@@ -19,12 +19,12 @@
         if ( numberOfMaps > 0) {
             var myIcon1 = L.icon({ 
                 iconUrl: wpfm_phpvars0.imagepath + "photo.png",
-                iconSize: [48, 48],
-                iconAnchor: [24, 48],
-                popupAnchor: [0, -24],
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -16],
                 shadowUrl: wpfm_phpvars0.imagepath + 'shadow.png',
-                shadowSize: [72, 48],
-                shadowAnchor: [24, 48],
+                shadowSize: [48, 32],
+                shadowAnchor: [16, 32],
             });
             /*
             var myIcon2 = L.icon({ // hiking     $icon = "hiking";
@@ -37,12 +37,12 @@
             */
             var myIcon3 = L.icon({ 
                 iconUrl: wpfm_phpvars0.imagepath + "active.png",
-                iconSize: [48, 48],
-                iconAnchor: [24, 48],
-                popupAnchor: [0, -24],
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -16],
                 shadowUrl: wpfm_phpvars0.imagepath + 'shadow.png',
-                shadowSize: [72, 48],
-                shadowAnchor: [24, 48]
+                shadowSize: [48, 32],
+                shadowAnchor: [16, 32],
             });
 
             var opts = { // Kartenoptionen definieren : können NICHT für alle Karten gleich sein

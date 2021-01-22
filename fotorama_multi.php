@@ -35,6 +35,11 @@ if (doYoastXmlSitemap) {
 	require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 }
 
+require_once __DIR__ . '/inc/admin_settings.php';
+
+if ( is_admin() )
+	$fotorama_elevation = new FotoramaElevation();
+	
 // define the shortcode to generate the image-slider with map
 add_shortcode('fotomulti', '\mvbplugins\fotoramamulti\showmulti');
 
@@ -55,6 +60,11 @@ function showmulti($attr, $content = null)
 	$postimages = []; // array with images for the Yoast XML Sitemap
 	$thumbsdir = 'thumbs'; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter=0; // counts the number of shortcodes on ONE page!
+	
+ 	// Get Values from Admin settings page
+ 	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
+ 	$path_to_images_for_fotorama_slider_0 = $fotorama_elevation_options['path_to_images_for_fotorama_slider_0']; // Path to Images for Fotorama Slider
+ 	$theme_for_elevation_1 = $fotorama_elevation_options['theme_for_elevation_1']; // Theme for Elevation
 
 	// Extract shortcode-Parameters and set Default-Values
 	extract(shortcode_atts(array(
@@ -71,7 +81,7 @@ function showmulti($attr, $content = null)
 		'requiregps' => 'true',
 		'maxwidth' => '600', // grid verwenden bei großer Breite
 		'showcaption' => 'true',
-		'eletheme' => 'lime-theme', // theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
+		'eletheme' => $fotorama_elevation_options['theme_for_elevation_1'], // theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
 	), $attr));
 
 	// Detect Language of Website and set the Javascript-Variable for the Language used in GPXViewer
