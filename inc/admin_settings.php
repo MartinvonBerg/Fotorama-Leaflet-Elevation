@@ -8,7 +8,7 @@ namespace mvbplugins\fotoramamulti;
 
 $path = plugin_dir_path(__FILE__);
 require_once $path . 'custom_mine_types.php'; 
-
+require_once $path . 'parseGPX.php'; 
 
 class FotoramaElevation {
 	private $fotorama_elevation_options;
@@ -349,29 +349,29 @@ class FotoramaElevation {
 
 	public function handle_file_upload($option) { // wird nur einmal aufgerufen
 
-		if ( ! function_exists( 'wp_handle_upload' ) ) {
-			require_once( ABSPATH . 'wp-admin/includes/file.php' );
-		}
-
 		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
-		$file = $this->my_sanitize_text($option);
+		$file = $_FILES['gpx-file']['name'];
+		$parsegpxfile = true;
 
 		$path = $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2'];
 		$complete = $path . '/' . $file;
-		$success = false;
 
 		if( is_dir($path) ) {
 			//echo "The Directory {$path} exists";
 		} else {
 			mkdir($path , 0777);
 			//echo "The Directory {$path} was created";
-			$success = true;
 		}
 
 		if(! is_file($complete)) {
 			$name_file = $_FILES['gpx-file']['name'];
 			$tmp_name = $_FILES['gpx-file']['tmp_name']; 
+
+			if ($parsegpxfile) {
+				parsegpx ($tmp_name);
+			}
+
 			$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
 			if( $result )  {
 				$temp = 'of '. $name_file . '" successful!';
@@ -379,15 +379,11 @@ class FotoramaElevation {
 				$temp = "The file was not uploaded";
 			}
 
-			//$urls = wp_handle_upload($complete, array('test_form' => FALSE));
-			//$temp = $urls["url"]; // setzt den String für get_option('gpx-file') : Ausgabe kann damit gesteuert werden!
-			//if ($temp == null) {
-			//  $temp =  'No Success!';
-			//} 
 			return $temp;  
 		}
 		
-		return $option;
+		$temp = "File alread exists!";
+		return $temp;
 	}
 
 	public function fotorama_elevation_sanitize($input) {
