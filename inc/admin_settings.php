@@ -8,6 +8,14 @@ namespace mvbplugins\fotoramamulti;
 
 class FotoramaElevation {
 	private $fotorama_elevation_options;
+	private $gpx_options;
+	private $up_dir = '';
+	private $min_height_map = 100;
+	private $max_height_map = 1000;
+	private $min_height_chart = 100;
+	private $max_height_chart = 800;
+	private $min_width = 100;
+	private $max_width = 1500;
 
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'fotorama_elevation_add_plugin_page' ) );
@@ -25,11 +33,29 @@ class FotoramaElevation {
 	}
 
 	public function fotorama_elevation_create_admin_page( $out ) {
-		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); 
+		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
+		$this->gpx_options = get_option( 'gpxfile_0' );
+
+		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
 		$path_to_gpx_files_2 = $this->fotorama_elevation_options['path_to_gpx_files_2'];
-		if (isset($_POST['admin_settings'])){
+		if (isset($_POST['admin_settings'])){ // wird ausgeführt wenn der gen shortcode button gedrück wird
+			$gpxfile = $this->fotorama_elevation_options['gpx_file'];
 			$out =  '[fotomulti gxppath="'. $path_to_gpx_files_2 .'" imgpath=""]';
 		}
+
+		$path_to_images_for_fotorama = $this->fotorama_elevation_options['path_to_images_for_fotorama_0']; // Path to Images for Fotorama
+		$colour_theme_for_leaflet_elevation = $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1']; // Colour Theme for Leaflet Elevation
+		$path_to_gpx_files = $this->fotorama_elevation_options['path_to_gpx_files_2']; // Path to GPX-Files
+		$download_gpx_files = $this->fotorama_elevation_options['download_gpx_files_3']; // Download GPX-Files
+		$show_caption = $this->fotorama_elevation_options['show_caption_4']; // Show Caption
+		$images_with_gps_required = $this->fotorama_elevation_options['images_with_gps_required_5']; // Images with GPS required
+		$ignore_custom_sort = $this->fotorama_elevation_options['ignore_custom_sort_6']; // Ignore custom sort
+		$show_address_of_start = $this->fotorama_elevation_options['show_address_of_start_7']; // Show address of start
+		$text_for_start_address = $this->fotorama_elevation_options['text_for_start_address_8']; // Text for Start address
+		$general_text_for_the_fotorama_alt = $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9']; // General text for the Fotorama alt
+		$height_of_map = $this->fotorama_elevation_options['height_of_map_10']; // Height of Map
+		$height_of_chart = $this->fotorama_elevation_options['height_of_chart_11']; // Height of Chart
+		$max_width_of_container = $this->fotorama_elevation_options['max_width_of_container_12']; // Max Width of Container
 		?>
 
 		<div class="wrap">
@@ -44,8 +70,37 @@ class FotoramaElevation {
 					submit_button();
 				?>
 			</form>
+
+			<form method="post" action="">
+				<?php
+					settings_fields( 'fotorama_elevation_gpx_group' );
+					do_settings_sections( 'fotorama-elevation-gpx' );
+					submit_button('Save GPX-File', 'primary', "admin_settings");
+				?>
+				<p>
+				<?php echo 'File: ' . $gpxfile; ?>
+				</p>
+			</form>	
+		
             <h3>List of shortcode Parameters:</h3>
-			<p><b>Example: </b> [fotomulti imgpath="Alben_Website/Aosta_Urtier" gpxfile="Urtier_2018_08_18_MTB.gpx"]</p>
+			<p><b>Complete shortcode with the above settings: </br></b> <?php
+				$example = '[fotomulti imgpath="' . $path_to_images_for_fotorama .'" ';
+				$example.= 'gpxpath="' . $path_to_gpx_files . '" ';
+				$example.= 'gpxfile="test.gpx" ';
+				$example.= 'mapheight="' . $height_of_map . '" ';
+				$example.= 'chartheight="' . $height_of_chart . '" ';
+				$example.= 'dload="' . $download_gpx_files . '" ';
+				$example.= 'alttext="' . $general_text_for_the_fotorama_alt . '" ';
+				$example.= 'ignoresort="' . $ignore_custom_sort . '" ';
+				$example.= 'showadress="' . $show_address_of_start . '" ';
+				$example.= 'adresstext="' . $text_for_start_address . '" ';
+				$example.= 'requiregps="' . $images_with_gps_required . '" ';
+				$example.= 'maxwidth="' . $max_width_of_container . '" ';
+				$example.= 'showcaption="' . $show_caption . '" ';
+				$example.= 'eletheme="' . $colour_theme_for_leaflet_elevation . '"] ';
+		
+			 	echo $example;
+			?></p>
 
 			<style type="text/css">
 				.tg  {border-collapse:collapse;border-spacing:2;background-color: white;}
@@ -169,7 +224,7 @@ class FotoramaElevation {
 		</div>
 	<?php }
 
-	public function fotorama_elevation_page_init() {
+	public function fotorama_elevation_page_init() { // == demo_settings_page()
 		register_setting(
 			'fotorama_elevation_option_group', // option_group
 			'fotorama_elevation_option_name', // option_name
@@ -272,7 +327,7 @@ class FotoramaElevation {
 
 		add_settings_field(
 			'height_of_map_10', // id
-			'Height of Map', // title
+			'Height of Map in px', // title
 			array( $this, 'height_of_map_10_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
@@ -280,7 +335,7 @@ class FotoramaElevation {
 
 		add_settings_field(
 			'height_of_chart_11', // id
-			'Height of Chart', // title
+			'Height of Chart in px', // title
 			array( $this, 'height_of_chart_11_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
@@ -288,17 +343,57 @@ class FotoramaElevation {
 
 		add_settings_field(
 			'max_width_of_container_12', // id
-			'Max Width of Container', // title
+			'Max Width of Container in px', // title
 			array( $this, 'max_width_of_container_12_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
+
+		register_setting(
+			'fotorama_elevation_gpx_group', // option_group
+			'gpxfile_0', // option_name
+			array( $this, 'gpx_sanitize' ) // sanitize_callback
+		);
+
+		add_settings_section(
+			'gpx_setting_section', // id
+			'GPX-Fle Upload', // title
+			array( $this, 'gpx_section_info' ), // callback
+			'fotorama-elevation-gpx' // page
+		);
+
+		add_settings_field(
+			"gpx_file", // id
+			"GPX-File Upload", // title
+			array( $this, "background_form_element"), // callbakc
+			'fotorama-elevation-gpx', // page
+			"gpx_setting_section" // section
+		);
+	}
+
+	public function background_form_element()
+    {
+        //echo form element for file upload
+        ?>
+            <input type="file" style="width:500px;" name="gpx_options[gpx_file]" id="gpx_file" value="<?php echo get_option('gpx_file'); ?>" />
+			<?php 
+			
+	}
+	
+	public function gpx_sanitize($input) {
+		$sanitary_values = array();
+		if ( isset( $input['gpx_file'] ) ) {
+			$sanitary_values['gpx_file'] = sanitize_text_field( $input['gpx_file'] );
+		} else { $sanitary_values['gpx_file'] = '';}
+
+		return $sanitary_values;
+
 	}
 
 	public function fotorama_elevation_sanitize($input) {
 		$sanitary_values = array();
 		if ( isset( $input['path_to_images_for_fotorama_0'] ) ) {
-			$sanitary_values['path_to_images_for_fotorama_0'] = sanitize_text_field( $input['path_to_images_for_fotorama_0'] );
+			$sanitary_values['path_to_images_for_fotorama_0'] = $this->my_sanitize_path( $input['path_to_images_for_fotorama_0'] );
 		}
 
 		if ( isset( $input['colour_theme_for_leaflet_elevation_1'] ) ) {
@@ -306,48 +401,63 @@ class FotoramaElevation {
 		}
 
 		if ( isset( $input['path_to_gpx_files_2'] ) ) {
-			$sanitary_values['path_to_gpx_files_2'] = sanitize_text_field( $input['path_to_gpx_files_2'] );
+			$sanitary_values['path_to_gpx_files_2'] = $this->my_sanitize_path( $input['path_to_gpx_files_2'] );
 		}
 
-		if ( isset( $input['download_gpx_files_3'] ) ) {
-			$sanitary_values['download_gpx_files_3'] = $input['download_gpx_files_3'];
+		if ( isset( $input['download_gpx_files_3'] ) ) { // wird nur durchlaufen, wenn button gecheckt ist, sonst nicht.
+			$sanitary_values['download_gpx_files_3'] = 'true';
+		} else {
+			$sanitary_values['download_gpx_files_3'] = 'false';
 		}
 
 		if ( isset( $input['show_caption_4'] ) ) {
-			$sanitary_values['show_caption_4'] = $input['show_caption_4'];
+			//$sanitary_values['show_caption_4'] = $input['show_caption_4'];
+			$sanitary_values['show_caption_4'] = 'true';
+		} else {
+			$sanitary_values['show_caption_4'] = 'false';
 		}
 
 		if ( isset( $input['images_with_gps_required_5'] ) ) {
-			$sanitary_values['images_with_gps_required_5'] = $input['images_with_gps_required_5'];
+			$sanitary_values['images_with_gps_required_5'] = 'true';
+		} else {
+			$sanitary_values['images_with_gps_required_5'] = 'false';
 		}
 
 		if ( isset( $input['ignore_custom_sort_6'] ) ) {
-			$sanitary_values['ignore_custom_sort_6'] = $input['ignore_custom_sort_6'];
+			$sanitary_values['ignore_custom_sort_6'] = 'true';
+		} else {
+			$sanitary_values['ignore_custom_sort_6'] = 'false';
 		}
 
 		if ( isset( $input['show_address_of_start_7'] ) ) {
-			$sanitary_values['show_address_of_start_7'] = $input['show_address_of_start_7'];
+			$sanitary_values['show_address_of_start_7'] = 'true';
+		} else {
+			$sanitary_values['show_address_of_start_7'] = 'false';
 		}
 
 		if ( isset( $input['text_for_start_address_8'] ) ) {
-			$sanitary_values['text_for_start_address_8'] = sanitize_text_field( $input['text_for_start_address_8'] );
+			$sanitary_values['text_for_start_address_8'] = $this->my_sanitize_text( $input['text_for_start_address_8'] );
 		}
 
 		if ( isset( $input['general_text_for_the_fotorama_alt_9'] ) ) {
-			$sanitary_values['general_text_for_the_fotorama_alt_9'] = sanitize_text_field( $input['general_text_for_the_fotorama_alt_9'] );
+			$sanitary_values['general_text_for_the_fotorama_alt_9'] = $this->my_sanitize_text( $input['general_text_for_the_fotorama_alt_9'] );
 		}
 
 		if ( isset( $input['height_of_map_10'] ) ) {
-			$sanitary_values['height_of_map_10'] = sanitize_text_field( $input['height_of_map_10'] );
+			$sanitary_values['height_of_map_10'] = $this->my_sanitize_int_with_limits($input['height_of_map_10'], $this->min_height_map, $this->max_height_map );
 		}
 
 		if ( isset( $input['height_of_chart_11'] ) ) {
-			$sanitary_values['height_of_chart_11'] = sanitize_text_field( $input['height_of_chart_11'] );
+			$sanitary_values['height_of_chart_11'] = $this->my_sanitize_int_with_limits($input['height_of_chart_11'], $this->min_height_chart, $this->max_height_chart );
 		}
 
 		if ( isset( $input['max_width_of_container_12'] ) ) {
-			$sanitary_values['max_width_of_container_12'] = sanitize_text_field( $input['max_width_of_container_12'] );
+			$sanitary_values['max_width_of_container_12'] = $this->my_sanitize_int_with_limits($input['max_width_of_container_12'], $this->min_width, $this->max_width );
 		}
+
+		if ( isset( $input['gpx_file'] ) ) {
+			$sanitary_values['gpx_file'] = sanitize_text_field( $input['gpx_file'] );
+		} else { $sanitary_values['gpx_file'] = '';}
 
 		return $sanitary_values;
 	}
@@ -358,10 +468,14 @@ class FotoramaElevation {
     public function leaflet_elevation_section_info() {
 	}
 
+	public function gpx_section_info() {
+	}
+
 	public function path_to_images_for_fotorama_0_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[path_to_images_for_fotorama_0]" id="path_to_images_for_fotorama_0" value="%s">',
-			isset( $this->fotorama_elevation_options['path_to_images_for_fotorama_0'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_images_for_fotorama_0']) : ''
+			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[path_to_images_for_fotorama_0]" id="path_to_images_for_fotorama_0" value="%s"><p>%s</p>',
+			isset( $this->fotorama_elevation_options['path_to_images_for_fotorama_0'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_images_for_fotorama_0']) : '',
+			$this->up_dir . '/' . $this->fotorama_elevation_options['path_to_images_for_fotorama_0']
 		);
 	}
 
@@ -388,43 +502,45 @@ class FotoramaElevation {
 
 	public function path_to_gpx_files_2_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[path_to_gpx_files_2]" id="path_to_gpx_files_2" value="%s">',
-			isset( $this->fotorama_elevation_options['path_to_gpx_files_2'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_gpx_files_2']) : ''
+			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[path_to_gpx_files_2]" id="path_to_gpx_files_2" value="%s"><p>%s</p>',
+			isset( $this->fotorama_elevation_options['path_to_gpx_files_2'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_gpx_files_2']) : '', 
+			$this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2']
 		);
 	}
 
 	public function download_gpx_files_3_callback() {
+		$param = 1;
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[download_gpx_files_3]" id="download_gpx_files_3" value="download_gpx_files_3" %s> <label for="download_gpx_files_3">Provide download link for GPX-Files</label>',
-			( isset( $this->fotorama_elevation_options['download_gpx_files_3'] ) && $this->fotorama_elevation_options['download_gpx_files_3'] === 'download_gpx_files_3' ) ? 'checked' : ''
+			( isset( $this->fotorama_elevation_options['download_gpx_files_3'] ) && $this->fotorama_elevation_options['download_gpx_files_3'] === 'true' ) ? 'checked' : '' 
 		);
 	}
 
 	public function show_caption_4_callback() {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[show_caption_4]" id="show_caption_4" value="show_caption_4" %s> <label for="show_caption_4">Show the Caption in Fotorama</label>',
-			( isset( $this->fotorama_elevation_options['show_caption_4'] ) && $this->fotorama_elevation_options['show_caption_4'] === 'show_caption_4' ) ? 'checked' : ''
+			( isset( $this->fotorama_elevation_options['show_caption_4'] ) && $this->fotorama_elevation_options['show_caption_4'] === 'true' ) ? 'checked' : ''
 		);
 	}
 
 	public function images_with_gps_required_5_callback() {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[images_with_gps_required_5]" id="images_with_gps_required_5" value="images_with_gps_required_5" %s> <label for="images_with_gps_required_5">Show images only if they provide GPS-Data in EXIF</label>',
-			( isset( $this->fotorama_elevation_options['images_with_gps_required_5'] ) && $this->fotorama_elevation_options['images_with_gps_required_5'] === 'images_with_gps_required_5' ) ? 'checked' : ''
+			( isset( $this->fotorama_elevation_options['images_with_gps_required_5'] ) && $this->fotorama_elevation_options['images_with_gps_required_5'] === 'true' ) ? 'checked' : ''
 		);
 	}
 
 	public function ignore_custom_sort_6_callback() {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[ignore_custom_sort_6]" id="ignore_custom_sort_6" value="ignore_custom_sort_6" %s> <label for="ignore_custom_sort_6">Ignore custom sort even if provided by Wordpress. Sort ascending by date taken if checked.</label>',
-			( isset( $this->fotorama_elevation_options['ignore_custom_sort_6'] ) && $this->fotorama_elevation_options['ignore_custom_sort_6'] === 'ignore_custom_sort_6' ) ? 'checked' : ''
+			( isset( $this->fotorama_elevation_options['ignore_custom_sort_6'] ) && $this->fotorama_elevation_options['ignore_custom_sort_6'] === 'true' ) ? 'checked' : ''
 		);
 	}
 
 	public function show_address_of_start_7_callback() {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[show_address_of_start_7]" id="show_address_of_start_7" value="show_address_of_start_7" %s> <label for="show_address_of_start_7">Show the address of the starting point (taken from the first image or GPX-coordinate in the GPX-track)</label>',
-			( isset( $this->fotorama_elevation_options['show_address_of_start_7'] ) && $this->fotorama_elevation_options['show_address_of_start_7'] === 'show_address_of_start_7' ) ? 'checked' : ''
+			( isset( $this->fotorama_elevation_options['show_address_of_start_7'] ) && $this->fotorama_elevation_options['show_address_of_start_7'] === 'true' ) ? 'checked' : ''
 		);
 	}
 
@@ -444,23 +560,55 @@ class FotoramaElevation {
 
 	public function height_of_map_10_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[height_of_map_10]" id="height_of_map_10" value="%s">',
-			isset( $this->fotorama_elevation_options['height_of_map_10'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_map_10']) : ''
+			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[height_of_map_10]" id="height_of_map_10" value="%s"><p>Min: %s px, Max: %s px</p>',
+			isset( $this->fotorama_elevation_options['height_of_map_10'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_map_10']) : '',
+			$this->min_height_map, $this->max_height_map
 		);
 	}
 
 	public function height_of_chart_11_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s">',
-			isset( $this->fotorama_elevation_options['height_of_chart_11'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_chart_11']) : ''
+			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s"><p>Min: %s px, Max: %s px</p>',
+			isset( $this->fotorama_elevation_options['height_of_chart_11'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_chart_11']) : '',
+			$this->min_height_chart, $this->max_height_chart
 		);
 	}
 
 	public function max_width_of_container_12_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[max_width_of_container_12]" id="max_width_of_container_12" value="%s">',
-			isset( $this->fotorama_elevation_options['max_width_of_container_12'] ) ? esc_attr( $this->fotorama_elevation_options['max_width_of_container_12']) : ''
+			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[max_width_of_container_12]" id="max_width_of_container_12" value="%s"><p>Min: %s px, Max: %s px</p>',
+			isset( $this->fotorama_elevation_options['max_width_of_container_12'] ) ? esc_attr( $this->fotorama_elevation_options['max_width_of_container_12']) : '',
+			$this->min_width, $this->max_width
 		);
+	}
+
+	private function my_sanitize_path ($inp) {
+		$inp = sanitize_text_field( $inp);
+		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
+		$inp = preg_replace("/[^A-Za-z0-9-_\/]/", "", $inp);
+		$inp = rtrim($inp,'/');
+		$inp = rtrim($inp,'\\');
+		$inp = ltrim($inp,'/');
+		$inp = ltrim($inp,'\\');
+		return $inp;
+	}
+
+	private function my_sanitize_text ($inp) {
+		$inp = sanitize_text_field( $inp);
+		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
+		return $inp;
+	}
+
+	private function my_sanitize_int_with_limits($inp, $min, $max) {
+		$inp = preg_replace("/[^0-9]/", "", $inp);
+		$val = intval( $inp);
+		if (filter_var($val, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max))) === false) {
+			// echo("Variable value is not within the legal range");
+			($val < $min) ? $val = $min : $val = $max;
+		} else {
+			//echo("Variable value is within the legal range");
+		}
+		return strval($val);
 	}
 
 }
