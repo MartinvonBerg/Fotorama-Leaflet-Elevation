@@ -6,10 +6,13 @@
  */
 namespace mvbplugins\fotoramamulti;
 
+$path = plugin_dir_path(__FILE__);
+require_once $path . 'custom_mine_types.php'; 
+
+
 class FotoramaElevation {
 	private $fotorama_elevation_options;
-	private $gpx_options;
-	private $up_dir = '';
+	private $up_dir = '';    
 	private $min_height_map = 100;
 	private $max_height_map = 1000;
 	private $min_height_chart = 100;
@@ -32,16 +35,9 @@ class FotoramaElevation {
 		);
 	}
 
-	public function fotorama_elevation_create_admin_page( $out ) {
+	public function fotorama_elevation_create_admin_page() {
 		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
-		$this->gpx_options = get_option( 'gpxfile_0' );
-
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
-		$path_to_gpx_files_2 = $this->fotorama_elevation_options['path_to_gpx_files_2'];
-		if (isset($_POST['admin_settings'])){ // wird ausgeführt wenn der gen shortcode button gedrück wird
-			$gpxfile = $this->fotorama_elevation_options['gpx_file'];
-			$out =  '[fotomulti gxppath="'. $path_to_gpx_files_2 .'" imgpath=""]';
-		}
 
 		$path_to_images_for_fotorama = $this->fotorama_elevation_options['path_to_images_for_fotorama_0']; // Path to Images for Fotorama
 		$colour_theme_for_leaflet_elevation = $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1']; // Colour Theme for Leaflet Elevation
@@ -62,6 +58,14 @@ class FotoramaElevation {
 			<h2>Settings for Fotorama-Elevation Plugin</h2>
 			<h4>General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.</h4>
 			<?php settings_errors(); ?>
+			
+			<form method="post" action="options.php" enctype="multipart/form-data">
+            <?php
+               settings_fields("gpx_section");
+               do_settings_sections("gpx_file");
+			   submit_button('Save GPX-File');
+            ?>
+         	</form>
 
 			<form method="post" action="options.php">
 				<?php
@@ -70,17 +74,6 @@ class FotoramaElevation {
 					submit_button();
 				?>
 			</form>
-
-			<form method="post" action="">
-				<?php
-					settings_fields( 'fotorama_elevation_gpx_group' );
-					do_settings_sections( 'fotorama-elevation-gpx' );
-					submit_button('Save GPX-File', 'primary', "admin_settings");
-				?>
-				<p>
-				<?php echo 'File: ' . $gpxfile; ?>
-				</p>
-			</form>	
 		
             <h3>List of shortcode Parameters:</h3>
 			<p><b>Complete shortcode with the above settings: </br></b> <?php
@@ -212,17 +205,10 @@ class FotoramaElevation {
 			</tbody>
 
 			</table>
-			<form method="post" action="">	
-			<?php
-			submit_button( 'Generate Shortcode', 'primary', "admin_settings" );
-			?>
-			<p>
-			<?php echo 'Shortcode: ' . $out; ?>
-			</p>
-			</form>
 
 		</div>
-	<?php }
+		<?php 
+	}
 
 	public function fotorama_elevation_page_init() { // == demo_settings_page()
 		register_setting(
@@ -348,46 +334,60 @@ class FotoramaElevation {
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
-
-		register_setting(
-			'fotorama_elevation_gpx_group', // option_group
-			'gpxfile_0', // option_name
-			array( $this, 'gpx_sanitize' ) // sanitize_callback
-		);
-
-		add_settings_section(
-			'gpx_setting_section', // id
-			'GPX-Fle Upload', // title
-			array( $this, 'gpx_section_info' ), // callback
-			'fotorama-elevation-gpx' // page
-		);
-
-		add_settings_field(
-			"gpx_file", // id
-			"GPX-File Upload", // title
-			array( $this, "background_form_element"), // callbakc
-			'fotorama-elevation-gpx', // page
-			"gpx_setting_section" // section
-		);
-	}
-
-	public function background_form_element()
-    {
-        //echo form element for file upload
-        ?>
-            <input type="file" style="width:500px;" name="gpx_options[gpx_file]" id="gpx_file" value="<?php echo get_option('gpx_file'); ?>" />
-			<?php 
-			
-	}
 	
-	public function gpx_sanitize($input) {
-		$sanitary_values = array();
-		if ( isset( $input['gpx_file'] ) ) {
-			$sanitary_values['gpx_file'] = sanitize_text_field( $input['gpx_file'] );
-		} else { $sanitary_values['gpx_file'] = '';}
+		add_settings_section("gpx_section", "GPX-File Upload", null, "gpx_file");
+    	add_settings_field("gpx-file", "GPX-File", array( $this, "gpx_file_display"), "gpx_file", "gpx_section");  
+		register_setting("gpx_section", "gpx-file", array( $this, "handle_file_upload") );
+		
+	}
 
-		return $sanitary_values;
+	public function gpx_file_display() {
+	
+		?><input type="file" name="gpx-file" /><?php // create html button for file name
+		echo ('Upload "' .  get_option('gpx-file') . '"');
+	}
 
+	public function handle_file_upload($option) { // wird nur einmal aufgerufen
+
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/file.php' );
+		}
+
+		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
+		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
+		$file = $this->my_sanitize_text($option);
+
+		$path = $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2'];
+		$complete = $path . '/' . $file;
+		$success = false;
+
+		if( is_dir($path) ) {
+			//echo "The Directory {$path} exists";
+		} else {
+			mkdir($path , 0777);
+			//echo "The Directory {$path} was created";
+			$success = true;
+		}
+
+		if(! is_file($complete)) {
+			$name_file = $_FILES['gpx-file']['name'];
+			$tmp_name = $_FILES['gpx-file']['tmp_name']; 
+			$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
+			if( $result )  {
+				$temp = 'of '. $name_file . '" successful!';
+			} else {
+				$temp = "The file was not uploaded";
+			}
+
+			//$urls = wp_handle_upload($complete, array('test_form' => FALSE));
+			//$temp = $urls["url"]; // setzt den String für get_option('gpx-file') : Ausgabe kann damit gesteuert werden!
+			//if ($temp == null) {
+			//  $temp =  'No Success!';
+			//} 
+			return $temp;  
+		}
+		
+		return $option;
 	}
 
 	public function fotorama_elevation_sanitize($input) {
@@ -466,9 +466,6 @@ class FotoramaElevation {
     }
     
     public function leaflet_elevation_section_info() {
-	}
-
-	public function gpx_section_info() {
 	}
 
 	public function path_to_images_for_fotorama_0_callback() {
