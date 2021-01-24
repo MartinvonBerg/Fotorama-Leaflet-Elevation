@@ -11,6 +11,16 @@ use phpGPX\Parsers\MetadataParser;
 use phpGPX\Parsers\RouteParser;
 use phpGPX\Parsers\TrackParser;
 use phpGPX\Parsers\WaypointParser;
+use phpGPX\Parsers\BoundsParser;
+
+spl_autoload_register(function ($class_name) {
+	$path = plugin_dir_path(__FILE__);
+	$path = \str_replace('\phpGPX','',$path);
+	$pos = strpos($class_name, 'php');
+	if ($pos !== false) {
+		include $path . $class_name . '.php';
+	}
+});
 
 /**
  * Class phpGPX
@@ -69,21 +79,21 @@ class phpGPX
 	 * ELEVATION_SMOOTHING_THRESHOLD applies
 	 * @var bool
 	 */
-	public static $APPLY_ELEVATION_SMOOTHING = false;
+	public static $APPLY_ELEVATION_SMOOTHING = true;
 
 	/**
 	 * if APPLY_ELEVATION_SMOOTHING is true
 	 * the minimum elevation difference between considered points in meters
 	 * @var int
 	 */
-	public static $ELEVATION_SMOOTHING_THRESHOLD = 2;
+	public static $ELEVATION_SMOOTHING_THRESHOLD = 4; // best between 4 and 5
 
 	/**
 	 * Apply distance calculation smoothing? If true, the threshold in
 	 * DISTANCE_SMOOTHING_THRESHOLD applies
 	 * @var bool
 	 */
-	public static $APPLY_DISTANCE_SMOOTHING = false;
+	public static $APPLY_DISTANCE_SMOOTHING = true;
 
 	/**
 	 * if APPLY_DISTANCE_SMOOTHING is true
@@ -129,6 +139,7 @@ class phpGPX
 
 		// Parse routes
 		$gpx->routes = isset($xml->rte) ? RouteParser::parse($xml->rte) : [];
+
 
 		return $gpx;
 	}

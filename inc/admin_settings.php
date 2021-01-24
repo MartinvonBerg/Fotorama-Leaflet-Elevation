@@ -344,7 +344,7 @@ class FotoramaElevation {
 	public function gpx_file_display() {
 	
 		?><input type="file" name="gpx-file" /><?php // create html button for file name
-		echo ('Upload "' .  get_option('gpx-file') . '"');
+		echo ('Upload ' .  get_option('gpx-file') );
 	}
 
 	public function handle_file_upload($option) { // wird nur einmal aufgerufen
@@ -369,12 +369,13 @@ class FotoramaElevation {
 			$tmp_name = $_FILES['gpx-file']['tmp_name']; 
 
 			if ($parsegpxfile) {
-				parsegpx ($tmp_name);
+				$values = parsegpx ($tmp_name, $path, $name_file);
 			}
 
-			$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
+			//$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
+			$result = true;
 			if( $result )  {
-				$temp = 'of '. $name_file . '" successful!';
+				$temp = 'of "'. $name_file . '" successful! With: ' . $values;
 			} else {
 				$temp = "The file was not uploaded";
 			}
