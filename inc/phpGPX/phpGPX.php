@@ -22,6 +22,7 @@ spl_autoload_register(function ($class_name) {
 	}
 });
 
+
 /**
  * Class phpGPX
  * @package phpGPX
@@ -139,7 +140,6 @@ class phpGPX
 
 		// Parse routes
 		$gpx->routes = isset($xml->rte) ? RouteParser::parse($xml->rte) : [];
-
 
 		return $gpx;
 	}

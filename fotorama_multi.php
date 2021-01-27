@@ -63,8 +63,8 @@ function showmulti($attr, $content = null)
 	
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
- 	$path_to_images_for_fotorama_slider_0 = $fotorama_elevation_options['path_to_images_for_fotorama_slider_0']; // Path to Images for Fotorama Slider
- 	$theme_for_elevation_1 = $fotorama_elevation_options['theme_for_elevation_1']; // Theme for Elevation
+ 	//$path_to_images_for_fotorama_slider_0 = $fotorama_elevation_options['path_to_images_for_fotorama_slider_0']; // Path to Images for Fotorama Slider
+ 	//$theme_for_elevation_1 = $fotorama_elevation_options['theme_for_elevation_1']; // Theme for Elevation
 
 	// Extract shortcode-Parameters and set Default-Values
 	extract(shortcode_atts(array(
@@ -81,7 +81,7 @@ function showmulti($attr, $content = null)
 		'requiregps' => 'true',
 		'maxwidth' => '600', // grid verwenden bei großer Breite
 		'showcaption' => 'true',
-		'eletheme' => $fotorama_elevation_options['theme_for_elevation_1'], // theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
+		'eletheme' => $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'], // theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
 	), $attr));
 
 	// Detect Language of Website and set the Javascript-Variable for the Language used in GPXViewer

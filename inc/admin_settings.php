@@ -6,6 +6,8 @@
  */
 namespace mvbplugins\fotoramamulti;
 
+use Exception;
+
 $path = plugin_dir_path(__FILE__);
 require_once $path . 'custom_mine_types.php'; 
 require_once $path . 'parseGPX.php'; 
@@ -58,15 +60,19 @@ class FotoramaElevation {
 			<h2>Settings for Fotorama-Elevation Plugin</h2>
 			<h4>General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.</h4>
 			<?php settings_errors(); ?>
-			
+			<hr>
 			<form method="post" action="options.php" enctype="multipart/form-data">
             <?php
-               settings_fields("gpx_section");
-               do_settings_sections("gpx_file");
+			   settings_fields("gpx_section");
+			   do_settings_sections("gpx_file");
+			   ?>
+			   <p><b>Hint: GPX-routes without elevation data shall be converted to tracks with <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
+			   Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.</b></b> 
+			   <?php
 			   submit_button('Save GPX-File');
             ?>
          	</form>
-
+			<hr>
 			<form method="post" action="options.php">
 				<?php
 					settings_fields( 'fotorama_elevation_option_group' );
@@ -74,7 +80,7 @@ class FotoramaElevation {
 					submit_button();
 				?>
 			</form>
-		
+			<hr>
             <h3>List of shortcode Parameters:</h3>
 			<p><b>Complete shortcode with the above settings: </br></b> <?php
 				$example = '[fotomulti imgpath="' . $path_to_images_for_fotorama .'" ';
@@ -216,7 +222,7 @@ class FotoramaElevation {
 			'fotorama_elevation_option_name', // option_name
 			array( $this, 'fotorama_elevation_sanitize' ) // sanitize_callback
 		);
-
+	
 		add_settings_section(
 			'fotorama_elevation_setting_section', // id
 			'Fotorama Settings', // title
@@ -338,13 +344,31 @@ class FotoramaElevation {
 		add_settings_section("gpx_section", "GPX-File Upload", null, "gpx_file");
     	add_settings_field("gpx-file", "GPX-File", array( $this, "gpx_file_display"), "gpx_file", "gpx_section");  
 		register_setting("gpx_section", "gpx-file", array( $this, "handle_file_upload") );
+
+		add_settings_field(
+			'gpx-reduce', // id
+			'GPX-Parsing', // title
+			array( $this, 'gpx_reduce_callback' ), // callback
+			'gpx_file', // page
+			'gpx_section' // section
+		);
+		
+		// add setting for smooth fehlt noch
 		
 	}
 
 	public function gpx_file_display() {
 	
 		?><input type="file" name="gpx-file" /><?php // create html button for file name
-		echo ('Upload ' .  get_option('gpx-file') );
+		echo ('</br>Upload' .  get_option('gpx-file') );
+	}
+
+	public function gpx_reduce_callback() {
+		
+		printf(
+			'<input type="checkbox" name="gpx-file[gpx-reduce]" id="gpx-reduce" value="gpx-reduce" %s> <label for="gpx-reduce">Reduce and add Metadata to GPX File</label>',
+			( true ) ? 'checked' : ''
+		);
 	}
 
 	public function handle_file_upload($option) { // wird nur einmal aufgerufen
@@ -352,7 +376,9 @@ class FotoramaElevation {
 		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
 		$file = $_FILES['gpx-file']['name'];
-		$parsegpxfile = true;
+
+		$parsegpxfile = $option["gpx-reduce"] == 'gpx-reduce';
+		$smooth = 25;
 
 		$path = $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2'];
 		$complete = $path . '/' . $file;
@@ -364,26 +390,30 @@ class FotoramaElevation {
 			//echo "The Directory {$path} was created";
 		}
 
-		if(! is_file($complete)) {
+		if(! is_file($complete) && ($file != '')) {
 			$name_file = $_FILES['gpx-file']['name'];
 			$tmp_name = $_FILES['gpx-file']['tmp_name']; 
 
-			if ($parsegpxfile) {
-				$values = parsegpx ($tmp_name, $path, $name_file);
+			if ($parsegpxfile) { 
+				$values = parsegpx ($tmp_name, $path, $name_file, $smooth);
+				$result = strpos($values, 'Skip') == false;
+			} else {
+				$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
+				$values = 'File not touched!';
 			}
 
-			//$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
-			$result = true;
 			if( $result )  {
-				$temp = 'of "'. $name_file . '" successful! With: ' . $values;
+				$temp = ' of "'. $name_file . '" successful! </br> With: ' . $values;
 			} else {
-				$temp = "The file was not uploaded";
+				$temp = ". The file was not uploaded. " . $values;
 			}
 
 			return $temp;  
 		}
 		
-		$temp = "File alread exists!";
+		if ($file == '') { $temp = '. No Filename given!';}
+		else { $temp = "File alread exists!"; }
+
 		return $temp;
 	}
 
@@ -467,7 +497,7 @@ class FotoramaElevation {
 
 	public function path_to_images_for_fotorama_0_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[path_to_images_for_fotorama_0]" id="path_to_images_for_fotorama_0" value="%s"><p>%s</p>',
+			'<input class="regular-text" type="text" placeholder="Define path without leading and trailing slashes" name="fotorama_elevation_option_name[path_to_images_for_fotorama_0]" id="path_to_images_for_fotorama_0" value="%s"><p>%s</p>',
 			isset( $this->fotorama_elevation_options['path_to_images_for_fotorama_0'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_images_for_fotorama_0']) : '',
 			$this->up_dir . '/' . $this->fotorama_elevation_options['path_to_images_for_fotorama_0']
 		);
@@ -496,7 +526,7 @@ class FotoramaElevation {
 
 	public function path_to_gpx_files_2_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[path_to_gpx_files_2]" id="path_to_gpx_files_2" value="%s"><p>%s</p>',
+			'<input class="regular-text" type="text" placeholder="Define path without leading and trailing slashes" name="fotorama_elevation_option_name[path_to_gpx_files_2]" id="path_to_gpx_files_2" value="%s"><p>%s</p>',
 			isset( $this->fotorama_elevation_options['path_to_gpx_files_2'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_gpx_files_2']) : '', 
 			$this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2']
 		);
@@ -540,7 +570,7 @@ class FotoramaElevation {
 
 	public function text_for_start_address_8_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[text_for_start_address_8]" id="text_for_start_address_8" value="%s">',
+			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[text_for_start_address_8]" id="text_for_start_address_8" value="%s">',
 			isset( $this->fotorama_elevation_options['text_for_start_address_8'] ) ? esc_attr( $this->fotorama_elevation_options['text_for_start_address_8']) : ''
 		);
 	}
@@ -554,7 +584,7 @@ class FotoramaElevation {
 
 	public function height_of_map_10_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[height_of_map_10]" id="height_of_map_10" value="%s"><p>Min: %s px, Max: %s px</p>',
+			'<input type="number" min="'. $this->min_height_map .'" max="'. $this->max_height_map .'" name="fotorama_elevation_option_name[height_of_map_10]" id="height_of_map_10" value="%s"><p>Min: %s px, Max: %s px</p>',
 			isset( $this->fotorama_elevation_options['height_of_map_10'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_map_10']) : '',
 			$this->min_height_map, $this->max_height_map
 		);
@@ -562,7 +592,7 @@ class FotoramaElevation {
 
 	public function height_of_chart_11_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s"><p>Min: %s px, Max: %s px</p>',
+			'<input type="number" min="'. $this->min_height_chart .'" max="'. $this->max_height_chart .'" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s"><p>Min: %s px, Max: %s px</p>',
 			isset( $this->fotorama_elevation_options['height_of_chart_11'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_chart_11']) : '',
 			$this->min_height_chart, $this->max_height_chart
 		);
@@ -570,7 +600,7 @@ class FotoramaElevation {
 
 	public function max_width_of_container_12_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[max_width_of_container_12]" id="max_width_of_container_12" value="%s"><p>Min: %s px, Max: %s px</p>',
+			'<input type="number" min="'. $this->min_width .'" max="'. $this->max_width .'" name="fotorama_elevation_option_name[max_width_of_container_12]" id="max_width_of_container_12" value="%s"><p>Min: %s px, Max: %s px</p>',
 			isset( $this->fotorama_elevation_options['max_width_of_container_12'] ) ? esc_attr( $this->fotorama_elevation_options['max_width_of_container_12']) : '',
 			$this->min_width, $this->max_width
 		);
