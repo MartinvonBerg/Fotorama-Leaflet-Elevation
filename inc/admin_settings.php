@@ -6,8 +6,6 @@
  */
 namespace mvbplugins\fotoramamulti;
 
-use Exception;
-
 $path = plugin_dir_path(__FILE__);
 require_once $path . 'custom_mine_types.php'; 
 require_once $path . 'parseGPX.php'; 
@@ -40,10 +38,10 @@ class FotoramaElevation {
 	public function fotorama_elevation_create_admin_page() {
 		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
-
-		$path_to_images_for_fotorama = $this->fotorama_elevation_options['path_to_images_for_fotorama_0']; // Path to Images for Fotorama
+		/*
+		//$path_to_images_for_fotorama = $this->fotorama_elevation_options['path_to_images_for_fotorama_0']; // Path to Images for Fotorama
 		$colour_theme_for_leaflet_elevation = $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1']; // Colour Theme for Leaflet Elevation
-		$path_to_gpx_files = $this->fotorama_elevation_options['path_to_gpx_files_2']; // Path to GPX-Files
+		//$path_to_gpx_files = $this->fotorama_elevation_options['path_to_gpx_files_2']; // Path to GPX-Files
 		$download_gpx_files = $this->fotorama_elevation_options['download_gpx_files_3']; // Download GPX-Files
 		$show_caption = $this->fotorama_elevation_options['show_caption_4']; // Show Caption
 		$images_with_gps_required = $this->fotorama_elevation_options['images_with_gps_required_5']; // Images with GPS required
@@ -54,8 +52,9 @@ class FotoramaElevation {
 		$height_of_map = $this->fotorama_elevation_options['height_of_map_10']; // Height of Map
 		$height_of_chart = $this->fotorama_elevation_options['height_of_chart_11']; // Height of Chart
 		$max_width_of_container = $this->fotorama_elevation_options['max_width_of_container_12']; // Max Width of Container
-		?>
+		*/
 
+		?>
 		<div class="wrap">
 			<h2>Settings for Fotorama-Elevation Plugin</h2>
 			<h4>General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.</h4>
@@ -83,20 +82,20 @@ class FotoramaElevation {
 			<hr>
             <h3>List of shortcode Parameters:</h3>
 			<p><b>Complete shortcode with the above settings: </br></b> <?php
-				$example = '[fotomulti imgpath="' . $path_to_images_for_fotorama .'" ';
-				$example.= 'gpxpath="' . $path_to_gpx_files . '" ';
+				$example = '[fotomulti imgpath="' . $this->fotorama_elevation_options['path_to_images_for_fotorama_0'] . '" ';
+				$example.= 'gpxpath="' .            $this->fotorama_elevation_options['path_to_gpx_files_2'] . '" ';
 				$example.= 'gpxfile="test.gpx" ';
-				$example.= 'mapheight="' . $height_of_map . '" ';
-				$example.= 'chartheight="' . $height_of_chart . '" ';
-				$example.= 'dload="' . $download_gpx_files . '" ';
-				$example.= 'alttext="' . $general_text_for_the_fotorama_alt . '" ';
-				$example.= 'ignoresort="' . $ignore_custom_sort . '" ';
-				$example.= 'showadress="' . $show_address_of_start . '" ';
-				$example.= 'adresstext="' . $text_for_start_address . '" ';
-				$example.= 'requiregps="' . $images_with_gps_required . '" ';
-				$example.= 'maxwidth="' . $max_width_of_container . '" ';
-				$example.= 'showcaption="' . $show_caption . '" ';
-				$example.= 'eletheme="' . $colour_theme_for_leaflet_elevation . '"] ';
+				$example.= 'mapheight="' .          $this->fotorama_elevation_options['height_of_map_10'] . '" ';
+				$example.= 'chartheight="' .        $this->fotorama_elevation_options['height_of_chart_11'] . '" ';
+				$example.= 'dload="' .              $this->fotorama_elevation_options['download_gpx_files_3'] . '" ';
+				$example.= 'alttext="' .            $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] . '" ';
+				$example.= 'ignoresort="' .         $this->fotorama_elevation_options['ignore_custom_sort_6'] . '" ';
+				$example.= 'showadress="' .         $this->fotorama_elevation_options['show_address_of_start_7'] . '" ';
+				$example.= 'adresstext="' .         $this->fotorama_elevation_options['text_for_start_address_8'] . '" ';
+				$example.= 'requiregps="' .         $this->fotorama_elevation_options['images_with_gps_required_5'] . '" ';
+				$example.= 'maxwidth="' .           $this->fotorama_elevation_options['max_width_of_container_12'] . '" ';
+				$example.= 'showcaption="' .        $this->fotorama_elevation_options['show_caption_4'] . '" ';
+				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '" ';
 		
 			 	echo $example;
 			?></p>
@@ -209,7 +208,6 @@ class FotoramaElevation {
 				<td class="tg-0pky">Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. Martin-theme is my special theme.</td>
 			</tr>
 			</tbody>
-
 			</table>
 
 		</div>
@@ -367,7 +365,7 @@ class FotoramaElevation {
 		
 		printf(
 			'<input type="checkbox" name="gpx-file[gpx-reduce]" id="gpx-reduce" value="gpx-reduce" %s> <label for="gpx-reduce">Reduce and add Metadata to GPX File</label>',
-			( true ) ? 'checked' : ''
+			( $this->fotorama_elevation_options['gpx_file'] === 'true' ) ? 'checked' : ''
 		);
 	}
 
@@ -378,6 +376,12 @@ class FotoramaElevation {
 		$file = $_FILES['gpx-file']['name'];
 
 		$parsegpxfile = $option["gpx-reduce"] == 'gpx-reduce';
+		if ($parsegpxfile) {
+			$this->fotorama_elevation_options['gpx_file'] = 'true';
+		} else {
+			$this->fotorama_elevation_options['gpx_file'] = 'false';
+		}
+		$success = add_option( 'fotorama_elevation_option_name', $this->fotorama_elevation_options );
 		$smooth = 25;
 
 		$path = $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2'];
@@ -482,9 +486,10 @@ class FotoramaElevation {
 			$sanitary_values['max_width_of_container_12'] = $this->my_sanitize_int_with_limits($input['max_width_of_container_12'], $this->min_width, $this->max_width );
 		}
 
-		if ( isset( $input['gpx_file'] ) ) {
-			$sanitary_values['gpx_file'] = sanitize_text_field( $input['gpx_file'] );
-		} else { $sanitary_values['gpx_file'] = '';}
+		//if ( isset( $input['gpx_file'] ) ) {
+		//	$sanitary_values['gpx_file'] = sanitize_text_field( $input['gpx_file'] );
+		//} else { $sanitary_values['gpx_file'] = '';}
+		$sanitary_values['gpx_file'] = $input['gpx_file'] ;
 
 		return $sanitary_values;
 	}
@@ -636,22 +641,3 @@ class FotoramaElevation {
 	}
 
 }
-
-
-/* 
- * Retrieve this value with:
- * $fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
- * $path_to_images_for_fotorama_0 = $fotorama_elevation_options['path_to_images_for_fotorama_0']; // Path to Images for Fotorama
- * $colour_theme_for_leaflet_elevation_1 = $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1']; // Colour Theme for Leaflet Elevation
- * $path_to_gpx_files_2 = $fotorama_elevation_options['path_to_gpx_files_2']; // Path to GPX-Files
- * $download_gpx_files_3 = $fotorama_elevation_options['download_gpx_files_3']; // Download GPX-Files
- * $show_caption_4 = $fotorama_elevation_options['show_caption_4']; // Show Caption
- * $images_with_gps_required_5 = $fotorama_elevation_options['images_with_gps_required_5']; // Images with GPS required
- * $ignore_custom_sort_6 = $fotorama_elevation_options['ignore_custom_sort_6']; // Ignore custom sort
- * $show_address_of_start_7 = $fotorama_elevation_options['show_address_of_start_7']; // Show address of start
- * $text_for_start_address_8 = $fotorama_elevation_options['text_for_start_address_8']; // Text for Start address
- * $general_text_for_the_fotorama_alt_9 = $fotorama_elevation_options['general_text_for_the_fotorama_alt_9']; // General text for the Fotorama alt
- * $height_of_map_10 = $fotorama_elevation_options['height_of_map_10']; // Height of Map
- * $height_of_chart_11 = $fotorama_elevation_options['height_of_chart_11']; // Height of Chart
- * $max_width_of_container_12 = $fotorama_elevation_options['max_width_of_container_12']; // Max Width of Container
- */

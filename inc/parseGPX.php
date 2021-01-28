@@ -12,7 +12,6 @@ use phpGPX\Models\Segment;
 use phpGPX\Models\Track;
 use phpGPX\Models\Bounds;
 
-// TODO : läuft derzeit nur mit einem Track element
 /**
  * Parse GPX-track and write it to destination directory
  *
@@ -41,15 +40,25 @@ function parsegpx($infile, $path, $newfile, $smooth) {
     $gpx = new phpGPX();    
     $file = $gpx->load($infile);
 
-    foreach ($file->routes as $track) {
+    foreach ($file->routes as $segment) { 
         // Statistics for whole track
-        $track->stats->toArray();
-
+        if ( ($file->routes[0]->stats->cumulativeElevationGain > 0) || ($file->routes[0]->stats->cumulativeElevationLoss > 0)) {
+            $segment->stats->toArray();// Statistics for segment of track
+        
+            $pointsbefore = $pointsbefore + \sizeof($segment->points);
+            $ascent = $ascent + $segment->stats->cumulativeElevationGain;
+            $descent = $descent + $segment->stats->cumulativeElevationLoss;
+            $dist = $dist + $segment->stats->distance;
+            $bounds = getBounds($segment, $reducetrack, $smooth);
+        } else {
+            $desc = 'No elevation data in route of GPX-File. Skipped';
+            return $desc;
+        }
     }
 	
     foreach ($file->tracks as $track) {
         // Statistics for whole track
-        $track->stats->toArray();
+        //$track->stats->toArray();
 
         // check lastbounds and set new maxmin values
         //if (\array_key_exists('minLongitude', $bounds )) {
@@ -79,7 +88,7 @@ function parsegpx($infile, $path, $newfile, $smooth) {
         }
     }
     
-    if (\sizeof($file->tracks) > 0)  {
+    if ( array_key_exists('minLongitude', $bounds[0]) )  {
         $ascent = intval($ascent);
         $descent = intval($descent);
         $dist = number_format_i18n($dist / 1000, 1);
@@ -139,9 +148,9 @@ function parsegpx($infile, $path, $newfile, $smooth) {
  */
 function getBounds($segment, $reduce, $smooth) {
     $minlat = 180;
-    $maxlat = 0;
+    $maxlat = -180;
     $minlon = 180;
-    $maxlon = 0;
+    $maxlon = -180;
     $points = $segment->points;
     $lastlat = 0;
     $lastlon = 0;
