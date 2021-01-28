@@ -351,10 +351,7 @@ class FotoramaElevation {
 			'gpx_section' // section
 		);
 		
-		// add setting for smooth fehlt noch
-		
 	}
-
 	public function gpx_file_display() {
 	
 		?><input type="file" name="gpx-file" /><?php // create html button for file name
@@ -377,12 +374,11 @@ class FotoramaElevation {
 
 		$parsegpxfile = $option["gpx-reduce"] == 'gpx-reduce';
 		if ($parsegpxfile) {
-			$this->fotorama_elevation_options['gpx_file'] = 'true';
+			//$this->fotorama_options2['gpx_reduce'] = 'true';
 		} else {
-			$this->fotorama_elevation_options['gpx_file'] = 'false';
+			//$this->fotorama_options2['gpx_reduce'] = 'false';
 		}
-		$success = add_option( 'fotorama_elevation_option_name', $this->fotorama_elevation_options );
-		$smooth = 25;
+		$smooth = 25;		
 
 		$path = $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2'];
 		$complete = $path . '/' . $file;
