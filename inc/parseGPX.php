@@ -18,11 +18,12 @@ use phpGPX\Models\Bounds;
  * @param string $infile path to inputfile in PHP tmp Directory
  * @param string $path destination path for GPX-Track
  * @param string $newfile name for GPX-Track-file
- * @param float $smooth value for track smoothing in meters
+ * @param float $smooth value for distance smoothing in meters
+ * @param float $elesmooth value for elevation smoothing in meters
  *
  * @return string description with simple stats as written to metadata of gpx-track
  */
-function parsegpx($infile, $path, $newfile, $smooth) {
+function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
 
     // metdata for track
     $desc = '';
@@ -37,7 +38,11 @@ function parsegpx($infile, $path, $newfile, $smooth) {
     $pointsbefore = 0;
     $pointsafter = 0;
 
-    $gpx = new phpGPX();    
+    $gpx = new phpGPX();  
+    $gpx::$ELEVATION_SMOOTHING_THRESHOLD = $elesmooth ?? 4;
+    $gpx::$APPLY_DISTANCE_SMOOTHING = true;
+    $gpx::$APPLY_ELEVATION_SMOOTHING = true;
+
     $file = $gpx->load($infile);
 
     foreach ($file->routes as $segment) { 

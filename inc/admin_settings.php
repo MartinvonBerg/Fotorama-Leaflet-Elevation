@@ -12,6 +12,7 @@ require_once $path . 'parseGPX.php';
 
 class FotoramaElevation {
 	private $fotorama_elevation_options;
+	private $fotorama_option2;
 	private $up_dir = '';    
 	private $min_height_map = 100;
 	private $max_height_map = 1000;
@@ -38,34 +39,19 @@ class FotoramaElevation {
 	public function fotorama_elevation_create_admin_page() {
 		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
-		/*
-		//$path_to_images_for_fotorama = $this->fotorama_elevation_options['path_to_images_for_fotorama_0']; // Path to Images for Fotorama
-		$colour_theme_for_leaflet_elevation = $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1']; // Colour Theme for Leaflet Elevation
-		//$path_to_gpx_files = $this->fotorama_elevation_options['path_to_gpx_files_2']; // Path to GPX-Files
-		$download_gpx_files = $this->fotorama_elevation_options['download_gpx_files_3']; // Download GPX-Files
-		$show_caption = $this->fotorama_elevation_options['show_caption_4']; // Show Caption
-		$images_with_gps_required = $this->fotorama_elevation_options['images_with_gps_required_5']; // Images with GPS required
-		$ignore_custom_sort = $this->fotorama_elevation_options['ignore_custom_sort_6']; // Ignore custom sort
-		$show_address_of_start = $this->fotorama_elevation_options['show_address_of_start_7']; // Show address of start
-		$text_for_start_address = $this->fotorama_elevation_options['text_for_start_address_8']; // Text for Start address
-		$general_text_for_the_fotorama_alt = $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9']; // General text for the Fotorama alt
-		$height_of_map = $this->fotorama_elevation_options['height_of_map_10']; // Height of Map
-		$height_of_chart = $this->fotorama_elevation_options['height_of_chart_11']; // Height of Chart
-		$max_width_of_container = $this->fotorama_elevation_options['max_width_of_container_12']; // Max Width of Container
-		*/
-
+	
 		?>
 		<div class="wrap">
 			<h2>Settings for Fotorama-Elevation Plugin</h2>
 			<h4>General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.</h4>
-			<?php settings_errors(); ?>
+			<?php //settings_errors(); ?>
 			<hr>
 			<form method="post" action="options.php" enctype="multipart/form-data">
             <?php
 			   settings_fields("gpx_section");
 			   do_settings_sections("gpx_file");
 			   ?>
-			   <p><b>Hint: GPX-routes without elevation data shall be converted to tracks with <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
+			   <p><b>Hint: GPX-routes without elevation data should be converted to tracks with <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
 			   Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.</b></b> 
 			   <?php
 			   submit_button('Save GPX-File');
@@ -95,7 +81,7 @@ class FotoramaElevation {
 				$example.= 'requiregps="' .         $this->fotorama_elevation_options['images_with_gps_required_5'] . '" ';
 				$example.= 'maxwidth="' .           $this->fotorama_elevation_options['max_width_of_container_12'] . '" ';
 				$example.= 'showcaption="' .        $this->fotorama_elevation_options['show_caption_4'] . '" ';
-				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '" ';
+				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '"] ';
 		
 			 	echo $example;
 			?></p>
@@ -338,9 +324,10 @@ class FotoramaElevation {
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
-	
+
+		// --------------- GPX-Section --------------------------------------------------------
 		add_settings_section("gpx_section", "GPX-File Upload", null, "gpx_file");
-    	add_settings_field("gpx-file", "GPX-File", array( $this, "gpx_file_display"), "gpx_file", "gpx_section");  
+    	add_settings_field("gpx-file", "GPX-File", array( $this, "gpx_file_callback"), "gpx_file", "gpx_section");  
 		register_setting("gpx_section", "gpx-file", array( $this, "handle_file_upload") );
 
 		add_settings_field(
@@ -350,36 +337,101 @@ class FotoramaElevation {
 			'gpx_file', // page
 			'gpx_section' // section
 		);
+
+		add_settings_field(
+			'gpx_smooth', // id
+			'Distance-Smooth', // title
+			array( $this, 'gpx_smooth_callback' ), // callback
+			'gpx_file', // page
+			'gpx_section' // section
+		);
+
+		add_settings_field(
+			'gpx_elesmooth', // id
+			'Elevation-Smooth', // title
+			array( $this, 'gpx_elesmooth_callback' ), // callback
+			'gpx_file', // page
+			'gpx_section' // section
+		);
+
+		add_settings_field(
+			'gpx_overwrite', // id
+			'Overwrite GPX-Track', // title
+			array( $this, 'gpx_overwrite_callback' ), // callback
+			'gpx_file', // page
+			'gpx_section' // section
+		);
+		// Database options for GPX-File-Upload Section 
+		// Attention: option 'gpx-reduce' is stored in 'fotorama_elevation_option_name' and in variable '$this->fotorama_elevation_options'
+		if (!get_option('fotorama_option2')){
+			$this->fotorama_option2 = array(
+				'gpx_smooth' => 25, // Distance smooth in meters
+				'gpx_elesmooth' => 4, // Elevation smooth in meters
+				'gpx_overwrite' => true);
+			add_option('fotorama_option2', $this->fotorama_option2);
+			} else {
+				get_option('fotorama_option2');
+		}
 		
 	}
-	public function gpx_file_display() {
+	public function gpx_file_callback() {
 	
 		?><input type="file" name="gpx-file" /><?php // create html button for file name
 		echo ('</br>Upload' .  get_option('gpx-file') );
 	}
 
 	public function gpx_reduce_callback() {
-		
 		printf(
-			'<input type="checkbox" name="gpx-file[gpx-reduce]" id="gpx-reduce" value="gpx-reduce" %s> <label for="gpx-reduce">Reduce and add Metadata to GPX File</label>',
+			'<input type="checkbox" name="gpx-file[gpx_reduce]" id="gpx_reduce" value="gpx_reduce" %s> <label for="gpx_reduce">Reduce and add Metadata to GPX File</label>',
 			( $this->fotorama_elevation_options['gpx_file'] === 'true' ) ? 'checked' : ''
+		);
+	}
+
+	public function gpx_smooth_callback() {
+		$this->fotorama_option2 = get_option('fotorama_option2');
+		printf(
+			'<input type="number" min="1" max="50" name="gpx-file[gpx_smooth]" id="gpx_smooth" value=%s><label> Min. Distance of Track-Points in Meters</label>',
+			isset( $this->fotorama_option2['gpx_smooth'] ) ? esc_attr( $this->fotorama_option2['gpx_smooth']): ''
+		);
+	}
+
+	public function gpx_elesmooth_callback() {
+		$this->fotorama_option2 = get_option('fotorama_option2');
+		printf(
+			'<input type="number" min="1" max="50" name="gpx-file[gpx_elesmooth]" id="gpx_elesmooth" value=%s><label> Min. Elevation between Track-Points in Meters. Used in Statistics Calc only. Best is 4.</label>',
+			isset( $this->fotorama_option2['gpx_elesmooth'] ) ? esc_attr( $this->fotorama_option2['gpx_elesmooth']): ''
+		);
+	}
+
+	public function gpx_overwrite_callback() {
+		printf(
+			'<input type="checkbox" name="gpx-file[gpx_overwrite]" id="gpx_overwrite" value="gpx_overwrite" %s> <label for="gpx_overwrite">Overwrite existing GPX-File</label>',
+			( $this->fotorama_option2['gpx_overwrite'] === 'true' ) ? 'checked' : ''
 		);
 	}
 
 	public function handle_file_upload($option) { // wird nur einmal aufgerufen
 
 		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
+		$this->fotorama_option2 = get_option('fotorama_option2');
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
-		$file = $_FILES['gpx-file']['name'];
 
 		$parsegpxfile = $option["gpx-reduce"] == 'gpx-reduce';
-		if ($parsegpxfile) {
-			//$this->fotorama_options2['gpx_reduce'] = 'true';
-		} else {
-			//$this->fotorama_options2['gpx_reduce'] = 'false';
-		}
-		$smooth = 25;		
+		$parsegpxfile ? $this->fotorama_elevation_options['gpx_file'] = 'true' : $this->fotorama_elevation_options['gpx_file'] = 'false';
+		$success = update_option( 'fotorama_elevation_option_name', $this->fotorama_elevation_options );
 
+		$this->fotorama_option2['gpx_smooth'] = intval($option["gpx_smooth"]);	
+		$smooth = $this->fotorama_option2['gpx_smooth'];
+
+		$this->fotorama_option2['gpx_elesmooth'] = intval($option["gpx_elesmooth"]);	
+		$elesmooth = $this->fotorama_option2['gpx_elesmooth'];
+
+		$overwrite = $option["gpx_overwrite"] == 'gpx_overwrite';
+		$overwrite ? $this->fotorama_option2['gpx_overwrite'] = 'true' : $this->fotorama_option2['gpx_overwrite'] = 'false';
+			
+		$success = update_option( 'fotorama_option2', $this->fotorama_option2 );
+
+		$file = $_FILES['gpx-file']['name'];
 		$path = $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2'];
 		$complete = $path . '/' . $file;
 
@@ -390,12 +442,12 @@ class FotoramaElevation {
 			//echo "The Directory {$path} was created";
 		}
 
-		if(! is_file($complete) && ($file != '')) {
+		if( (! is_file($complete) || ($overwrite) ) && ($file != '')) {
 			$name_file = $_FILES['gpx-file']['name'];
 			$tmp_name = $_FILES['gpx-file']['tmp_name']; 
 
 			if ($parsegpxfile) { 
-				$values = parsegpx ($tmp_name, $path, $name_file, $smooth);
+				$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth);
 				$result = strpos($values, 'Skip') == false;
 			} else {
 				$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
@@ -438,7 +490,6 @@ class FotoramaElevation {
 		}
 
 		if ( isset( $input['show_caption_4'] ) ) {
-			//$sanitary_values['show_caption_4'] = $input['show_caption_4'];
 			$sanitary_values['show_caption_4'] = 'true';
 		} else {
 			$sanitary_values['show_caption_4'] = 'false';
@@ -482,9 +533,6 @@ class FotoramaElevation {
 			$sanitary_values['max_width_of_container_12'] = $this->my_sanitize_int_with_limits($input['max_width_of_container_12'], $this->min_width, $this->max_width );
 		}
 
-		//if ( isset( $input['gpx_file'] ) ) {
-		//	$sanitary_values['gpx_file'] = sanitize_text_field( $input['gpx_file'] );
-		//} else { $sanitary_values['gpx_file'] = '';}
 		$sanitary_values['gpx_file'] = $input['gpx_file'] ;
 
 		return $sanitary_values;
@@ -585,7 +633,7 @@ class FotoramaElevation {
 
 	public function height_of_map_10_callback() {
 		printf(
-			'<input type="number" min="'. $this->min_height_map .'" max="'. $this->max_height_map .'" name="fotorama_elevation_option_name[height_of_map_10]" id="height_of_map_10" value="%s"><p>Min: %s px, Max: %s px</p>',
+			'<input type="number" min="'. $this->min_height_map .'" max="'. $this->max_height_map .'" name="fotorama_elevation_option_name[height_of_map_10]" id="height_of_map_10" value="%s"><label>  Min: %s px, Max: %s px</label>',
 			isset( $this->fotorama_elevation_options['height_of_map_10'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_map_10']) : '',
 			$this->min_height_map, $this->max_height_map
 		);
@@ -593,7 +641,7 @@ class FotoramaElevation {
 
 	public function height_of_chart_11_callback() {
 		printf(
-			'<input type="number" min="'. $this->min_height_chart .'" max="'. $this->max_height_chart .'" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s"><p>Min: %s px, Max: %s px</p>',
+			'<input type="number" min="'. $this->min_height_chart .'" max="'. $this->max_height_chart .'" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s"><label>  Min: %s px, Max: %s px</label>',
 			isset( $this->fotorama_elevation_options['height_of_chart_11'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_chart_11']) : '',
 			$this->min_height_chart, $this->max_height_chart
 		);
@@ -601,7 +649,7 @@ class FotoramaElevation {
 
 	public function max_width_of_container_12_callback() {
 		printf(
-			'<input type="number" min="'. $this->min_width .'" max="'. $this->max_width .'" name="fotorama_elevation_option_name[max_width_of_container_12]" id="max_width_of_container_12" value="%s"><p>Min: %s px, Max: %s px</p>',
+			'<input type="number" min="'. $this->min_width .'" max="'. $this->max_width .'" name="fotorama_elevation_option_name[max_width_of_container_12]" id="max_width_of_container_12" value="%s"><label>  Min: %s px, Max: %s px</label>',
 			isset( $this->fotorama_elevation_options['max_width_of_container_12'] ) ? esc_attr( $this->fotorama_elevation_options['max_width_of_container_12']) : '',
 			$this->min_width, $this->max_width
 		);

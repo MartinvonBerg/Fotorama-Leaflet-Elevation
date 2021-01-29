@@ -80,7 +80,7 @@ class phpGPX
 	 * ELEVATION_SMOOTHING_THRESHOLD applies
 	 * @var bool
 	 */
-	public static $APPLY_ELEVATION_SMOOTHING = true;
+	public static $APPLY_ELEVATION_SMOOTHING = false;
 
 	/**
 	 * if APPLY_ELEVATION_SMOOTHING is true

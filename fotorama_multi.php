@@ -68,19 +68,19 @@ function showmulti($attr, $content = null)
 
 	// Extract shortcode-Parameters and set Default-Values
 	extract(shortcode_atts(array(
-		'gpxpath' => 'gpx',
+		'gpxpath' => $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx',
 		'gpxfile' => 'test.gpx',
-		'mapheight' => '450',
-		'chartheight' => '200',
-		'imgpath' => 'Bilder',
-		'dload' => 'yes',
-		'alttext' => '',
-		'ignoresort' => 'false', // ignore custom sort even if provided by Wordpress, then sort by date ascending
-		'showadress' => 'true', // wird auch als showmap genutzt
-		'adresstext' => 'Startadresse',
-		'requiregps' => 'true',
-		'maxwidth' => '600', // grid verwenden bei großer Breite
-		'showcaption' => 'true',
+		'mapheight' => $fotorama_elevation_options['height_of_map_10'] ?? '450',
+		'chartheight' => $fotorama_elevation_options['height_of_chart_11'] ?? '200',
+		'imgpath' => $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
+		'dload' => $fotorama_elevation_options['download_gpx_files_3'] ?? 'yes', //!!!
+		'alttext' => $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '',
+		'ignoresort' => $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', // !!! ignore custom sort even if provided by Wordpress, then sort by date ascending
+		'showadress' => $fotorama_elevation_options['show_address_of_start_7'] ??'true', // !!! wird auch als showmap genutzt
+		'adresstext' => $fotorama_elevation_options['text_for_start_address_8'] ?? 'Startadresse',
+		'requiregps' => $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
+		'maxwidth' => $fotorama_elevation_options['max_width_of_container_12'] ?? '600', // grid verwenden bei großer Breite
+		'showcaption' => $fotorama_elevation_options['show_caption_4'] ?? 'true',
 		'eletheme' => $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'], // theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
 	), $attr));
 
@@ -89,14 +89,6 @@ function showmulti($attr, $content = null)
 	$languages = array("de", "en", "fr", "es");
 	if (!in_array($lang, $languages)) {
 		$lang = "en";
-	}
-
-	// Check Parameters for Height of Map and Chart and restrict to the given range. Preset if range exceeded
-	if (($mapheight < 50) || ($mapheight > 900)) {
-		$mapheight = 450;
-	}
-	if (($chartheight < 50) || ($chartheight > 500)) {
-		$chartheight = 150;
 	}
 
 	// Define path and url variables
@@ -374,7 +366,7 @@ function showmulti($attr, $content = null)
 	//$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
 
 	// provide GPX-download if defined
-	if ($dload == 'yes')  {
+	if ($dload == 'true')  {
 		if ($i == 1) {
 			$htmlstring .= '<p><strong>Download GPX-Datei: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></strong></p>';
 		} else {
