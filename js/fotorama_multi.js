@@ -492,19 +492,17 @@
                 // TODO: ascent / descent calculation is wrong. Mine is better
                 if (parseFloat(info.includes[1]) != NaN) {
                     q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = info[1] + " km";
-                } else {
-                    q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
-                }
+                } 
                 if (parseFloat(info.includes[3]) != NaN) {
                     q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + info[3] + " m";
-                } else {
-                    q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + trace.gpx.get_elevation_gain().toFixed(0) + " m";
-                }
+                } 
                 if (parseFloat(info.includes[5]) != NaN) {
                     q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + info[5] + " m";
-                } else {
-                    q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + trace.gpx.get_elevation_loss().toFixed(0) + " m";
-                }
+                } 
+            } else {
+                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
+                q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + trace.gpx.get_elevation_gain().toFixed(0) + " m";
+                q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + trace.gpx.get_elevation_loss().toFixed(0) + " m";
             }
         }
  

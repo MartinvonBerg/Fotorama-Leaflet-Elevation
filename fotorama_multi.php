@@ -37,6 +37,9 @@ if (doYoastXmlSitemap) {
 
 require_once __DIR__ . '/inc/admin_settings.php';
 
+// --------------- load additonal functions ------------------------------
+require_once __DIR__ . '/inc/fm_functions.php';
+
 if ( is_admin() )
 	$fotorama_elevation = new FotoramaElevation();
 	
@@ -69,7 +72,7 @@ function showmulti($attr, $content = null)
 	// Extract shortcode-Parameters and set Default-Values
 	extract(shortcode_atts(array(
 		'gpxpath' => $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx',
-		'gpxfile' => 'test.gpx',
+		'gpxfile' => '',
 		'mapheight' => $fotorama_elevation_options['height_of_map_10'] ?? '450',
 		'chartheight' => $fotorama_elevation_options['height_of_chart_11'] ?? '200',
 		'imgpath' => $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
@@ -441,21 +444,21 @@ function fotomulti_scripts()
 	wp_enqueue_style('fm-style2', $plugin_url . 'css/fotorama3.css');
 	//wp_enqueue_style('fm-style3', $plugin_url . 'css/image-zoom.css');
 	wp_enqueue_style('fm-style3', "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css");
-	wp_enqueue_style('fm-style4', "https://unpkg.com/@raruto/leaflet-elevation@1.5.1/dist/leaflet-elevation.min.css");
+	wp_enqueue_style('fm-style4', "https://unpkg.com/@raruto/leaflet-elevation@1.5.3/dist/leaflet-elevation.min.css");
 	//wp_enqueue_style('fm-style5', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css");
 	//wp_enqueue_style('fm-style6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css");
-	wp_enqueue_style('fm-style7', "https://unpkg.com/leaflet-gesture-handling@1.2.1/dist/leaflet-gesture-handling.min.css" );
+	wp_enqueue_style('fm-style7', "https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css" );
 	//wp_enqueue_style('fm-style8', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.css");
 
     // Load Scripts
 	wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '3.1.0', true);
 	wp_enqueue_script('fm-script2', "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js", array('jquery'), '3.1.0', true);
-	wp_enqueue_script('fm-script3', "https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js", array('jquery'), '3.1.0', true);
-	wp_enqueue_script('fm-script4', "https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js", array('jquery'), '3.1.0', true);
-	wp_enqueue_script('fm-script5', "https://unpkg.com/@raruto/leaflet-elevation@1.5.1/dist/leaflet-elevation.min.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script3', "https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js", array('jquery'), '3.1.0', true); // does not work with d3 > version 6.0 !
+	wp_enqueue_script('fm-script4', "https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.5.0/gpx.min.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script5', "https://unpkg.com/@raruto/leaflet-elevation@1.5.3/dist/leaflet-elevation.min.js", array('jquery'), '3.1.0', true);
 	//wp_enqueue_script('fm-script6', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js", array('jquery'), '3.1.0', true);
 	//wp_enqueue_script('fm-script7', $plugin_url . "js/leaflet.markercluster.layersupport.js", array('jquery'), '3.1.0', true);
-	wp_enqueue_script('fm-script8', "https://unpkg.com/leaflet-gesture-handling@1.2.1/dist/leaflet-gesture-handling.min.js", array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script8', "https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js", array('jquery'), '3.1.0', true);
 	//wp_enqueue_script('fm-script10', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.min.js");
 	wp_enqueue_script('fm_script9', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '3.1.0', true);
 	
@@ -464,6 +467,12 @@ function fotomulti_scripts()
 
 add_action('wp_enqueue_scripts', 'mvbplugins\fotoramamulti\fotomulti_scripts');
 
-// --------------- load additonal functions ------------------------------
-require_once __DIR__ . '/inc/fm_functions.php';
+function i18n_init() {
+	$dir = dirname( \plugin_basename( __FILE__)) . '/languages/';
+	//$dir = './languages/';
+	$success = load_plugin_textdomain( 'fotoramamulti', false, $dir);
+}
+
+add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\i18n_init');
+
 
