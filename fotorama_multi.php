@@ -66,9 +66,7 @@ function showmulti($attr, $content = null)
 	
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
- 	//$path_to_images_for_fotorama_slider_0 = $fotorama_elevation_options['path_to_images_for_fotorama_slider_0']; // Path to Images for Fotorama Slider
- 	//$theme_for_elevation_1 = $fotorama_elevation_options['theme_for_elevation_1']; // Theme for Elevation
-
+ 	
 	// Extract shortcode-Parameters and set Default-Values
 	extract(shortcode_atts(array(
 		'gpxpath' => $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx',
@@ -461,6 +459,8 @@ function fotomulti_scripts()
 	wp_enqueue_script('fm-script8', "https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js", array('jquery'), '3.1.0', true);
 	//wp_enqueue_script('fm-script10', "https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.min.js");
 	wp_enqueue_script('fm_script9', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '3.1.0', true);
+	wp_enqueue_script('fm-script11', "https://unpkg.com/leaflet-ui/dist/leaflet-ui.js", array('jquery'), '3.1.0', true); // min gibt es nicht
+	wp_enqueue_script('fm_script12', $plugin_url . 'js/libs/leaflet-gpxgroup.js', array('jquery'), '3.1.0', true);
 	
   }
 }

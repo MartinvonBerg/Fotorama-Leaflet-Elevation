@@ -58,7 +58,7 @@
                             scroll: "Use Ctrl + Scrollwheel to zoom the Map",
                             scrollMac: "use \u2318 + scroll to zoom the map"
                             }
-                    },
+                    },                    
                 },
                 zoomControl: {
                     position: 'topleft',
@@ -85,7 +85,8 @@
             var controlElevation = new Array();
             var eleopts = new Array();
             var traces = new Array();
-            var tracks = new Array(); 
+            var tracks = new Array();
+            var grouptracks = [];  
             var group1 = new Array();
             //let marker = new Array();
 
@@ -232,9 +233,9 @@
                 // create Track selector bottom right
                 baseLayers2[m] = {};
                 if (parseInt(phptracks.ngpxfiles) > 0) {
-                    controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
-                    controlLayer2[m].setPosition('bottomright')
-                    controlLayer2[m].addTo(maps[m]);
+                    //controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
+                    //controlLayer2[m].setPosition('bottomright')
+                    //controlLayer2[m].addTo(maps[m]);
 
                     // create elevation chart(s) -----------------------
                     eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
@@ -248,23 +249,57 @@
                             downloadLink:false,
                             followMarker: false,
                             skipNullZCoords: true,
-                            legend: true,
-                        }
+                            legend: false,
+                        },
                         }
                     };
                     
-                    controlElevation[m] = L.control.elevation(eleopts[m].elevationControl.options); 
-                    controlElevation[m].addTo(maps[m]);
-                    controlElevation[m].loadChart(maps[m]);
+                    //controlElevation[m] = L.control.elevation(eleopts[m].elevationControl.options); 
+                    //controlElevation[m].addTo(maps[m]);
+                    //controlElevation[m].loadChart(maps[m]);
 
                     // load all tracks from array
                     traces[m] = [];
                     tracks[m] = phptracks.tracks; 
-                
-                    var i = 0;
-                    for (var track in tracks[m]) {
-                        loadTrace(m, track, i++)
-                    } 
+
+                    var showalltracks = true;
+                    grouptracks[m] = [];
+                    var routes; // für mehrfache noch anpassen
+
+                    if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks == true) {
+                        var i = 0;
+                        for (var track in tracks[m]) {
+                            grouptracks[m][i] = tracks[m][track].url;
+                            i++;
+                        };
+
+                        window.setTimeout( function() {
+                            m = 0;
+                            routes = L.gpxGroup(grouptracks[m], {
+                                elevation: true,
+                                elevation_options: eleopts[m].elevationControl.options,
+                                legend: true,
+                                legend_options: {
+                                    position: "bottomright",
+                                    collapsed: false,
+                                  },
+                                distanceMarkers: false,
+                            });
+                            routes.addTo(maps[m]);
+                          
+                        }, 1000 );
+                        
+                        window.setTimeout( function() {  
+                            m = 0; 
+                            bounds[m] = maps[m].getBounds().pad(-0.15); // 0 .. -0.5 possible: -0.2 best
+                        }, 1500 );
+
+                    } else {
+                        var i = 0;
+                        for (var track in tracks[m]) {
+                            loadTrace(m, track, i++)
+                        } 
+                    }
                 }
 
                 // change elevation chart on change
@@ -346,7 +381,7 @@
                     if (marker.length > 0) {
                         mrk[m] = marker;
                         //LayerSupportGroup.checkIn([group1]); 
-                        controlLayer[m].addOverlay(group1[m], 'Fotos (' + j + ')');    
+                        //controlLayer[m].addOverlay(group1[m], 'Fotos (' + j + ')');    
                         group1[m].addTo(maps[m]); 
                     
                         if(bounds[m].length == 0) {
