@@ -292,7 +292,26 @@
                         window.setTimeout( function() {  
                             m = 0; 
                             bounds[m] = maps[m].getBounds().pad(-0.15); // 0 .. -0.5 possible: -0.2 best
+                            // Select the node that will be observed for mutations
+                            const targetNode = document.getElementsByClassName('leaflet-bottom')[1];
+                            
+                            // Options for the observer (which mutations to observe)
+                            const config = { childList: true, subtree: true, attributes:true };
+
+                            // Callback function to execute when mutations are observed
+                            const callback = function(mutationsList, observer) {
+                                // Use traditional 'for loops' for IE 11
+                                console.log('elevation changed');
+                            };
+
+                            // Create an observer instance linked to the callback function
+                            const observer = new MutationObserver(callback);
+
+                            // Start observing the target node for configured mutations
+                            observer.observe(targetNode, config);
                         }, 1500 );
+
+                        
 
                     } else {
                         var i = 0;
