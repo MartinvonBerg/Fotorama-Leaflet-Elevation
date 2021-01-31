@@ -333,7 +333,7 @@ L.GpxGroup = L.Class.extend({
       for (var i in route._layers) {
         this.highlight(route, route._layers[i]);
       }
-      map.flyToBounds(e.layer.getBounds());
+      //this._map.flyToBounds(e.layer.getBounds());
     }
     e.input.scrollIntoView({
       behavior: 'smooth'

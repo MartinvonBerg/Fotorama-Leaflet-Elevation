@@ -10,12 +10,12 @@
         var mobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
         var fotorama = new Array();
         var phpvars = new Array();
-        var circlemarker = new Array();
+        var circlemarker = new Array(); // weg
         var storemarker = new Array();
         var newmarker = new Array();
         var mrk = new Array(); 
         
-        // Icons definieren, TODO: besser als Klasse und als LOOP, abhängig von der Anzahl der Kategorien!
+        // Icons definieren
         if ( numberOfMaps > 0) {
             var myIcon1 = L.icon({ 
                 iconUrl: wpfm_phpvars0.imagepath + "photo.png",
@@ -45,7 +45,7 @@
                 shadowAnchor: [16, 32],
             });
 
-            var opts = { // Kartenoptionen definieren : können NICHT für alle Karten gleich sein
+            var opts = { // Kartenoptionen definieren 
                 map: {
                     center: [41.4583, 12.7059],
                     zoom: 5,
@@ -88,7 +88,7 @@
             var tracks = new Array();
             var grouptracks = [];  
             var group1 = new Array();
-            //let marker = new Array();
+            var showalltracks = true;
 
             $(document).ready(function() {
                 // get height
@@ -186,7 +186,7 @@
                 }  
 
                 maps[m] = new L.Map('map' + m, opts.map); 
-                maps[m].addLayer(baseLayers[m].OpenTopoMap);
+                maps[m].addLayer(baseLayers[m].OpenTopoMap); // ändern bei multitrack
                 bounds[m] = maps[m].getBounds;  
             
                 // create scale control top left // mobile: zoom deactivate. use fingers!
@@ -233,15 +233,16 @@
                 // create Track selector bottom right
                 baseLayers2[m] = {};
                 if (parseInt(phptracks.ngpxfiles) > 0) {
-                    //controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
-                    //controlLayer2[m].setPosition('bottomright')
-                    //controlLayer2[m].addTo(maps[m]);
+                    if (showalltracks == false) {
+                        controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
+                        controlLayer2[m].setPosition('bottomright')
+                        controlLayer2[m].addTo(maps[m]);
+                    }
 
                     // create elevation chart(s) -----------------------
                     eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
                         elevationControl: {
-                        //data: glob_leaf_gpxfile,
-                        options: {
+                          options: {
                             theme: phptracks.eletheme, // CHANGE: theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
                             elevationDiv: "#elevation-div" + m, // zähler verwenden
                             detachedView: true,
@@ -249,25 +250,25 @@
                             downloadLink:false,
                             followMarker: false,
                             skipNullZCoords: true,
-                            legend: false,
+                            legend: true,
                         },
                         }
                     };
-                    
-                    //controlElevation[m] = L.control.elevation(eleopts[m].elevationControl.options); 
-                    //controlElevation[m].addTo(maps[m]);
-                    //controlElevation[m].loadChart(maps[m]);
-
+                    if (showalltracks == false) {
+                        controlElevation[m] = L.control.elevation(eleopts[m].elevationControl.options); 
+                        controlElevation[m].addTo(maps[m]);
+                        controlElevation[m].loadChart(maps[m]);
+                    }    
                     // load all tracks from array
                     traces[m] = [];
-                    tracks[m] = phptracks.tracks; 
-
-                    var showalltracks = true;
-                    grouptracks[m] = [];
-                    var routes; // für mehrfache noch anpassen
+                    tracks[m] = phptracks.tracks;                     
 
                     if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks == true) {
+                        grouptracks[m] = [];
+                        var routes; // für mehrfache noch anpassen
                         var i = 0;
+                        var subroutes = [];
+
                         for (var track in tracks[m]) {
                             grouptracks[m][i] = tracks[m][track].url;
                             i++;
@@ -286,7 +287,7 @@
                                 distanceMarkers: false,
                             });
                             routes.addTo(maps[m]);
-                          
+                            
                         }, 1000 );
                         
                         window.setTimeout( function() {  
@@ -299,9 +300,52 @@
                             const config = { childList: true, subtree: true, attributes:true };
 
                             // Callback function to execute when mutations are observed
-                            const callback = function(mutationsList, observer) {
-                                // Use traditional 'for loops' for IE 11
-                                console.log('elevation changed');
+                            const callback = function() {
+                                let div = document.getElementsByClassName('leaflet-control-layers-base');
+                                let len = div[1].childElementCount;
+                                let activetrack = 0;
+                                let track = '';
+                                var keyarray = Object.keys(routes._routes);
+                                //let endstyle = '';;
+
+                                for (var c = 0; c < len; c++){
+                                    let child = div[1].children[c].children[0].children[1];
+                                    //let html = child.outerHTML;
+                                    let style = child.attributes.style;
+                                    if (style) {
+                                        style = child.attributes.style.nodeValue;
+                                        if (style.search('font-weight') > -1) {
+                                            activetrack = c;    
+                                            track = child.innerText;
+                                            track = track.trim();
+                                            //endstyle = style;
+                                            //routes._routes[85]._info.desc
+                                        }
+                                    }       
+                                 }
+
+                                 keyarray.forEach(key => {
+                                    //
+                                    let info = routes._routes[key]._info.desc;
+                                    let name = routes._routes[key]._info.name;
+                                    let q = document.querySelector.bind(document);
+                                    
+                                    if (name == track) {
+                                        if ( info) { 
+                                            info = info.split(' '); 
+                                            if (parseFloat(info.includes[1]) != NaN) {
+                                                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = info[1] + " km";
+                                            } 
+                                            if (parseFloat(info.includes[4]) != NaN) {
+                                                q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + info[4] + " m";
+                                            } 
+                                            if (parseFloat(info.includes[7]) != NaN) {
+                                                q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + info[7] + " m";
+                                            } 
+                                        }
+                                    }
+                                 });
+                                 //console.log('Nr ' + activetrack + ' : ' + track + ' : ' + endstyle + ' is avtive');
                             };
 
                             // Create an observer instance linked to the callback function
@@ -309,9 +353,7 @@
 
                             // Start observing the target node for configured mutations
                             observer.observe(targetNode, config);
-                        }, 1500 );
-
-                        
+                        }, 1500 ); 
 
                     } else {
                         var i = 0;
@@ -400,7 +442,7 @@
                     if (marker.length > 0) {
                         mrk[m] = marker;
                         //LayerSupportGroup.checkIn([group1]); 
-                        //controlLayer[m].addOverlay(group1[m], 'Fotos (' + j + ')');    
+                        controlLayer[m].addOverlay(group1[m], 'Fotos (' + j + ')');    
                         group1[m].addTo(maps[m]); 
                     
                         if(bounds[m].length == 0) {
@@ -416,7 +458,7 @@
             }
         } // end for m maps
         
-        // jQuery fotorama funktionen for fullscreen and map interaction
+        // jQuery fotorama functions for fullscreen and map interaction
         if ( numberOfFotorama > 0) {
             if (numberOfMaps > 0) {
                 $('.fotorama').on('fotorama:showend fotorama:load',
@@ -547,11 +589,11 @@
                 if (parseFloat(info.includes[1]) != NaN) {
                     q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = info[1] + " km";
                 } 
-                if (parseFloat(info.includes[3]) != NaN) {
-                    q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + info[3] + " m";
+                if (parseFloat(info.includes[4]) != NaN) {
+                    q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + info[4] + " m";
                 } 
-                if (parseFloat(info.includes[5]) != NaN) {
-                    q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + info[5] + " m";
+                if (parseFloat(info.includes[7]) != NaN) {
+                    q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + info[7] + " m";
                 } 
             } else {
                 q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
