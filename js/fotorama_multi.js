@@ -186,7 +186,11 @@
                 }  
 
                 maps[m] = new L.Map('map' + m, opts.map); 
-                maps[m].addLayer(baseLayers[m].OpenTopoMap); // ändern bei multitrack
+                if (numberOfMaps == 1 && showalltracks){
+                    maps[m].addLayer(baseLayers[m].OpenStreetMap); 
+                } else {
+                maps[m].addLayer(baseLayers[m].OpenTopoMap); 
+                }
                 bounds[m] = maps[m].getBounds;  
             
                 // create scale control top left // mobile: zoom deactivate. use fingers!
@@ -233,12 +237,6 @@
                 // create Track selector bottom right
                 baseLayers2[m] = {};
                 if (parseInt(phptracks.ngpxfiles) > 0) {
-                    if (showalltracks == false) {
-                        controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
-                        controlLayer2[m].setPosition('bottomright')
-                        controlLayer2[m].addTo(maps[m]);
-                    }
-
                     // create elevation chart(s) -----------------------
                     eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
                         elevationControl: {
@@ -254,11 +252,16 @@
                         },
                         }
                     };
+
                     if (showalltracks == false) {
+                        controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
+                        controlLayer2[m].setPosition('bottomright')
+                        controlLayer2[m].addTo(maps[m]);
                         controlElevation[m] = L.control.elevation(eleopts[m].elevationControl.options); 
                         controlElevation[m].addTo(maps[m]);
                         controlElevation[m].loadChart(maps[m]);
-                    }    
+                    }  
+                      
                     // load all tracks from array
                     traces[m] = [];
                     tracks[m] = phptracks.tracks;                     
@@ -267,14 +270,16 @@
                         grouptracks[m] = [];
                         var routes; // für mehrfache noch anpassen
                         var i = 0;
-                        var subroutes = [];
 
                         for (var track in tracks[m]) {
                             grouptracks[m][i] = tracks[m][track].url;
                             i++;
                         };
 
-                        window.setTimeout( function() {
+                        //window.setTimeout( function() { // test: load, loaded, route_loaded, idle, initHooks_called, plugins_loaded, initHooks_called
+                        // leaflet.min.js Z.4807 _tileReady :: fire: load, tileload
+                        //maps[0].on('plugins_loaded', function() {
+                        //maps[0].whenReady( function() {
                             m = 0;
                             routes = L.gpxGroup(grouptracks[m], {
                                 elevation: true,
@@ -287,39 +292,43 @@
                                 distanceMarkers: false,
                             });
                             routes.addTo(maps[m]);
-                            
-                        }, 1000 );
+                           
+                        //});   
+                        //, 1000 );
+
+                        // Preload a default chart / track.
+                        //routes.on( 'load', function( e ) {
+                            // https://github.com/Raruto/leaflet-elevation/issues/7
+                        //    m = 0;
+                        //});
                         
-                        window.setTimeout( function() {  
+                        //window.setTimeout( function(e) { 
+                        maps[0].on( 'eledata_added eledata_clear', function() {
                             m = 0; 
-                            bounds[m] = maps[m].getBounds().pad(-0.15); // 0 .. -0.5 possible: -0.2 best
+                            //maps[m].zoomOut(1);
+                            bounds[m] = maps[m].getBounds(); //pad(-0.3); // 0 .. -0.5 possible: -0.2 best
+
                             // Select the node that will be observed for mutations
                             const targetNode = document.getElementsByClassName('leaflet-bottom')[1];
-                            
                             // Options for the observer (which mutations to observe)
                             const config = { childList: true, subtree: true, attributes:true };
-
                             // Callback function to execute when mutations are observed
                             const callback = function() {
                                 let div = document.getElementsByClassName('leaflet-control-layers-base');
                                 let len = div[1].childElementCount;
-                                let activetrack = 0;
                                 let track = '';
                                 var keyarray = Object.keys(routes._routes);
                                 //let endstyle = '';;
 
                                 for (var c = 0; c < len; c++){
                                     let child = div[1].children[c].children[0].children[1];
-                                    //let html = child.outerHTML;
+                                 
                                     let style = child.attributes.style;
                                     if (style) {
                                         style = child.attributes.style.nodeValue;
                                         if (style.search('font-weight') > -1) {
-                                            activetrack = c;    
                                             track = child.innerText;
                                             track = track.trim();
-                                            //endstyle = style;
-                                            //routes._routes[85]._info.desc
                                         }
                                     }       
                                  }
@@ -329,7 +338,7 @@
                                     let info = routes._routes[key]._info.desc;
                                     let name = routes._routes[key]._info.name;
                                     let q = document.querySelector.bind(document);
-                                    
+
                                     if (name == track) {
                                         if ( info) { 
                                             info = info.split(' '); 
@@ -347,12 +356,18 @@
                                  });
                                  //console.log('Nr ' + activetrack + ' : ' + track + ' : ' + endstyle + ' is avtive');
                             };
-
                             // Create an observer instance linked to the callback function
                             const observer = new MutationObserver(callback);
-
                             // Start observing the target node for configured mutations
                             observer.observe(targetNode, config);
+
+                            // Select a default track ( 0 = first element ).
+                            var i = 0; // ALTERNATIVE: tracks.indexOf( "tracks/20130922.gpx" );
+                            var route = routes[Object.keys( routes )[i]];
+
+                            // Select chart.
+                            //L.gpxGroup.setSelection( route );
+
                         }, 1500 ); 
 
                     } else {
