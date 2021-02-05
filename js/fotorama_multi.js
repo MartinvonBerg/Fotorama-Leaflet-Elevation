@@ -185,6 +185,8 @@
                     "Satellit": layer4[m]
                 }  
 
+                var mylocale = setlang();
+
                 maps[m] = new L.Map('map' + m, opts.map); 
                 if (numberOfMaps == 1 && showalltracks){
                     maps[m].addLayer(baseLayers[m].OpenStreetMap); 
@@ -210,7 +212,7 @@
                         img.style.width = '32px';
                         img.style.height = '32px';
                         img.style.cursor = 'pointer';
-                        img.title = 'Alles anzeigen';
+                        img.title = L._('Show all');
                         img.id = m;
                         img.onclick = function (e) {
                             let m = parseInt(e.srcElement.id);
@@ -267,6 +269,7 @@
                     tracks[m] = phptracks.tracks;                     
 
                     if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks == true) {
+                        m = 0;
                         grouptracks[m] = [];
                         var routes; // für mehrfache noch anpassen
                         var i = 0;
@@ -275,27 +278,39 @@
                             grouptracks[m][i] = tracks[m][track].url;
                             i++;
                         };
+                    
+                        routes = L.gpxGroup(grouptracks[m], {
+                            elevation: true,
+                            elevation_options: eleopts[m].elevationControl.options,
+                            legend: true,
+                            legend_options: {
+                                position: "bottomright",
+                                collapsed: false,
+                            },
+                            distanceMarkers: false,
+                        });
 
-                        //window.setTimeout( function() { // test: load, loaded, route_loaded, idle, initHooks_called, plugins_loaded, initHooks_called
-                        // leaflet.min.js Z.4807 _tileReady :: fire: load, tileload
-                        //maps[0].on('plugins_loaded', function() {
-                        //maps[0].whenReady( function() {
-                            m = 0;
-                            routes = L.gpxGroup(grouptracks[m], {
-                                elevation: true,
-                                elevation_options: eleopts[m].elevationControl.options,
-                                legend: true,
-                                legend_options: {
-                                    position: "bottomright",
-                                    collapsed: false,
-                                  },
-                                distanceMarkers: false,
-                            });
-                            routes.addTo(maps[m]);
+                        routes.once('loaded', function(e) {
+                            
+                            // Select a default track ( 0 = first element ).
+                            var i = 0; // ALTERNATIVE: tracks.indexOf( "tracks/20130922.gpx" );
+                            var route = routes[Object.keys( routes )[i]];
+                            // Select chart.
+                            var sel= routes.getSelection();
+                          
+                        });
+
+                        routes.addTo(maps[m]);
+                        bounds[m] = maps[m].getBounds();
+
+                        window.setTimeout( function(e) { 
+                            maps[0].zoomOut(1); // nur mit m=0, da zu Anfang geladen, kein Event gefunden map.on('load') geht nicht
+                            var elem = document.getElementsByClassName('leaflet-control-layers-base')[1].children[0].childNodes[0];
+                            elem.dispatchEvent(new Event('onclick'));
+                            // Select chart.
+                            //L.GpxGroup.setSelection( route );
+                        }, 1000);
                            
-                        //});   
-                        //, 1000 );
-
                         // Preload a default chart / track.
                         //routes.on( 'load', function( e ) {
                             // https://github.com/Raruto/leaflet-elevation/issues/7
@@ -303,9 +318,8 @@
                         //});
                         
                         //window.setTimeout( function(e) { 
-                        maps[0].on( 'eledata_added eledata_clear', function() {
+                        maps[0].on( 'eledata_loaded eledata_added eledata_clear', function() {
                             m = 0; 
-                            //maps[m].zoomOut(1);
                             bounds[m] = maps[m].getBounds(); //pad(-0.3); // 0 .. -0.5 possible: -0.2 best
 
                             // Select the node that will be observed for mutations
@@ -343,13 +357,13 @@
                                         if ( info) { 
                                             info = info.split(' '); 
                                             if (parseFloat(info.includes[1]) != NaN) {
-                                                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = info[1] + " km";
+                                                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km";
                                             } 
                                             if (parseFloat(info.includes[4]) != NaN) {
-                                                q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + info[4] + " m";
+                                                q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
                                             } 
                                             if (parseFloat(info.includes[7]) != NaN) {
-                                                q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + info[7] + " m";
+                                                q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
                                             } 
                                         }
                                     }
@@ -361,14 +375,10 @@
                             // Start observing the target node for configured mutations
                             observer.observe(targetNode, config);
 
-                            // Select a default track ( 0 = first element ).
-                            var i = 0; // ALTERNATIVE: tracks.indexOf( "tracks/20130922.gpx" );
-                            var route = routes[Object.keys( routes )[i]];
-
                             // Select chart.
                             //L.gpxGroup.setSelection( route );
 
-                        }, 1500 ); 
+                        } ); 
 
                     } else {
                         var i = 0;
@@ -457,7 +467,7 @@
                     if (marker.length > 0) {
                         mrk[m] = marker;
                         //LayerSupportGroup.checkIn([group1]); 
-                        controlLayer[m].addOverlay(group1[m], 'Fotos (' + j + ')');    
+                        controlLayer[m].addOverlay(group1[m], L._('Images') + '(' + j + ')');    
                         group1[m].addTo(maps[m]); 
                     
                         if(bounds[m].length == 0) {
@@ -602,20 +612,56 @@
                 info = info.split(' '); 
                 // TODO: ascent / descent calculation is wrong. Mine is better
                 if (parseFloat(info.includes[1]) != NaN) {
-                    q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = info[1] + " km";
+                    q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km";
                 } 
                 if (parseFloat(info.includes[4]) != NaN) {
-                    q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + info[4] + " m";
+                    q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
                 } 
                 if (parseFloat(info.includes[7]) != NaN) {
-                    q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + info[7] + " m";
+                    q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
                 } 
             } else {
-                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
-                q('#data-summary'+m+' .gain .summaryvalue').innerHTML = "+" + trace.gpx.get_elevation_gain().toFixed(0) + " m";
-                q('#data-summary'+m+' .loss .summaryvalue').innerHTML = "-" + trace.gpx.get_elevation_loss().toFixed(0) + " m";
+                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': '  + (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
+                q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = L._('Ascent')   + ': +' + trace.gpx.get_elevation_gain().toFixed(0) + " m";
+                q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = L._('Descent')  + ': -' + trace.gpx.get_elevation_loss().toFixed(0) + " m";
             }
         }
+
+        function setlang() {
+            let de = {
+                'Show all' : "Alles anzeigen",
+                'Distance' : "Strecke",
+                "Ascent"   : "Anstieg",
+                "Descent"  : "Abstieg",
+                "Altitude" : "Höhe", // is in file /src/altitude.js
+                "Images"   : "Fotos",
+            };
+
+            let it = {
+                'Show all' : "Mostra Tutti",
+                'Distance' : "Distanza",
+                "Ascent"   : "Salita",
+                "Descent"  : "Discesa",
+                "Altitude" : "Altitudine", // is in file /src/altitude.js
+                "Images"   : "Foto",
+            };
+
+            let fr = {
+                'Show all' : "Afficher Tout",
+                'Distance' : "Distance",
+                "Ascent"   : "Ascente",
+                "Descent"  : "Descente",
+                "Altitude" : "Altitude", // is in file /src/altitude.js
+                "Images"   : "Images",
+            };
+
+            var lang = navigator.language;
+            lang = lang.split('-')[0];
+
+            L.registerLocale(lang, eval(lang) );
+            L.setLocale(lang);
+            return mylocale;
+        };
  
     }
 })(document, jQuery);

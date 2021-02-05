@@ -349,13 +349,13 @@ function showmulti($attr, $content = null)
 		if ($i > 0) { // number of gpxtracks at least 1 !
 			$htmlstring  .= '<div id="data-summary'.strval($shortcodecounter) .'" class="data-summary">';
 			$htmlstring  .= '<span class="totlen">';
-			$htmlstring  .= '<span class="summarylabel">Strecke: </span>';
+			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span></span> ';
 			$htmlstring  .= '<span class="gain">';
-			$htmlstring  .= '<span class="summarylabel">Anstieg: </span>';
+			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> ';
 			$htmlstring  .= '<span class="loss">';
-			$htmlstring  .= '<span class="summarylabel">Abstieg: </span>';
+			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> </div>';
 		}
 		// ------------------------
