@@ -77,6 +77,7 @@ class FotoramaElevation {
 				$example = '[fotomulti imgpath="' . $this->fotorama_elevation_options['path_to_images_for_fotorama_0'] . '" ';
 				$example.= 'gpxpath="' .            $this->fotorama_elevation_options['path_to_gpx_files_2'] . '" ';
 				$example.= 'gpxfile="test.gpx" ';
+				$example.= 'showalltracks="false" ';
 				$example.= 'mapheight="' .          $this->fotorama_elevation_options['height_of_map_10'] . '" ';
 				$example.= 'chartheight="' .        $this->fotorama_elevation_options['height_of_chart_11'] . '" ';
 				$example.= 'dload="' .              $this->fotorama_elevation_options['download_gpx_files_3'] . '" ';
@@ -88,7 +89,9 @@ class FotoramaElevation {
 				$example.= 'maxwidth="' .           $this->fotorama_elevation_options['max_width_of_container_12'] . '" ';
 				$example.= 'showcaption="' .        $this->fotorama_elevation_options['show_caption_4'] . '" ';
 				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '"] ';
-		
+				$example.= 'mapcenter="48.12,12.35" ';
+				$example.= 'zoom="8" ';
+				$example.= 'markertext="My Address"';
 			 	echo $example;
 			?></p>
 
@@ -119,13 +122,25 @@ class FotoramaElevation {
 				<td class="tg-0pky">gpxpath</td>
 				<td class="tg-0pky">gpx</td>
 				<td class="tg-0pky">gpxpath="gpx"</td>
-				<td class="tg-0pky">Path to file with GPX-Track(s) relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/gpx</td>
+				<td class="tg-0pky">Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/gpx</td>
 			</tr>
 			<tr>
 				<td class="tg-0pky">gpxfile</td>
 				<td class="tg-0pky">'' / test.gpx</td>
 				<td class="tg-0pky">gpxfile="test.gpx"</td>
-				<td class="tg-0pky">File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx</td>
+				<td class="tg-0pky">File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: "f1.gpx, f2.gpx, f3.gpx"</td>
+			</tr>
+			<tr>
+				<td class="tg-0pky">dload</td>
+				<td class="tg-0pky">yes / no</td>
+				<td class="tg-0pky">dload="yes"</td>
+				<td class="tg-0pky">Provide download link for the GPX-Tracks, if "yes".</td>
+			</tr>
+			<tr>
+				<td class="tg-0pky">showalltracks</td>
+				<td class="tg-0pky">false / true </td>
+				<td class="tg-0pky">showalltracks="true"</td>
+				<td class="tg-0pky">Show all given tracks together in one Map. Works only with one map!. Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option.</td>
 			</tr>
 			<tr>
 				<td class="tg-0pky">mapheight</td>
@@ -140,16 +155,37 @@ class FotoramaElevation {
 				<td class="tg-0pky">Height of the leaflet elevation chart in pixels (px)</td>
 			</tr>
 			<tr>
+				<td class="tg-0pky">eletheme</td>
+				<td class="tg-0pky">lime-theme</td>
+				<td class="tg-0pky">eletheme="lime-theme"</td>
+				<td class="tg-0pky">Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. Martin-theme is my special theme.</td>
+			</tr>
+			<tr>
+				<td class="tg-0pky">mapcenter</td>
+				<td class="tg-0pky">0.0,0.0</td>
+				<td class="tg-0pky">mapcenter="48.12,12.35"</td>
+				<td class="tg-0pky">Center of the map if NO tracks are defined. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option.</td>
+			</tr>
+			<tr>
+				<td class="tg-0pky">zoom</td>
+				<td class="tg-0pky">8</td>
+				<td class="tg-0pky">zoom="8"</td>
+				<td class="tg-0pky">Zoom level for the map if NO tracks are defined. There is no admin-setting for this option.</td>
+			</tr>
+			<tr>
+				<td class="tg-0pky">markertext</td>
+				<td class="tg-0pky">Home Address</td>
+				<td class="tg-0pky">markertext="My Address"</td>
+				<td class="tg-0pky">Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option.</td>
+			</tr>
+			<tr>
+			<td class="tg-0pky">Fotorama</td><td></td><td></td><td></td>
+			</tr>
+			<tr>
 				<td class="tg-0pky">imgpath</td>
 				<td class="tg-0pky">Bilder</td>
 				<td class="tg-0pky">imgpath="Bilder"</td>
 				<td class="tg-0pky">Path the images relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/galleries/holiday2020</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">dload</td>
-				<td class="tg-0pky">yes / no</td>
-				<td class="tg-0pky">dload="yes"</td>
-				<td class="tg-0pky">Provide download link for the GPX-Tracks, if "yes".</td>
 			</tr>
 			<tr>
 				<td class="tg-0pky">alttext</td>
@@ -193,12 +229,7 @@ class FotoramaElevation {
 				<td class="tg-0pky">showcaption="true"</td>
 				<td class="tg-0pky">Show the caption in the fotorama slider</td>
 			</tr>
-			<tr>
-				<td class="tg-0pky">eletheme</td>
-				<td class="tg-0pky">lime-theme</td>
-				<td class="tg-0pky">eletheme="lime-theme"</td>
-				<td class="tg-0pky">Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. Martin-theme is my special theme.</td>
-			</tr>
+		
 			</tbody>
 			</table>
 

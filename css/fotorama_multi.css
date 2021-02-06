@@ -3,6 +3,14 @@
 #map0_img {display: none;}
 /*#map0 { border-top: 1px solid lightslategray; padding-top: 8px;}*/
 
+/*------------- grid -----------------------*/
+.grid {
+  display: grid;
+  /*grid-template-columns: 1fr minmax(auto, 45%);*/
+  grid-template-columns: repeat(auto-fit, minmax(25em, 1fr));
+  grid-gap: 10px;
+}
+
 /*------------- fotorama -----------------------*/
 .fotorama__nav__shaft {
   margin-bottom: 5px;

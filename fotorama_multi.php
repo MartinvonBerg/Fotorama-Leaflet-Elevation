@@ -24,7 +24,7 @@ defined('ABSPATH') || die('Are you ok?');
 const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. But where?
 
 // load globals and functions for status transitions only if needed or intended
-const setCustomFields = false;
+const setCustomFields = true;
 if (setCustomFields) {
 	require_once __DIR__ . '/inc/stateTransitions.php';
 }
@@ -83,6 +83,10 @@ function showmulti($attr, $content = null)
 		'maxwidth' => $fotorama_elevation_options['max_width_of_container_12'] ?? '600', // grid verwenden bei großer Breite
 		'showcaption' => $fotorama_elevation_options['show_caption_4'] ?? 'true',
 		'eletheme' => $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'], // theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
+		'showalltracks' => 'false',
+		'mapcenter' => "0, 0", // admin setting einführen
+		'zoom' => 8,					// admin setting einführen
+		'markertext' => 'Home address',
 	), $attr));
 
 	// Detect Language of Website and set the Javascript-Variable for the Language used in GPXViewer
@@ -91,6 +95,8 @@ function showmulti($attr, $content = null)
 	if (!in_array($lang, $languages)) {
 		$lang = "en";
 	}
+
+	$mapcenter = explode(',',$mapcenter);
 
 	// Define path and url variables
 	$up_url = gpxview_get_upload_dir('baseurl');  // upload_url
@@ -282,7 +288,7 @@ function showmulti($attr, $content = null)
 	}
 
 	// Generate the html-code start with the surrounding Div
-	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' style="max-width:'. $maxwidth .'px;">';
+	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' class="grid" style="max-width:'. $maxwidth .'px;">';
 	$imgnr = 1;
 
 	// Generate Fotorama images for fotorama-javascript-rendering
@@ -357,17 +363,16 @@ function showmulti($attr, $content = null)
 			$htmlstring  .= '<span class="loss">';
 			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> </div>';
+			// ------------------------
+			$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" style="height:'. $chartheight .'px;" class="leaflet-control elevation"></div>';
 		}
-		// ------------------------
-		$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" style="height:'. $chartheight .'px;" class="leaflet-control elevation"></div>';
 		$htmlstring  .= '</div>';
-	
 	}
 	// close all html-divs
-	//$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
-
+	$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
+	$htmlstring  .= '<div>';
 	// provide GPX-download if defined
-	if ($dload == 'true')  {
+	if ( ($dload == 'true') and ($i > 0))  {
 		if ($i == 1) {
 			$htmlstring .= '<p><strong>Download GPX-Datei: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></strong></p>';
 		} else {
@@ -411,9 +416,9 @@ function showmulti($attr, $content = null)
 			$htmlstring .= '<p>'. $v2 . '</p>';
 		}
 	}
-
+	$htmlstring  .= '</div>';
 	// close all html-divs
-	$htmlstring  .= '</div><!--div id=box'.$shortcodecounter.'-->';
+	//$htmlstring  .= '</div><!--div id=box'.$shortcodecounter.'-->';
 	
 	// pass php variabls to javascript-file for fotorama
 	wp_localize_script('fm_script9', 'wpfm_phpvars' . $shortcodecounter, array(
@@ -422,9 +427,12 @@ function showmulti($attr, $content = null)
 		'imgdata' => $phpimgdata ?? [],
 		'tracks' => $tracks,
 		'eletheme' => $eletheme,
+		'showalltracks' => $showalltracks,
+		'mapcenter' => $mapcenter,
+		'zoom' => $zoom,
+		'markertext' => $markertext,
  		) 
 	);
-
 
 	$shortcodecounter++;
 	return $htmlstring;
@@ -451,7 +459,7 @@ function fotomulti_scripts()
 	// Load Scripts
 	wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '3.1.0', true);
 
-	wp_enqueue_script('fm-script3', "https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js", array('jquery'), '3.1.0', true); // does not work with d3 > version 6.0 !
+	wp_enqueue_script('fm-script3', "https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js", array('jquery'), '3.1.0', true); // does not work with d3 > version 6.0 !
 	wp_enqueue_script('fm-script2', "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js", array('jquery'), '3.1.0', true);
 	
 	wp_enqueue_script('fm-script4', "https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.5.0/gpx.min.js", array('jquery'), '3.1.0', true);

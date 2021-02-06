@@ -14,6 +14,9 @@
         var storemarker = new Array();
         var newmarker = new Array();
         var mrk = new Array(); 
+
+        var showalltracks = (wpfm_phpvars0.showalltracks === 'true');
+        if (numberOfMaps>1 && showalltracks) {showalltracks = false;}
         
         // Icons definieren
         if ( numberOfMaps > 0) {
@@ -88,14 +91,11 @@
             var tracks = new Array();
             var grouptracks = [];  
             var group1 = new Array();
-            var showalltracks = true;
 
             $(document).ready(function() {
                 // get height
-                //var chartheight = jQuery('#elevation-div0').clientHeight;
                 var chartheight = document.getElementById('elevation-div0').clientHeight;
                 $('.elevation-control.elevation .background').css("height", chartheight);
-                //console.log(chartheight);
             });
         }
         
@@ -154,6 +154,12 @@
                 // get js-variable from php-output
                 let phptracks = eval('wpfm_phpvars'+m);
 
+                //get options for maps without tracks
+                if ( (parseInt(phptracks.ngpxfiles) == 0) && (! hasFotorama) ) {
+                    opts.map.center = phptracks.mapcenter;
+                    opts.map.zoom = phptracks.zoom;
+                }
+
                 // Kartenlayer definieren 
                 layer1[m] = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
@@ -184,7 +190,7 @@
                     "Bike-Hike-Map": layer3[m],
                     "Satellit": layer4[m]
                 }  
-
+                // set the language strings
                 var mylocale = setlang();
 
                 maps[m] = new L.Map('map' + m, opts.map); 
@@ -251,6 +257,17 @@
                             followMarker: false,
                             skipNullZCoords: true,
                             legend: true,
+                            lazyLoadJS: false,
+                            loadData: {
+                                defer: true,
+                                lazy: true,
+                            },
+                            margins: {
+                                top: 10,
+                                right: 20,
+                                bottom: 10,
+                                left: 50
+                            },
                         },
                         }
                     };
@@ -270,6 +287,22 @@
 
                     if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks == true) {
                         m = 0;
+                        // create elevation chart(s) options different from single-track options -----------------------
+                        eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
+                            elevationControl: {
+                                options: {
+                                    theme: phptracks.eletheme, 
+                                    summary:false,
+                                    margins: {
+                                        top: 15,
+                                        right: 20,
+                                        bottom: 10,
+                                        left: 50
+                                    },
+                                },
+                            }
+                        };
+                        
                         grouptracks[m] = [];
                         var routes; // für mehrfache noch anpassen
                         var i = 0;
@@ -289,35 +322,23 @@
                             },
                             distanceMarkers: false,
                         });
-
-                        routes.once('loaded', function(e) {
-                            
-                            // Select a default track ( 0 = first element ).
-                            var i = 0; // ALTERNATIVE: tracks.indexOf( "tracks/20130922.gpx" );
-                            var route = routes[Object.keys( routes )[i]];
-                            // Select chart.
-                            var sel= routes.getSelection();
-                          
-                        });
-
+                   
                         routes.addTo(maps[m]);
                         bounds[m] = maps[m].getBounds();
 
                         window.setTimeout( function(e) { 
                             maps[0].zoomOut(1); // nur mit m=0, da zu Anfang geladen, kein Event gefunden map.on('load') geht nicht
-                            var elem = document.getElementsByClassName('leaflet-control-layers-base')[1].children[0].childNodes[0];
-                            elem.dispatchEvent(new Event('onclick'));
-                            // Select chart.
-                            //L.GpxGroup.setSelection( route );
+
+                            // Did not managa that: Preload a default chart / track. according to https://github.com/Raruto/leaflet-elevation/issues/7
+                            // So, we are using a click event, 3 times, due to another bug. It works
+                            var elem1 = document.getElementsByClassName('leaflet-control-layers-base')[1].children[0].childNodes[0];
+                            var elem2 = document.getElementsByClassName('leaflet-control-layers-base')[1].children[1].childNodes[0];
+                            elem1.click();
+                            elem2.click();
+                            elem1.click();
+
                         }, 1000);
                            
-                        // Preload a default chart / track.
-                        //routes.on( 'load', function( e ) {
-                            // https://github.com/Raruto/leaflet-elevation/issues/7
-                        //    m = 0;
-                        //});
-                        
-                        //window.setTimeout( function(e) { 
                         maps[0].on( 'eledata_loaded eledata_added eledata_clear', function() {
                             m = 0; 
                             bounds[m] = maps[m].getBounds(); //pad(-0.3); // 0 .. -0.5 possible: -0.2 best
@@ -386,9 +407,12 @@
                             loadTrace(m, track, i++)
                         } 
                     }
+                } else {
+                    // Create simple marker
+                    L.marker(opts.map.center, { title: phptracks.markertext,}).addTo(maps[m]);
                 }
 
-                // change elevation chart on change
+                // change elevation chart on change of gpx-track
                 maps[m].on('baselayerchange', function(e) {
                     let ename = e.name;
                     let mapchange = false;
@@ -523,7 +547,6 @@
                             newmarker[m].setZIndexOffset(500);
                             newmarker[m].addTo(maps[m]);
                         }
-
                     }
                 });
             }
@@ -543,10 +566,10 @@
             });
         }
 
-        // disable right-click completely
-        //jQuery('document').contextmenu(function() {
-        //   return false;
-        //});   
+        // disable right-click for fotorama
+        $('[id^=mfotorama]').contextmenu(function() {
+           return false;
+        });   
 
         // functions for track loading
         function loadTrace(m, track, i) {
