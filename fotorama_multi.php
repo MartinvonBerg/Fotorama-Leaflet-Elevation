@@ -372,16 +372,16 @@ function showmulti($attr, $content = null)
 	// close all html-divs
 	$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
 
-	$htmlstring  .= '<div>';
+	$htmlstring  .= '<div class="fm-dload">';
 	// provide GPX-download if defined
 	if ( ($dload == 'true') and ($i > 0))  {
 		if ($i == 1) {
-			$htmlstring .= '<p><strong>Download GPX-Datei: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></strong></p>';
+			$htmlstring .= '<p><strong>Download: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></strong></p>';
 		} else {
 			$gpxf = explode(',',$gpxfile);
-			$htmlstring .= '<p><strong>Download GPX-Dateien: '; // <a download=""</a>
+			$htmlstring .= '<p><strong>Download: '; // <a download=""</a>
 			foreach ($gpxf as $f){
-				$htmlstring .= ' <a download="' . $f . '" href="' . $gpx_url . $f . '">'. $f .' --- </a>';
+				$htmlstring .= ' <a download="' . $f . '" href="' . $gpx_url . $f . '">'. $f .' - </a>';
 			}
 			$htmlstring .= '</strong></p>';
 		}

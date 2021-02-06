@@ -89,10 +89,10 @@ class FotoramaElevation {
 				$example.= 'requiregps="' .         $this->fotorama_elevation_options['images_with_gps_required_5'] . '" ';
 				$example.= 'maxwidth="' .           $this->fotorama_elevation_options['max_width_of_container_12'] . '" ';
 				$example.= 'showcaption="' .        $this->fotorama_elevation_options['show_caption_4'] . '" ';
-				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '"] ';
+				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '" ';
 				$example.= 'mapcenter="48.12,12.35" ';
 				$example.= 'zoom="8" ';
-				$example.= 'markertext="My Address"';
+				$example.= 'markertext="My Address"]';
 			 	echo $example;
 			?></p>
 

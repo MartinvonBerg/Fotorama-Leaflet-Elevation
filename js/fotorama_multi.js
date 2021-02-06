@@ -257,7 +257,7 @@
                             elevationDiv: "#elevation-div" + m, // zähler verwenden
                             detachedView: true,
                             summary: false,
-                            downloadLink:false,
+                            downloadLink:true,
                             followMarker: false,
                             skipNullZCoords: true,
                             legend: true,
@@ -410,6 +410,14 @@
                         for (var track in tracks[m]) {
                             loadTrace(m, track, i++)
                         } 
+                        /*
+                        window.setTimeout( function() {
+                            dloadtext = $('.fm-dload')[0].children[0].children[0].innerHTML;
+                            $('.fm-dload')[0].children[0].children[0].innerHTML = '';
+                            $('.elevation-summary').html(dloadtext); 
+                            $('.elevation-summary').css('margin-left', '1px');
+                        }, 1000);
+                        */
                     }
                 } else {
                     // Create simple marker
