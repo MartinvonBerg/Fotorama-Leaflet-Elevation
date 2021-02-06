@@ -1,14 +1,13 @@
-/* special CSS for the wp_fotorama_gpxviewer */
-#map0_hp { margin-top:10px; }
-#map0_img {display: none;}
-/*#map0 { border-top: 1px solid lightslategray; padding-top: 8px;}*/
+/* special CSS for the wp_fotorama_elevation */
+
 
 /*------------- grid -----------------------*/
-.grid {
-  display: grid;
-  /*grid-template-columns: 1fr minmax(auto, 45%);*/
-  grid-template-columns: repeat(auto-fit, minmax(25em, 1fr));
-  grid-gap: 10px;
+@media screen and (min-width: 480px) {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25em, 1fr)); /* change the value xxx em here for grid settings */
+    grid-gap: 10px;
+  }
 }
 
 /*------------- fotorama -----------------------*/
@@ -38,21 +37,11 @@
   box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68);
   background: #22222285; 
   }
-  .fotorama__nav--thumbs {
+.fotorama__nav--thumbs {
     background: rgb(144,144,144);
     background: linear-gradient(0deg, rgba(144,144,144,1) 0%, rgba(249,249,249,1) 91%);
   } 
-  @media only screen and (max-width:479px){
-  .fotorama__caption__wrap {
-    display:none;
-  }
-  .fotorama__caption {
-    display:none;
-  }
-  .leafmap {
-    height: 300px; 
-  }
-  }
+
 
 /*------------------ leaflet ------------------------------*/
 .boxmap {
@@ -60,9 +49,6 @@
   border-top: 1px solid lightslategray; 
   padding: 5px 5px 5px 5px; }
 
-.leafmap {
-  /*height: 400px; */
-}
 #elevation-div {
     height: 250px;
     font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;

@@ -84,6 +84,7 @@ class FotoramaElevation {
 				$example.= 'alttext="' .            $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] . '" ';
 				$example.= 'ignoresort="' .         $this->fotorama_elevation_options['ignore_custom_sort_6'] . '" ';
 				$example.= 'showadress="' .         $this->fotorama_elevation_options['show_address_of_start_7'] . '" ';
+				$example.= 'showmap="true" ';
 				$example.= 'adresstext="' .         $this->fotorama_elevation_options['text_for_start_address_8'] . '" ';
 				$example.= 'requiregps="' .         $this->fotorama_elevation_options['images_with_gps_required_5'] . '" ';
 				$example.= 'maxwidth="' .           $this->fotorama_elevation_options['max_width_of_container_12'] . '" ';
@@ -143,6 +144,24 @@ class FotoramaElevation {
 				<td class="tg-0pky">Show all given tracks together in one Map. Works only with one map!. Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option.</td>
 			</tr>
 			<tr>
+				<td class="tg-0pky">showadress</td>
+				<td class="tg-0pky">true / false</td>
+				<td class="tg-0pky">showadress="true"</td>
+				<td class="tg-0pky">Show start adress of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image.</td>
+			</tr>
+			<tr>
+				<td class="tg-0pky">adresstext</td>
+				<td class="tg-0pky">Startadresse</td>
+				<td class="tg-0pky">adresstext="Startadresse"</td>
+				<td class="tg-0pky">Text for header above start address</td>
+			</tr>
+			<tr>
+				<td class="tg-0pky">showmap</td>
+				<td class="tg-0pky">true / false</td>
+				<td class="tg-0pky">showmap="true"</td>
+				<td class="tg-0pky">Show the map, independent of other settinges. Currently no Admin setting for that.</td>
+			</tr>
+			<tr>
 				<td class="tg-0pky">mapheight</td>
 				<td class="tg-0pky">450</td>
 				<td class="tg-0pky">mapheight="450"</td>
@@ -199,18 +218,7 @@ class FotoramaElevation {
 				<td class="tg-0pky">ignoresort="false"</td>
 				<td class="tg-0pky">Ignore custom sort even if provided by Wordpress. If checked sort by date ascending</td>
 			</tr>
-			<tr>
-				<td class="tg-0pky">showadress</td>
-				<td class="tg-0pky">true / false</td>
-				<td class="tg-0pky">showadress="true"</td>
-				<td class="tg-0pky">Show start adress of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image. Currently also used as "show map".</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">adresstext</td>
-				<td class="tg-0pky">Startadresse</td>
-				<td class="tg-0pky">adresstext="Startadresse"</td>
-				<td class="tg-0pky">Text for header above start address</td>
-			</tr>
+		
 			<tr>
 				<td class="tg-0pky">requiregps</td>
 				<td class="tg-0pky">true / false</td>
@@ -324,7 +332,7 @@ class FotoramaElevation {
 
 		add_settings_field(
 			'show_address_of_start_7', // id
-			'Show map', // title
+			'Show Address', // title
 			array( $this, 'show_address_of_start_7_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
@@ -652,7 +660,7 @@ class FotoramaElevation {
 
 	public function show_address_of_start_7_callback() {
 		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[show_address_of_start_7]" id="show_address_of_start_7" value="show_address_of_start_7" %s> <label for="show_address_of_start_7">Show map and address of starting point (taken from the first image or GPX-coordinate in the GPX-track)</label>',
+			'<input type="checkbox" name="fotorama_elevation_option_name[show_address_of_start_7]" id="show_address_of_start_7" value="show_address_of_start_7" %s> <label for="show_address_of_start_7">Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)</label>',
 			( isset( $this->fotorama_elevation_options['show_address_of_start_7'] ) && $this->fotorama_elevation_options['show_address_of_start_7'] === 'true' ) ? 'checked' : ''
 		);
 	}

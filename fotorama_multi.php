@@ -74,18 +74,19 @@ function showmulti($attr, $content = null)
 		'mapheight' => $fotorama_elevation_options['height_of_map_10'] ?? '450',
 		'chartheight' => $fotorama_elevation_options['height_of_chart_11'] ?? '200',
 		'imgpath' => $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
-		'dload' => $fotorama_elevation_options['download_gpx_files_3'] ?? 'yes', //!!!
+		'dload' => $fotorama_elevation_options['download_gpx_files_3'] ?? 'yes', 
 		'alttext' => $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '',
-		'ignoresort' => $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', // !!! ignore custom sort even if provided by Wordpress, then sort by date ascending
-		'showadress' => $fotorama_elevation_options['show_address_of_start_7'] ??'true', // !!! wird auch als showmap genutzt
+		'ignoresort' => $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', 
+		'showadress' => $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
+		'showmap' => 'true',
 		'adresstext' => $fotorama_elevation_options['text_for_start_address_8'] ?? 'Startadresse',
 		'requiregps' => $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
-		'maxwidth' => $fotorama_elevation_options['max_width_of_container_12'] ?? '600', // grid verwenden bei großer Breite
+		'maxwidth' => $fotorama_elevation_options['max_width_of_container_12'] ?? '600', 
 		'showcaption' => $fotorama_elevation_options['show_caption_4'] ?? 'true',
-		'eletheme' => $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'], // theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
+		'eletheme' => $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'], 
 		'showalltracks' => 'false',
-		'mapcenter' => "0, 0", // admin setting einführen
-		'zoom' => 8,					// admin setting einführen
+		'mapcenter' => "0.0, 0.0", 
+		'zoom' => 8,					
 		'markertext' => 'Home address',
 	), $attr));
 
@@ -347,7 +348,7 @@ function showmulti($attr, $content = null)
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
-	if ($showadress  == 'true') {
+	if ($showmap  == 'true') {
 		$mapid = 'map' . strval($shortcodecounter); 
 		$htmlstring  .= '<div id=box' . $mapid .' class="boxmap">';
 		$htmlstring  .= '<div id="'. $mapid .'" class="leafmap" style="height:'. $mapheight .'px;"></div>';
@@ -370,6 +371,7 @@ function showmulti($attr, $content = null)
 	}
 	// close all html-divs
 	$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
+
 	$htmlstring  .= '<div>';
 	// provide GPX-download if defined
 	if ( ($dload == 'true') and ($i > 0))  {
@@ -427,6 +429,8 @@ function showmulti($attr, $content = null)
 		'imgdata' => $phpimgdata ?? [],
 		'tracks' => $tracks,
 		'eletheme' => $eletheme,
+		'mapheight' => $mapheight,
+		'chartheight' => $chartheight,
 		'showalltracks' => $showalltracks,
 		'mapcenter' => $mapcenter,
 		'zoom' => $zoom,

@@ -17,6 +17,10 @@
 
         var showalltracks = (wpfm_phpvars0.showalltracks === 'true');
         if (numberOfMaps>1 && showalltracks) {showalltracks = false;}
+
+        var chartheight = wpfm_phpvars0.chartheight;
+        var phpmapheight = wpfm_phpvars0.mapheight;
+        
         
         // Icons definieren
         if ( numberOfMaps > 0) {
@@ -571,6 +575,36 @@
            return false;
         });   
 
+        $(window).on("resize", function() {
+            var or = window.orientation;
+            var h = window.screen.availHeight;
+            var w = window.screen.availWidth;
+
+            var fotowidth = $('[id^=mfotorama]').width();
+            if (fotowidth<480) {
+                $('.fotorama__caption__wrapm, .fotorama__caption').hide();   
+            } else {
+                $('.fotorama__caption__wrapm, .fotorama__caption').show();
+            }
+
+            var leafwidth = $('[id^=boxmap]').width();
+
+            if (leafwidth<480) {  
+                $('.leaflet-control-attribution').hide();
+            } else {
+                $('.leaflet-control-attribution').show();
+            }
+
+            var eleheight = leafwidth / 3;
+            eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight); // TODO: get chartheight from admin settings for max
+            $('[id^=elevation-div]').css("height", eleheight);
+
+            var mapheight = leafwidth * 0.6;
+            mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight); // TODO: get chartheight from admin settings for max
+            $('[id^=map]').css("height", mapheight);
+         
+        }).trigger('resize');
+
         // functions for track loading
         function loadTrace(m, track, i) {
             let trace = {};
@@ -609,7 +643,6 @@
             })
 
             trace.gpx.addTo(maps[m]);
-
             traces[m].push(trace);
         }
 
