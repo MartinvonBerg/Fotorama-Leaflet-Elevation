@@ -222,8 +222,8 @@ function showmulti($attr, $content = null)
 	// on the status transition of the post from 'draft' to 'published'.
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
-	//if ($draft_2_pub)  { // TODO: anpassung für multi!!!
-	if (\current_user_can('edit_posts')) { 	
+	if ($draft_2_pub)  { // TODO: anpassung für multi!!!
+	//if (\current_user_can('edit_posts')) { 	
 		if (setCustomFields) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 		}
@@ -246,8 +246,8 @@ function showmulti($attr, $content = null)
 			if ($i == 0) {
 				$gpxfile .= $f;
 
-				//if ($draft_2_pub and setCustomFields) {
-				if (\current_user_can('edit_posts') and setCustomFields) {	
+				if ($draft_2_pub and setCustomFields) {
+				//if (\current_user_can('edit_posts') and setCustomFields) {	
 					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
 					//TODO: anpassung für multi!!!
 					$gpxdata = simplexml_load_file($gpx_url . $f);
@@ -356,18 +356,19 @@ function showmulti($attr, $content = null)
 		$htmlstring  .= '<div id="'. $mapid .'" class="leafmap" style="height:'. $mapheight .'px;"></div>';
 		// Custom Summary
 		if ($i > 0) { // number of gpxtracks at least 1 !
+			$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" style="height:'. $chartheight .'px;" class="leaflet-control elevation"></div>';
 			$htmlstring  .= '<div id="data-summary'.strval($shortcodecounter) .'" class="data-summary">';
 			$htmlstring  .= '<span class="totlen">';
 			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span></span> ';
 			$htmlstring  .= '<span class="gain">';
-			$htmlstring  .= '<span class="summarylabel"> </span>';
+			$htmlstring  .= '<span class="summarylabel">Ascent: </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> ';
 			$htmlstring  .= '<span class="loss">';
-			$htmlstring  .= '<span class="summarylabel"> </span>';
+			$htmlstring  .= '<span class="summarylabel">Descent: </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> </div>';
 			// ------------------------
-			$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" style="height:'. $chartheight .'px;" class="leaflet-control elevation"></div>';
+			
 		}
 		//$htmlstring  .= '</div>';
 	}

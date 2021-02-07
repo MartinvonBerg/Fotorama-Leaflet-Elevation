@@ -10,7 +10,7 @@
         var mobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
         var fotorama = new Array();
         var phpvars = new Array();
-        var circlemarker = new Array(); // weg
+        //var circlemarker = new Array(); // weg
         var storemarker = new Array();
         var newmarker = new Array();
         var mrk = new Array(); 
@@ -257,7 +257,7 @@
                             theme: phptracks.eletheme, // martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
                             elevationDiv: "#elevation-div" + m, 
                             detachedView: true,
-                            summary: false,
+                            summary: true,
                             downloadLink:true,
                             followMarker: false,
                             skipNullZCoords: true,
@@ -573,7 +573,14 @@
         // disable right-click for fotorama
         $('[id^=mfotorama]').contextmenu(function() {
            return false;
-        });   
+        });  
+        
+        $(window).on("pageshow",function(e){
+            let q = document.querySelector.bind(document);
+            q('[id^=elevation-div] > div > div > span.totlen > span.summarylabel').innerHTML = L._('Distance')+ ': ';
+            q('[id^=elevation-div] > div > div > span.maxele > span.summarylabel').innerHTML = L._('Ascent')+ ': ';
+            q('[id^=elevation-div] > div > div > span.minele > span.summarylabel').innerHTML = L._('Descent')+ ': ';
+        });
 
         $(window).on("resize", function() {
             var or = window.orientation;
