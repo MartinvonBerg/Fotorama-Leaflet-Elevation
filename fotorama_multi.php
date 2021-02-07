@@ -30,7 +30,7 @@ if (setCustomFields) {
 }
 
 // load the wpseo_sitemap_url-images callback to add images of post to the sitemap only if needed or intended
-const doYoastXmlSitemap = false;
+const doYoastXmlSitemap = true;
 if (doYoastXmlSitemap) {
 	require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 }
@@ -222,7 +222,8 @@ function showmulti($attr, $content = null)
 	// on the status transition of the post from 'draft' to 'published'.
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
-	if ($draft_2_pub)  { // TODO: anpassung für multi!!!
+	//if ($draft_2_pub)  { // TODO: anpassung für multi!!!
+	if (\current_user_can('edit_posts')) { 	
 		if (setCustomFields) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 		}
@@ -245,7 +246,8 @@ function showmulti($attr, $content = null)
 			if ($i == 0) {
 				$gpxfile .= $f;
 
-				if ($draft_2_pub and setCustomFields) {
+				//if ($draft_2_pub and setCustomFields) {
+				if (\current_user_can('edit_posts') and setCustomFields) {	
 					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
 					//TODO: anpassung für multi!!!
 					$gpxdata = simplexml_load_file($gpx_url . $f);
@@ -367,16 +369,16 @@ function showmulti($attr, $content = null)
 			// ------------------------
 			$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" style="height:'. $chartheight .'px;" class="leaflet-control elevation"></div>';
 		}
-		$htmlstring  .= '</div>';
+		//$htmlstring  .= '</div>';
 	}
 	// close all html-divs
-	$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
+	//$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
 
 	$htmlstring  .= '<div class="fm-dload">';
 	// provide GPX-download if defined
 	if ( ($dload == 'true') and ($i > 0))  {
 		if ($i == 1) {
-			$htmlstring .= '<p><strong>Download: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></strong></p>';
+			$htmlstring .= '<p>Download: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></p>';
 		} else {
 			$gpxf = explode(',',$gpxfile);
 			$htmlstring .= '<p><strong>Download: '; // <a download=""</a>
@@ -393,7 +395,7 @@ function showmulti($attr, $content = null)
 		if ( ! empty($geoadresstest[0]) ) {
 			$test = $geoadresstest[0]; // we need only the first index
 			$geoadress = maybe_unserialize($test);	// type conversion to array
-			$htmlstring .= '<h4>'. $adresstext .'</h4>';
+			//$htmlstring .= '<p>'. $adresstext .': </p>';
 		
 			$v = '';
 			foreach ($geoadress as $key => $value) {
@@ -415,12 +417,12 @@ function showmulti($attr, $content = null)
 			$lon = get_post_meta($postid,'lon');
 			$googleurl = 'https://www.google.com/maps/place/' . $lat[0] . ',' . $lon[0] . '/@' . $lat[0] . ',' . $lon[0] . ',9z';
 			$v2 = '<a href="' .$googleurl. '" target="_blank">'. $v .'</a>';
-			$htmlstring .= '<p>'. $v2 . '</p>';
+			$htmlstring .= '<p>'. $adresstext. ': ' .  $v2 . '</p>';
 		}
 	}
-	$htmlstring  .= '</div>';
+	$htmlstring  .= '</div></div>';
 	// close all html-divs
-	//$htmlstring  .= '</div><!--div id=box'.$shortcodecounter.'-->';
+	$htmlstring  .= '</div><!--div id=box'.$shortcodecounter.'-->';
 	
 	// pass php variabls to javascript-file for fotorama
 	wp_localize_script('fm_script9', 'wpfm_phpvars' . $shortcodecounter, array(

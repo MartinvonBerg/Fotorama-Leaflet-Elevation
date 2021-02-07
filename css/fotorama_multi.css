@@ -5,7 +5,7 @@
 @media screen and (min-width: 480px) {
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(25em, 1fr)); /* change the value xxx em here for grid settings */
+    grid-template-columns: repeat(auto-fit, minmax(30em, 1fr)); /* change the value xxx em here for grid settings */
     grid-gap: 10px;
   }
 }
@@ -45,15 +45,19 @@
 
 /*------------------ leaflet ------------------------------*/
 .boxmap {
-  border-bottom: 1px solid lightslategray; 
   border-top: 1px solid lightslategray; 
-  padding: 5px 5px 5px 5px; }
+  padding: 5px 5px 5px 5px; 
+}
 
-#elevation-div {
-    height: 250px;
-    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
-    /*margin-top: 22px;*/
-  }
+.fm-dload {
+  border-top: 1px solid lightslategray;
+  margin-bottom: 15px;
+}
+
+.fm-dload p {
+  margin: 0px;
+}
+
 
 .data-summary {
   font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;

@@ -95,12 +95,13 @@
             var tracks = new Array();
             var grouptracks = [];  
             var group1 = new Array();
-
+            /*
             $(document).ready(function() {
                 // get height
                 var chartheight = document.getElementById('elevation-div0').clientHeight;
                 $('.elevation-control.elevation .background').css("height", chartheight);
             });
+            */
         }
         
         for (var m = 0; m < numberOfboxes; m++) {
@@ -201,7 +202,7 @@
                 if (numberOfMaps == 1 && showalltracks){
                     maps[m].addLayer(baseLayers[m].OpenStreetMap); 
                 } else {
-                maps[m].addLayer(baseLayers[m].OpenTopoMap); 
+                    maps[m].addLayer(baseLayers[m].OpenTopoMap); 
                 }
                 bounds[m] = maps[m].getBounds;  
             
@@ -253,8 +254,8 @@
                     eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
                         elevationControl: {
                           options: {
-                            theme: phptracks.eletheme, // CHANGE: theme anpassen martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
-                            elevationDiv: "#elevation-div" + m, // zähler verwenden
+                            theme: phptracks.eletheme, // martin-theme, lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme
+                            elevationDiv: "#elevation-div" + m, 
                             detachedView: true,
                             summary: false,
                             downloadLink:true,
@@ -379,17 +380,16 @@
                                     let q = document.querySelector.bind(document);
 
                                     if (name == track) {
-                                        if ( info) { 
-                                            info = info.split(' '); 
-                                            if (parseFloat(info.includes[1]) != NaN) {
-                                                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km";
-                                            } 
-                                            if (parseFloat(info.includes[4]) != NaN) {
-                                                q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
-                                            } 
-                                            if (parseFloat(info.includes[7]) != NaN) {
-                                                q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
-                                            } 
+                                        if (info) {info = info.split(' ')} else {info='';};
+                                        if (info[1] && info[4] && info[7]) { 
+                                            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km"; 
+                                            q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
+                                            q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
+                                        
+                                        } else {
+                                            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': '  + (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
+                                            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = L._('Ascent')   + ': +' + trace.gpx.get_elevation_gain().toFixed(0) + " m";
+                                            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = L._('Descent')  + ': -' + trace.gpx.get_elevation_loss().toFixed(0) + " m";
                                         }
                                     }
                                  });
@@ -410,14 +410,6 @@
                         for (var track in tracks[m]) {
                             loadTrace(m, track, i++)
                         } 
-                        /*
-                        window.setTimeout( function() {
-                            dloadtext = $('.fm-dload')[0].children[0].children[0].innerHTML;
-                            $('.fm-dload')[0].children[0].children[0].innerHTML = '';
-                            $('.elevation-summary').html(dloadtext); 
-                            $('.elevation-summary').css('margin-left', '1px');
-                        }, 1000);
-                        */
                     }
                 } else {
                     // Create simple marker
@@ -672,18 +664,12 @@
             });
 
             var info = trace.gpx._info.desc;
-            if ( info) { 
-                info = info.split(' '); 
-                // TODO: ascent / descent calculation is wrong. Mine is better
-                if (parseFloat(info.includes[1]) != NaN) {
-                    q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km";
-                } 
-                if (parseFloat(info.includes[4]) != NaN) {
-                    q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
-                } 
-                if (parseFloat(info.includes[7]) != NaN) {
-                    q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
-                } 
+            if (info) {info = info.split(' ')} else {info='';};
+            if (info[1] && info[4] && info[7]) { 
+                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km"; 
+                q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
+                q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
+              
             } else {
                 q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': '  + (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
                 q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = L._('Ascent')   + ': +' + trace.gpx.get_elevation_gain().toFixed(0) + " m";
