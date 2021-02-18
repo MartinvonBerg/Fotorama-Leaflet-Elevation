@@ -11,6 +11,7 @@
         var fotorama = new Array();
         var phpvars = new Array();
         var storemarker = new Array();
+        var circlemarker = new Array(); // weg
         var newmarker = new Array();
         var mrk = new Array();         
         
@@ -240,7 +241,7 @@
                             elevationDiv: "#elevation-div" + m, 
                             detachedView: true,
                             summary: false,
-                            downloadLink:true,
+                            downloadLink:false,
                             followMarker: false,
                             skipNullZCoords: true,
                             legend: true,
@@ -274,25 +275,10 @@
 
                     if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks == true) {
                         m = 0;
-                        // create elevation chart(s) options different from single-track options -----------------------
-                        eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
-                            elevationControl: {
-                                options: {
-                                    theme: phptracks.eletheme, 
-                                    summary:false,
-                                    margins: {
-                                        top: 15,
-                                        right: 20,
-                                        bottom: 10,
-                                        left: 50
-                                    },
-                                },
-                            }
-                        };
-                        
                         grouptracks[m] = [];
-                        var routes; // für mehrfache noch anpassen
+                        var routes; 
                         var i = 0;
+                        var page= $('html, body');
 
                         for (var track in tracks[m]) {
                             grouptracks[m][i] = tracks[m][track].url;
@@ -311,7 +297,7 @@
                         });
                    
                         routes.addTo(maps[m]);
-                        bounds[m] = maps[m].getBounds();
+                        bounds[m] = maps[m].getBounds().pad(0.5);
 
                         window.setTimeout( function(e) { 
                             maps[0].zoomOut(1); // nur mit m=0, da zu Anfang geladen, kein Event gefunden map.on('load') geht nicht
@@ -325,10 +311,17 @@
                             elem1.click();
 
                         }, 1000);
+
+                        $('#boxmap0').on('scroll touchmove mousewheel', function(e){
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        });
                            
                         maps[0].on( 'eledata_loaded eledata_added eledata_clear', function() {
                             m = 0; 
-                            bounds[m] = maps[m].getBounds(); //pad(-0.3); // 0 .. -0.5 possible: -0.2 best
+                            page.stop();
+                            bounds[m] = maps[m].getBounds().pad(0.5); // 0 .. -0.5 possible: -0.2 best
 
                             // Select the node that will be observed for mutations
                             const targetNode = document.getElementsByClassName('leaflet-bottom')[1];
@@ -554,102 +547,39 @@
            return false;
         });  
         
-        $(window).on("pageshow",function(e){
-            // Select the node that will be observed for mutations
-            const targetNode = document.getElementsByClassName('elevation-summary');
-            // Options for the observer (which mutations to observe)
-            const config = { childList: true, subtree: true, attributes:true };
-            // Callback function to execute when mutations are observed
-            const callback2 = function(mutations) {
-                let parent = mutations[0].target.offsetParent.id;
-                //console.log(parent);
-                var sel =document.getElementById(parent).children[0];
-                let q = document.querySelector.bind(document);
-                //q('#'+parent + '> div > div > span.totlen > span.summarylabel').innerHTML = L._('Distance')+ ': ';
-                //q('#'+parent + 'div > div > span.maxele > span.summarylabel').innerHTML = L._('Ascent')+ ': ';
-                //q('#'+parent + 'div > div > span.minele > span.summarylabel').innerHTML = L._('Descent')+ ': ';
-                /*
-                let div = document.getElementsByClassName('leaflet-control-layers-base');
-                let len = div[1].childElementCount;
-                let track = '';
-                var keyarray = Object.keys(routes._routes);
-                //let endstyle = '';;
-
-                for (var c = 0; c < len; c++){
-                    let child = div[1].children[c].children[0].children[1];
-                
-                    let style = child.attributes.style;
-                    if (style) {
-                        style = child.attributes.style.nodeValue;
-                        if (style.search('font-weight') > -1) {
-                            track = child.innerText;
-                            track = track.trim();
-                        }
-                    }       
-                }
-
-                keyarray.forEach(key => {
-                    //
-                    let info = routes._routes[key]._info.desc;
-                    let name = routes._routes[key]._info.name;
-                    let q = document.querySelector.bind(document);
-
-                    if (name == track) {
-                        if (info) {info = info.split(' ')} else {info='';};
-                        if (info[1] && info[4] && info[7]) { 
-                            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km"; 
-                            q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
-                            q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
-                        
-                        } else {
-                            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': '  + (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
-                            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = L._('Ascent')   + ': +' + trace.gpx.get_elevation_gain().toFixed(0) + " m";
-                            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = L._('Descent')  + ': -' + trace.gpx.get_elevation_loss().toFixed(0) + " m";
-                        }
-                    }
-                });
-                */
-                //console.log('Nr ' + activetrack + ' : ' + track + ' : ' + endstyle + ' is avtive');
-            };
-            // Create an observer instance linked to the callback function
-            var observer = new MutationObserver(callback2);
-            // Start observing the target node for configured mutations
-            //observer.observe(targetNode[0], config);
-            //observer.observe(targetNode[1], config);
-            //observer.observe(targetNode[2], config);   
-            
-        });
-        
         $(window).on("resize", function() {
             var or = window.orientation;
             var h = window.screen.availHeight;
             var w = window.screen.availWidth;
 
+            
             var fotowidth = $('[id^=mfotorama]').width();
             if (fotowidth<480) {
                 $('.fotorama__caption__wrapm, .fotorama__caption').hide();   
             } else {
                 $('.fotorama__caption__wrapm, .fotorama__caption').show();
             }
+            
+            for (var m = 0; m < numberOfboxes; m++) {      
+                var leafwidth = $('#boxmap' +m).width();
 
-            var leafwidth = $('[id^=boxmap]').width();
+                if (leafwidth<480) {  
+                    $('.leaflet-control-attribution').hide();
+                } else {
+                    $('.leaflet-control-attribution').show();
+                }
+              
+                var eleheight = leafwidth / 3;
+                eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight); // TODO: get chartheight from admin settings for max
+                $('#elevation-div'+m).css("height", eleheight);
 
-            if (leafwidth<480) {  
-                $('.leaflet-control-attribution').hide();
-            } else {
-                $('.leaflet-control-attribution').show();
+                var mapheight = leafwidth * 0.6;
+                mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight); // TODO: get chartheight from admin settings for max
+                $('#map'+m).css("height", mapheight);
             }
-
-            var eleheight = leafwidth / 3;
-            eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight); // TODO: get chartheight from admin settings for max
-            $('[id^=elevation-div]').css("height", eleheight);
-
-            var mapheight = leafwidth * 0.6;
-            mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight); // TODO: get chartheight from admin settings for max
-            $('[id^=map]').css("height", mapheight);
-         
+        
         }).trigger('resize');
-
+        
         // functions for track loading
         function loadTrace(m, track, i) {
             let trace = {};
@@ -755,9 +685,11 @@
             var lang = navigator.language;
             lang = lang.split('-')[0];
 
-            L.registerLocale(lang, eval(lang) );
-            L.setLocale(lang);
-            return mylocale;
+            if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') ) {
+                L.registerLocale(lang, eval(lang) );
+                L.setLocale(lang);
+                return mylocale;
+            } else {return;}
         };
  
     }

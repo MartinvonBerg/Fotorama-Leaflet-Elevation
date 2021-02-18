@@ -1,4 +1,6 @@
 <?php
+namespace mvbplugins\fotoramamulti;
+
 function custom_mime_types( $mimes ) { 
 	// Add new MIME types here
 	$mimes['kml'] = 'application/vnd.google-earth.kml+xml';

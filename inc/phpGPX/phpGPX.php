@@ -13,15 +13,21 @@ use phpGPX\Parsers\TrackParser;
 use phpGPX\Parsers\WaypointParser;
 use phpGPX\Parsers\BoundsParser;
 
-spl_autoload_register(function ($class_name) {
-	$path = plugin_dir_path(__FILE__);
-	$path = \str_replace('\phpGPX','',$path);
-	$pos = strpos($class_name, 'php');
-	if ($pos !== false) {
-		include $path . $class_name . '.php';
-	}
-});
+spl_autoload_register( '\phpGPX\gpx_autoloader');
 
+function gpx_autoloader( $class_name ) {
+	$path = realpath(plugin_dir_path(__FILE__));
+	$path = str_replace('\phpGPX','',$path); // for Windows System
+	$path = str_replace('/phpGPX','',$path); // for Linux system
+	$pos = strpos($class_name, 'GPX');
+	$class = str_replace('\\','/',$class_name); // for Linux system
+	
+	if ($pos !== false) {
+		if (file_exists($path . '/' . $class . '.php')) {
+			include_once ($path . '/' . $class . '.php');
+		}
+	}
+};
 
 /**
  * Class phpGPX

@@ -1,3 +1,10 @@
+Doku ist noch nicht fertig.
+Responsive hat noch Fehler.
+Der Modus mit allen Tracks hat Fehler, siehe bei Madeira übersicht.
+use CDN switch
+
+Und aufräumen...
+
 I know the code has to be improved and this file has to be translated! We wait for Christmas.
 
 === wp-fotorama-gpxviewer ===

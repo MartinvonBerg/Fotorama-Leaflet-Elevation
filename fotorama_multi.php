@@ -44,7 +44,7 @@ if ( is_admin() )
 	$fotorama_elevation = new FotoramaElevation();
 	
 // define the shortcode to generate the image-slider with map
-add_shortcode('fotomulti', '\mvbplugins\fotoramamulti\showmulti');
+add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
 function showmulti($attr, $content = null)
@@ -362,13 +362,12 @@ function showmulti($attr, $content = null)
 			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span></span> ';
 			$htmlstring  .= '<span class="gain">';
-			$htmlstring  .= '<span class="summarylabel">Ascent: </span>';
+			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> ';
 			$htmlstring  .= '<span class="loss">';
-			$htmlstring  .= '<span class="summarylabel">Descent: </span>';
+			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> </div>';
-			// ------------------------
-			
+			// ------------------------	
 		}
 		//$htmlstring  .= '</div>';
 	}
