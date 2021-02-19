@@ -1,9 +1,10 @@
-Doku ist noch nicht fertig.
-Responsive hat noch Fehler.
-Der Modus mit allen Tracks hat Fehler, siehe bei Madeira übersicht.
-use CDN switch
+Diese Doku ist noch nicht fertig und noch nicht auf fotorama-multi aktualisiert
+    Übersetzung begonnen aber noch nicht fertig _() u.s.w. fehlen
+    Beschreibung Admin - Settings
+    Beschreibung der Varianten
 
-Und aufräumen...
+Responsive / mobile hat noch Fehler.
+Der Modus mit allen Tracks hat Fehler, siehe bei Madeira übersicht. --> mail an raruto
 
 I know the code has to be improved and this file has to be translated! We wait for Christmas.
 

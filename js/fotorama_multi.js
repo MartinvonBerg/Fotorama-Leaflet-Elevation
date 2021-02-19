@@ -245,7 +245,7 @@
                             followMarker: false,
                             skipNullZCoords: true,
                             legend: true,
-                            lazyLoadJS: false,
+                            lazyLoadJS: true, // set the lazyLoadJS option to false to avoid automatically including missing javascript dependencies (i.e. not detected in the global scope).
                             loadData: {
                                 defer: true,
                                 lazy: true,
@@ -260,7 +260,7 @@
                         }
                     };
 
-                    if (showalltracks == false) {
+                    if (showalltracks === false) {
                         controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
                         controlLayer2[m].setPosition('bottomright')
                         controlLayer2[m].addTo(maps[m]);
@@ -273,7 +273,7 @@
                     traces[m] = [];
                     tracks[m] = phptracks.tracks;                     
 
-                    if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks == true) {
+                    if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks === true) {
                         m = 0;
                         grouptracks[m] = [];
                         var routes; 
@@ -589,6 +589,9 @@
                 async: true,
                 index: i,
                 marker_options: {
+                    wptIconUrls: {
+                        '': wpfm_phpvars0.imagepath + 'pin-icon-wpt.png', // see: https://github.com/mpetazzoni/leaflet-gpx#about-waypoints
+                    },
                     startIconUrl: null,
                     endIconUrl: null,
                     shadowUrl: null,
