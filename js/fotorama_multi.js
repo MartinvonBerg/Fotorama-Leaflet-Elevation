@@ -13,15 +13,15 @@
         var storemarker = new Array();
         var circlemarker = new Array(); // weg
         var newmarker = new Array();
-        var mrk = new Array();         
+        var mrk = new Array();   
+        var chartheight = new Array();
+        var phpmapheight = new Array();      
         
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
             var showalltracks = (wpfm_phpvars0.showalltracks === 'true');
             if (numberOfMaps>1 && showalltracks) {showalltracks = false;}
     
-            var chartheight = wpfm_phpvars0.chartheight;
-            var phpmapheight = wpfm_phpvars0.mapheight;
             // Icons definieren
             var myIcon1 = L.icon({ 
                 iconUrl: wpfm_phpvars0.imagepath + "photo.png",
@@ -140,6 +140,8 @@
             if ( hasMap) {
                 // get js-variable from php-output
                 let phptracks = eval('wpfm_phpvars'+m);
+                chartheight[m] = phptracks.chartheight;
+                phpmapheight[m] = phptracks.mapheight;
 
                 //get options for maps without tracks
                 if ( (parseInt(phptracks.ngpxfiles) == 0) && (! hasFotorama) ) {
@@ -556,21 +558,39 @@
             }
             
             for (var m = 0; m < numberOfboxes; m++) {      
-                var leafwidth = $('#boxmap' +m).width();
+                var wbox = $('#boxmap' + m).width();
+
+                var hbox = $('#boxmap' + m).height();
+                //var hmap = $('#map' + m).height() ?? 0;
+
+                var hele = $('#elevation-div' + m).height(); // ?? 0;
+                hele = (typeof hele === 'undefined') ? 0 : hele;
+
+                var hsum = $('#data-summary' + m).height(); // ?? 0;
+                hsum = (typeof hsum === 'undefined') ? 0 : hsum;
+
+                var hdld = $('#boxmap' + m + ' .fm-dload').height(); // ?? 0;
+                hdld = (typeof hdld === 'undefined') ? 0 : hdld;
+
+                var hmapnew = hbox - hele - hsum - hdld; 
 
                 /* don't show leaflet attribution if screen is too small
-                if (leafwidth<480) {  
+                if (wbox<480) {  
                     $('.leaflet-control-attribution').hide();
                 } else {
                     $('.leaflet-control-attribution').show();
                 }
                 */
-                var eleheight = leafwidth / 3;
-                eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight); 
+                var eleheight = wbox / 3;
+                eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight[m]); 
                 $('#elevation-div'+m).css("height", eleheight);
 
-                var mapheight = leafwidth * 0.6;
-                mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight); 
+                if (hele < 5) {
+                    var mapheight = hmapnew; 
+                } else {
+                    var mapheight = wbox * 0.6; 
+                }
+                mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight[m]);
                 $('#map'+m).css("height", mapheight);
             }
         
