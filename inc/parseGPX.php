@@ -70,11 +70,13 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
         //    $lastbounds = $bounds[0];
         //}
         
-        foreach ($track->segments as $segment) {
+        foreach ( $track->segments as $segment ) {
             // check lastbounds and set new maxmin values
-            if (\array_key_exists('minLongitude', $bounds[0] )) {
+            if ( sizeof($bounds)>0 ) {
                 $lastbounds = $bounds[0];
             }
+            
+
             // Statistics for segment of track
             $segment->stats->toArray();
             $pointsbefore = $pointsbefore + \sizeof($segment->points);
@@ -84,7 +86,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
             $bounds = getBounds($segment, $reducetrack, $smooth);
         
             // check lastbounds and set new maxmin values
-            if (\array_key_exists('minLongitude', $lastbounds )) {
+            if ( \sizeof( $lastbounds ) > 0) {
                 ($bounds[0]->maxLatitude > $lastbounds->maxLatitude) ? '' : ($bounds[0]->maxLatitude = $lastbounds->maxLatitude);
                 ($bounds[0]->maxLongitude > $lastbounds->maxLongitude) ? '' : ($bounds[0]->maxLongitude = $lastbounds->maxLongitude);
                 ($bounds[0]->minLatitude < $lastbounds->minLatitude) ? '' : ($bounds[0]->minLatitude = $lastbounds->minLatitude);
@@ -93,7 +95,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
         }
     }
     
-    if ( array_key_exists('minLongitude', $bounds[0]) )  {
+    if ( sizeof($bounds)>0 )  {
         $ascent = intval($ascent);
         $descent = intval($descent);
         $dist = number_format_i18n($dist / 1000, 1);
@@ -149,7 +151,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
  * @param bool $reduce reduce track or not
  * @param float $smooth value for track smoothing in meters
  *
- * @return float [m]
+ * @return array bounds of track and segment 
  */
 function getBounds($segment, $reduce, $smooth) {
     $minlat = 180;

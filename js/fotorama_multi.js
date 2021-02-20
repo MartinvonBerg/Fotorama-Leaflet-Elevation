@@ -103,6 +103,12 @@
                 let olddata = fotorama[m].data;
                 let newdata = [];
                 let width = $fotoramaDiv[0].parentElement.clientWidth;
+
+                if (mobile) {
+                    var h = window.screen.height;
+                    var w = window.screen.width;
+                    h>w ? width = h : width = w;
+                }
         
                 if (newimages[0].srcset) {
                     if (olddata.length == newimages.length) {
@@ -563,12 +569,13 @@
             for (var m = 0; m < numberOfboxes; m++) {      
                 var leafwidth = $('#boxmap' +m).width();
 
+                /* don't show leaflet attribution if screen is too small
                 if (leafwidth<480) {  
                     $('.leaflet-control-attribution').hide();
                 } else {
                     $('.leaflet-control-attribution').show();
                 }
-              
+                */
                 var eleheight = leafwidth / 3;
                 eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight); // TODO: get chartheight from admin settings for max
                 $('#elevation-div'+m).css("height", eleheight);
