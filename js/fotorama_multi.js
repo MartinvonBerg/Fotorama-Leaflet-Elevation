@@ -48,14 +48,7 @@
                     zoom: 5,
                     markerZoomAnimation: false,
                     zoomControl: false,
-                    gestureHandling: true,
-                    gestureHandlingOptions: {
-                        text: {
-                            touch: "Use two Fingers to move the Map",
-                            scroll: "Use Ctrl + Scrollwheel to zoom the Map",
-                            scrollMac: "use \u2318 + scroll to zoom the map"
-                            }
-                    },                    
+                    gestureHandling: true,            
                 },
                 zoomControl: {
                     position: 'topleft',
@@ -554,11 +547,7 @@
         });  
         
         $(window).on("resize", function() {
-            var or = window.orientation;
-            var h = window.screen.availHeight;
-            var w = window.screen.availWidth;
-
-            
+                    
             var fotowidth = $('[id^=mfotorama]').width();
             if (fotowidth<480) {
                 $('.fotorama__caption__wrapm, .fotorama__caption').hide();   
@@ -577,11 +566,11 @@
                 }
                 */
                 var eleheight = leafwidth / 3;
-                eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight); // TODO: get chartheight from admin settings for max
+                eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight); 
                 $('#elevation-div'+m).css("height", eleheight);
 
                 var mapheight = leafwidth * 0.6;
-                mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight); // TODO: get chartheight from admin settings for max
+                mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight); 
                 $('#map'+m).css("height", mapheight);
             }
         
