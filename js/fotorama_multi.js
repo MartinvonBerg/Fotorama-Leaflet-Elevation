@@ -197,6 +197,18 @@
                 }
 
                 //------- Lupe, Image-Marker und Base-Layer-Change handling --------------------------------
+
+                // create a fullscreen button and add it to the map
+                L.control.fullscreen({
+                    position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, defaut topleft
+                    title: L._('Show fullscreen'), // change the title of the button, default Full Screen
+                    titleCancel: L._('Exit fullscreen'), // change the title of the button when fullscreen is on, default Exit Full Screen
+                    content: null, // change the content of the button, can be HTML, default null
+                    forceSeparateButton: true, // force seperate button to detach from zoom buttons, default false
+                    forcePseudoFullscreen: true, // force use of pseudo full screen even if full screen API is available, default false
+                    fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
+                }).addTo(maps[m]);
+
                 // Functions and Overlays for Show-all in the top left corner
                 L.Control.Watermark = L.Control.extend({
                     onAdd: function () {
@@ -534,11 +546,14 @@
                     fotorama.setOptions({
                         fit: 'contain'
                     });
+                    var scrzoom = new ScrollZoom($('.fotorama__stage__shaft .fotorama__stage__frame.fotorama__loaded.fotorama__loaded--img.fotorama__loaded--full.fotorama__active'),4,0.5); 
+
                 } else {
                     // Back to normal settings
                     fotorama.setOptions({
                         fit: 'cover'
                     });
+                    delete window.scrzoom;
                 }
             });
         }
@@ -595,6 +610,10 @@
             }
         
         }).trigger('resize');
+
+        $(document).ready(function (){
+            //var scroll_zoom = new ScrollZoom($('.fotorama__stage__frame'),4,0.5);
+        })
         
         // functions for track loading
         function loadTrace(m, track, i) {
@@ -681,6 +700,8 @@
                 "Descent"  : "Abstieg",
                 "Altitude" : "Höhe", // is in file /src/altitude.js
                 "Images"   : "Fotos",
+                'Show fullscreen' : 'Zeige Vollbild',
+                'Exit fullscreen' : 'Vollbild beenden',
             };
 
             let it = {
@@ -690,6 +711,8 @@
                 "Descent"  : "Discesa",
                 "Altitude" : "Altitudine", // is in file /src/altitude.js
                 "Images"   : "Foto",
+                'Show fullscreen' : 'Mappa a schermo intero',
+                'Exit fullscreen' : 'Esci schermo intero',
             };
 
             let fr = {
@@ -699,6 +722,8 @@
                 "Descent"  : "Descente",
                 "Altitude" : "Altitude", // is in file /src/altitude.js
                 "Images"   : "Images",
+                'Show fullscreen' : 'Afficher carte en plein écran',
+                'Exit fullscreen' : 'Quitter le mode plein écran',
             };
 
             var lang = navigator.language;
@@ -710,6 +735,60 @@
                 return mylocale;
             } else {return;}
         };
+
+        function ScrollZoom(container,max_scale,factor){
+            var target = container.children().first()
+            var size = {w:target.width(),h:target.height()}
+            var pos = {x:0,y:0}
+            var zoom_target = {x:0,y:0}
+            var zoom_point = {x:0,y:0}
+            var scale = 1
+            target.css('transform-origin','0 0')
+            target.on("mousewheel DOMMouseScroll",scrolled)
+        
+            function scrolled(e){
+                var offset = container.offset()
+                zoom_point.x = e.pageX - offset.left
+                zoom_point.y = e.pageY - offset.top
+        
+                e.preventDefault();
+                var delta = e.delta || e.originalEvent.wheelDelta;
+                if (delta === undefined) {
+                  //we are on firefox
+                  delta = e.originalEvent.detail;
+                }
+                delta = Math.max(-1,Math.min(1,delta)) // cap the delta to [-1,1] for cross browser consistency
+        
+                // determine the point on where the slide is zoomed in
+                zoom_target.x = (zoom_point.x - pos.x)/scale
+                zoom_target.y = (zoom_point.y - pos.y)/scale
+        
+                // apply zoom
+                scale += delta*factor * scale
+                scale = Math.max(1,Math.min(max_scale,scale))
+        
+                // calculate x and y based on zoom
+                pos.x = -zoom_target.x * scale + zoom_point.x
+                pos.y = -zoom_target.y * scale + zoom_point.y
+        
+        
+                // Make sure the slide stays in its container area when zooming out
+                if(pos.x>0)
+                    pos.x = 0
+                if(pos.x+size.w*scale<size.w)
+                    pos.x = -size.w*(scale-1)
+                if(pos.y>0)
+                    pos.y = 0
+                 if(pos.y+size.h*scale<size.h)
+                    pos.y = -size.h*(scale-1)
+        
+                update()
+            }
+        
+            function update(){
+                target.css('transform','translate('+(pos.x)+'px,'+(pos.y)+'px) scale('+scale+','+scale+')')
+            }
+        }
  
     }
 })(document, jQuery);
