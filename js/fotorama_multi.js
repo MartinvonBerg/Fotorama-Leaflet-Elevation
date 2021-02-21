@@ -506,9 +506,9 @@
                     source = source.replace('mfotorama','');
                     m = parseInt(source);
 
-                    if (circlemarker[m]) {
-                        maps[m].removeLayer(circlemarker[m])
-                    };
+                    //if (circlemarker[m]) {
+                    //    maps[m].removeLayer(circlemarker[m])
+                    //};
 
                     if ((maps != 'undefined') && phpvars[m].imgdata[nr].coord[0]) {
                         //console.log('change in: ' + e.currentTarget.id + ' index: ' + nr + 'Koord: ' + phpvars[m].imgdata[nr].coord[0] + ':' + phpvars[m].imgdata[nr].coord[1] ); 

@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama-Multi
  * Plugin URI:        https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
  * Description:       Fotorama Multi Slider
- * Version:           0.0.4
+ * Version:           0.0.5
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
