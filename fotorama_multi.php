@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama-Multi
  * Plugin URI:        https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
  * Description:       Fotorama Multi Slider
- * Version:           0.0.3
+ * Version:           0.0.4
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -452,16 +452,16 @@ function fotomulti_scripts()
 		wp_enqueue_style('fm-style3', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css');
 		wp_enqueue_style('fm-style4', 'https://unpkg.com/@raruto/leaflet-elevation@1.5.3/dist/leaflet-elevation.min.css');
 		wp_enqueue_style('fm-style7', 'https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css');
-		wp_enqueue_style('fm-style', $plugin_url . 'css/Control.FullScreen.css');
+		wp_enqueue_style('fm-style', $plugin_url . 'css/Control.FullScreen.min.css');
 
 		// Load Scripts
 		wp_enqueue_script('fm-script3', 'https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js', array('jquery'), '5.16.0', true); // does not work with d3 > version 6.0 !
 		wp_enqueue_script('fm-script2', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js', array('jquery'), '1.7.1', true);
 		wp_enqueue_script('fm-script4', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.5.0/gpx.min.js', array('jquery'), '1.5.0', true);
-		wp_enqueue_script('fm-script12', $plugin_url . 'js/libs/leaflet-gpxgroup.js', array('jquery'), '', true);
+		wp_enqueue_script('fm-script12', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
 		wp_enqueue_script('fm-script5', 'https://unpkg.com/@raruto/leaflet-elevation@1.5.3/dist/leaflet-elevation.min.js', array('jquery'), '1.5.3', true);
 		wp_enqueue_script('fm-script8', 'https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script9', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '', true);	
+		wp_enqueue_script('fm-script9', $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '', true);	
 	} else {
 		// Load local Styles
 		wp_enqueue_style('fm-style3', $plugin_url . 'css/leaflet.min.css');
@@ -476,12 +476,12 @@ function fotomulti_scripts()
 		wp_enqueue_script('fm-script12', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
 		wp_enqueue_script('fm-script5',  $plugin_url . 'js/libs/leaflet-elevation.min.js', array('jquery'), '1.5.3', true);
 		wp_enqueue_script('fm-script8',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script10',  $plugin_url . 'js/libs/Control.FullScreen.js', array('jquery'), '', true);
+		wp_enqueue_script('fm-script10',  $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '', true);
 		//wp_enqueue_script('fm-script11',  $plugin_url . 'js/libs/Control.FullScreen.js', array('jquery'), '', true);
 		//wp_enqueue_script('fm-script11',  'https://cdnjs.cloudflare.com/ajax/libs/jquery.panzoom/4.0.0/panzoom.js', array('jquery'), '4.0.0', true);
 		//wp_enqueue_script('fm-script11',  'https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js', array('jquery'), '9.4.0', true);
 		
-		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.js', array('jquery'), '0.0.7', true);	
+		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.0.7', true);	
 		
 	}
   }
