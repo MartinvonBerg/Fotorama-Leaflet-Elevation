@@ -15,7 +15,9 @@
         var newmarker = new Array();
         var mrk = new Array();   
         var chartheight = new Array();
-        var phpmapheight = new Array();      
+        var phpmapheight = new Array();   
+        var zoomDiv = null;   
+        var fotoramaState = null;
         
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
@@ -505,6 +507,7 @@
                     let source = e.currentTarget.id;
                     source = source.replace('mfotorama','');
                     m = parseInt(source);
+                    var elem;
 
                     //if (circlemarker[m]) {
                     //    maps[m].removeLayer(circlemarker[m])
@@ -521,6 +524,41 @@
                             newmarker[m].addTo(maps[m]);
                         }
                         if (e.type === 'fotorama:showend') {
+                            //console.log(fotorama.activeFrame.$stageFrame[0].children[0].src);
+                            elem = fotorama.activeFrame.$stageFrame[0].children[0];
+                            zoomDiv = null;
+                            console.log(fotoramaState, m, nr);
+                            if (fotoramaState == 'full') {
+                                zoomDiv = $('.fotorama__stage__frame').ZoomArea({
+                                    zoomLevel: 1,
+                                    minZoomLevel: 1,
+                                    maxZoomLevel: 10,
+                                    elementClass: 'zoomed' + m,
+                                    parentOverflow: 'scroll',
+                                    exceptionsZoom: ['fotorama__caption'],
+                                    mouseSensibleZoom : true,
+                                    //hideWhileAnimate: ['map-area', 'marker-all'],
+                                    //externalIncrease: '.map-control-zoomin',
+                                    //externalDecrease: '.map-control-zoomout',
+                                    virtualScrollbars: true,
+                                    usedAnimateMethod: 'jquery'
+                                });
+                            } else {
+                                zoomDiv = $('.fotorama__stage__frame').ZoomArea({
+                                    zoomLevel: 1,
+                                    minZoomLevel: 1,
+                                    maxZoomLevel: 5,
+                                    elementClass: 'zoomed' + m,
+                                    parentOverflow: 'hidden',
+                                    exceptionsZoom: ['fotorama__caption'],
+                                    mouseSensibleZoom : true,
+                                    //hideWhileAnimate: ['map-area', 'marker-all'],
+                                    //externalIncrease: '.map-control-zoomin',
+                                    //externalDecrease: '.map-control-zoomout',
+                                    virtualScrollbars: true,
+                                    usedAnimateMethod: 'jquery'
+                                });
+                            };
                             maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
                         }
                         //circlemarker[m] = L.marker([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ], { icon: myIcon2  }).addTo(maps[m]);
@@ -546,11 +584,15 @@
                     fotorama.setOptions({
                         fit: 'contain'
                     });
+                    fotoramaState = 'full';
+                
                 } else {
                     // Back to normal settings
                     fotorama.setOptions({
                         fit: 'cover'
                     }); 
+                    fotoramaState = 'normal';
+                    zoomDiv = null;
                 }
             });
         }
