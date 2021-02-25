@@ -501,7 +501,7 @@
         // jQuery fotorama functions for fullscreen, map interaction e.q marker settings
         if ( numberOfFotorama > 0) {
             if (numberOfMaps > 0) {
-                $('.fotorama').on('fotorama:showend fotorama:load',
+              $('.fotorama').on('fotorama:showend fotorama:load',
                 function (e, fotorama, extra) {
                     let nr = fotorama.activeIndex;
                     let source = e.currentTarget.id;
@@ -523,42 +523,41 @@
                             newmarker[m].setZIndexOffset(500);
                             newmarker[m].addTo(maps[m]);
                         }
+
                         if (e.type === 'fotorama:showend') {
                             //console.log(fotorama.activeFrame.$stageFrame[0].children[0].src);
                             elem = fotorama.activeFrame.$stageFrame[0].children[0];
+                            elem = document.getElementsByClassName('fotorama__stage__frame fotorama__loaded fotorama__loaded--img fotorama__active')[0]; 
+                            elem = $('.fotorama__stage__frame.fotorama__loaded.fotorama__loaded--img.fotorama__active')[0];
                             zoomDiv = null;
-                            console.log(fotoramaState, m, nr);
                             if (fotoramaState == 'full') {
-                                zoomDiv = $('.fotorama__stage__frame').ZoomArea({
-                                    zoomLevel: 1,
-                                    minZoomLevel: 1,
-                                    maxZoomLevel: 10,
-                                    elementClass: 'zoomed' + m,
-                                    parentOverflow: 'scroll',
-                                    exceptionsZoom: ['fotorama__caption'],
-                                    mouseSensibleZoom : true,
-                                    //hideWhileAnimate: ['map-area', 'marker-all'],
-                                    //externalIncrease: '.map-control-zoomin',
-                                    //externalDecrease: '.map-control-zoomout',
-                                    virtualScrollbars: true,
-                                    usedAnimateMethod: 'jquery'
+                                zoomDiv = Panzoom(elem, {
+                                    maxScale: 5,
+                                    minScale: 1,
+                                    step : 0.25,
+                                    exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
+                                    panOnlyWhenZoomed: true,
                                 });
+                                zoomDiv.pan(10, 10);
+                                zoomDiv.zoom(1, { animate: true });
+                                elem.parentElement.addEventListener('wheel', zoomDiv.zoomWithWheel);
                             } else {
-                                zoomDiv = $('.fotorama__stage__frame').ZoomArea({
-                                    zoomLevel: 1,
-                                    minZoomLevel: 1,
-                                    maxZoomLevel: 5,
-                                    elementClass: 'zoomed' + m,
-                                    parentOverflow: 'hidden',
-                                    exceptionsZoom: ['fotorama__caption'],
-                                    mouseSensibleZoom : true,
-                                    //hideWhileAnimate: ['map-area', 'marker-all'],
-                                    //externalIncrease: '.map-control-zoomin',
-                                    //externalDecrease: '.map-control-zoomout',
-                                    virtualScrollbars: true,
-                                    usedAnimateMethod: 'jquery'
+                                zoomDiv = Panzoom(elem, {
+                                    maxScale: 1,
+                                    minScale: 1,
+                                    exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
+                                    panOnlyWhenZoomed: true,
+                                    disableZoom: true,
+                                    cursor: 'arrow',
                                 });
-                            };
+                                zoomDiv.zoom(1);
+                                zoomDiv.pan(0, 0);
+                                //elem.parentElement.addEventListener('wheel', zoomDiv.zoomWithWheel);
+                                
+                            }
+
+                            //console.log(fotoramaState, m, nr);
+                          
                             maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
                         }
                         //circlemarker[m] = L.marker([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ], { icon: myIcon2  }).addTo(maps[m]);
@@ -587,12 +586,19 @@
                     fotoramaState = 'full';
                 
                 } else {
+                    zoomDiv.zoom(1, { animate: true });
+                    zoomDiv.pan(0, 0);
+                    //zoomDiv.reset();
+                    //zoomDiv.destroy();
+                    zoomDiv = null;
+
                     // Back to normal settings
                     fotorama.setOptions({
                         fit: 'cover'
                     }); 
                     fotoramaState = 'normal';
-                    zoomDiv = null;
+                    fotorama[0].show(0);
+                
                 }
             });
         }
