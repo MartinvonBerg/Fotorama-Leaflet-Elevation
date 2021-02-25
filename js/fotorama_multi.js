@@ -522,14 +522,24 @@
                             newmarker[m].setIcon(myIcon3);
                             newmarker[m].setZIndexOffset(500);
                             newmarker[m].addTo(maps[m]);
+                           
+                            for (var fi = 0; fi < fotorama.data.length; fi++) {  
+                                fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
+                            }
+                            //fotorama.data[nr].$stageFrame[0].id = 'f' + m + '-' + nr;
+                            //fotorama.data[1].$stageFrame[0].id = 'f' + m + '-1';
+                            
                         }
 
                         if (e.type === 'fotorama:showend') {
                             //console.log(fotorama.activeFrame.$stageFrame[0].children[0].src);
-                            elem = fotorama.activeFrame.$stageFrame[0].children[0];
-                            elem = document.getElementsByClassName('fotorama__stage__frame fotorama__loaded fotorama__loaded--img fotorama__active')[0]; 
-                            elem = $('.fotorama__stage__frame.fotorama__loaded.fotorama__loaded--img.fotorama__active')[0];
+                            fotorama.activeFrame.$stageFrame[0].id = fotorama.activeFrame.$navThumbFrame[0].id;
+                            //elem = fotorama.activeFrame.$stageFrame[0].children[0];
+                            //elem = document.getElementsByClassName('fotorama__stage__frame fotorama__loaded fotorama__loaded--img fotorama__active')[0]; 
+                            //elem = $('.fotorama__stage__frame.fotorama__loaded.fotorama__loaded--img.fotorama__active')[0];
+                            elem = document.getElementById('f' + m + '-' + nr).firstChild;
                             zoomDiv = null;
+
                             if (fotoramaState == 'full') {
                                 zoomDiv = Panzoom(elem, {
                                     maxScale: 5,
@@ -538,14 +548,14 @@
                                     exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
                                     panOnlyWhenZoomed: true,
                                 });
-                                zoomDiv.pan(10, 10);
+                                zoomDiv.pan(0, 0);
                                 zoomDiv.zoom(1, { animate: true });
                                 elem.parentElement.addEventListener('wheel', zoomDiv.zoomWithWheel);
                             } else {
                                 zoomDiv = Panzoom(elem, {
                                     maxScale: 1,
                                     minScale: 1,
-                                    exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
+                                    //exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
                                     panOnlyWhenZoomed: true,
                                     disableZoom: true,
                                     cursor: 'arrow',
@@ -553,8 +563,8 @@
                                 zoomDiv.zoom(1);
                                 zoomDiv.pan(0, 0);
                                 //elem.parentElement.addEventListener('wheel', zoomDiv.zoomWithWheel);
-                                
-                            }
+                            }        
+                        
 
                             //console.log(fotoramaState, m, nr);
                           
@@ -577,13 +587,33 @@
                 });
             }
             
-            $('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', function (e, fotorama) {
+            $('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', function (e, fotorama, extra) {
                 if (e.type === 'fotorama:fullscreenenter') {
+                    let nr = fotorama.activeIndex;
+                    let source = e.currentTarget.id;
+                    source = source.replace('mfotorama','');
+                    m = parseInt(source);
+                    var elem;
+                    fotoramaState = 'full';
+
                     // Options for the fullscreen
                     fotorama.setOptions({
                         fit: 'contain'
                     });
-                    fotoramaState = 'full';
+
+                    // zooming 
+                    elem = document.getElementById('f' + m + '-' + nr).firstChild;
+                    zoomDiv = null;
+                    zoomDiv = Panzoom(elem, {
+                        maxScale: 5,
+                        minScale: 1,
+                        step : 0.25,
+                        exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
+                        panOnlyWhenZoomed: true,
+                    });
+                    zoomDiv.pan(0, 0);
+                    zoomDiv.zoom(1, { animate: true });
+                    elem.parentElement.addEventListener('wheel', zoomDiv.zoomWithWheel);
                 
                 } else {
                     zoomDiv.zoom(1, { animate: true });
@@ -597,16 +627,15 @@
                         fit: 'cover'
                     }); 
                     fotoramaState = 'normal';
-                    fotorama[0].show(0);
                 
                 }
             });
         }
 
         // disable right-click for fotorama
-        $('[id^=mfotorama]').contextmenu(function() {
-           return false;
-        });  
+        //$('[id^=mfotorama]').contextmenu(function() {
+        //   return false;
+        //});  
         
         $(window).on("resize", function() {
                     
