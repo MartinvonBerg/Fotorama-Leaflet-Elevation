@@ -16,7 +16,6 @@
         var mrk = new Array();   
         var chartheight = new Array();
         var phpmapheight = new Array();   
-        var zoomDiv = null;   
         var fotoramaState = 'normal';
         
         // Variable definitions for maps
@@ -507,7 +506,6 @@
                     let source = e.currentTarget.id;
                     source = source.replace('mfotorama','');
                     m = parseInt(source);
-                    var elem;
 
                     //if (circlemarker[m]) {
                     //    maps[m].removeLayer(circlemarker[m])
@@ -522,38 +520,31 @@
                             newmarker[m].setIcon(myIcon3);
                             newmarker[m].setZIndexOffset(500);
                             newmarker[m].addTo(maps[m]);
-                           
+
+                            // Set id in fotorama.data, all nav thumbs and active stage shaft
                             for (var fi = 0; fi < fotorama.data.length; fi++) {  
                                 fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
                             }
-                            fotorama.data[nr].$stageFrame[0].id = 'f' + m + '-' + nr;
-                            //fotorama.data[1].$stageFrame[0].id = 'f' + m + '-1';
-                            
+                            fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
+
                         }
 
                         if (e.type === 'fotorama:showend') {
-                            //console.log(fotorama.activeFrame.$stageFrame[0].children[0].src);
-                            fotorama.activeFrame.$stageFrame[0].id = fotorama.activeFrame.$navThumbFrame[0].id;
-                            //elem = fotorama.activeFrame.$stageFrame[0].children[0];
-                            //elem = document.getElementsByClassName('fotorama__stage__frame fotorama__loaded fotorama__loaded--img fotorama__active')[0]; 
-                            //elem = $('.fotorama__stage__frame.fotorama__loaded.fotorama__loaded--img.fotorama__active')[0];
-                            //elem = document.getElementById('f' + m + '-' + nr);
+                            // set id in current active stage Frame
+                            fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
+                
                             if (fotoramaState == 'full') {
-                                $('#f' + m + '-' + nr).zoom(
+                                $('#sf' + m + '-' + nr).zoom(
                                     {url: fotorama.data[nr].full,
                 
                                 });
+                            } else {
+                                $('#sf' + m + '-' + nr).trigger('zoom.destroy');
                             }
 
-                            //zoomDiv = null;
-                        
-
-                     
-                        
-
-                          
                             maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
                         }
+
                         //circlemarker[m] = L.marker([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ], { icon: myIcon2  }).addTo(maps[m]);
                         if (storemarker[m].options.id != mrk[m][nr].options.id) {
                             maps[m].removeLayer(newmarker[m]);
@@ -569,6 +560,39 @@
                         }
                     }
                 });
+            } else {
+                // part for fotorama zoom in fullscreen without map
+              $('.fotorama').on('fotorama:showend fotorama:load',
+                function (e, fotorama, extra) {
+                    let nr = fotorama.activeIndex;
+                    let source = e.currentTarget.id;
+                    source = source.replace('mfotorama','');
+                    m = parseInt(source);
+              
+                    if (e.type === 'fotorama:load') {
+                        // Set id in fotorama.data, all nav thumbs and active stage shaft
+                        for (var fi = 0; fi < fotorama.data.length; fi++) {  
+                            fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
+                        }
+                        fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
+                    }
+
+                    if (e.type === 'fotorama:showend') {
+                        // set id in current active stage Frame
+                        fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
+            
+                        if (fotoramaState == 'full') {
+                            // activate the zoom in fullscreen
+                            $('#sf' + m + '-' + nr).zoom(
+                                {url: fotorama.data[nr].full,
+            
+                            });
+                        } else {
+                            // destroy / deactivate zoom in normal-mode
+                            $('#sf' + m + '-' + nr).trigger('zoom.destroy');
+                        }      
+                    }
+                });
             }
             
             $('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', function (e, fotorama, extra) {
@@ -576,11 +600,6 @@
                 let source = e.currentTarget.id;
                 source = source.replace('mfotorama','');
                 m = parseInt(source);
-              
-                $('#f' + m + '-' + nr).zoom(
-                    {url: fotorama.data[nr].full,
-
-                });
 
                 if (e.type === 'fotorama:fullscreenenter') {
                     fotoramaState = 'full';
@@ -589,22 +608,30 @@
                         fit: 'contain'
                     });
 
+                    $('#sf' + m + '-' + nr).zoom(
+                        {url: fotorama.data[nr].full,
+    
+                    });
+
                 } else {
                     // Back to normal settings
                     fotorama.setOptions({
                         fit: 'cover'
                     }); 
                     fotoramaState = 'normal';
-                    //$('#f' + m + '-' + nr).zoom();
-                    $('#f' + m + '-' + nr).trigger('zoom.destroy');
+                  
+                    for (var fi = 0; fi < fotorama.data.length; fi++) { 
+                        var elem =  $('#sf' + m + '-' + fi);
+                        $('#sf' + m + '-' + fi).trigger('zoom.destroy');
+                    }
                 }
             });
         }
 
         // disable right-click for fotorama
-        //$('[id^=mfotorama]').contextmenu(function() {
-        //   return false;
-        //});  
+        $('[id^=mfotorama]').contextmenu(function() {
+           return false;
+        });  
         
         $(window).on("resize", function() {
                     

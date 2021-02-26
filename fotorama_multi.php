@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama-Multi
  * Plugin URI:        https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
  * Description:       Fotorama Multi Slider
- * Version:           0.0.5
+ * Version:           0.0.6
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -291,7 +291,7 @@ function showmulti($attr, $content = null)
 	// Generate Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		$htmlstring  .= '<div id="Bilder" style="display : none"><figure><img loading="lazy" alt="' . $alttext . '"><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
-		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="cover" data-shadows="true" data-captions="'. $showcaption .'" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="true">';
+		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="cover" data-shadows="true" data-captions="'. $showcaption .'" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
 		
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
@@ -332,7 +332,7 @@ function showmulti($attr, $content = null)
 				$htmlstring .= '<a href="' . $imgurl . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . 
 				' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
 				// this is for the thumbnails
-				$htmlstring .= '<div id="f'. $shortcodecounter .'-'. $imgnr .'"><img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></div></a>'; 
+				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>'; 
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
 				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg' . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
@@ -452,7 +452,7 @@ function fotomulti_scripts()
 		wp_enqueue_style('fm-style3', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css');
 		wp_enqueue_style('fm-style4', 'https://unpkg.com/@raruto/leaflet-elevation@1.5.3/dist/leaflet-elevation.min.css');
 		wp_enqueue_style('fm-style7', 'https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css');
-		wp_enqueue_style('fm-style', $plugin_url . 'css/Control.FullScreen.min.css');
+		wp_enqueue_style('fm-style5', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/2.0.0/Control.FullScreen.min.css');
 
 		// Load Scripts
 		wp_enqueue_script('fm-script3', 'https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js', array('jquery'), '5.16.0', true); // does not work with d3 > version 6.0 !
@@ -461,15 +461,16 @@ function fotomulti_scripts()
 		wp_enqueue_script('fm-script12', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
 		wp_enqueue_script('fm-script5', 'https://unpkg.com/@raruto/leaflet-elevation@1.5.3/dist/leaflet-elevation.min.js', array('jquery'), '1.5.3', true);
 		wp_enqueue_script('fm-script8', 'https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script9', $plugin_url . 'js/fotorama_multi.js', array('jquery'), '', true);	
+		wp_enqueue_script('fm-script10','https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/2.0.0/Control.FullScreen.min.js', array('jquery'), '2.0.0', true);
+		wp_enqueue_script('fm-script11','https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
+		wp_enqueue_script('fm-script9', $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '', true);	
 	} else {
 		// Load local Styles
 		wp_enqueue_style('fm-style3', $plugin_url . 'css/leaflet.min.css');
 		wp_enqueue_style('fm-style4', $plugin_url . 'css/leaflet-elevation.min.css');
 		wp_enqueue_style('fm-style7', $plugin_url . 'css/leaflet-gesture-handling.min.css');
-		wp_enqueue_style('fm-style', $plugin_url . 'css/Control.FullScreen.css');
-		wp_enqueue_style('fm-style5', $plugin_url . 'js/any-element-zoom-pan/css/jquery.zoom.css');
-
+		wp_enqueue_style('fm-style5', $plugin_url . 'css/Control.FullScreen.min.css');
+	
 		// Load local Scripts
 		wp_enqueue_script('fm-script3',  $plugin_url . 'js/libs/d3.min.js', array('jquery'), '5.15.0', true); // does not work with d3 > version 6.0 !
 		wp_enqueue_script('fm-script2',  $plugin_url . 'js/libs/leaflet.min.js', array('jquery'), '1.7.1', true);
@@ -478,13 +479,8 @@ function fotomulti_scripts()
 		wp_enqueue_script('fm-script5',  $plugin_url . 'js/libs/leaflet-elevation.min.js', array('jquery'), '1.5.3', true);
 		wp_enqueue_script('fm-script8',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '', true);
 		wp_enqueue_script('fm-script10',  $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '', true);
-		//wp_enqueue_script('fm-script13',  $plugin_url . 'js/jquery-mousewheel-master/jquery.mousewheel.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script11',  $plugin_url . 'js/zoom-master/jquery.zoom.js', array('jquery'), '', true);
-		
-		//wp_enqueue_script('fm-script14',  'https://cdnjs.cloudflare.com/ajax/libs/jquery.panzoom/4.0.0/panzoom.js', array('jquery'), '4.0.0', true);
-		//wp_enqueue_script('fm-script11',  'https://unpkg.com/panzoom@9.4.1/dist/panzoom.min.js', array('jquery'), '9.4.1', true);
-		
-		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.js', array('jquery'), '0.0.7', true);	
+		wp_enqueue_script('fm-script11',  $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
+		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.0.7', true);	
 		
 	}
   }
