@@ -479,10 +479,10 @@ function fotomulti_scripts()
 		wp_enqueue_script('fm-script8',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '', true);
 		wp_enqueue_script('fm-script10',  $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '', true);
 		//wp_enqueue_script('fm-script13',  $plugin_url . 'js/jquery-mousewheel-master/jquery.mousewheel.js', array('jquery'), '', true);
-		//wp_enqueue_script('fm-script11',  $plugin_url . 'js/any-element-zoom-pan/js/zoom.jquery.js', array('jquery'), '', true);
+		wp_enqueue_script('fm-script11',  $plugin_url . 'js/zoom-master/jquery.zoom.js', array('jquery'), '', true);
 		
 		//wp_enqueue_script('fm-script14',  'https://cdnjs.cloudflare.com/ajax/libs/jquery.panzoom/4.0.0/panzoom.js', array('jquery'), '4.0.0', true);
-		wp_enqueue_script('fm-script11',  'https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js', array('jquery'), '9.4.0', true);
+		//wp_enqueue_script('fm-script11',  'https://unpkg.com/panzoom@9.4.1/dist/panzoom.min.js', array('jquery'), '9.4.1', true);
 		
 		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.js', array('jquery'), '0.0.7', true);	
 		

@@ -17,7 +17,7 @@
         var chartheight = new Array();
         var phpmapheight = new Array();   
         var zoomDiv = null;   
-        var fotoramaState = null;
+        var fotoramaState = 'normal';
         
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
@@ -526,7 +526,7 @@
                             for (var fi = 0; fi < fotorama.data.length; fi++) {  
                                 fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
                             }
-                            //fotorama.data[nr].$stageFrame[0].id = 'f' + m + '-' + nr;
+                            fotorama.data[nr].$stageFrame[0].id = 'f' + m + '-' + nr;
                             //fotorama.data[1].$stageFrame[0].id = 'f' + m + '-1';
                             
                         }
@@ -537,36 +537,20 @@
                             //elem = fotorama.activeFrame.$stageFrame[0].children[0];
                             //elem = document.getElementsByClassName('fotorama__stage__frame fotorama__loaded fotorama__loaded--img fotorama__active')[0]; 
                             //elem = $('.fotorama__stage__frame.fotorama__loaded.fotorama__loaded--img.fotorama__active')[0];
-                            elem = document.getElementById('f' + m + '-' + nr).firstChild;
-                            zoomDiv = null;
-
+                            //elem = document.getElementById('f' + m + '-' + nr);
                             if (fotoramaState == 'full') {
-                                zoomDiv = Panzoom(elem, {
-                                    maxScale: 5,
-                                    minScale: 1,
-                                    step : 0.25,
-                                    exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
-                                    panOnlyWhenZoomed: true,
+                                $('#f' + m + '-' + nr).zoom(
+                                    {url: fotorama.data[nr].full,
+                
                                 });
-                                zoomDiv.pan(0, 0);
-                                zoomDiv.zoom(1, { animate: true });
-                                elem.parentElement.addEventListener('wheel', zoomDiv.zoomWithWheel);
-                            } else {
-                                zoomDiv = Panzoom(elem, {
-                                    maxScale: 1,
-                                    minScale: 1,
-                                    //exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
-                                    panOnlyWhenZoomed: true,
-                                    disableZoom: true,
-                                    cursor: 'arrow',
-                                });
-                                zoomDiv.zoom(1);
-                                zoomDiv.pan(0, 0);
-                                //elem.parentElement.addEventListener('wheel', zoomDiv.zoomWithWheel);
-                            }        
+                            }
+
+                            //zoomDiv = null;
                         
 
-                            //console.log(fotoramaState, m, nr);
+                     
+                        
+
                           
                             maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
                         }
@@ -588,46 +572,31 @@
             }
             
             $('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', function (e, fotorama, extra) {
-                if (e.type === 'fotorama:fullscreenenter') {
-                    let nr = fotorama.activeIndex;
-                    let source = e.currentTarget.id;
-                    source = source.replace('mfotorama','');
-                    m = parseInt(source);
-                    var elem;
-                    fotoramaState = 'full';
+                let nr = fotorama.activeIndex;
+                let source = e.currentTarget.id;
+                source = source.replace('mfotorama','');
+                m = parseInt(source);
+              
+                $('#f' + m + '-' + nr).zoom(
+                    {url: fotorama.data[nr].full,
 
+                });
+
+                if (e.type === 'fotorama:fullscreenenter') {
+                    fotoramaState = 'full';
                     // Options for the fullscreen
                     fotorama.setOptions({
                         fit: 'contain'
                     });
 
-                    // zooming 
-                    elem = document.getElementById('f' + m + '-' + nr).firstChild;
-                    zoomDiv = null;
-                    zoomDiv = Panzoom(elem, {
-                        maxScale: 5,
-                        minScale: 1,
-                        step : 0.25,
-                        exclude: ['fotorama__caption', 'fotorama__caption__wrap'],
-                        panOnlyWhenZoomed: true,
-                    });
-                    zoomDiv.pan(0, 0);
-                    zoomDiv.zoom(1, { animate: true });
-                    elem.parentElement.addEventListener('wheel', zoomDiv.zoomWithWheel);
-                
                 } else {
-                    zoomDiv.zoom(1, { animate: true });
-                    zoomDiv.pan(0, 0);
-                    //zoomDiv.reset();
-                    //zoomDiv.destroy();
-                    zoomDiv = null;
-
                     // Back to normal settings
                     fotorama.setOptions({
                         fit: 'cover'
                     }); 
                     fotoramaState = 'normal';
-                
+                    //$('#f' + m + '-' + nr).zoom();
+                    $('#f' + m + '-' + nr).trigger('zoom.destroy');
                 }
             });
         }
