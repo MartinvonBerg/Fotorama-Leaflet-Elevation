@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Fotoramamulti\n"
-"POT-Creation-Date: 2021-01-29 18:26+0100\n"
-"PO-Revision-Date: 2021-01-29 18:27+0100\n"
+"POT-Creation-Date: 2021-02-27 07:47+0100\n"
+"PO-Revision-Date: 2021-02-27 11:11+0100\n"
 "Last-Translator: \n"
 "Language-Team: Martin von Berg\n"
 "Language: de_DE\n"
@@ -17,31 +17,147 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:4c,1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: inc/admin_settings.php:60
+#: fotorama_multi.php:375 fotorama_multi.php:378
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Download"
+msgstr "Herunterladen"
+
+#: fotorama_multi.php:411
+msgid "Start address"
+msgstr "Startadresseeee"
+
+#: inc/admin_settings.php:59
 msgid "Save GPX-File"
 msgstr "GPX-Datei speichern"
 
-#: inc/admin_settings.php:335 inc/admin_settings.php:336
-#: inc/admin_settings.php:394
+#: inc/admin_settings.php:387 inc/admin_settings.php:388
+#: inc/admin_settings.php:446
 msgid "GPX-File"
 msgstr "GPX-Datei"
 
-#: inc/admin_settings.php:341
+#: inc/admin_settings.php:393
 msgid "GPX-Parsing"
 msgstr "GPX-Datei reduzieren"
 
-#: inc/admin_settings.php:349
+#: inc/admin_settings.php:401
 msgid "Distance-Smooth"
 msgstr "Abstand filtern"
 
-#: inc/admin_settings.php:357
+#: inc/admin_settings.php:409
 msgid "Elevation-Smooth"
 msgstr "Höhe filtern"
 
-#: inc/admin_settings.php:365
+#: inc/admin_settings.php:417
 msgid "Overwrite GPX-Track"
 msgstr "GPX-Datei überschreiben"
 
-#: inc/admin_settings.php:393
+#: inc/admin_settings.php:445
 msgid "Reduce and add Metadata to"
 msgstr "Reduziere und ergänze Metadaten der"
+
+#: js/fotorama_multi.js:212 js/fotorama_multi.min.js:1
+msgid "Show fullscreen"
+msgstr "Vollbild"
+
+#: js/fotorama_multi.js:213 js/fotorama_multi.min.js:1
+msgid "Exit fullscreen"
+msgstr "Vollbild beenden"
+
+#: js/fotorama_multi.js:230 js/fotorama_multi.min.js:1
+msgid "Show all"
+msgstr ""
+
+#: js/fotorama_multi.js:382 js/fotorama_multi.js:387 js/fotorama_multi.js:763
+#: js/fotorama_multi.js:768 js/fotorama_multi.min.js:1
+#, fuzzy
+#| msgid "Distance-Smooth"
+msgid "Distance"
+msgstr "Abstand filtern"
+
+#: js/fotorama_multi.js:383 js/fotorama_multi.js:388 js/fotorama_multi.js:764
+#: js/fotorama_multi.js:769 js/fotorama_multi.min.js:1
+msgid "Ascent"
+msgstr ""
+
+#: js/fotorama_multi.js:384 js/fotorama_multi.js:389 js/fotorama_multi.js:765
+#: js/fotorama_multi.js:770 js/fotorama_multi.min.js:1
+msgid "Descent"
+msgstr ""
+
+#: js/fotorama_multi.js:494 js/fotorama_multi.min.js:1
+msgid "Images"
+msgstr ""
+
+#: js/libs/extended-ui.js:92 js/libs/extended-ui.min.js:4
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Total Ascent: "
+msgstr ""
+
+#: js/libs/extended-ui.js:94 js/libs/extended-ui.min.js:4
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Total Descent: "
+msgstr ""
+
+#: js/libs/extended-ui.js:95 js/libs/extended-ui.min.js:5
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Min Slope: "
+msgstr ""
+
+#: js/libs/extended-ui.js:96 js/libs/extended-ui.min.js:5
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Max Slope: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+#, fuzzy
+#| msgid "Elevation-Smooth"
+msgid "Elevation"
+msgstr "Höhe filtern"
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Total Length: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Max Elevation: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Min Elevation: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Total Time: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "mph"
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Min Speed: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Max Speed: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Avg Speed: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "ft/s²"
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Min Acceleration: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Max Acceleration: "
+msgstr ""
+
+#: js/libs/leaflet-elevation.min.js:1
+msgid "Avg Acceleration: "
+msgstr ""

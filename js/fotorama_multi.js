@@ -806,10 +806,21 @@
                 'Exit fullscreen' : 'Quitter le mode plein écran',
             };
 
+            let es = {
+                'Show all' : "Mostrar Todo",
+                'Distance' : "Distancia",
+                "Ascent"   : "Ascenso",
+                "Descent"  : "Descenso",
+                "Altitude" : "Altura", // is in file /src/altitude.js
+                "Images"   : "Fotos",
+                'Show fullscreen' : 'Mostrar pantalla completa',
+                'Exit fullscreen' : 'Salir de pantalla completa',
+            };
+
             var lang = navigator.language;
             lang = lang.split('-')[0];
 
-            if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') ) {
+            if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
                 L.registerLocale(lang, eval(lang) );
                 L.setLocale(lang);
                 return mylocale;

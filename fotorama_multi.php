@@ -91,6 +91,9 @@ function showmulti($attr, $content = null)
 		'markertext' => 'Home address',
 	), $attr));
 
+	// Detect Language of the client request
+	$lang = substr(\explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0], 0, 2); 
+
 	$mapcenter = explode(',',$mapcenter);
 
 	// Define path and url variables
@@ -372,10 +375,10 @@ function showmulti($attr, $content = null)
 	// provide GPX-download if defined
 	if ( ($dload == 'true') and ($i > 0))  {
 		if ($i == 1) {
-			$htmlstring .= '<p>Download: <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></p>';
+			$htmlstring .= '<p>' . t('Download', $lang) . ': <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></p>';
 		} else {
 			$gpxf = explode(',',$gpxfile);
-			$htmlstring .= '<p><strong>Download: '; // <a download=""</a>
+			$htmlstring .= '<p><strong>' . t('Download', $lang) . ': '; // <a download=""</a>
 			foreach ($gpxf as $f){
 				$htmlstring .= ' <a download="' . $f . '" href="' . $gpx_url . $f . '">'. $f .' - </a>';
 			}
@@ -405,7 +408,11 @@ function showmulti($attr, $content = null)
 			$lon = get_post_meta($postid,'lon');
 			$googleurl = 'https://www.google.com/maps/place/' . $lat[0] . ',' . $lon[0] . '/@' . $lat[0] . ',' . $lon[0] . ',9z';
 			$v2 = '<a href="' .$googleurl. '" target="_blank">'. $v .'</a>';
-			$htmlstring .= '<p>'. $adresstext. ': ' .  $v2 . '</p>';
+			if ($adresstext != 'Start address'){
+				$htmlstring .= '<p>'. $adresstext. ': ' .  $v2 . '</p>';
+			} else {
+				$htmlstring .= '<p>'. t('Start address', $lang) . ': ' .  $v2 . '</p>';
+			}
 		}
 	}
 	$htmlstring  .= '</div></div>';
@@ -499,6 +506,43 @@ function i18n_init() {
 	$success = load_plugin_textdomain( 'fotoramamulti', false, $dir);
 }
 
-//add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\i18n_init');
+add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\i18n_init'); // only for translations in the admin-settings page
+
+/**
+ * translate strings on client request
+ *
+ * @param $string $translate the string to translate
+ * @param $string $language	 the client language
+ * @return $string the translated string for defined language or the original string
+ */
+function t($translate, $language) {
+	
+	$languages = array('de', 'fr', 'it', 'es'); // provided translations
+
+	$de = array(
+		'Download' => 'Herunterladen',
+		'Start address' => 'Startadresse');
+
+	$fr = array(
+		'Download' => 'Télécharges',
+		'Start address' => 'Adresse de départ');
+
+	$it = array(
+		'Download' => 'Scarica',
+		'Start address' => 'Indirizzo iniziale');
+
+	$es = array(
+		'Download' => 'Descarga',
+		'Start address' => 'Dirección de inicio');
+
+	if ( ! in_array($language, $languages)) {
+		$language = "en";
+		return $translate;
+	} else {
+		$translate = isset( $$language[$translate]) ? $$language[$translate] : $translate;
+	}
+
+	return $translate;
+}
 
 
