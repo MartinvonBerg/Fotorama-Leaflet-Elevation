@@ -11,12 +11,12 @@
         var fotorama = new Array();
         var phpvars = new Array();
         var storemarker = new Array();
-        var circlemarker = new Array(); // weg
         var newmarker = new Array();
         var mrk = new Array();   
         var chartheight = new Array();
         var phpmapheight = new Array();   
-        var fotoramaState = 'normal';
+        var fotoramaState = 'normal'; // for zooming
+        var zoomeffect = 'mouseover'; // for: https://www.jacklmoore.com/zoom/
         
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
@@ -43,7 +43,8 @@
                 shadowAnchor: [16, 32],
             });
 
-            var opts = { // Kartenoptionen definieren 
+            // Kartenoptionen definieren
+            var opts = {  
                 map: {
                     center: [41.4583, 12.7059],
                     zoom: 5,
@@ -56,7 +57,7 @@
                 },
                 layersControl: {
                     options: {
-                    collapsed: true, //mobile == true, // mobile: false // desktop: true
+                    collapsed: true, 
                     },
                 },
             };
@@ -81,6 +82,7 @@
             var group1 = new Array();
         }
         
+        // do it for all shortcodes on the page or post
         for (var m = 0; m < numberOfboxes; m++) {
 
             var hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
@@ -104,7 +106,9 @@
                     h>w ? width = h : width = w;
                 }
         
+                // replace thumbnails in html souce-code with images from srcset
                 if (newimages[0].srcset) {
+                    // nur ausführen wenn images vorhanden! ansonsten das ursprüngliche belassen! php liefert reduzierte bilder nur mit wpid also wenn in wp medialib
                     if (olddata.length == newimages.length) {
                         // Assumption: array newimages has the same sorting as olddata and the srcset is the same for all images
                         let srcarray = newimages[0].srcset
@@ -129,7 +133,7 @@
                                 newdata[index] = {img: newimages[index].srcset[ srcindex ], thumb: item.thumb, full: newimages[index].srcset['2560'], caption: item.caption};
                             }
                         }
-                        // nur ausführen wenn images vorhanden! ansonsten das ursprüngliche belassen! php liefert reduzierte bilder nur mit wpid also wenn in wp medialib
+                        
                         fotorama[m].load(newdata);
                     }
                 }
@@ -139,18 +143,18 @@
             var hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
 
             if ( hasMap) {
-                // get js-variable from php-output
+                // get js-variables from php-output
                 let phptracks = eval('wpfm_phpvars'+m);
                 chartheight[m] = phptracks.chartheight;
                 phpmapheight[m] = phptracks.mapheight;
 
-                //get options for maps without tracks
+                //get options for maps without gpx-tracks
                 if ( (parseInt(phptracks.ngpxfiles) == 0) && (! hasFotorama) ) {
                     opts.map.center = phptracks.mapcenter;
                     opts.map.zoom = phptracks.zoom;
                 }
 
-                // Kartenlayer definieren 
+                // define map layers 
                 layer1[m] = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: 'MapData:&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
@@ -168,36 +172,39 @@
                     attribution: 'Tiles &copy; Esri &mdash; Source: Esri User Community'
                     });
 
+                // set map attribution for mobile devices to a short string
                 if ( mobile ) {
                     layer1[m].options.attribution = layer2[m].options.attribution;
                     layer3[m].options.attribution = layer2[m].options.attribution;
                     layer4[m].options.attribution = layer2[m].options.attribution;
                 };      
 
-                baseLayers[m] = { // Kartenoptionen definieren 
+                // define base layers for leaflet map
+                baseLayers[m] = {  
                     "OpenStreetMap": layer2[m],
-                    "OpenTopoMap": layer1[m],
+                    "OpenTopoMap": layer1[m], 
                     "Bike-Hike-Map": layer3[m],
                     "Satellit": layer4[m]
                 }  
                 // set the language strings
                 var mylocale = setlang();
 
+                // initiate the leaflet map
                 maps[m] = new L.Map('map' + m, opts.map); 
                 if (numberOfMaps == 1 && showalltracks){
-                    maps[m].addLayer(baseLayers[m].OpenStreetMap); 
+                    maps[m].addLayer(baseLayers[m].OpenStreetMap); // this one is preselected for multiple tracks
                 } else {
-                    maps[m].addLayer(baseLayers[m].OpenTopoMap); 
+                    maps[m].addLayer(baseLayers[m].OpenTopoMap); // this one is preselected for one gpx-track
                 }
                 bounds[m] = maps[m].getBounds;  
             
-                // create scale control top left // mobile: zoom deactivate. use fingers!
+                // create scale control top left // for mobile: zoom deactivated. use fingers!
                 if ( ! mobile ) { 
                     controlZoom[m] = new L.Control.Zoom(opts.zoomControl); 
                     controlZoom[m].addTo(maps[m]); 
                 }
 
-                //------- Lupe, Image-Marker und Base-Layer-Change handling --------------------------------
+                //------- Magnifying glass, fullscreen, Image-Marker und Base-Layer-Change handling --------------------------------
 
                 // create a fullscreen button and add it to the map
                 L.control.fullscreen({
@@ -210,7 +217,7 @@
                     fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
                 }).addTo(maps[m]);
 
-                // Functions and Overlays for Show-all in the top left corner
+                // Functions and Overlays for Show-all (Magnifying glass) in the top left corner
                 L.Control.Watermark = L.Control.extend({
                     onAdd: function () {
                         let img = L.DomUtil.create('img');
@@ -246,6 +253,8 @@
 
                 // create Track selector bottom right
                 baseLayers2[m] = {};
+
+                // create tracks or marker
                 if (parseInt(phptracks.ngpxfiles) > 0) {
                     // create elevation chart(s) -----------------------
                     eleopts[m] = { // Kartenoptionen definieren : können für alle Karten gleich sein
@@ -274,7 +283,7 @@
                         }
                     };
 
-                    if (showalltracks === false) {
+                    if (showalltracks === false) { // this is for the single gpx-track case
                         controlLayer2[m] = L.control.layers(baseLayers2[m], null, {collapsed:true}); 
                         controlLayer2[m].setPosition('bottomright')
                         controlLayer2[m].addTo(maps[m]);
@@ -287,6 +296,7 @@
                     traces[m] = [];
                     tracks[m] = phptracks.tracks;                     
 
+                    // part to show multiple tracks in one map, a bit experimental and not perfect
                     if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks === true) {
                         m = 0;
                         grouptracks[m] = [];
@@ -313,6 +323,7 @@
                         routes.addTo(maps[m]);
                         bounds[m] = maps[m].getBounds().pad(0.5);
 
+                        // workaround to show the first track with elevation chart
                         window.setTimeout( function(e) { 
                             maps[0].zoomOut(1); // nur mit m=0, da zu Anfang geladen, kein Event gefunden map.on('load') geht nicht
 
@@ -326,16 +337,10 @@
 
                         }, 1000);
 
-                        $('#boxmap0').on('scroll touchmove mousewheel', function(e){
-                            e.preventDefault();
-                            e.stopPropagation();
-                            return false;
-                        });
-                           
+                        // function to show the current track statistics with an mutation observer                          
                         maps[0].on( 'eledata_loaded eledata_added eledata_clear', function() {
                             m = 0; 
-                            page.stop();
-                            bounds[m] = maps[m].getBounds().pad(0.5); // 0 .. -0.5 possible: -0.2 best
+                            bounds[m] = maps[m].getBounds(); //.pad(0.5); // 0 .. -0.5 possible: -0.2 best
 
                             // Select the node that will be observed for mutations
                             const targetNode = document.getElementsByClassName('leaflet-bottom')[1];
@@ -349,6 +354,7 @@
                                 var keyarray = Object.keys(routes._routes);
                                 //let endstyle = '';;
 
+                                // find the track in div
                                 for (var c = 0; c < len; c++){
                                     let child = div[1].children[c].children[0].children[1];
                                  
@@ -362,12 +368,14 @@
                                     }       
                                  }
 
+                                 // do this for all routes that were loaded
                                  keyarray.forEach(key => {
                                     //
                                     let info = routes._routes[key]._info.desc;
                                     let name = routes._routes[key]._info.name;
                                     let q = document.querySelector.bind(document);
 
+                                    // update only for the active track
                                     if (name == track) {
                                         if (info) {info = info.split(' ')} else {info='';};
                                         if (info[1] && info[4] && info[7]) { 
@@ -391,14 +399,16 @@
 
                         } ); 
 
-                    } else {
+                    } 
+                    // part to show one track at time
+                    else {
                         var i = 0;
                         for (var track in tracks[m]) {
                             loadTrace(m, track, i++)
                         } 
                     }
                 } else {
-                    // Create simple marker
+                    // No gpx-track to show: Create simple marker
                     L.marker(opts.map.center, { title: phptracks.markertext,}).addTo(maps[m]);
                 }
 
@@ -443,6 +453,7 @@
                     let marker = new Array();
                     let j = 0;
                 
+                    // define image markers for map
                     phptracks.imgdata.forEach(tour => { 
                         if ( (tour["coord"][0] == null) || (tour["coord"][1] == null) ) {
                             // do nothing
@@ -463,8 +474,7 @@
                                 var source = a.originalEvent.currentTarget.id;
                                 source = source.replace('map','');
                                 m = parseInt( source);
-                                //console.log('Map '+ m +' Marker Nr.' + this.options.id + ' clicked');
-                                // remove circlemarker[m]
+                                                               
                                 fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
                             });
                             marker[j].on('mouseover', function (e) {
@@ -497,19 +507,17 @@
             }
         } // end for m maps
         
-        // jQuery fotorama functions for fullscreen, map interaction e.q marker settings
+        // jQuery fotorama functions for fullscreen, map interaction e.q marker settings. 
         if ( numberOfFotorama > 0) {
+
             if (numberOfMaps > 0) {
+              // update markers and zoomed image  
               $('.fotorama').on('fotorama:showend fotorama:load',
                 function (e, fotorama, extra) {
                     let nr = fotorama.activeIndex;
                     let source = e.currentTarget.id;
                     source = source.replace('mfotorama','');
                     m = parseInt(source);
-
-                    //if (circlemarker[m]) {
-                    //    maps[m].removeLayer(circlemarker[m])
-                    //};
 
                     if ((maps != 'undefined') && phpvars[m].imgdata[nr].coord[0]) {
                         //console.log('change in: ' + e.currentTarget.id + ' index: ' + nr + 'Koord: ' + phpvars[m].imgdata[nr].coord[0] + ':' + phpvars[m].imgdata[nr].coord[1] ); 
@@ -532,11 +540,14 @@
                         if (e.type === 'fotorama:showend') {
                             // set id in current active stage Frame
                             fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
-                
+                            
+                            // zoom the active frame if full, only for desktop
+                            // source: https://www.jacklmoore.com/zoom/
                             if (fotoramaState == 'full') {
                                 $('#sf' + m + '-' + nr).zoom(
                                     {url: fotorama.data[nr].full,
-                
+                                     on: zoomeffect,
+                                     touch: false,
                                 });
                             } else {
                                 $('#sf' + m + '-' + nr).trigger('zoom.destroy');
@@ -545,7 +556,6 @@
                             maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
                         }
 
-                        //circlemarker[m] = L.marker([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ], { icon: myIcon2  }).addTo(maps[m]);
                         if (storemarker[m].options.id != mrk[m][nr].options.id) {
                             maps[m].removeLayer(newmarker[m]);
                             storemarker[m].setIcon(myIcon1);
@@ -561,7 +571,7 @@
                     }
                 });
             } else {
-                // part for fotorama zoom in fullscreen without map
+              // part for fotorama zoom in fullscreen without leaflet map
               $('.fotorama').on('fotorama:showend fotorama:load',
                 function (e, fotorama, extra) {
                     let nr = fotorama.activeIndex;
@@ -585,7 +595,8 @@
                             // activate the zoom in fullscreen
                             $('#sf' + m + '-' + nr).zoom(
                                 {url: fotorama.data[nr].full,
-            
+                                 on: zoomeffect,
+                                 touch: false,
                             });
                         } else {
                             // destroy / deactivate zoom in normal-mode
@@ -610,7 +621,8 @@
 
                     $('#sf' + m + '-' + nr).zoom(
                         {url: fotorama.data[nr].full,
-    
+                         on: zoomeffect,
+                         touch: false,
                     });
 
                 } else {
@@ -621,18 +633,18 @@
                     fotoramaState = 'normal';
                   
                     for (var fi = 0; fi < fotorama.data.length; fi++) { 
-                        var elem =  $('#sf' + m + '-' + fi);
                         $('#sf' + m + '-' + fi).trigger('zoom.destroy');
                     }
                 }
             });
         }
 
-        // disable right-click for fotorama
+        // disable right-click for fotorama, needed for the zoom function
         $('[id^=mfotorama]').contextmenu(function() {
            return false;
         });  
         
+        // function for resizing for responsive devices
         $(window).on("resize", function() {
                     
             var fotowidth = $('[id^=mfotorama]').width();
@@ -725,6 +737,7 @@
             traces[m].push(trace);
         }
 
+        // Function to update the elevation trace
         function setElevationTrace(m, index) {
             let trace = traces[m][index];
 
@@ -758,6 +771,7 @@
             }
         }
 
+        // i18n translation
         function setlang() {
             let de = {
                 'Show all' : "Alles anzeigen",
@@ -802,4 +816,5 @@
             } else {return;}
         }; 
     }
+
 })(document, jQuery);
