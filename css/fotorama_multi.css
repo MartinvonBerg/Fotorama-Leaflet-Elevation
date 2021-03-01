@@ -2,12 +2,10 @@
 
 
 /*------------- grid -----------------------*/
-@media screen and (min-width: 480px) {
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(30em, 1fr)); /* change the value xxx em here for grid settings */
-    grid-gap: 10px;
-  }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));  /*change the value xxx em here for grid settings */
+  grid-gap: 5px;
 }
 
 /*------------- fotorama -----------------------*/

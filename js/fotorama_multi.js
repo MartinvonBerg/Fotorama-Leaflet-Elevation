@@ -379,14 +379,24 @@
                                     if (name == track) {
                                         if (info) {info = info.split(' ')} else {info='';};
                                         if (info[1] && info[4] && info[7]) { 
-                                            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km"; 
-                                            q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
-                                            q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
-                                        
+                                            q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
+                                            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = info[1] + " km"; 
+
+                                            q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
+                                            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = info[4] + " m";
+
+                                            q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';
+                                            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = info[7] + " m";
+                                          
                                         } else {
-                                            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': '  + (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
-                                            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = L._('Ascent')   + ': +' + trace.gpx.get_elevation_gain().toFixed(0) + " m";
-                                            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = L._('Descent')  + ': -' + trace.gpx.get_elevation_loss().toFixed(0) + " m";
+                                            q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
+                                            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
+
+                                            q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
+                                            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = trace.gpx.get_elevation_gain().toFixed(0) + " m";
+
+                                            q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';                                            
+                                            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = trace.gpx.get_elevation_loss().toFixed(0) + " m";
                                         }
                                     }
                                  });
@@ -759,15 +769,25 @@
 
             var info = trace.gpx._info.desc;
             if (info) {info = info.split(' ')} else {info='';};
-            if (info[1] && info[4] && info[7]) { 
-                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': ' + info[1] + " km"; 
-                q('#data-summary'+m+' .gain .summaryvalue').innerHTML = L._('Ascent') + ': +' + info[4] + " m";
-                q('#data-summary'+m+' .loss .summaryvalue').innerHTML = L._('Descent') + ': -' + info[7] + " m";
+            if (info[0]=='Dist:' && info[1] && info[4] && info[7]) { 
+                q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
+                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = info[1] + " km"; 
+
+                q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
+                q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = info[4] + " m";
+
+                q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';
+                q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = info[7] + " m";
               
             } else {
-                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = L._('Distance') + ': '  + (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
-                q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = L._('Ascent')   + ': +' + trace.gpx.get_elevation_gain().toFixed(0) + " m";
-                q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = L._('Descent')  + ': -' + trace.gpx.get_elevation_loss().toFixed(0) + " m";
+                q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
+                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = (trace.gpx.get_distance() / 1000).toFixed(2) + " km";
+
+                q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
+                q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = trace.gpx.get_elevation_gain().toFixed(0) + " m";
+
+                q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';                                            
+                q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = trace.gpx.get_elevation_loss().toFixed(0) + " m";
             }
         }
 

@@ -449,7 +449,7 @@ function fotomulti_scripts()
   if (!is_front_page() || !is_home()) {
 
 	// Load Styles
-	wp_enqueue_style('fm-style1', $plugin_url . 'css/fotorama_multi.min.css');
+	wp_enqueue_style('fm-style1', $plugin_url . 'css/fotorama_multi.css');
 	wp_enqueue_style('fm-style2', $plugin_url . 'css/fotorama3.min.css');
 	// Load Scripts
 	wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '3.1.0', true);
