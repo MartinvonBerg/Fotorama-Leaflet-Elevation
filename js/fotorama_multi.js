@@ -1,3 +1,5 @@
+/* d3 migration guide: https://observablehq.com/@d3/d3v6-migration-guide */
+
 (function (document, $, undefined) {
     "use strict";
     var numberOfboxes = document.querySelectorAll('[id^=multifotobox]').length;
