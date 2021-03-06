@@ -88,6 +88,7 @@ class FotoramaElevation {
 				$example.= 'adresstext="' .         $this->fotorama_elevation_options['text_for_start_address_8'] . '" ';
 				$example.= 'requiregps="' .         $this->fotorama_elevation_options['images_with_gps_required_5'] . '" ';
 				$example.= 'maxwidth="' .           $this->fotorama_elevation_options['max_width_of_container_12'] . '" ';
+				$example.= 'minrowwidth="' .        $this->fotorama_elevation_options['min_width_css_grid_row_14'] . '" ';
 				$example.= 'showcaption="' .        $this->fotorama_elevation_options['show_caption_4'] . '" ';
 				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '" ';
 				$example.= 'mapcenter="48.12,12.35" ';
@@ -231,6 +232,13 @@ class FotoramaElevation {
 				<td class="tg-0pky">Maximum width of the whole container with slider and map</td>
 			</tr>
 			<tr>
+				<td class="tg-0pky">minrowwidth</td>
+				<td class="tg-0pky">480</td>
+				<td class="tg-0pky">minrowwidth="480"</td>
+				<td class="tg-0pky">Minimum width of one row of the CSS-Grid. If greater than maxwidth/2 Fotorama and the map are never shown in one row. 
+									Mind that the max. width of the outer div may be inherited from other elements or set by the theme.</td>
+			</tr>
+			<tr>
 				<td class="tg-0pky">showcaption</td>
 				<td class="tg-0pky">true / false</td>
 				<td class="tg-0pky">showcaption="true"</td>
@@ -311,6 +319,23 @@ class FotoramaElevation {
 			'fotorama-elevation-admin', // page
 			'fotorama_elevation_setting_section' // section
         );
+
+		add_settings_field(
+			'setCustomFields_15', // id
+			'Set Custom Fields for post', // title
+			array( $this, 'setCustomFields_15_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'fotorama_elevation_setting_section' // section
+        );
+
+		add_settings_field(
+			'doYoastXmlSitemap_16', // id
+			'Generate Entries in Yoast XML-Sitemap for Fotorama Images', // title
+			array( $this, 'doYoastXmlSitemap_16_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'fotorama_elevation_setting_section' // section
+        );
+
         // ---------- Leaflet Elevation Settings Section
         add_settings_section(
 			'leaflet_elevation_setting_section', // id
@@ -379,6 +404,14 @@ class FotoramaElevation {
 			'max_width_of_container_12', // id
 			'Max Width of Container in px', // title
 			array( $this, 'max_width_of_container_12_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'leaflet_elevation_setting_section' // section
+		);
+
+		add_settings_field(
+			'min_width_css_grid_row_14', // id
+			'Min Width of one CSS-grid Row in px', // title
+			array( $this, 'min_width_css_grid_row_14_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
@@ -599,6 +632,22 @@ class FotoramaElevation {
 			$sanitary_values['useCDN_13'] = 'false';
 		}
 
+		if ( isset( $input['min_width_css_grid_row_14'] ) ) {
+			$sanitary_values['min_width_css_grid_row_14'] = $this->my_sanitize_int_with_limits($input['min_width_css_grid_row_14'], $this->min_width/2, $this->max_width );
+		}
+
+		if ( isset( $input['setCustomFields_15'] ) ) {
+			$sanitary_values['setCustomFields_15'] = 'true';
+		} else {
+			$sanitary_values['setCustomFields_15'] = 'false';
+		}
+
+		if ( isset( $input['doYoastXmlSitemap_16'] ) ) {
+			$sanitary_values['doYoastXmlSitemap_16'] = 'true';
+		} else {
+			$sanitary_values['doYoastXmlSitemap_16'] = 'false';
+		}
+
 		$sanitary_values['gpx_file'] = $input['gpx_file'] ;
 
 		return $sanitary_values;
@@ -726,6 +775,32 @@ class FotoramaElevation {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[useCDN_13]" id="useCDN_13" value="useCDN_13" %s> <label for="useCDN_13">Use CDN for js- and css-Library-Files</label>',
 			( isset( $this->fotorama_elevation_options['useCDN_13'] ) && $this->fotorama_elevation_options['useCDN_13'] === 'true' ) ? 'checked' : ''
+		);
+	}
+
+	public function min_width_css_grid_row_14_callback() {
+		printf(
+			'<input type="number" min="'. $this->min_width/2 .'" max="'. $this->max_width .'" name="fotorama_elevation_option_name[min_width_css_grid_row_14]" id="min_width_css_grid_row_14" value="%s"><label>  Min: %s px, Max: %s px</label>',
+			isset( $this->fotorama_elevation_options['min_width_css_grid_row_14'] ) ? esc_attr( $this->fotorama_elevation_options['min_width_css_grid_row_14']) : '480',
+			$this->min_width/2, $this->max_width
+		);
+	}
+
+	public function setCustomFields_15_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[setCustomFields_15]" id="setCustomFields_15" value="setCustomFields_15" %s> 
+			<label for="setCustomFields_15">
+			Set Custom Fields (geojson, lat, lon, postimg) in post. Geojson is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map
+			</label>',
+			( isset( $this->fotorama_elevation_options['setCustomFields_15'] ) && $this->fotorama_elevation_options['setCustomFields_15'] === 'true' ) ? 'checked' : ''
+		);
+	}
+
+	public function doYoastXmlSitemap_16_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[doYoastXmlSitemap_16]" id="doYoastXmlSitemap_16" value="doYoastXmlSitemap_16" %s> 
+			<label for="doYoastXmlSitemap_16">Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Stored in Custom field `postimg`</label>',
+			( isset( $this->fotorama_elevation_options['doYoastXmlSitemap_16'] ) && $this->fotorama_elevation_options['doYoastXmlSitemap_16'] === 'true' ) ? 'checked' : ''
 		);
 	}
 

@@ -25,14 +25,14 @@ defined('ABSPATH') || die('Are you ok?');
 const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. But where?
 
 // load globals and functions for status transitions only if needed or intended
-const setCustomFields = true;
-if (setCustomFields) {
+$const1 = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15']; // liefert 'true'
+if ($const1 == 'true') {
 	require_once __DIR__ . '/inc/stateTransitions.php';
 }
 
 // load the wpseo_sitemap_url-images callback to add images of post to the sitemap only if needed or intended
-const doYoastXmlSitemap = true;
-if (doYoastXmlSitemap) {
+$const2 = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16'];
+if ($const2 == 'true') {
 	require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 }
 
@@ -55,6 +55,8 @@ function showmulti($attr, $content = null)
 	global $post_state_draft_2_pub;
 	$pub_2_draft = $post_state_pub_2_draft ?? false;
 	$draft_2_pub = $post_state_draft_2_pub ?? false;
+	$setCustomFields = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15'] == 'true'; // liefert 'true'
+	$doYoastXmlSitemap = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16'] == 'true';
 	
 	// --- Variables -----------------------------------
 	$postid = get_the_ID();
@@ -83,6 +85,7 @@ function showmulti($attr, $content = null)
 		'adresstext' => $fotorama_elevation_options['text_for_start_address_8'] ?? 'Startadresse',
 		'requiregps' => $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
 		'maxwidth' => $fotorama_elevation_options['max_width_of_container_12'] ?? '600', 
+		'minrowwidth' => $fotorama_elevation_options['min_width_css_grid_row_14'] ?? '480',
 		'showcaption' => $fotorama_elevation_options['show_caption_4'] ?? 'true',
 		'eletheme' => $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'], 
 		'showalltracks' => 'false',
@@ -179,7 +182,7 @@ function showmulti($attr, $content = null)
 				);
 			
 				// create array to add the image-urls to Yoast-seo xml-sitemap // TODO: anpassung für multi!!!
-				if (doYoastXmlSitemap) {
+				if ($doYoastXmlSitemap) {
 					$img2add = $up_url . '/' . $imgpath . '/' . $jpgfile . '.jpg';
 					$postimages[] = array('src' => $img2add , 'alt' => $title, );
 				}
@@ -221,10 +224,10 @@ function showmulti($attr, $content = null)
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
 	if ($draft_2_pub)  { // TODO: anpassung für multi!!!
 	//if (\current_user_can('edit_posts')) { 	
-		if (setCustomFields) {
+		if ($setCustomFields) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 		}
-		if (doYoastXmlSitemap) {
+		if ($doYoastXmlSitemap) {
 			$postimages = maybe_serialize($postimages);
 			delete_post_meta($postid,'postimg');
 			update_post_meta($postid,'postimg',$postimages,'');
@@ -243,7 +246,7 @@ function showmulti($attr, $content = null)
 			if ($i == 0) {
 				$gpxfile .= $f;
 
-				if ($draft_2_pub and setCustomFields) {
+				if ($draft_2_pub and $setCustomFields) {
 				//if (\current_user_can('edit_posts') and setCustomFields) {	
 					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
 					//TODO: anpassung für multi!!!
@@ -287,8 +290,14 @@ function showmulti($attr, $content = null)
 		}
 	}
 
+	// Generate the inline style for the CSS-Grid. Identical for all shortcodes!
+	if ($shortcodecounter == 0) {
+		$htmlstring  .= '<style type="text/css">';
+		$htmlstring  .= ' .mfoto_grid { display: grid;';
+		$htmlstring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} </style>';  
+	}
 	// Generate the html-code start with the surrounding Div
-	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' class="grid" style="max-width:'. $maxwidth .'px;">';
+	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' class="mfoto_grid" style="max-width:'. $maxwidth .'px;">';
 	$imgnr = 1;
 
 	// Generate Fotorama images for fotorama-javascript-rendering
@@ -470,7 +479,7 @@ function fotomulti_scripts()
 		wp_enqueue_script('fm-script8', 'https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js', array('jquery'), '', true);
 		wp_enqueue_script('fm-script10','https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/2.0.0/Control.FullScreen.min.js', array('jquery'), '2.0.0', true);
 		wp_enqueue_script('fm-script11','https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-		wp_enqueue_script('fm-script9', $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '', true);	
+		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '', true);	
 	} else {
 		// Load local Styles
 		wp_enqueue_style('fm-style3', $plugin_url . 'css/leaflet.min.css');
@@ -485,8 +494,8 @@ function fotomulti_scripts()
 		wp_enqueue_script('fm-script12', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
 		wp_enqueue_script('fm-script5',  $plugin_url . 'js/libs/leaflet-elevation.min.js', array('jquery'), '1.5.3', true);
 		wp_enqueue_script('fm-script8',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script10',  $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script11',  $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
+		wp_enqueue_script('fm-script10', $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '', true);
+		wp_enqueue_script('fm-script11', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
 		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.0.7', true);	
 		
 	}
@@ -502,14 +511,13 @@ add_action('wp_enqueue_scripts', 'mvbplugins\fotoramamulti\fotomulti_scripts');
  */
 function i18n_init() {
 	$dir = dirname( \plugin_basename( __FILE__)) . '/languages/';
-	//$dir = './languages/';
-	$success = load_plugin_textdomain( 'fotoramamulti', false, $dir);
+	load_plugin_textdomain( 'fotoramamulti', false, $dir);
 }
 
 add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\i18n_init'); // only for translations in the admin-settings page
 
 /**
- * translate strings on client request
+ * translate strings on client request (mind: it will not work if the page or post is cached by wordpress or another cache mechanism)
  *
  * @param $string $translate the string to translate
  * @param $string $language	 the client language

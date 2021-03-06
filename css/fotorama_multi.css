@@ -1,13 +1,5 @@
 /* special CSS for the wp_fotorama_elevation */
 
-
-/*------------- grid -----------------------*/
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));  /*change the value xxx em here for grid settings */
-  grid-gap: 5px;
-}
-
 /*------------- fotorama -----------------------*/
 .fotorama__nav__shaft {
   margin-bottom: 5px;
@@ -58,7 +50,6 @@
 .fm-dload p {
   margin: 5px;
 }
-
 
 .data-summary {
   /*font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
