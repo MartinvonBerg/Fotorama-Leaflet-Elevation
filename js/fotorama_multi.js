@@ -198,7 +198,7 @@
                 } else {
                     maps[m].addLayer(baseLayers[m].OpenTopoMap); // this one is preselected for one gpx-track
                 }
-                bounds[m] = maps[m].getBounds;  
+                //bounds[m] = maps[m].getBounds;  
             
                 // create scale control top left // for mobile: zoom deactivated. use fingers!
                 if ( ! mobile ) { 
@@ -304,7 +304,6 @@
                         grouptracks[m] = [];
                         var routes; 
                         var i = 0;
-                        var page= $('html, body');
 
                         for (var track in tracks[m]) {
                             grouptracks[m][i] = tracks[m][track].url;
@@ -317,19 +316,27 @@
                             legend: true,
                             legend_options: {
                                 position: "bottomright",
-                                collapsed: false,
+                                collapsed: true,
                             },
                             distanceMarkers: false,
                         });
                    
                         routes.addTo(maps[m]);
-                        bounds[m] = maps[m].getBounds().pad(0.5);
+                        //bounds[m] = maps[m].getBounds().pad(0.5);
 
                         // workaround to show the first track with elevation chart
                         window.setTimeout( function(e) { 
-                            maps[0].zoomOut(1); // nur mit m=0, da zu Anfang geladen, kein Event gefunden map.on('load') geht nicht
+                            //nur mit m=0, da zu Anfang geladen, kein Event gefunden map.on('load') geht nicht
+                            var b = routes.bounds;
+                            maps[0].fitBounds([
+                                [b._northEast.lat, b._northEast.lng],
+                                [b._southWest.lat, b._southWest.lng],
+                               
+                            ]);
+                            maps[0].zoomOut(1);
+                            bounds[0] = maps[0].getBounds();
 
-                            // Did not managa that: Preload a default chart / track. according to https://github.com/Raruto/leaflet-elevation/issues/7
+                            // Did not manage that: Preload a default chart / track. according to https://github.com/Raruto/leaflet-elevation/issues/7
                             // So, we are using a click event, 3 times, due to another bug. It works
                             var elem1 = document.getElementsByClassName('leaflet-control-layers-base')[1].children[0].childNodes[0];
                             var elem2 = document.getElementsByClassName('leaflet-control-layers-base')[1].children[1].childNodes[0];
@@ -342,7 +349,7 @@
                         // function to show the current track statistics with an mutation observer                          
                         maps[0].on( 'eledata_loaded eledata_added eledata_clear', function() {
                             m = 0; 
-                            bounds[m] = maps[m].getBounds(); //.pad(0.5); // 0 .. -0.5 possible: -0.2 best
+                            //bounds[m] = maps[m].getBounds(); //.pad(0.5); // 0 .. -0.5 possible: -0.2 best
 
                             // Select the node that will be observed for mutations
                             const targetNode = document.getElementsByClassName('leaflet-bottom')[1];

@@ -152,6 +152,7 @@ L.GpxGroup = L.Class.extend({
     this._markers = L.featureGroup();
     this._elevation = L.control.elevation(this.options.elevation_options);
     this._legend = L.control.layersLegend(null, null, this.options.legend_options);
+    var initbounds = 0;
 
     var icon = L.icon(this.options.points_options.icon);
     this.options.points.forEach(function(poi) {
@@ -206,6 +207,11 @@ L.GpxGroup = L.Class.extend({
       marker_options: this.options.marker_options,
       polyline_options: line_style
     });
+
+    route.on('loaded', function() {
+      var bounds = route.getBounds();
+      route['bounds'] = bounds;
+      });
 
     route.originalStyle = line_style;
 
@@ -286,6 +292,7 @@ L.GpxGroup = L.Class.extend({
     this.fire('route_loaded', {
       route: route,
     });
+    // this part is done when all routes are loaded
     if (++this._loadedCount === this._tracks.length) {
       this.fire('loaded');
       if (this.options.flyToBounds) {
@@ -295,6 +302,22 @@ L.GpxGroup = L.Class.extend({
           noMoveStart: true
         });
       }
+
+      // calc bounds here
+      var keys = Object.keys(this._routes);
+      var b = this._routes[keys[0]].bounds;
+      // for loop for maxbounds. 
+      for (var m = 1; m < this._tracks.length; m++) {
+        var newbds = this._routes[keys[m]].bounds;
+        console.log(newbds);
+        newbds._northEast.lat > b._northEast.lat ? b._northEast.lat=newbds._northEast.lat : '';
+        newbds._northEast.lng > b._northEast.lng ? b._northEast.lng=newbds._northEast.lng : '';
+        newbds._southWest.lat < b._southWest.lat ? b._southWest.lat=newbds._southWest.lat : '';
+        newbds._southWest.lng < b._southWest.lng ? b._southWest.lng=newbds._southWest.lng : '';
+      }
+      this['bounds'] = b;
+      initbounds = b;
+     
       if (this.options.legend) {
         this._legend.addTo(this._map);
       }
@@ -333,11 +356,21 @@ L.GpxGroup = L.Class.extend({
       for (var i in route._layers) {
         this.highlight(route, route._layers[i]);
       }
-      //this._map.flyToBounds(e.layer.getBounds());
+     
+      var curbds = this._map.getBounds();
+      var initzoom = this._map.getBoundsZoom(initbounds) -1;
+      var curzoom = this._map.getBoundsZoom(curbds);
+      
+      //if ((this.options.flyToBounds)) { // bds.contains(trackbds)
+      if ( curzoom > initzoom ) {
+        var center = e.layer.getBounds().getCenter();
+        //this._map.flyToBounds(e.layer.getBounds());
+        this._map.flyTo(center);
+      }
     }
-    e.input.scrollIntoView({
-      behavior: 'smooth'
-    });
+    //e.input.scrollIntoView({
+    //  behavior: 'smooth'
+    //});
     for (var j in layers) {
       var selected = layers[j].isSelected();
       var legend = L.DomUtil.get('legend_' + layers[j]._leaflet_id);
