@@ -152,8 +152,7 @@ L.GpxGroup = L.Class.extend({
     this._markers = L.featureGroup();
     this._elevation = L.control.elevation(this.options.elevation_options);
     this._legend = L.control.layersLegend(null, null, this.options.legend_options);
-    var initbounds = 0;
-
+    
     var icon = L.icon(this.options.points_options.icon);
     this.options.points.forEach(function(poi) {
       var marker = L.marker(poi.latlng, {
@@ -302,7 +301,6 @@ L.GpxGroup = L.Class.extend({
           noMoveStart: true
         });
       }
-
       // calc bounds here
       var keys = Object.keys(this._routes);
       var b = this._routes[keys[0]].bounds;
