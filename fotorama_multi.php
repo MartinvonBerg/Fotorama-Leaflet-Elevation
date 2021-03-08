@@ -482,7 +482,7 @@ function fotomulti_scripts()
 		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '', true);	
 	} else {
 		// Load local Styles
-		wp_enqueue_style('fm-style3', $plugin_url . 'css/leaflet.min.css');
+		wp_enqueue_style('fm-style3', $plugin_url . 'css/leaflet.css');
 		wp_enqueue_style('fm-style4', $plugin_url . 'css/leaflet-elevation.min.css');
 		wp_enqueue_style('fm-style7', $plugin_url . 'css/leaflet-gesture-handling.min.css');
 		wp_enqueue_style('fm-style5', $plugin_url . 'css/Control.FullScreen.min.css');

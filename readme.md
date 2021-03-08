@@ -242,3 +242,4 @@ This plugin uses the great work from:
 - fotorama, see: https://fotorama.io/ Thank you for that!
 - GPXViewer, see: https://www.j-berkemeier.de/GPXViewer/ Vielen Dank für den Support!
 - wordpress for coding hints: https://de.wordpress.org/
+- icons from freeicons.io

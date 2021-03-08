@@ -198,7 +198,7 @@
                 } else {
                     maps[m].addLayer(baseLayers[m].OpenTopoMap); // this one is preselected for one gpx-track
                 }
-                //bounds[m] = maps[m].getBounds;  
+                bounds[m] = maps[m].getBounds;  
             
                 // create scale control top left // for mobile: zoom deactivated. use fingers!
                 if ( ! mobile ) { 
@@ -349,7 +349,7 @@
                         // function to show the current track statistics with an mutation observer                          
                         maps[0].on( 'eledata_loaded eledata_added eledata_clear', function() {
                             m = 0; 
-                            //bounds[m] = maps[m].getBounds(); //.pad(0.5); // 0 .. -0.5 possible: -0.2 best
+                            bounds[m] = maps[m].getBounds(); //.pad(0.5); // 0 .. -0.5 possible: -0.2 best
 
                             // Select the node that will be observed for mutations
                             const targetNode = document.getElementsByClassName('leaflet-bottom')[1];
