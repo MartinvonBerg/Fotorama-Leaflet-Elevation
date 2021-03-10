@@ -307,7 +307,7 @@ L.GpxGroup = L.Class.extend({
       // for loop for maxbounds. 
       for (var m = 1; m < this._tracks.length; m++) {
         var newbds = this._routes[keys[m]].bounds;
-        console.log(newbds);
+        //console.log(newbds);
         newbds._northEast.lat > b._northEast.lat ? b._northEast.lat=newbds._northEast.lat : '';
         newbds._northEast.lng > b._northEast.lng ? b._northEast.lng=newbds._northEast.lng : '';
         newbds._southWest.lat < b._southWest.lat ? b._southWest.lat=newbds._southWest.lat : '';

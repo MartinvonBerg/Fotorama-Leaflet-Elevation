@@ -303,7 +303,8 @@ function showmulti($attr, $content = null)
 	// Generate Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		$htmlstring  .= '<div id="Bilder" style="display : none"><figure><img loading="lazy" alt="' . $alttext . '"><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
-		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="cover" data-shadows="true" data-captions="'. $showcaption .'" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
+		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="cover" 
+							  data-shadows="true" data-captions="'. $showcaption .'" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
 		
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
@@ -373,13 +374,11 @@ function showmulti($attr, $content = null)
 			$htmlstring  .= '<span class="loss">';
 			$htmlstring  .= '<span class="summarylabel"> </span>';
 			$htmlstring  .= '<span class="summaryvalue">0</span> </span> </div>';
-			// ------------------------	
 		}
-		//$htmlstring  .= '</div>';
+		//$htmlstring  .= '</div>'; // uncommented to include fm-dload in grid of the boxmap, showing directly under the map
 	}
-	// close all html-divs
-	//$htmlstring  .= '</div> <!--div id=box'.$shortcodecounter.'-->';
-
+	
+	// ----------------------------------------------------
 	$htmlstring  .= '<div class="fm-dload">';
 	// provide GPX-download if defined
 	if ( ($dload == 'true') and ($i > 0))  {
@@ -424,9 +423,15 @@ function showmulti($attr, $content = null)
 			}
 		}
 	}
-	$htmlstring  .= '</div></div>';
+    $htmlstring  .= '</div>'; // end <div class="fm-dload"> is empty w/o dload or startadress 
+	// ----------------------------------------------------
+	
+	if ($showmap  == 'true') {
+        $htmlstring  .= '</div>'; // end for boxmap. div ends here to have fm-dload underneath the map
+	}
+
 	// close all html-divs
-	$htmlstring  .= '</div><!--div id=box'.$shortcodecounter.'-->';
+	$htmlstring  .= '</div><!--div id=multifotobox'.$shortcodecounter.'-->';
 	
 	// pass php variabls to javascript-file for fotorama
 	wp_localize_script('fm-script9', 'wpfm_phpvars' . $shortcodecounter, array(

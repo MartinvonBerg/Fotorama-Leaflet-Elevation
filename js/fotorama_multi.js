@@ -603,7 +603,9 @@
                     if (e.type === 'fotorama:load') {
                         // Set id in fotorama.data, all nav thumbs and active stage shaft
                         for (var fi = 0; fi < fotorama.data.length; fi++) {  
-                            fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
+                            if ( fotorama.data[0].$navThumbFrame != undefined) {
+                                fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
+                            }
                         }
                         fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
                     }
