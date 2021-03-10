@@ -44,7 +44,7 @@ var _MINUTE_IN_MILLIS = 60 * _SECOND_IN_MILLIS;
 var _HOUR_IN_MILLIS = 60 * _MINUTE_IN_MILLIS;
 var _DAY_IN_MILLIS = 24 * _HOUR_IN_MILLIS;
 
-var _GPX_STYLE_NS = 'http://www.topografix.com/GPX/gpx_style/0/2';
+var _GPX_STYLE_NS = 'https://www.topografix.com/GPX/gpx_style/0/2';
 
 var _DEFAULT_MARKER_OPTS = {
   startIconUrl: 'pin-icon-start.png',

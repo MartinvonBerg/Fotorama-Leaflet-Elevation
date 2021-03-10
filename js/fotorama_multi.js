@@ -19,6 +19,7 @@
         var phpmapheight = new Array();   
         var fotoramaState = 'normal'; // for zooming
         var zoomeffect = 'mouseover'; // for: https://www.jacklmoore.com/zoom/
+        var zpadding = [30,30];
         
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
@@ -161,7 +162,7 @@
                     maxZoom: 19,
                     attribution: 'MapData:&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
                     });
-                layer2[m] = new L.tileLayer('http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/ {y}.png', {
+                layer2[m] = new L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/ {y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     });
@@ -233,7 +234,7 @@
                         img.id = m;
                         img.onclick = function (e) {
                             let m = parseInt(e.srcElement.id);
-                            maps[m].fitBounds(bounds[m], {padding: [30,30]}); 
+                            maps[m].fitBounds(bounds[m], {padding: zpadding}); 
                             //map.flyTo([40.737, -73.923]) // für fotorama nur Center, ohne Zoom-Änderung
                         };
                         return img;
@@ -304,6 +305,7 @@
                         grouptracks[m] = [];
                         var routes; 
                         var i = 0;
+                        zpadding = [0,0];
 
                         for (var track in tracks[m]) {
                             grouptracks[m][i] = tracks[m][track].url;
@@ -349,7 +351,7 @@
                         // function to show the current track statistics with an mutation observer                          
                         maps[0].on( 'eledata_loaded eledata_added eledata_clear', function() {
                             m = 0; 
-                            bounds[m] = maps[m].getBounds(); //.pad(0.5); // 0 .. -0.5 possible: -0.2 best
+                            //bounds[m] = maps[m].getBounds(); //.pad(0.5); // 0 .. -0.5 possible: -0.2 best
 
                             // Select the node that will be observed for mutations
                             const targetNode = document.getElementsByClassName('leaflet-bottom')[1];
@@ -765,7 +767,7 @@
             let q = document.querySelector.bind(document);
             controlElevation[m].addData(trace.line);
 
-            maps[m].fitBounds(trace.gpx.getBounds(), {padding: [30,30]});
+            maps[m].fitBounds(trace.gpx.getBounds(), {padding: zpadding});
             bounds[m] = trace.gpx.getBounds();
 
             trace.gpx.setStyle({

@@ -286,7 +286,7 @@ L.GpxGroup = L.Class.extend({
 
   _onRouteLoaded: function(route) {
     if (this.options.legend) {
-      this._legend.addBaseLayer(route, '<svg id="legend_' + route._leaflet_id + '" width="25" height="10" version="1.1" xmlns="http://www.w3.org/2000/svg">' + '<line x1="0" x2="50" y1="5" y2="5" stroke="' + route.options.polyline_options.color + '" fill="transparent" stroke-width="5" /></svg>' + ' ' + route.get_name());
+      this._legend.addBaseLayer(route, '<svg id="legend_' + route._leaflet_id + '" width="25" height="10" version="1.1" xmlns="https://www.w3.org/2000/svg">' + '<line x1="0" x2="50" y1="5" y2="5" stroke="' + route.options.polyline_options.color + '" fill="transparent" stroke-width="5" /></svg>' + ' ' + route.get_name());
     }
     this.fire('route_loaded', {
       route: route,
