@@ -46,7 +46,7 @@ See under https://www.mvb1.de/skitour-schneibstein/
 
 ## Screenshot
 
-![screenshot_live_site](./fotorama1.PNG)
+![screenshot_live_site](./fotorama1.png)
 
 
 # Note prior to installation
