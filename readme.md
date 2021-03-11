@@ -1,15 +1,38 @@
+# Contents
+
+- [Description](#description)
+- [Donate](#donate)
+- [Live Example or Demo](#live-example-or-demo)
+- [Note prior to installation](#note-prior-to-installation)
+- [Installation](#installation)
+- [Update or De-Installation](#update-or-de-installation)
+- [Upgrade Notice](#upgrade-notice)
+- [Usage](#usage)
+- [Image Preparation and Usage of the Fotorama-Slider](#image-preparation-and-usage-of-the-fotorama-slider)
+- [Usage of Leaflet Elevation](#usage-of-leaflet-elevation)
+- [Frequently Asked Questions](#frequently-asked-questions)
+- [Translation, i18n](#translation--i18n)
+  * [Frontend](#frontend)
+  * [Backend](#backend)
+- [Credits](#credits)
+- [Note for Developers](#note-for-developers)
+- [Changelog](#changelog)
+
 # Description 
 
-This is a Wordpress-Plugin to show a responsive image-slider with thumbnails (based on fotorama). The images are taken from a folder in the Wordpress upload-directory (uploaded via FTP). Under the image-slider an OpenStreetMap is shown. This map shows the GPX-position of the images and additionally a GPX-Track that was recorded during the excursion (based on GPXViewer). The map moves synchronously to the slider, e.g. it is centered to the GPS-Position of the current image. Under the map a height-chart of the GPX-track shown. Its track-data is shown on the map on mouse-over. 
+This is a Wordpress-Plugin for a responsive image-slider with thumbnails (based on fotorama). The images are taken from a folder in the Wordpress upload-directory. Optionally a Leaflet map is shown. This map shows the GPX-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation is used for that). The map moves synchronously with the slider, e.g. it is centered to the GPS-Position of the current image. Under the map a height-chart of the GPX-track with its statistics is shown (leaflet elevation is used for that).
+The shortcode may be used more than once per page. 
 
-The Plugin is fully responsive and SEO-friendly. It adds the images of the slider to the Yoast-XML-Sitemap and sets the alt-tag of the images (but not for the thumbnails). It is possible to use either the image-slider or the map with height-chart alone.
+The Plugin is fully responsive and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode and on desktops only. It is deactivated for mobile devices as the usability is poor.
 
-Although the images are expected in a folder of the Wordpress upload-directory they could have been added to the Wordpress-Media-Catalog before. If this is the case the responsive image srcset is used and the Wordpress-information of the Media-Catalog is used for the title and the alt-tag. It works only with JPG-Files an not with videos. Fotorama is able to tackle with videos but I'm looking for other developpers to provide that addition.
+Although the images are expected in a folder of the Wordpress upload-directory they could have been added to the Wordpress-Media-Catalog, too. If this is the case the responsive image srcset is used and the Wordpress-information of the Media-Catalog is used for the title and the alt-tag. The slider works only with JPG-Files an not with videos. 
 
-The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts on a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple .
+The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point.
 
-This plugin does not provide an Admin-Panel for its settings or the specific settings for a post. As well it has no interface to act as a Gutenberg-Block. I needed some help for that. **It runs with Wordpress 5.6**
+The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings e.g. shortcodes that have to be set individually for each usage are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation.
+Up to now, there is no Gutenberg-Block provided.  **It runs with Wordpress 5.7 and PHP 8.0.**
 
+</br>   
 
 # Donate
 If you like this plugin buy me a coffee or a beer:
@@ -18,41 +41,18 @@ If you like this plugin buy me a coffee or a beer:
 
 </br>    
 
-# Usage
-
-- Shortcode:  `[gpxview]`   **Use the code only once per page or post!**
-- Parameters: <*'Parameter'*> => <*'Default-Value'*>
-
-        'gpxpath' => 'gpx',
-		'gpxfile' => 'test.gpx',
-		'mapheight' => '450',
-		'chartheight' => '150',
-		'imgpath' => 'Bilder',    -- do not add slashes at the beginning or end
-		'dload' => 'yes',
-		'alttext' => '',          -- alt-text e.g description for the image-slider and the FIRST image
-		'scale' => 1.0,           -- map-scale factor for GPXViewer
-		'ignoresort' => false,    -- ignore custom sort even if provided by Wordpress, then sort by date ascending
-
-- Example Shortcode: `[gpxview imgpath="Alben_Website/Bike-Hike-Lago-Lansfero" gpxfile="Bike-Hike-Lago-Lansfero.gpx" alttext="Bildergalerie mit Karte, GPX-Track und Höhenprofil zur Bike-Hike-Tour zum Lago Lansfero im Piemont in den italienischen Alpen"]`
-- **Important: Only images with valid GPS-Coordinates in EXIF-Data are shown!** 
-
-# Example
-See under https://www.mvb1.de/info/wordpress-plugins/
+# Live Example or Demo
+See under https://www.mvb1.de/skitour-schneibstein/
 
 ## Screenshot
 
-![screenshot_live_site](./wp_fotorama_gpx.PNG)
+![screenshot_live_site](./fotorama1.PNG)
+
 
 # Note prior to installation
-1. Do a Backup!
-2. It is not possible to minify the Javascript files of the GPXViewer. If so, it will fail e.g. not work. Therefore it is NOT possible to use the WP-Plugin
-    - "Autoptimize" (https://wordpress.org/plugins/autoptimize/). If you prefer Autoptimize you can't use this plugin.
-    - It works with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). But the minification of the files of the GPXViewer has to be excluded:
-        - Add the following code in the admin-window of "Asset Clean up" for the exceptions of minification and code-cleaning:
-            - /wp-content/plugins/wp-fotorama-gpxviewer/(.*?).css 
-            - /wp-content/plugins/wp-fotorama-gpxviewer/(.*?).js  
-    - I did not test other Plugins for Code-Optimization but I except similar problems.
-    - The plugin was tested with wordpress versions 5.3 - 5.5.3 and PHP 7.x
+The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
+- I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
+- The plugin was tested with wordpress versions 5.6 - 5.7 and PHP 7.4.x and 8.x.
 
 # Installation
 
@@ -64,46 +64,110 @@ See under https://www.mvb1.de/info/wordpress-plugins/
 
 # Update or De-Installation
 
-1. Deactivate the plugin in Admin-Area of WordPress
-2. Delete the Plugin-in. Stop here for De-Installation. Hint: The Wordpress-Database is not cleaned upon de-installation. The Custom-Fields (lat, lon, postimg) remain there!
-3. Do Installation for the new version.
+1. Deactivate the plugin in Admin-Area of WordPress.
+2. Delete the Plugin-in. Stop here for De-Installation. Hint: The Wordpress-Database is cleaned upon de-installation. The Custom-Fields (lat, lon, postimg, admin settings ASO) are removed from your database! No tracks left behind.
+3. Do Installation for the new version. Wordpress will provide you a message window wether you are sure. It's up to you.
 
-# Detailed Usage of the Image-Slider (Fotorama)
+# Upgrade Notice 
+
+Upgrade to Wordpress 5.7 and PHP 8.0 is highly recommended!
+
+</br>
+
+# Usage
+
+- Image and GPX-track preparation: see below
+- Shortcode:  `[gpxview]`   **Use the code as often you want per page or post! No interference between shortcodes.**
+- Parameter usage: <em>Parameter = "Value"</em>. See the table below for shortcode parameters. Separate by at least one space in between.
+
+
+|Shortcode|Value (Default first)|Example|Description|
+|:--------|:--------------------|:------|:----------|
+|gpxpath|gpx|gpxpath="gpx"|Path to file(s) with GPX-Track(s) relative to the WordPress uploads folder, e.g: ../wordpress/wp-content/uploads/gpx. Do not use trailing slashes!|
+|gpxfile|test.gpx|gpxfile="test.gpx"|File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use a comma separated list for multiple file: "f1.gpx, f2.gpx, f3.gpx" (The file name given in the GPX-section of the admin settings is NOT shown in the example shortcode!)|
+|dload|yes / no|dload="yes"|Provide download link for the GPX-Track(s), if "yes".|
+|showalltracks|false / true|showalltracks="true"|Show all given tracks together in one Map. Works only with one map per page! Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option as this is no useful global option.|
+|showadress|true / false|showadress="true"|Show start address of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image. Field is translation ready it its value is 'start address|
+|adresstext|Start address|adresstext="Start address"|Text for header above start address. Field is translation ready it its value is 'Start address'. Mind that translation may not show up if any cache is used! Even the browser cache won't block the translation.|
+|showmap|true / false|showmap="true"|Show the map, independent of other settings. There is no admin-setting for this option as this is no useful global option.|
+|mapheight|450|mapheight="450"|Height of the leaflet map in pixels (px). Note that this value maybe overwritten be the responsive function! Could happen that you won't see any change in the frontend if you change it by the Admin settings.|
+|chartheight|200|chartheight="200"|Height of the leaflet elevation chart in pixels (px)|
+|eletheme|lime-theme|eletheme="lime-theme"|Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. And Martin-theme is my special theme.|
+|mapcenter|0.0,0.0|mapcenter="48.12,12.35"|Center of the map if NO tracks and images are used. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
+|zoom|8|zoom="8"|Zoom level for the map if NO tracks and images are used. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
+|markertext|Home Address|markertext="My Address"|Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
+|**Fotorama**||||
+|imgpath|Bilder|imgpath="Bilder"|Path the images relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/galleries/holiday2020. Do not use trailing slashes!|
+|alttext|''|alttext="Image Slider with map from holiday"|Alltext for the fotorama slider for SEO|
+|ignoresort|false / true|ignoresort="false"|Ignore custom sort even if provided by Wordpress. If checked (="true") sort by image-taken-date ascending. The custom sort is only provided if the images were added to a separate folder WP Media library and the custom field "gallery_sort" was set! This setting maybe done with the WP REST API, see also: https://github.com/MartinvonBerg/Ext_REST_Media_Lib|
+|requiregps|true / false|requiregps="true"|Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF. Or show images also if the do NOT provide GPS-data.|
+|maxwidth|600|maxwidth="600"|Maximum width of the whole container with slider and map. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
+|minrowwidth|480|minrowwidth="480"|Minimum width of one row of the CSS-Grid. If greater than the half of the above maxwidth the Fotorama slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
+|showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not. Does not work perfectly if set to "false".|
+|useCDN|false / true|useCDN="false"|Use CDN for js- and css-Library-Files or not.|
+
+</br>
+
+- Example Shortcode: `[gpxview imgpath="Alben_Website" gpxpath="gpx" gpxfile="test.gpx" showalltracks="false" mapheight="400" chartheight="200" dload="true" alttext="" ignoresort="false" useCDN="false" showadress="true" showmap="true" adresstext="Start address" requiregps="true" maxwidth="1500" minrowwidth="480" showcaption="true" eletheme="lime-theme" mapcenter="48.12,12.35" zoom="8" markertext="My Address"]`
+
+- **ATTENTION** There are Admin Settings without shortcode:
+    - Set Custom Fields for post: Set Custom Fields (geojson, lat, lon, postimg) in post. Geojson is for the address shown under the elevation chart. Lat.,Lon. are for the GPS-Coords used for the Overview-Map. The custom-fields *lat*, *Lon* and *postimg* are only set ONCE at the status-transition from 'draft' to 'published' only. So, if you want to change do 'published' to 'draft' to 'published' again.
+    - Generate Entries in Yoast XML-Sitemap for Fotorama Images: Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Stored in Custom field `postimg`. Only tested with ONE fotorama slider per post! The custom field is only written it `Set Custom Fields` is checked (="true").
+
+- **ATTENTION** And there are shortcodes without Admin Settings: see the table above.
+
+</br>
+
+## Usage of the admin section 'GPX-File upload'
+![screenshot_gpx_section](./gpx_section.PNG)
+### Explanation in the order of appearance:
+- GPX-File: Select a GPX-File from your disk you want to upload. The GPX-Path `gpxpath` of the Settings panel is used as folder.
+- GPX-Parsing: If checked the file will be reduced to the absolute minimum that is necessary to show a track in the leaflet map. Useful to reduce network load and speed up the page.
+- Distance Smooth: Add the track point only if it is XX meters away from the last track point (here 25m).
+- Elevation Smooth: Min. Elevation between Track-Points in Meters. Used in Statistics Calc only. Best is 4.
+- Overwrite GPX-Track: Well, self explanatory.
+
+Process and save the file with the Button at the bottom.
+
+</br>
+
+# Image Preparation and Usage of the Fotorama-Slider 
 1. Preparation of Images (optional)
 
-    - Generate Thubnails and rescale your Images.
+    - Generate Thumbnails and rescale your Images.
     I used "ImageResizer for Windows" rescaled the former full-size images and generated thumbnails. The Thumbnails have to have '_thumb', '-thumb', '200x150' or '150x150' in their filename (e.g. image1-thumb.jpg). The minimum size should be 64 x 64px. Best is 150 x 150px.
     Optionally you can store the Thumbnails to a subfolder './thumbs' but that is not required.
     If you do not provide thumbnails the full-scaled images will be used. This will increase load time.
     
 2. Upload images with ftp (FileZilla) or even Lightroom!
-    - Upload the images from Step 1 to your Wordpress site e.g. with Filezilla. Upload to a Sub-Folder in 
+    - Upload the images from Step 1 to your Wordpress site e.g. with Filezilla. Upload to the Sub-Folder `imgpath` (see table above) in 
 ./wp-content/uploads/. Do not use the WP-standard folders, like ./wp-content/uploads/2020/12!
         - Example:  ./wp-content/uploads/All_Albums/gallery1
-    - Do not use 'thumb' or something like '4x5' or 200x150 or 150x150 (regex: [0-9]x[0-9]) in the filename for the full-size image. These files will be regarded as thumbnails and therefore ignored for the slider.
-    - Up to now the images are NOT shown in the Media-Catalog of Wordpress
-    - Note for Lightroom-Users: I also wrote a Lightroom-Plugin to upload the images directly to the Wordpress-Catalog and do the whole process in one Click! All image-work, updates, change of title, development can be done in Lightroom and the same image with unchanged Wordpress-ID is updated. The images in the Plugin are updated automatically. 
+    - Do not use 'thumb' or something like '4x5' or 200x150 or 150x150 (regex: [0-9]x[0-9]) in the filename for the full-sized image. These files will be regarded as thumbnail and therefore ignored for the slider.
+    - If the images were optionally uploaded to the Media-Catalog of WordPress the WP srcset is used for thumbnails.
+    - Note for Lightroom-Users: I also wrote a Lightroom-Plugin to upload the images directly to the Wordpress-Catalog and do the whole process in one Click! All image-work, updates, change of title, development can be done in Lightroom and the same image with unchanged Wordpress-ID is updated. The images in the fotorama-slider are updated automatically. Mind that ALL caches on the line from the server to your browser have to emptied for that. If you use a Plugin to convert jpg to webp the cache of this plugins must be emptied to show changed images in the slider. 
     - Example-Folder
 
         ![folder_overview](./screen_folder1.png)
 
-3. Add the shortcode to you page or post (see above for the shortcode)
+3. Add the shortcode to your page or post (see above for the shortcode)
 
-    Up to now only images are shown! If EXIF-Data for the caption is not provided it will be replaced by "--"   
+    If EXIF-Data for the caption is not provided it will be replaced by "--"   
 
-4. Fotorama Options
+4. Further Fotorama Options
 
-    The Fotorama-Slider options are fixed with this line in the source-code of 'wp_gpxviewer.php:
+    The Fotorama-Slider options are fixed with this line in the source-code of 'fotorama_multi.php':
     ```php
     $string  .= '<div id="fotorama" class="fotorama" data-auto="false" data-width="100%" data-fit="contain" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="true" data-hash="true">';
     ```
-    The CSS is set in wp_gpxviewer_style.css. Further Fotorama-options are to find under : https://fotorama.io/docs/4/options/ or in fotorama.dev.js starting at line 880 under "OPTIONS = {..."
-    
-5. TODO (german only, just a reminder for me)
-    - Mean: maximale Breite der Gallerie prüfen. Irgendwas stimmt da nicht.
-    - Minor: Umschaltung "data-fit" zwischen Inline-Anzeige und fullscreen-Anzeige: Keine Kontaktdaten vom Entwickler verfügbar und Debugging mit Chrome geht nicht. 
+    The CSS is set in 'fotorama_multi.css'. Further Fotorama-options are to find under : https://fotorama.io/docs/4/options/ or in fotorama.dev.js starting at line 880 under "OPTIONS = {..."
 
-# Usage of the OpenStreetMap (GPXVIEWER)    
+    If you know what you are doing you may change the code to whatever you like. Have fun!
+    
+5. TODO w.r.t to FOTORAMA
+    - showcaption: Setting is ignored for the firs two images 
+
+# Usage of Leaflet Elevation    
 1. Preparation  (optional)
 
     Resize the GPX-Tracks with GPSBabel in a Batch-File (Windows-code):
@@ -115,46 +179,23 @@ See under https://www.mvb1.de/info/wordpress-plugins/
 
 2. Upload GPX-Tracks
     - Upload the Tracks to the folder  ./wp-content/uploads/gpx with ftp. 
-    - The Folder "gpx" can be choosen relative to "../wp-content/uploads/" with the parameter [gpxview ...gpxpath="*path-to-gpx*"]. 
+    - Or upload with the admin panel as described above.
+    - The Folder "gpx" can be chosen relative to "../wp-content/uploads/" with the parameter [gpxview ...gpxpath="*path-to-gpx*"]. 
          Do not use (Back)-Slashes ('/' or '\\')  at the beginning or end of *path-to-gpx*.
 
 3. Activate the map including the track
     - Add the parameter to the Shortcode : [gpxview gpxfile="*Trackname.gpx*"].   Default: "test.gpx".
-    - Without the parameter for the folder the the standard-folder ./wp-content/uploads/gpx/ is used.
+    - Without the parameter for the folder the standard-folder ./wp-content/uploads/gpx/ is used.
     - It is possible to show more than one GPX-Track. Provide these by a comma separated list, e.g: gpxfile="Malle.gpx, Malle2.gpx, Malle3.gpx"
     - It is necessary to provide the track-file with the *.gpx extension always.
-        
-4. Options for the GPXViewer
-- If not provided the default-values for parameters will be used.
-- Map height: *mapheight=300*. Default : 450. Provide the number without '' or ""!
-- Chart height: *chartheight=100*. Default : 150. Provide the number without '' or ""!
-- Show link to download the GPX-Track, shown under the chart: *dload='no'*. Default : 'yes'. Provided only if you use ONE GPX-Track.
-- Further options:      
-    - In the source-code of 'wp_gpxviewer.php':
-    ```php 
-    $string  .= '<div id=map0 class="map gpxview:' . $gpxfile . ':OPENTOPO" style="width:100%;height:' . $mapheight . 'px"></div>';
-    $string  .= '<div id="map0_profiles" style="width:100%;height:' . $chartheight . 'px"><div id="map0_hp" class="map" style="width:100%;height:' . $chartheight . 'px"></div></div>';
-    ```
-	- Styling in wp_gpxviewer_style.css! Change the  *.css directly, if you prefer other style-settings
-    - All Options of GPXViewer:
-        see: https://www.j-berkemeier.de/GPXViewer/#Zus%C3%A4tzliche
-    - Javascript-Files:
-        - All settings that were changed by me should be marked with  *Martin* 
-        - Most settings are to find under   GPX2GM_Defs.js, starting at line 111 under "JB.GPX2GM.setparameters = function() { ..."   
-       
+   
 
-5. TODOs & Bugs (german only, just a reminder for me)
-    - Mean: update GPXViewer auf aktuelle Version 6.11! Läuft aber auch mit der alten Version 6.7! 
-    - Minor: Infofenster mit Trackdaten wird von Anfang an angezeigt. Es werden aber nur die Daten des 1. Tracks angezeigt!   
-    - Minor: TODO: Alle Daten, außer lat, long, ele aus dem GPX entfernen
-    - Mean: GPX-Dateien OHNE Höhenangaben fürhen zu einem leeren Höhenprofil und einem Javascript-error im Browser, der aber nicht blockierend ist. Gallerie und Karte passen aber trotzdem
-    - Mean: BUG: wenn die Wegpunkte einmal de- / re-aktiviert werden, folgt der Kreis nicht mehr dem Bild! Die Seite muss dann neu geladen werden! 
-    - Minor: Minfiy der Dateien aus GMUTILS funktioniert nicht.
+5. TODOs & Bugs 
+    - none found up to now
        
 
 3. Combination of Image-Slider and OpenStreetMap (the intended use of the plugin):
     - Very simple: combine the above mentioned paramaters in ONE shortcode
-    - It is only possible to use one shortcode per page or post. Otherwise it will fail.
     - The plugin sets the custom-fields *lat*, *Lon* and *postimg* at the status-transition from 'draft' to 'published' only. Not before. 	
 
 
@@ -162,84 +203,97 @@ See under https://www.mvb1.de/info/wordpress-plugins/
 
 There are no FAQs just yet.
 
-# Changelog (In german)
+# Translation, i18n
+## Frontend
+All (available) strings are translated from English to German, Italian, French and Spanish. 'Available' means that some tooltips of leaflet are not translatable. You may find the translation in the file 'fotorama_multi.js' in the function `setlang()`. Change it or add your language, if you like so. To add your language just add another array like this:
+```JS
+let it = {
+                'Show all' : "Mostra Tutti",
+                'Distance' : "Distanza",
+                "Ascent"   : "Salita",
+                "Descent"  : "Discesa",
+                "Altitude" : "Altitudine", // is in file /src/altitude.js
+                "Images"   : "Foto",
+                'Show fullscreen' : 'Mappa a schermo intero',
+                'Exit fullscreen' : 'Esci schermo intero',
+            };
+```
+Choose you language as array-name similar to `it` here. Mind that you have to 'activate' your translation in that line of code:
+```JS
+if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
+```
+The language setting is done in the browser of the client. So, there are no *.po or *.mo files.
+I also provided a translation for the PHP-strings 'Start address' and 'Download' underneath the map. Unfortunately, I realized too late, this is useless if the page is cached. 
 
-= 0.4.0 =
+## Backend
+The translation of the backend was started partially only. A small part of the GPX-section is translated to german. The remainder not! That's quite a work. 
 
-First release: 18.03.2020
-
-= 0.5.0 =
-
-Second release: 1.04.2020
-
-= 0.6.0 =
-
-3rd release: 22.04.2020
- - SEO Opimierung für Fotorama (alt-tags mit title-Inhalt aus dem Bild in den img-Tags)
- - Variable Verarbeitung der thumbnails bei verschiedenen Endungen und Orten
- - Post GEO-Daten für Übersichtskarte werden jetzt nach Bild oder GPX-Track gesetzt, Option für den Shortcode ergänzt
- - scale-Faktor ergänzt: Dieser setzt den Faktor die Umskalierung bei Focus und Zentrierung auf das aktive Bild
- - fotorama.js aus der Development-Version ergänzt und minified
- - JB.Infofenster jetzt rechts unten. Änderung in osmutils.js
-
-= 0.7.0 =
-
-4th release: 20.06.2020
-- Anzeige von Karte mit Foto-Icons auch OHNE GPX-Datei, Dabei wird OSM als Karte eingestellt
-
-= 0.7.1 =
-
-5th release: 30.08.2020
-- lazy loading für img ergänzt
-
-= 0.8.0 
-
-6th release: 20.09.2020
-- automatisches Setzen von custom fields 'lat' und 'lon' bei Statuswechsel von draft -> publish und löschen 
-    bei Statuswechsel von publish -> draft ergänzt. Daher sollte eigentlich 'setpostgps' => 'no' nicht mehr nötig sein.
-
-= 0.9.0 =
-
-7th release: 25.09.2020
-- ergänzen der Bilder aus dem fotorama-gpx-plugin in die yoast sitemap  
-
-= 0.10.0 =
-
-Yet another release: 4.12.2020
-- Code rework and organisation. Translation to English
-- read-out of WP-Media-Catalog added for img srcset, meta-data, exif-data etc.
-- options for custom-fields and yoast-xml added
-
-= 0.10.1 =
-
-Yet another release: 10.12.2020
-- Update for WP 5.6: deactivated useless alt and title in fotorama2.js for SEO
-- Test with live site on www.mvb1.de
-
-= 0.10.2 =
-
-Yet another release: 13.12.2020
-- Thumbnail size 200x150 added
-
-= 0.11.0 =
-
-Yet another release: 20.12.2020
-- made Thumbnail size variable, depeinding on the admin setting for thumbnails
-- introduced namespace for wordpress plugin compatiblity
-
-
-# Upgrade Notice 
-
-## Upgrade for Wordpress 5.6 is highly recommended!
-
-# Screenshots
-
-See : www.mvb1.de
+</br>
 
 # Credits 
 This plugin uses the great work from:
 
 - fotorama, see: https://fotorama.io/ Thank you for that!
-- GPXViewer, see: https://www.j-berkemeier.de/GPXViewer/ Vielen Dank für den Support!
+- leaflet: https://leafletjs.com
+- Leaflet-elevation: https://github.com/Raruto/leaflet-elevation Thank you Raruto for your help!
+- leaflet.Control.Fullscreen: https://github.com/brunob/leaflet.fullscreen
+- leaflet gesture handling: https://github.com/elmarquis/Leaflet.GestureHandling/
+- leaflet markercluster: https://github.com/Leaflet/Leaflet.markercluster
+- d3.js: https://github.com/d3/d3
+- extended ui: Copyright (c) 2020, GPL-3.0+ Project, Gérald Niel, Raruto
+- gpx.js: Copyright (C) 2011-2012 Pavel Shramov, Copyright (C) 2013-2017 Maxime Petazzoni <maxime.petazzoni@bulix.org>
 - wordpress for coding hints: https://de.wordpress.org/
+- jquery.zoom.js from: http://www.jacklmoore.com/zoom
+- phpGPX library: https://github.com/Sibyx/phpGPX
+- HTML Table generator: https://www.tablesgenerator.com/html_tables
+- WordPress Option Page generator from http://jeremyhixon.com/wp-tools/option-page/
 - icons from freeicons.io
+
+# Note for Developers
+- unit tests
+    - No unit testing done at all. I know these are a must for professional software development. But, this is a hobbyist project that I did just for fun. 
+- integration tests
+    - done on my local test suite and on my live site 
+- system tests
+    - done on my local test suite and on my live site
+    - I'm using an external Python script with selenium to "click" through all pages and posts, capture all error messages and warnings, do screen shots and compare these automatically with previous versions and compare  html-sources with previous sources. Quite useful a automated test to detect hidden errors.
+    - interference with other plugins:
+        - All PHP code runs in separate namespaces
+        - JS is wrapped in a self invoking function call and only executed if the dedicated div-id is found on the page.
+        - CSS might be a problem, as I did not us SCSS, CASS or less to generate really separated CSS-classes.
+        - I'm using the following plugins in my site: (output of the REST-API to list all plugins)
+        ```JSON
+        [
+            {"name":"Admin Columns"}, 
+            {"name":"Antispam Bee"},
+            {"name":"Asset CleanUp: Page Speed Booster"}, // This is extensively used to unload unused plugin code!
+            {"name":"Cache Enabler"},
+            {"name":"Duplicate Page and Post"},
+            {"name":"Easy Table of Contents"},
+            {"name":"Ext_REST_Media_Lib"}, // Plugin from me
+            {"name":"Fotorama-Multi"}, // Plugin from me
+            {"name":"Gmedia Gallery"},
+            {"name":"Gutenberg"},
+            {"name":"WebP Express"},
+            {"name":"wp-front-albums"}, // Plugin from me
+            {"name":"wp-recent-post-slider"}, // Plugin from me
+            {"name":"wp-special-functions"}, // Plugin from me
+            {"name":"wp_post_map_view_simple"}, // Plugin from me
+            {"name":"Yoast SEO"}
+        ]
+        ```
+
+- WP coding guidelines
+    - Following WP coding guidelines is essential. I realized this too late, so I coded different. The WP code linter shows hundreds of error messages. Coding guidelines have to be used from the beginning of the project.  
+- PHP-check with phpcs in Visual Studio Code:
+    ``` 
+    phpcs -n -p . --standard=PHPCompatibility --runtime-set testVersion 7.0-
+    ```
+- jquery migrate was used to update fotorama to the jquery version 3.5.1 that is currently used by WordPress. Some js code raises the "add passive event listener warning" which doesn't interfere the execution.
+- leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation.
+
+# Changelog
+
+= 0.0.8 =
+
+First public release: 11.03.2021
