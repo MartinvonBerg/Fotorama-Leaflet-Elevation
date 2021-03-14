@@ -291,11 +291,13 @@ function showmulti($attr, $content = null)
 	}
 
 	// Generate the inline style for the CSS-Grid. Identical for all shortcodes!
+	/*------------- grid -----------------------*/
 	if ($shortcodecounter == 0) {
 		$htmlstring  .= '<style type="text/css">';
-		$htmlstring  .= ' .mfoto_grid { display: grid;';
-		$htmlstring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} </style>';  
+		$htmlstring  .= '@media screen and (min-width: 480px) { .mfoto_grid { display: grid;';
+		$htmlstring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} } </style>';  
 	}
+	
 	// Generate the html-code start with the surrounding Div
 	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' class="mfoto_grid" style="max-width:'. $maxwidth .'px;">';
 	$imgnr = 1;
