@@ -222,12 +222,12 @@ function showmulti($attr, $content = null)
 	// on the status transition of the post from 'draft' to 'published'.
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
-	if ($draft_2_pub)  { // TODO: anpassung für multi!!!
+	if ($draft_2_pub && (0 == $shortcodecounter) )  { // TODO: anpassung für multi!!!
 	//if (\current_user_can('edit_posts')) { 	
 		if ($setCustomFields) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 		}
-		if ($doYoastXmlSitemap) {
+		if ($doYoastXmlSitemap) { // TODO: append to existing postimg
 			$postimages = maybe_serialize($postimages);
 			delete_post_meta($postid,'postimg');
 			update_post_meta($postid,'postimg',$postimages,'');
@@ -246,7 +246,7 @@ function showmulti($attr, $content = null)
 			if ($i == 0) {
 				$gpxfile .= $f;
 
-				if ($draft_2_pub and $setCustomFields) {
+				if ($draft_2_pub && $setCustomFields && (0 == $shortcodecounter)) {
 				//if (\current_user_can('edit_posts') and setCustomFields) {	
 					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
 					//TODO: anpassung für multi!!!
