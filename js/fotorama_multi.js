@@ -530,76 +530,67 @@
         
         // jQuery fotorama functions for fullscreen, map interaction e.q marker settings. 
         if ( numberOfFotorama > 0) {
+            
+            // update markers and zoomed image  
+            $('.fotorama').on('fotorama:showend fotorama:load',
+            function (e, fotorama, extra) {
+                let nr = fotorama.activeIndex;
+                let source = e.currentTarget.id;
+                source = source.replace('mfotorama','');
+                m = parseInt(source);
 
-            if (numberOfMaps > 0) {
-              // update markers and zoomed image  
-              $('.fotorama').on('fotorama:showend fotorama:load',
-                function (e, fotorama, extra) {
-                    let nr = fotorama.activeIndex;
-                    let source = e.currentTarget.id;
-                    source = source.replace('mfotorama','');
-                    m = parseInt(source);
+                if ( (maps[m] != undefined) && phpvars[m].imgdata[nr].coord[0] ) {
+                    //console.log('change in: ' + e.currentTarget.id + ' index: ' + nr + 'Koord: ' + phpvars[m].imgdata[nr].coord[0] + ':' + phpvars[m].imgdata[nr].coord[1] ); 
+                    if (e.type === 'fotorama:load') {
+                        storemarker[m] = mrk[m][nr];
+                        newmarker[m] = mrk[m][nr];
+                        maps[m].removeLayer(mrk[m][nr]);
+                        newmarker[m].setIcon(myIcon3);
+                        newmarker[m].setZIndexOffset(500);
+                        newmarker[m].addTo(maps[m]);
 
-                    if ((maps != 'undefined') && phpvars[m].imgdata[nr].coord[0]) {
-                        //console.log('change in: ' + e.currentTarget.id + ' index: ' + nr + 'Koord: ' + phpvars[m].imgdata[nr].coord[0] + ':' + phpvars[m].imgdata[nr].coord[1] ); 
-                        if (e.type === 'fotorama:load') {
-                            storemarker[m] = mrk[m][nr];
-                            newmarker[m] = mrk[m][nr];
-                            maps[m].removeLayer(mrk[m][nr]);
-                            newmarker[m].setIcon(myIcon3);
-                            newmarker[m].setZIndexOffset(500);
-                            newmarker[m].addTo(maps[m]);
-
-                            // Set id in fotorama.data, all nav thumbs and active stage shaft
-                            for (var fi = 0; fi < fotorama.data.length; fi++) {  
-                                fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
-                            }
-                            fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
-
+                        // Set id in fotorama.data, all nav thumbs and active stage shaft
+                        for (var fi = 0; fi < fotorama.data.length; fi++) {  
+                            fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
                         }
+                        fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
 
-                        if (e.type === 'fotorama:showend') {
-                            // set id in current active stage Frame
-                            fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
-                            
-                            // zoom the active frame if full, only for desktop
-                            // source: https://www.jacklmoore.com/zoom/
-                            if (fotoramaState == 'full') {
-                                $('#sf' + m + '-' + nr).zoom(
-                                    {url: fotorama.data[nr].full,
-                                     on: zoomeffect,
-                                     touch: false,
-                                });
-                            } else {
-                                $('#sf' + m + '-' + nr).trigger('zoom.destroy');
-                            }
-
-                            maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
-                        }
-
-                        if (storemarker[m].options.id != mrk[m][nr].options.id) {
-                            maps[m].removeLayer(newmarker[m]);
-                            storemarker[m].setIcon(myIcon1);
-                            newmarker[m].setZIndexOffset(-500);
-                            storemarker[m].addTo(maps[m]);
-                            storemarker[m] = mrk[m][nr]
-                            newmarker[m] = mrk[m][nr];
-                            maps[m].removeLayer(mrk[m][nr]);
-                            newmarker[m].setIcon(myIcon3);
-                            newmarker[m].setZIndexOffset(500);
-                            newmarker[m].addTo(maps[m]);
-                        }
                     }
-                });
-            } else {
-              // part for fotorama zoom in fullscreen without leaflet map
-              $('.fotorama').on('fotorama:showend fotorama:load',
-                function (e, fotorama, extra) {
-                    let nr = fotorama.activeIndex;
-                    let source = e.currentTarget.id;
-                    source = source.replace('mfotorama','');
-                    m = parseInt(source);
-              
+
+                    if (e.type === 'fotorama:showend') {
+                        // set id in current active stage Frame
+                        fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
+                        
+                        // zoom the active frame if full, only for desktop
+                        // source: https://www.jacklmoore.com/zoom/
+                        if (fotoramaState == 'full') {
+                            $('#sf' + m + '-' + nr).zoom(
+                                {url: fotorama.data[nr].full,
+                                    on: zoomeffect,
+                                    touch: false,
+                            });
+                        } else {
+                            $('#sf' + m + '-' + nr).trigger('zoom.destroy');
+                        }
+
+                        maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
+                    }
+
+                    if (storemarker[m].options.id != mrk[m][nr].options.id) {
+                        maps[m].removeLayer(newmarker[m]);
+                        storemarker[m].setIcon(myIcon1);
+                        newmarker[m].setZIndexOffset(-500);
+                        storemarker[m].addTo(maps[m]);
+                        storemarker[m] = mrk[m][nr]
+                        newmarker[m] = mrk[m][nr];
+                        maps[m].removeLayer(mrk[m][nr]);
+                        newmarker[m].setIcon(myIcon3);
+                        newmarker[m].setZIndexOffset(500);
+                        newmarker[m].addTo(maps[m]);
+                    }
+                }
+                // this is the code for zoom activation for fotorama without a map
+                else if (maps[m] == undefined) {
                     if (e.type === 'fotorama:load') {
                         // Set id in fotorama.data, all nav thumbs and active stage shaft
                         for (var fi = 0; fi < fotorama.data.length; fi++) {  
@@ -618,16 +609,16 @@
                             // activate the zoom in fullscreen
                             $('#sf' + m + '-' + nr).zoom(
                                 {url: fotorama.data[nr].full,
-                                 on: zoomeffect,
-                                 touch: false,
+                                    on: zoomeffect,
+                                    touch: false,
                             });
                         } else {
                             // destroy / deactivate zoom in normal-mode
                             $('#sf' + m + '-' + nr).trigger('zoom.destroy');
                         }      
                     }
-                });
-            }
+                }
+            });
             
             $('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', function (e, fotorama, extra) {
                 let nr = fotorama.activeIndex;

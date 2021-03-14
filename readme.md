@@ -206,7 +206,7 @@ Process and save the file with the Button at the bottom.
    
 
 5. TODOs & Bugs 
-    - none found up to now
+    - throws JS-Errors if another JS-File calling leaflet-map with 'L.map..' is active on the same page / post. So, with "Standard"-WP this plugin won't work if another plugin using leaflet-maps is activated. Solvable by page-dependent plugin deactivation e.g. with Asset Clean-up.
        
 
 3. Combination of Image-Slider and OpenStreetMap (the intended use of the plugin):
@@ -316,4 +316,4 @@ This plugin uses the great work from:
 First public release: 11.03.2021
 
 = 0.0.9 =
-Error correction, Readme update
+14.03.2021: Error correction, Readme update
