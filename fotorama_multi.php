@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama-Multi
  * Plugin URI:        https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
  * Description:       Fotorama Multi Slider
- * Version:           0.0.9
+ * Version:           0.0.10
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -417,7 +417,7 @@ function showmulti($attr, $content = null)
 			$lat = get_post_meta($postid,'lat');
 			$lon = get_post_meta($postid,'lon');
 			$googleurl = 'https://www.google.com/maps/place/' . $lat[0] . ',' . $lon[0] . '/@' . $lat[0] . ',' . $lon[0] . ',9z';
-			$v2 = '<a href="' .$googleurl. '" target="_blank">'. $v .'</a>';
+			$v2 = '<a href="' .$googleurl. '" target="_blank" rel=”noopener noreferrer”>'. $v .'</a>';
 			if ($adresstext != 'Start address'){
 				$htmlstring .= '<p>'. $adresstext. ': ' .  $v2 . '</p>';
 			} else {

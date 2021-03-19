@@ -790,7 +790,7 @@ class FotoramaElevation {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[setCustomFields_15]" id="setCustomFields_15" value="setCustomFields_15" %s> 
 			<label for="setCustomFields_15">
-			Set Custom Fields (geojson, lat, lon, postimg) in post. Geojson is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map
+			Set Custom Fields (geoadress, lat, lon, postimg) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map
 			</label>',
 			( isset( $this->fotorama_elevation_options['setCustomFields_15'] ) && $this->fotorama_elevation_options['setCustomFields_15'] === 'true' ) ? 'checked' : ''
 		);
