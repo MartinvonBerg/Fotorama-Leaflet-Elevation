@@ -2,14 +2,14 @@
 
 /**
  *
- * @link              https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
+ * @link              https://github.com/MartinvonBerg/fotorama-leaflet-elevation
  * @since             5.3.0
  * @package           fotorama-multi
  *
  * @wordpress-plugin
  * Plugin Name:       Fotorama-Multi
- * Plugin URI:        https://github.com/MartinvonBerg/wp-fotorama-gpxviewer
- * Description:       Fotorama Multi Slider
+ * Plugin URI:        https://github.com/MartinvonBerg/fotorama-leaflet-elevation
+ * Description:       Fotorama Slider and Leaflet Elevation integration
  * Version:           0.0.10
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
@@ -20,30 +20,38 @@
 namespace mvbplugins\fotoramamulti;
 
 // fallback for wordpress security
-defined('ABSPATH') || die('Are you ok?');
+if (! defined('ABSPATH')) {
+    die('Are you ok?');
+}
 
 const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. But where?
 
+require_once __DIR__ . '/inc/admin_settings.php';
+// run admin panel and check settings
+if (is_admin()) {
+	$fotorama_elevation = new FotoramaElevation();
+}
+
+// --------------- load additonal functions ------------------------------
+require_once __DIR__ . '/inc/fm_functions.php';
+require_once __DIR__ . '/languages/locales_i18n.php';
+
 // load globals and functions for status transitions only if needed or intended
-$const1 = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15']; // liefert 'true'
+$const1 = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15']; // liefert 'true' oder null
 if ($const1 == 'true') {
 	require_once __DIR__ . '/inc/stateTransitions.php';
 }
 
 // load the wpseo_sitemap_url-images callback to add images of post to the sitemap only if needed or intended
-$const2 = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16'];
-if ($const2 == 'true') {
+$yoastIsActivated = active( 'wordpress-seo/wp-seo.php' );
+$const2 = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16']; // liefert 'true' oder null
+
+if ( ('true' == $const2) && $yoastIsActivated) {
 	require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 }
 
-require_once __DIR__ . '/inc/admin_settings.php';
 
-// --------------- load additonal functions ------------------------------
-require_once __DIR__ . '/inc/fm_functions.php';
-
-if ( is_admin() )
-	$fotorama_elevation = new FotoramaElevation();
-	
+// -----------------------------------------------------------------------
 // define the shortcode to generate the image-slider with map
 add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 
@@ -417,7 +425,7 @@ function showmulti($attr, $content = null)
 			$lat = get_post_meta($postid,'lat');
 			$lon = get_post_meta($postid,'lon');
 			$googleurl = 'https://www.google.com/maps/place/' . $lat[0] . ',' . $lon[0] . '/@' . $lat[0] . ',' . $lon[0] . ',9z';
-			$v2 = '<a href="' .$googleurl. '" target="_blank" rel=”noopener noreferrer”>'. $v .'</a>';
+			$v2 = '<a href="' .$googleurl. '" target="_blank" rel="noopener noreferrer">'. $v .'</a>';
 			if ($adresstext != 'Start address'){
 				$htmlstring .= '<p>'. $adresstext. ': ' .  $v2 . '</p>';
 			} else {
@@ -455,109 +463,5 @@ function showmulti($attr, $content = null)
 	return $htmlstring;
 }
 
-//bind and call scripts and styles
-function fotomulti_scripts()
-{
-  wp_reset_query();
-  $plugin_url = plugins_url('/', __FILE__);
-  $useCDN = get_option( 'fotorama_elevation_option_name')['useCDN_13'];
-
-  if (!is_front_page() || !is_home()) {
-
-	// Load Styles
-	wp_enqueue_style('fm-style1', $plugin_url . 'css/fotorama_multi.css');
-	wp_enqueue_style('fm-style2', $plugin_url . 'css/fotorama3.min.css');
-	// Load Scripts
-	wp_enqueue_script('fm-script1', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '3.1.0', true);
-	  
-	if ($useCDN == 'true') {
-		// Load Styles from CDN
-		wp_enqueue_style('fm-style3', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css');
-		wp_enqueue_style('fm-style4', 'https://unpkg.com/@raruto/leaflet-elevation@1.5.3/dist/leaflet-elevation.min.css');
-		wp_enqueue_style('fm-style7', 'https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css');
-		wp_enqueue_style('fm-style5', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/2.0.0/Control.FullScreen.min.css');
-
-		// Load Scripts
-		wp_enqueue_script('fm-script3', 'https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js', array('jquery'), '5.16.0', true); // does not work with d3 > version 6.0 !
-		wp_enqueue_script('fm-script2', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js', array('jquery'), '1.7.1', true);
-		wp_enqueue_script('fm-script4', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.5.0/gpx.min.js', array('jquery'), '1.5.0', true);
-		wp_enqueue_script('fm-script12', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script5', 'https://unpkg.com/@raruto/leaflet-elevation@1.5.3/dist/leaflet-elevation.min.js', array('jquery'), '1.5.3', true);
-		wp_enqueue_script('fm-script8', 'https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script10','https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/2.0.0/Control.FullScreen.min.js', array('jquery'), '2.0.0', true);
-		wp_enqueue_script('fm-script11','https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '', true);	
-	} else {
-		// Load local Styles
-		wp_enqueue_style('fm-style3', $plugin_url . 'css/leaflet.min.css');
-		wp_enqueue_style('fm-style4', $plugin_url . 'css/leaflet-elevation.min.css');
-		wp_enqueue_style('fm-style7', $plugin_url . 'css/leaflet-gesture-handling.min.css');
-		wp_enqueue_style('fm-style5', $plugin_url . 'css/Control.FullScreen.min.css');
-	
-		// Load local Scripts
-		wp_enqueue_script('fm-script3',  $plugin_url . 'js/libs/d3.min.js', array('jquery'), '5.15.0', true); // does not work with d3 > version 6.0 !
-		wp_enqueue_script('fm-script2',  $plugin_url . 'js/libs/leaflet.min.js', array('jquery'), '1.7.1', true);
-		wp_enqueue_script('fm-script4',  $plugin_url . 'js/libs/gpx.min.js', array('jquery'), '1.5.0', true);
-		wp_enqueue_script('fm-script12', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script5',  $plugin_url . 'js/libs/leaflet-elevation.min.js', array('jquery'), '1.5.3', true);
-		wp_enqueue_script('fm-script8',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script10', $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '', true);
-		wp_enqueue_script('fm-script11', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-		wp_enqueue_script('fm-script9',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.0.7', true);	
-		
-	}
-  }
-}
-
-add_action('wp_enqueue_scripts', 'mvbplugins\fotoramamulti\fotomulti_scripts');
-
-/**
- * Prepare the translation of the back- and frontend
- *
- * @return void no return value
- */
-function i18n_init() {
-	$dir = dirname( \plugin_basename( __FILE__)) . '/languages/';
-	load_plugin_textdomain( 'fotoramamulti', false, $dir);
-}
-
-add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\i18n_init'); // only for translations in the admin-settings page
-
-/**
- * translate strings on client request (mind: it will not work if the page or post is cached by wordpress or another cache mechanism)
- *
- * @param $string $translate the string to translate
- * @param $string $language	 the client language
- * @return $string the translated string for defined language or the original string
- */
-function t($translate, $language) {
-	
-	$languages = array('de', 'fr', 'it', 'es'); // provided translations
-
-	$de = array(
-		'Download' => 'Herunterladen',
-		'Start address' => 'Startadresse');
-
-	$fr = array(
-		'Download' => 'Télécharges',
-		'Start address' => 'Adresse de départ');
-
-	$it = array(
-		'Download' => 'Scarica',
-		'Start address' => 'Indirizzo iniziale');
-
-	$es = array(
-		'Download' => 'Descarga',
-		'Start address' => 'Dirección de inicio');
-
-	if ( ! in_array($language, $languages)) {
-		$language = "en";
-		return $translate;
-	} else {
-		$translate = isset( $$language[$translate]) ? $$language[$translate] : $translate;
-	}
-
-	return $translate;
-}
-
+require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
 

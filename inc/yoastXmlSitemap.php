@@ -11,6 +11,7 @@ function filter_wpseo_sitemap_urlimages( $images, $post_id ) {
 	//				'alt' => 'bild mit nix drin', ); 
 	//$isyoastseo = is_plugin_active('wordpress-seo/index.php'); // works only if admin is logged in!
 	$myimgfrompost = get_post_meta($post_id,'postimg'); // read array with post_images from custom-field of post
+	
 	if ( ! empty($myimgfrompost) ) {
 		$test = $myimgfrompost[0]; // we need only the first index
 		$postimages = maybe_unserialize($test);	// type conversion to array
