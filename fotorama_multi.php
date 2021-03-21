@@ -2,15 +2,15 @@
 
 /**
  *
- * @link              https://github.com/MartinvonBerg/fotorama-leaflet-elevation
+ * @link              https://github.com/MartinvonBerg/fotorama_multi
  * @since             5.3.0
- * @package           fotorama-multi
+ * @package           fotorama_multi
  *
  * @wordpress-plugin
  * Plugin Name:       Fotorama-Multi
- * Plugin URI:        https://github.com/MartinvonBerg/fotorama-leaflet-elevation
+ * Plugin URI:        https://github.com/MartinvonBerg/fotorama_multi
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.0.10
+ * Version:           0.1.1
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -24,23 +24,31 @@ if ( ! defined('ABSPATH' )) {
     die('Are you ok?');
 }
 
-const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. But where?
+// init the database settings for the admin panel on first activation of the plugin. Does not overwrite
+require_once __DIR__ . '/inc/init_database.php';
+register_activation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
 
-// load globals and functions for status transitions only if needed or intended
-$const1 = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15']; // liefert 'true' oder null
-if ($const1 == 'true') {
-	require_once __DIR__ . '/inc/stateTransitions.php';
+
+// define globals and load all functions 
+const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. But where?
+require_once __DIR__ . '/inc/stateTransitions.php';
+require_once __DIR__ . '/inc/fm_functions.php';
+require_once __DIR__ . '/inc/admin_settings.php';
+require_once __DIR__ . '/inc/yoastXmlSitemap.php';
+
+// load the wpseo_sitemap_url-images callback to add images of post to the sitemap only if needed or intended
+$const2 = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16'];
+if ($const2 == 'true') {
+	add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\do_addfilter_for_yoast');
 }
 
-require_once __DIR__ . '/inc/admin_settings.php';
 
-// --------------- load additonal functions ------------------------------
-require_once __DIR__ . '/inc/fm_functions.php';
-
+// --- show admin page if request is for admin page
 if ( is_admin() ) {
 	$fotorama_elevation = new FotoramaElevation();
 }
 
+// ------------------------------------------------------------
 // define the shortcode to generate the image-slider with map
 add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 

@@ -1,5 +1,7 @@
 <?php
 
+namespace mvbplugins\fotoramamulti;
+
 /**
  * Retrieve images from the custom field 'postimg' and add them to the yoastXmlSitemap.
  * The function is only executed if Yoast is active and the filter-hook wpseo_sitemap_urlimages is available.
@@ -36,6 +38,8 @@ function filter_wpseo_sitemap_urlimages( $images, $post_id ) {
 	}
 	return $images; 
 }; 
-         
-// add the filter for wpseo_sitemap_urlimages callback
-add_filter( 'wpseo_sitemap_urlimages', 'filter_wpseo_sitemap_urlimages', 10, 2 );
+ 
+function do_addfilter_for_yoast() {
+	// add the filter for wpseo_sitemap_urlimages callback
+	add_filter( 'wpseo_sitemap_urlimages', '\mvbplugins\fotoramamulti\filter_wpseo_sitemap_urlimages', 10, 2 );
+}
