@@ -484,7 +484,8 @@
                             
                             if ("srcset" in tour) { 
                                 var key = Object.keys(tour.srcset)[0];
-                                marker[j].bindPopup( tour["title"] + '<br><img src="' + tour.srcset[key] + '">' );
+                                //marker[j].bindPopup( tour["title"] + '<div><img src="' + tour.srcset[key] + '"><br><br><br><br><br><br></div>' );
+                                marker[j].bindPopup('<div>' + tour["title"] + '<br><img width="150px" src="' + tour.srcset[key] + '"></div>' );
                             } else {
                                 marker[j].bindPopup( tour["title"]  );
                             }
@@ -492,11 +493,11 @@
                             marker[j].addTo(group1[m]);
                             marker[j].on('click', function (a) {
                                 //var title = this.options.title;
-                                var source = a.originalEvent.currentTarget.id;
-                                source = source.replace('map','');
-                                m = parseInt( source);
+                            var source = a.originalEvent.currentTarget.id;
+                            source = source.replace('map','');
+                            m = parseInt( source);
                                                                
-                                fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
+                            fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
                             });
                             marker[j].on('mouseover', function (e) {
                                 this.openPopup();

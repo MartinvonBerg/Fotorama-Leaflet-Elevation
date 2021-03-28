@@ -112,8 +112,8 @@ Upgrade to Wordpress 5.7 and PHP 8.0 is highly recommended!
 
 - **ATTENTION** There are Admin Settings without shortcode:
     - Set Custom Fields for post: Set Custom Fields (geoadress, lat, lon, postimg) in post. Geoadress is for the start address shown under the elevation chart. Lat.,Lon. are for the GPS-Coords used for the Overview-Map. The custom-fields *lat*, *Lon*, *postimg* and *geoadress* are only set ONCE at the status-transition from 'draft' to 'published' only. So, if you want to change do 'published' to 'draft' to 'published' again. The data is taken from the FIRST shortcode on the page or post, only. So the images have to provide GPS-data or a GPX-track has to be used for this FIRST shortcode.
-    - Generate Entries in Yoast XML-Sitemap for Fotorama Images: Generate the Entries for the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Entries are stored in Custom field `postimg`. Tested with several fotorama slider per post! The custom field is only written if `Set Custom Fields` is checked (="true") and if the admin user is logged in. The status change is no longer required.
-    Generate Entries in Yoast XML-Sitemap for Fotorama Images: Due to a change in WP 5.7 the code has to be moved to your functions.php! So, if you like to have the images of fotorama added to the Yoas XML Sitemap add the complete code of ./inc/yoastXmlSitemap.php add the end of your funtions.php. Mind, that this file will be overwritten with every update of your theme.
+    - Generate Entries in Yoast XML-Sitemap for Fotorama Images: Generate the Entries for the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Entries are stored in Custom field `postimg`. Tested with several fotorama sliders per post! The custom field is only written if `Set Custom Fields` is checked (="true") and if the admin user is logged in. The status change is no longer required. Only usefull if you use Yoast SEO plugin. 
+    
 
 - **ATTENTION** And there are shortcodes without Admin Settings: see the table above.
 

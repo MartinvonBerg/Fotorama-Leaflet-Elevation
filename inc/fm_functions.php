@@ -1,6 +1,28 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
+
+function get_scripts_styles() {
+
+    $result = [];
+    $result['scripts'] = [];
+    $result['styles'] = [];
+
+    // Print all loaded Scripts
+    global $wp_scripts;
+    foreach( $wp_scripts->queue as $script ) :
+       $result['scripts'][] =  $wp_scripts->registered[$script]->src . ";";
+    endforeach;
+
+    // Print all loaded Styles (CSS)
+    global $wp_styles;
+    foreach( $wp_styles->queue as $style ) :
+       $result['styles'][] =  $wp_styles->registered[$style]->src . ";";
+    endforeach;
+
+    return $result;
+}
+
 /**
  * check whether a plugin is activated
  * source: https://stackoverflow.com/questions/39293716/detect-yoast-seo-plugin
@@ -8,7 +30,7 @@ namespace mvbplugins\fotoramamulti;
  * @param string $plugin the plugin path relative to the wp plugins-path
  * @return mixed true if plugin is active
  */
-function active( $plugin ) {
+function active_plugins( $plugin ) {
     $network_active = false;
     if ( is_multisite() ) {
         $plugins = get_site_option( 'active_sitewide_plugins' );
