@@ -28,8 +28,6 @@ if ( ! defined('ABSPATH' )) {
 require_once __DIR__ . '/inc/init_database.php';
 register_activation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
 
-
-
 // define globals and load all functions 
 const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. But where?
 require_once __DIR__ . '/inc/stateTransitions.php';

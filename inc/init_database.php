@@ -27,7 +27,7 @@ function fotoramamulti_activate() {
 	$opt = get_option($option_name);
 	if ( ! $opt) {
 		$opts = array(
-				'path_to_images_for_fotorama_0' => "Alben-Website",
+				'path_to_images_for_fotorama_0' => "Galleries",
 				'colour_theme_for_leaflet_elevation_1' => "lime-theme",
 				'path_to_gpx_files_2' => "gpx",
 				'download_gpx_files_3' => "true",

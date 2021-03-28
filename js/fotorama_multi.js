@@ -539,8 +539,9 @@
                 let source = e.currentTarget.id;
                 source = source.replace('mfotorama','');
                 m = parseInt(source);
+                hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
 
-                if ( (maps[m] != undefined) && phpvars[m].imgdata[nr].coord[0] ) {
+                if ( hasMap && phpvars[m].imgdata[nr].coord[0] ) {
                     //console.log('change in: ' + e.currentTarget.id + ' index: ' + nr + 'Koord: ' + phpvars[m].imgdata[nr].coord[0] + ':' + phpvars[m].imgdata[nr].coord[1] ); 
                     if (e.type === 'fotorama:load') {
                         storemarker[m] = mrk[m][nr];
@@ -591,7 +592,7 @@
                     }
                 }
                 // this is the code for zoom activation for fotorama without a map
-                else if (maps[m] == undefined) {
+                else if ( ! hasMap ) {
                     if (e.type === 'fotorama:load') {
                         // Set id in fotorama.data, all nav thumbs and active stage shaft
                         for (var fi = 0; fi < fotorama.data.length; fi++) {  
