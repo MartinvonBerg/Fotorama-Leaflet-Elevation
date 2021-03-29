@@ -26,7 +26,7 @@ function fotomulti_scripts()
     $useCDN = get_option( 'fotorama_elevation_option_name')['useCDN_13'];
 	
  	// Load Styles
-	wp_enqueue_style('fotorama_css', $plugin_url . 'css/fotorama_multi.css');
+	wp_enqueue_style('fotorama_css', $plugin_url . 'css/fotorama_multi.min.css');
 	wp_enqueue_style('fotorama3_css', $plugin_url . 'css/fotorama3.min.css');
 	// Load Scripts
 	wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '3.1.0', true);

@@ -1,6 +1,8 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
+global $fm_plugins_changed;
+
 /**
  * init the database settings for the admin panel on first activation of the plugin.
  * Current settings will not be overwritten.
@@ -11,9 +13,12 @@ namespace mvbplugins\fotoramamulti;
  */
 function fotoramamulti_activate() {
 	
+	global $fm_plugins_changed;
+	$fm_plugins_changed = false;
+
 	$option_name = 'fotorama_option2';
 	$opt = get_option($option_name);
-	if ( ! $opt) {
+	if ( ! $opt ) {
 		$opts = array(
 				'gpx_reduce' =>  "false",
 				'gpx_smooth' =>  25,
@@ -25,7 +30,7 @@ function fotoramamulti_activate() {
 
 	$option_name = 'fotorama_elevation_option_name';
 	$opt = get_option($option_name);
-	if ( ! $opt) {
+	if ( ! $opt ) {
 		$opts = array(
 				'path_to_images_for_fotorama_0' => "Galleries",
 				'colour_theme_for_leaflet_elevation_1' => "lime-theme",
@@ -51,8 +56,19 @@ function fotoramamulti_activate() {
 
 	$option_name = 'gpx-file';
 	$opt = get_option($option_name);
-	if ( ! $opt) {
+	if ( ! $opt ) {
 		$opts = '. No Filename given!';
+		update_option($option_name, $opts);
+	}
+
+	$option_name = 'fm_plugins_checker';
+	$opt = get_option($option_name);
+	if ( ! $opt ) {
+		$opts = array(
+				'show_admin_message' =>  "false",
+				'active_plugins' =>  '',
+				'fm_this_plugin_name' =>  'fotorama_multi',
+			);
 		update_option($option_name, $opts);
 	}
 }

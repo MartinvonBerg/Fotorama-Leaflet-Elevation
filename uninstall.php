@@ -23,3 +23,6 @@ delete_option($option_name);
 
 $option_name = 'gpx-file';
 delete_option($option_name);
+
+$option_name = 'fm_plugins_checker';
+delete_option($option_name);

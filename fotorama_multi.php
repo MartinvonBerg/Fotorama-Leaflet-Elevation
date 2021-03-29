@@ -47,15 +47,22 @@ if ($const2 == 'true') {
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin_settings.php';
 	$fotorama_elevation = new FotoramaElevation();
+	
+	$act_pis = \mvbplugins\fotoramamulti\active_plugins('');
+	$wp_act_pis = get_option('active_plugins');
+	$wp_act_pis = \implode(', ',$wp_act_pis);
+	$my_act_pis = \get_option('status_active_plugins');
+	if ( $wp_act_pis != $my_act_pis) {
+		update_option('status_active_plugins', $wp_act_pis);
+		$plugins_changed = true;
+	}
 
-	$act_pis = \mvbplugins\fotoramamulti\active_plugins( '');
-	$act_pis = get_option('active_plugins');
 	global $wp_scripts;
 	global $wp_styles;
-	$all_scripts = \mvbplugins\fotoramamulti\get_scripts_styles(); // am besten ausführen mit dem hook : 'wp_print_footer_scripts' oder wp_print_style oder wp_print_scripts
-	add_action( 'wp_print_scripts', 'crunchify_print_scripts_styles' ); // ist in der functions.php
+	//$all_scripts = \mvbplugins\fotoramamulti\get_scripts_styles(); // am besten ausführen mit dem hook : 'wp_print_footer_scripts' oder wp_print_style oder wp_print_scripts oder shutdown
+	//add_action( 'wp_print_scripts', 'crunchify_print_scripts_styles' ); // ist in der functions.php
 	$b=1;
-
+	
 }
 
 // ------------------------------------------------------------
@@ -381,7 +388,7 @@ function showmulti($attr, $content = null)
 			}
 
 			$phpimgdata[$imgnr-1]['id'] = $imgnr;
-			$phpimgdata[$imgnr-1]['title'] = $data['title'];
+			$phpimgdata[$imgnr-1]['title'] = $alttext; //$data['title'];
 			$phpimgdata[$imgnr-1]['coord'][0] = $data['lat'];
 			$phpimgdata[$imgnr-1]['coord'][1] = $data['lon'];
 

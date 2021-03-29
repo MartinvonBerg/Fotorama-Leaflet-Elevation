@@ -110,9 +110,9 @@
                 }
         
                 // replace thumbnails in html souce-code with images from srcset
-                if (newimages[0].srcset) {
+              
                     // nur ausführen wenn images vorhanden! ansonsten das ursprüngliche belassen! php liefert reduzierte bilder nur mit wpid also wenn in wp medialib
-                    if (olddata.length == newimages.length) {
+                if (newimages[0].srcset && ( olddata.length == newimages.length ) ) {
                         // Assumption: array newimages has the same sorting as olddata and the srcset is the same for all images
                         let srcarray = newimages[0].srcset
                         let srcindex = 0;
@@ -128,17 +128,24 @@
                         
                         olddata.forEach(replaceimg);
                         
-                        function replaceimg(item, index){
+                        function replaceimg(item, index) {
                             if (mobile) {
-                                newdata[index] = {img: newimages[index].srcset[ srcindex ], thumb: item.thumb, caption: item.caption};
+                                newdata[index] = {img: newimages[index].srcset[ srcindex ], alt: item.alt, thumb: item.thumb, caption: item.caption, };
                             }
                             else {
-                                newdata[index] = {img: newimages[index].srcset[ srcindex ], thumb: item.thumb, full: newimages[index].srcset['2560'], caption: item.caption};
+                                newdata[index] = {img: newimages[index].srcset[ srcindex ], alt: item.alt, thumb: item.thumb, full: newimages[index].srcset['2560'], caption: item.caption};
                             }
                         }
-                        
                         fotorama[m].load(newdata);
+                        
+                } else if (olddata.length == newimages.length) {
+                    olddata.forEach(replaceimg);
+                        
+                    function replaceimg(item, index){
+                            newdata[index] = {img: item.img, alt: newimages[index].title, thumb: item.thumb, caption: item.caption, };
                     }
+
+                    fotorama[m].load(newdata);
                 }
             }
         
