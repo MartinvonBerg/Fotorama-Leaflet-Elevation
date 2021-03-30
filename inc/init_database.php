@@ -1,8 +1,6 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
-global $fm_plugins_changed;
-
 /**
  * init the database settings for the admin panel on first activation of the plugin.
  * Current settings will not be overwritten.
@@ -13,9 +11,6 @@ global $fm_plugins_changed;
  */
 function fotoramamulti_activate() {
 	
-	global $fm_plugins_changed;
-	$fm_plugins_changed = false;
-
 	$option_name = 'fotorama_option2';
 	$opt = get_option($option_name);
 	if ( ! $opt ) {
@@ -65,10 +60,19 @@ function fotoramamulti_activate() {
 	$opt = get_option($option_name);
 	if ( ! $opt ) {
 		$opts = array(
-				'show_admin_message' =>  "false",
-				'active_plugins' =>  '',
-				'fm_this_plugin_name' =>  'fotorama_multi',
+			'show_admin_message' =>  'false',
+			'active_plugins' =>  '',
+			'plugin_name' =>  '',
+			'plugins_changed' => 'false',
 			);
 		update_option($option_name, $opts);
+	} else {
+		$opts = array(
+			'show_admin_message' =>  'false',
+			'active_plugins' =>  '',
+			'plugin_name' =>  '',
+			'plugins_changed' => 'false',
+		);
+	update_option($option_name, $opts);	
 	}
 }

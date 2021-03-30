@@ -48,22 +48,21 @@ if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin_settings.php';
 	$fotorama_elevation = new FotoramaElevation();
 	
-	$act_pis = \mvbplugins\fotoramamulti\active_plugins('');
 	$wp_act_pis = get_option('active_plugins');
 	$wp_act_pis = \implode(', ',$wp_act_pis);
-	$my_act_pis = \get_option('status_active_plugins');
-	if ( $wp_act_pis != $my_act_pis) {
-		update_option('status_active_plugins', $wp_act_pis);
-		$plugins_changed = true;
+	$fm_act_pis = \get_option('fm_plugins_checker');
+	if ( $wp_act_pis != $fm_act_pis['active_plugins']) {
+		$fm_act_pis['active_plugins'] = $wp_act_pis;
+		$fm_act_pis['plugins_changed'] = 'true';
+		update_option('fm_plugins_checker', $fm_act_pis);
 	}
 
-	global $wp_scripts;
-	global $wp_styles;
-	//$all_scripts = \mvbplugins\fotoramamulti\get_scripts_styles(); // am besten ausführen mit dem hook : 'wp_print_footer_scripts' oder wp_print_style oder wp_print_scripts oder shutdown
-	//add_action( 'wp_print_scripts', 'crunchify_print_scripts_styles' ); // ist in der functions.php
-	$b=1;
-	
+	// show notice if not resetted by shutdown hook function, TODO: $fm_act_pis['show_admin_message']
+	if ( 'true' == $fm_act_pis['show_admin_message']) {
+		add_action( 'all_admin_notices', '\mvbplugins\fotoramamulti\fm_error_notice' ); // all_admin_notices for multisite
+	}
 }
+add_action( 'shutdown', '\mvbplugins\fotoramamulti\action_shutdown', 10, 1 );
 
 // ------------------------------------------------------------
 // define the shortcode to generate the image-slider with map
