@@ -6,7 +6,8 @@ function action_shutdown( $array ) {
     
 	$fm_act_pis = \get_option('fm_plugins_checker');
 
-	if ( ('true' == $fm_act_pis['plugins_changed']) && ( \is_page() || \is_single()) ) { 
+	//if ( ('true' == $fm_act_pis['plugins_changed']) && ( \is_page() || \is_single()) ) { 
+	if ( ( \is_page() || \is_single()) ) {
 		$all = \mvbplugins\fotoramamulti\get_scripts_styles();
 		$plugin_path = plugins_url() . '/';
 		$plugin_name = plugin_basename( __FILE__ );
@@ -17,7 +18,11 @@ function action_shutdown( $array ) {
 		foreach ($all['scripts'] as $script) {
 			$script = \str_replace( $plugin_path, '', $script);
 			$is_fm_script = \stripos($script, $plugin_name);
-			$js = \basename($script, '.js;');
+			$suffix = \stripos( $script, '.js?' );
+			if ( $suffix > 0 ) {
+				$script = \substr($script, 0, $suffix+3);
+			}
+			$js = \basename($script, '.js');
 			$min = \stripos( $js, 'min' );
 			
 			if ($min > 0) {
@@ -26,7 +31,15 @@ function action_shutdown( $array ) {
 
 			if ( false === $is_fm_script){
 				$not_fm_scripts[] = $js;
-				$not_fm_scripts_complete[] = $script;	
+				$not_fm_scripts_complete[] = $script;
+				$plugin = \str_replace( $plugin_path, '', $script);
+				$pos = \stripos( $plugin, '/' );
+				$plugin_check = \substr($plugin, 0, $pos);
+				$plugin_conflict = \stripos( $plugin_check, 'leaflet' );
+				if ( is_numeric($plugin_conflict) ) {
+					$conflicting_plugin[] = $plugin_check . ' - detected by naming' ;
+				}
+				
 			} else {
 				$fm_scripts[] = $js;
 			}
@@ -60,12 +73,13 @@ function action_shutdown( $array ) {
 			}
 		}
 
-		if ( $conflicting_script == null) {
+		if ( empty( $conflicting_script ) && empty( $conflicting_plugin ) ) {
 			$fm_act_pis['plugins_changed'] = 'false';
 			$fm_act_pis['show_admin_message'] = 'false';
 			$fm_act_pis['plugin_name'] = '';
 		} else {
 			$fm_act_pis['show_admin_message'] = 'true';
+			$conflicting_script = \array_merge( (array)$conflicting_script, (array)$conflicting_plugin);
 			$fm_act_pis['plugin_name'] = \maybe_serialize( $conflicting_script );
 		}
 		\update_option('fm_plugins_checker', $fm_act_pis);
@@ -102,13 +116,13 @@ function get_scripts_styles() {
     // Print all loaded Scripts
     global $wp_scripts;
     foreach( $wp_scripts->queue as $script ) :
-       $result['scripts'][] =  $wp_scripts->registered[$script]->src . ";";
+       $result['scripts'][] =  $wp_scripts->registered[$script]->src;
     endforeach;
 
     // Print all loaded Styles (CSS)
     global $wp_styles;
     foreach( $wp_styles->queue as $style ) :
-       $result['styles'][] =  $wp_styles->registered[$style]->src . ";";
+       $result['styles'][] =  $wp_styles->registered[$style]->src;
     endforeach;
 
     return $result;

@@ -71,10 +71,6 @@ add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
 function showmulti($attr, $content = null)
 {
-	global $wp_scripts;
-	global $wp_styles;
-	$scr = get_scripts_styles();
-
 	// Define global Values and Variables. We need the globals for the state-transition of the post
 	global $post_state_pub_2_draft;
 	global $post_state_draft_2_pub;
@@ -491,7 +487,7 @@ function showmulti($attr, $content = null)
 	$htmlstring  .= '</div><!--div id=multifotobox'.$shortcodecounter.'-->';
 	
 	// pass php variabls to javascript-file for fotorama
-	wp_localize_script('fotorama_multi', 'wpfm_phpvars' . $shortcodecounter, array(
+	wp_localize_script('fotorama_multi_js', 'wpfm_phpvars' . $shortcodecounter, array(
 		'ngpxfiles'  => $i,
 		'imagepath' => $wp_fotomulti_path,
 		'imgdata' => $phpimgdata ?? [],

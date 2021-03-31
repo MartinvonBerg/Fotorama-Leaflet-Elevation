@@ -44,14 +44,18 @@ var _MINUTE_IN_MILLIS = 60 * _SECOND_IN_MILLIS;
 var _HOUR_IN_MILLIS = 60 * _MINUTE_IN_MILLIS;
 var _DAY_IN_MILLIS = 24 * _HOUR_IN_MILLIS;
 
-var _GPX_STYLE_NS = 'https://www.topografix.com/GPX/gpx_style/0/2';
+var _GPX_STYLE_NS = 'http://www.topografix.com/GPX/gpx_style/0/2';
 
 var _DEFAULT_MARKER_OPTS = {
   startIconUrl: 'pin-icon-start.png',
   endIconUrl: 'pin-icon-end.png',
   shadowUrl: 'pin-shadow.png',
   wptIcons: [],
+  wptIconsType: [],
   wptIconUrls : {
+    '': 'pin-icon-wpt.png',
+  },
+  wptIconTypeUrls : {
     '': 'pin-icon-wpt.png',
   },
   pointMatchers: [],
@@ -357,52 +361,67 @@ L.GPX = L.FeatureGroup.extend({
             el[i].getAttribute('lon'));
 
         var nameEl = el[i].getElementsByTagName('name');
-        var name = '';
-        if (nameEl.length > 0) {
-          name = nameEl[0].textContent;
-        }
+        var name = nameEl.length > 0 ? nameEl[0].textContent : null;
 
         var descEl = el[i].getElementsByTagName('desc');
-        var desc = '';
-        if (descEl.length > 0) {
-          desc = descEl[0].textContent;
-        }
+        var desc = descEl.length > 0 ? descEl[0].textContent : null;
 
         var symEl = el[i].getElementsByTagName('sym');
-        var symKey = '';
-        if (symEl.length > 0) {
-          symKey = symEl[0].textContent;
-        }
+        var symKey = symEl.length > 0 ? symEl[0].textContent : null;
+
+        var typeEl = el[i].getElementsByTagName('type');
+        var typeKey = typeEl.length > 0 ? typeEl[0].textContent : null;
 
         /*
          * Add waypoint marker based on the waypoint symbol key.
          *
          * First look for a configured icon for that symKey. If not found, look
          * for a configured icon URL for that symKey and build an icon from it.
+         * If none of those match, look through the point matchers for a match
+         * on the waypoint's name.
+         *
          * Otherwise, fall back to the default icon if one was configured, or
-         * finally to the default icon URL.
+         * finally to the default icon URL, if one was configured.
          */
         var wptIcons = options.marker_options.wptIcons;
         var wptIconUrls = options.marker_options.wptIconUrls;
+        var wptIconsType = options.marker_options.wptIconsType;
+        var wptIconTypeUrls = options.marker_options.wptIconTypeUrls;
+        var ptMatchers = options.marker_options.pointMatchers || [];
         var symIcon;
-        if (wptIcons && wptIcons[symKey]) {
+        if (wptIcons && symKey && wptIcons[symKey]) {
           symIcon = wptIcons[symKey];
-        } else if (wptIconUrls && wptIconUrls[symKey]) {
+        } else if (wptIconsType && typeKey && wptIconsType[typeKey]) {
+          symIcon = wptIconsType[typeKey];
+        } else if (wptIconUrls && symKey && wptIconUrls[symKey]) {
           symIcon = new L.GPXTrackIcon({iconUrl: wptIconUrls[symKey]});
+        } else if (wptIconTypeUrls && typeKey && wptIconTypeUrls[typeKey]) {
+          symIcon = new L.GPXTrackIcon({iconUrl: wptIconTypeUrls[typeKey]});
+        } else if (ptMatchers.length > 0) {
+          for (var j = 0; j < ptMatchers.length; j++) {
+            if (ptMatchers[j].regex.test(name)) {
+              symIcon = ptMatchers[j].icon;
+              break;
+            }
+          }
         } else if (wptIcons && wptIcons['']) {
           symIcon = wptIcons[''];
         } else if (wptIconUrls && wptIconUrls['']) {
           symIcon = new L.GPXTrackIcon({iconUrl: wptIconUrls['']});
-        } else {
-          console.log('No icon or icon URL configured for symbol type "' + symKey
-            + '", and no fallback configured; ignoring waypoint.');
+        }
+
+        if (!symIcon) {
+          console.log(
+            'No waypoint icon could be matched for symKey=%s,typeKey=%s,name=%s on waypoint %o',
+            symKey, typeKey, name, el[i]);
           continue;
         }
 
         var marker = new L.Marker(ll, {
           clickable: options.marker_options.clickable,
           title: name,
-          icon: symIcon
+          icon: symIcon,
+          type: 'waypoint'
         });
         marker.bindPopup("<b>" + name + "</b>" + (desc.length > 0 ? '<br>' + desc : '')).openPopup();
         this.fire('addpoint', { point: marker, point_type: 'waypoint', element: el[i] });

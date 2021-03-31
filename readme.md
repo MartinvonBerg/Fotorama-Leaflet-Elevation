@@ -53,6 +53,19 @@ See under https://www.mvb1.de/skitour-schneibstein/
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
 - The plugin was tested with wordpress versions 5.6 - 5.7 and PHP 7.4.x and 8.x.
+- The plugin was tested with other Plugins using leaflet Map:
+- It works together with:
+    - Leaflet Map (uses the same script-handle 'leaflet_js')
+    - Geo Mashup
+    - Google Maps Easy
+- It causes Javascript-Errors in browser with:    	
+    - GEO my Wordpress 
+    - MapPress Maps for WordPress
+    - Leaflet Maps Marker 	 
+    - Ultimate Maps by Supsystic  
+    - WP GPX maps	
+
+The new "Plugin-Checker" shows you an error message if one of the above plugins is used together with fotorama_multi.
 
 # Installation
 
@@ -60,13 +73,14 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 1. Download the plugin-directory from github to a local -> *.zip
 2. Install the zipped Plugin to the Wordpress-Plugin-Page (Upload zip in Admin-Backend). 
 3. Activate the plugin through the 'Plugins' menu in Admin-Area of WordPress
-4. Done!
+4. The Admin settings are initialised with reasonable values. Change the settings in the "Fotorama-Elevatione" page for preferred settings.
+5. Done!
 
 # Update or De-Installation
 
 1. Deactivate the plugin in Admin-Area of WordPress.
-2. Delete the Plugin-in. Stop here for De-Installation. Hint: The Wordpress-Database is cleaned upon de-installation. The Custom-Fields (lat, lon, postimg, admin settings ASO) are removed from your database! No tracks left behind.
-3. Do Installation for the new version. Wordpress will provide you a message window wether you are sure. It's up to you.
+2. Optional for clean Update: Delete the Plugin-in. Stop here for De-Installation. Hint: The Wordpress-Database is cleaned upon de-installation. The Custom-Fields (lat, lon, postimg, geoaddress, admin settings ASO) are removed from your database! 
+3. Do Installation with the new version. Wordpress will provide you a message window wether you are sure. If you de-installed before, all settings have to be done again. Skip Step 2. and you don't have to do that.
 
 # Upgrade Notice 
 
@@ -313,8 +327,20 @@ This plugin uses the great work from:
 
 # Changelog
 
-= 0.0.8 =
-First public release: 11.03.2021
+= 0.1.1 =
+30.03.2021: uninstall.php updated, because custom-fields updated
+    separate enqueue scripts re-introduced, handles changed, handles synchronized with other plugins, all loaded files updated
+    plugin- and script-checker introduced
+    condition for custom-fields changed, error correction in fotorama_multi.php
+    thumbnail on map for images with thumbs but not in wordpress added
+    logic with "hasMap" changed, SEO alt-tag corrected
+    rescaling of elevation chart removed, zoom w/o map corrected, fotorama w/o map corrected
+
+= 0.1.0 =
+    18.03.2021: Icons changed, error correction
 
 = 0.0.9 =
-14.03.2021: Error correction, Readme update
+    14.03.2021: Error correction, Readme update
+
+= 0.0.8 =
+    First public release: 11.03.2021
