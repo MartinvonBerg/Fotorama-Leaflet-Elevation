@@ -324,7 +324,7 @@ This plugin uses the great work from:
     phpcs -n -p . --standard=PHPCompatibility --runtime-set testVersion 7.0-
     ```
 - jquery migrate was used to update fotorama to the jquery version 3.5.1 that is currently used by WordPress. Some js code raises the "add passive event listener warning" which doesn't interfere the execution.
-- leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation.
+- leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with V5.16.0.
 
 # Changelog
 
@@ -335,7 +335,7 @@ This plugin uses the great work from:
     condition for custom-fields changed, error correction in fotorama_multi.php
     thumbnail on map for images with thumbs but not in wordpress added
     logic with "hasMap" changed, SEO alt-tag corrected
-    rescaling of elevation chart removed, zoom w/o map corrected, fotorama w/o map corrected
+    rescaling of elevation chart removed, zoom w/o map corrected, fotorama w/o map corrected, readme updated
 
 = 0.1.0 =
     18.03.2021: Icons changed, error correction

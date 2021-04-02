@@ -2,13 +2,13 @@
 
 /**
  *
- * @link              https://github.com/MartinvonBerg/fotorama_multi
+ * @link              https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * @since             5.3.0
  * @package           fotorama_multi
  *
  * @wordpress-plugin
- * Plugin Name:       Fotorama-Multi
- * Plugin URI:        https://github.com/MartinvonBerg/fotorama_multi
+ * Plugin Name:       Fotorama_Multi
+ * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
  * Version:           0.1.1
  * Author:            Martin von Berg
