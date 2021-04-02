@@ -71,10 +71,11 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 
 0. Do a complete Back-up of your Wordpress-Site including SQL-Database!
 1. Download the plugin-directory from github to a local -> *.zip
-2. Install the zipped Plugin to the Wordpress-Plugin-Page (Upload zip in Admin-Backend). 
-3. Activate the plugin through the 'Plugins' menu in Admin-Area of WordPress
-4. The Admin settings are initialised with reasonable values. Change the settings in the "Fotorama-Elevatione" page for preferred settings.
-5. Done!
+2. **! Important !** : Rename the donwloaded zip to 'fotorama_multi.zip' (There is no option in github to provide a name for the zip-file.)
+3. Install the zipped Plugin to the Wordpress-Plugin-Page (Upload zip in Admin-Backend). 
+4. Activate the plugin through the 'Plugins' menu in Admin-Area of WordPress
+5. The Admin settings are initialised with reasonable values. Change the settings in the "Fotorama-Elevatione" page for preferred settings.
+6. Done!
 
 # Update or De-Installation
 
