@@ -1485,7 +1485,9 @@ function addFocus (el, fn) {
 }
 
 function stopEvent (e, stopPropagation) {
-  e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+  if ( ! ("touchend" == e.type) && ("toustart" == e.type) ) { // Martin
+   e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+  } 
   stopPropagation && e.stopPropagation && e.stopPropagation();
 }
 

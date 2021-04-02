@@ -36,6 +36,15 @@
                 shadowSize: [48, 32],
                 shadowAnchor: [16, 32],
             });
+            var myIcon2 = L.icon({ 
+                iconUrl: wpfm_phpvars0.imagepath + "pin-icon-wpt.png",
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -16],
+                shadowUrl: wpfm_phpvars0.imagepath + 'shadow.png',
+                shadowSize: [48, 32],
+                shadowAnchor: [16, 32],
+            });
             var myIcon3 = L.icon({ 
                 iconUrl: wpfm_phpvars0.imagepath + "active.png",
                 iconSize: [32, 32],
@@ -437,7 +446,7 @@
                     }
                 } else {
                     // No gpx-track to show: Create simple marker
-                    L.marker(opts.map.center, { title: phptracks.markertext,}).addTo(maps[m]);
+                    L.marker(opts.map.center, { title: phptracks.markertext, icon: myIcon2 } ).addTo(maps[m]);
                 }
 
                 // change elevation chart on change of gpx-track
