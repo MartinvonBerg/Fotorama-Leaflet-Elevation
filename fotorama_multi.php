@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.1.1
+ * Version:           0.1.2
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -116,7 +116,11 @@ function showmulti($attr, $content = null)
 	), $attr));
 
 	// Detect Language of the client request
-	$lang = substr(\explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0], 0, 2); 
+	if ( array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER) ) {
+		$lang = substr(\explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0], 0, 2); 
+	} else {
+		$lang = 'en';
+	}
 
 	$mapcenter = explode(',',$mapcenter);
 

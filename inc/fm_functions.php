@@ -13,6 +13,7 @@ function action_shutdown( $array ) {
 		$plugin_name = plugin_basename( __FILE__ );
 		$pos = \stripos( $plugin_name, '/' );
 		$plugin_name = \substr($plugin_name, 0, $pos);
+		$not_fm_scripts = array();
 		
 		// filter and sort the scripts loaded from all plugins and themes
 		foreach ($all['scripts'] as $script) {
@@ -29,7 +30,7 @@ function action_shutdown( $array ) {
 				$js = \str_replace('.min', '', $js);
 			}
 
-			if ( false === $is_fm_script){
+			if ( false === $is_fm_script ) {
 				$not_fm_scripts[] = $js;
 				$not_fm_scripts_complete[] = $script;
 				$plugin = \str_replace( $plugin_path, '', $script);
@@ -115,15 +116,19 @@ function get_scripts_styles() {
 
     // Print all loaded Scripts
     global $wp_scripts;
-    foreach( $wp_scripts->queue as $script ) :
-       $result['scripts'][] =  $wp_scripts->registered[$script]->src;
-    endforeach;
+	if ( 'array' == gettype( $wp_scripts) || 'object' == gettype( $wp_scripts) ) {
+		foreach( $wp_scripts->queue as $script ) {
+		$result['scripts'][] =  $wp_scripts->registered[$script]->src;
+		}
+	}
 
     // Print all loaded Styles (CSS)
     global $wp_styles;
-    foreach( $wp_styles->queue as $style ) :
-       $result['styles'][] =  $wp_styles->registered[$style]->src;
-    endforeach;
+	if ( 'array' == gettype( $wp_styles) || 'object' == gettype( $wp_styles) ) {
+		foreach( $wp_styles->queue as $style ) {
+		$result['styles'][] =  $wp_styles->registered[$style]->src;
+		}
+	}
 
     return $result;
 }

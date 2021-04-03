@@ -59,7 +59,7 @@ function fotomulti_scripts()
 		wp_register_style('leaflet_gesture_handling_js', 'https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js', array('jquery'), '1.2.1', true); // 1.2.1
 		wp_register_style('control_fullscreen_js','https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/2.0.0/Control.FullScreen.min.js', array('jquery'), '2.0.0', true); // aktuell
 		wp_register_style('zoom_master_js','https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js', array('jquery'), '1.7.21', true); // aktuell
-		wp_register_style('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.1.1', true);	
+		wp_register_style('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.1.2', true);	
 	} else {
 		// register local Styles
 		wp_register_style('leaflet_css', $plugin_url . 'css/leaflet.min.css', '', '1.7.1');
@@ -76,7 +76,7 @@ function fotomulti_scripts()
 		wp_register_script('leaflet_gesture_handling_js',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '1.2.1', true);
 		wp_register_script('control_fullscreen_js', $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '2.0.0', true);
 		wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-		wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.1.1', true);	
+		wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.1.2', true);	
 
       
 	}

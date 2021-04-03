@@ -279,6 +279,7 @@ This plugin uses the great work from:
 - HTML Table generator: https://www.tablesgenerator.com/html_tables
 - WordPress Option Page generator from http://jeremyhixon.com/wp-tools/option-page/
 - icons from freeicons.io
+- https://onlinepngtools.com/ for adaptation of the PNG-icons
 - OpenStreetMaps, OpentTopoMaps  are great services.
 - Nominatim for reverse geo-coding: https://nominatim.org/release-docs/develop/api/Reverse/
 
@@ -326,6 +327,9 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with V5.16.0.
 
 # Changelog
+
+= 0.1.2 =
+3.04.2021: Minor php error correction
 
 = 0.1.1 =
 30.03.2021: uninstall.php updated, because custom-fields updated
