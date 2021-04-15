@@ -1485,8 +1485,21 @@ function addFocus (el, fn) {
 }
 
 function stopEvent (e, stopPropagation) {
-  if ( ! ("touchend" == e.type) && ("toustart" == e.type) ) { // Martin
-   e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+  var supportsPassive = false;
+  try {
+    var opts = e.defineProperty({}, 'passive', {
+        get: function() {
+            supportsPassive = true;
+        }
+    });
+    //window.addEventListener("testPassive", null, opts);
+    //window.removeEventListener("testPassive", null, opts);
+
+  } catch (e) {}
+  //if ( ! ("touchend" == e.type) && ("toustart" == e.type) ) { // Martin
+  // e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+  if (e && e.preventDefault && supportsPassive) {
+    e.preventDefault();
   } 
   stopPropagation && e.stopPropagation && e.stopPropagation();
 }

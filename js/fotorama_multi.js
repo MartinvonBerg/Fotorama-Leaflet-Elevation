@@ -581,7 +581,7 @@
                         
                         // zoom the active frame if full, only for desktop
                         // source: https://www.jacklmoore.com/zoom/
-                        if (fotoramaState == 'full') {
+                        if (fotoramaState == 'full' && ! mobile) {
                             $('#sf' + m + '-' + nr).zoom(
                                 {url: fotorama.data[nr].full,
                                     on: zoomeffect,
@@ -623,7 +623,7 @@
                         // set id in current active stage Frame
                         fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
             
-                        if (fotoramaState == 'full') {
+                        if (fotoramaState == 'full' && ! mobile) {
                             // activate the zoom in fullscreen
                             $('#sf' + m + '-' + nr).zoom(
                                 {url: fotorama.data[nr].full,

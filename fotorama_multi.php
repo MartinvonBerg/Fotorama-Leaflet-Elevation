@@ -58,7 +58,7 @@ if ( is_admin() ) {
 	}
 
 	// show notice if not resetted by shutdown hook function, TODO: $fm_act_pis['show_admin_message']
-	if ( 'true' == $fm_act_pis['show_admin_message']) {
+	if ( 'true' == $fm_act_pis['show_admin_message'] ) {
 		add_action( 'all_admin_notices', '\mvbplugins\fotoramamulti\fm_error_notice' ); // all_admin_notices for multisite
 	}
 }
@@ -282,8 +282,8 @@ function showmulti($attr, $content = null)
 			if ($i == 0) {
 				$gpxfile .= $f;
 
-				if ($draft_2_pub && $setCustomFields && (0 == $shortcodecounter)) {
-				//if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) && ( ! $pub_2_draft) ) {	
+				//if ($draft_2_pub && $setCustomFields && (0 == $shortcodecounter)) {
+				if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) ) {	
 					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
 					// This is done only once to reduce load on nominatim. If requests are too frequent it will block the response!
 					$gpxdata = simplexml_load_file($gpx_url . $f);
@@ -302,7 +302,7 @@ function showmulti($attr, $content = null)
 
 					// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
 					// only done for the first track
-					if ('true' == $showadress) {
+					if ('true' == $showadress && $pub_2_draft) {
 						$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
 						$opts = array(
 							'http'=>array(
