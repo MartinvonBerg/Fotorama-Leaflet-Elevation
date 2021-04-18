@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.1.2
+ * Version:           0.1.3
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -33,7 +33,7 @@ const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_im
 require_once __DIR__ . '/inc/stateTransitions.php';
 require_once __DIR__ . '/inc/fm_functions.php';
 require_once __DIR__ . '/languages/locales_i18n.php';
-require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
+//require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
 
 // load the wpseo_sitemap_url-images callback to add images of post to the sitemap only if needed or intended
 $const2 = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16'];
@@ -71,6 +71,8 @@ add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
 function showmulti($attr, $content = null)
 {
+	require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
+
 	// Define global Values and Variables. We need the globals for the state-transition of the post
 	global $post_state_pub_2_draft;
 	global $post_state_draft_2_pub;
@@ -329,9 +331,13 @@ function showmulti($attr, $content = null)
 	// Generate the inline style for the CSS-Grid. Identical for all shortcodes!
 	/*------------- grid -----------------------*/
 	if ($shortcodecounter == 0) {
-		$htmlstring  .= '<style type="text/css">';
-		$htmlstring  .= '@media screen and (min-width: 480px) { .mfoto_grid { display: grid;';
-		$htmlstring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} } </style>';  
+		add_action('wp_head', 'fotorama_multi_styles', 100);
+		function fotorama_multi_styles( ) {
+			$stylestring  = '<style type="text/css">';
+			$stylestring  .= '@media screen and (min-width: 480px) { .mfoto_grid { display: grid;';
+			$stylestring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} } </style>';  
+			echo $stylestring;
+		}
 	}
 	
 	// Generate the html-code start with the surrounding Div
