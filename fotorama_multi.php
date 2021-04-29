@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.1.3
+ * Version:           0.1.4
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -329,16 +329,7 @@ function showmulti($attr, $content = null)
 	}
 
 	// Generate the inline style for the CSS-Grid. Identical for all shortcodes!
-	/*------------- grid -----------------------*/
-	if ($shortcodecounter == 0) {
-		add_action('wp_head', 'fotorama_multi_styles', 100);
-		function fotorama_multi_styles( ) {
-			$stylestring  = '<style type="text/css">';
-			$stylestring  .= '@media screen and (min-width: 480px) { .mfoto_grid { display: grid;';
-			$stylestring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} } </style>';  
-			echo $stylestring;
-		}
-	}
+	// --> moved to header in file fm_functions.php
 	
 	// Generate the html-code start with the surrounding Div
 	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' class="mfoto_grid" style="max-width:'. $maxwidth .'px;">';
@@ -346,7 +337,7 @@ function showmulti($attr, $content = null)
 
 	// Generate Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
-		$htmlstring  .= '<div id="Bilder" style="display : none"><figure><img loading="lazy" alt="' . $alttext . '"><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
+		$htmlstring  .= '<div class="fotorama_multi_images" style="display : none"><figure><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
 		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="cover" 
 							  data-shadows="true" data-captions="'. $showcaption .'" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
 		

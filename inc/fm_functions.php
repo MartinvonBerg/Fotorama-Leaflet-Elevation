@@ -1,6 +1,17 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
+// add the style for the grid to ALL headers!
+// Generate the inline style for the CSS-Grid. Identical for all shortcodes!
+add_action('wp_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
+function fotorama_multi_styles( ) {
+	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
+	$stylestring  = '<style id="fotorama_multi_inline_css" type="text/css">';
+	$stylestring  .= '@media screen and (min-width: 480px) { .mfoto_grid { display: grid;';
+	$stylestring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} } </style>';  
+	echo $stylestring;
+}
+
 // define the shutdown callback 
 function action_shutdown( $array ) { 
     
@@ -48,7 +59,11 @@ function action_shutdown( $array ) {
 
 		// check the scripts if there are double filenames
 		foreach ($not_fm_scripts as $script) {
-			$script_conflict = \in_array($script, $fm_scripts);
+			if ('array' == gettype( $fm_scripts) ) {
+				$script_conflict = \in_array($script, $fm_scripts);
+			} else {
+				$script_conflict = false;
+			}
 			if ( $script_conflict ) {
 				$plugin = \array_search($script, $all['scripts']);
 
