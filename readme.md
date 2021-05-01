@@ -85,6 +85,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 # Upgrade Notice 
 
 Upgrade to Wordpress 5.7 and PHP 8.0 is highly recommended!
+Due to the error corrections it is highly recommended to upgrade the Plugin! Thank's for your patience.
 
 </br>
 
@@ -327,6 +328,12 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with V5.16.0.
 
 # Changelog
+
+= 0.1.4 =
+1.05.2021: PHP error correction for setting of custom-fields lat and lon from gpx-file
+
+= 0.1.3 =
+14.04.2021: Loading of scripts and styles changed! Now loaded only if the shortcode is on a page. So it is no longer required to fiddle with Asset Clean up.
 
 = 0.1.2 =
 3.04.2021: Minor php error correction

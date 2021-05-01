@@ -170,7 +170,7 @@ function gpxview_get_upload_dir($param, $subfolder = '')
 /**
  * Convert one part of GPS coordinates to float
  *
- * @param array $coordPart gpx coordinate-part, degree, minute or second
+ * @param string $coordPart gpx coordinate-part, degree, minute or second
  * @return float GPS coordinates as number
  */
 function gpxview_GPS2Num($coordPart)
@@ -217,9 +217,9 @@ function gpxview_getGPS($exifCoord, $hemi)
  * set custom fields 'lat' and 'lon' of the post
  *
  * @param int $pid the post-id
- * @param float $lat the GPS-coordinates lat as number
- * @param float $lon the GPS-coordinates lon as number
- * @return nothing
+ * @param string $lat the GPS-coordinates lat as number
+ * @param string $lon the GPS-coordinates lon as number
+ * @return void
  */
 function gpxview_setpostgps($pid, $lat, $lon)
 {
@@ -228,14 +228,14 @@ function gpxview_setpostgps($pid, $lat, $lon)
 	$oldlat = get_post_meta($pid,'lat');
 	$oldlon = get_post_meta($pid,'lon');
 	if ((count($oldlon)==0) && (count($oldlat)==0)) {
-		update_post_meta($pid,'lat',$lat,''); 
-		update_post_meta($pid,'lon',$lon,'');
+		update_post_meta($pid,'lat',$lat); 
+		update_post_meta($pid,'lon',$lon);
 		//echo ('Update Post-Meta lat und lon');
-	} elseif (strlen($oldlon[0]>=0) && strlen($oldlat[0]>=0)) {
+	} else { //if (strlen($oldlon[0]>=0) && strlen($oldlat[0]>=0)) {
 		delete_post_meta($pid,'lat');
 		delete_post_meta($pid,'lon');
-		update_post_meta($pid,'lat',$lat,''); 
-		update_post_meta($pid,'lon',$lon,'');
+		update_post_meta($pid,'lat',$lat); 
+		update_post_meta($pid,'lon',$lon);
 		//echo ('Update Post-Meta lat und lon');
 	}
 }

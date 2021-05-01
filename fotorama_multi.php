@@ -247,11 +247,11 @@ function showmulti($attr, $content = null)
 	// on the status transition of the post from 'draft' to 'published'.
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
-	if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) && ( ! $pub_2_draft) && ( $imageNumber > 0)) {
+	if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) && ( $imageNumber > 0)) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 	}
 
-	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap && ( ! $pub_2_draft) ) { 
+	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap && ( $draft_2_pub) ) { 
 			
 		if ( (0 == $shortcodecounter) ) {
 			delete_post_meta($postid,'postimg');
@@ -288,23 +288,32 @@ function showmulti($attr, $content = null)
 				if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) ) {	
 					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
 					// This is done only once to reduce load on nominatim. If requests are too frequent it will block the response!
-					$gpxdata = simplexml_load_file($gpx_url . $f);
-					if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] )) {
-						$lat = (string) $gpxdata->trk->trkseg->trkpt[0]['lat']; 
-					} else {
-						$lat = (string) $gpxdata->trk->trkpt[0]['lat'];
+					$gpxdata = simplexml_load_file( $gpx_dir . $f );
+
+					if ( 'object' == gettype( $gpxdata) ) {
+						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] ) ) {
+							$lat = \strval( $gpxdata->trk->trkseg->trkpt[0]['lat'] ); 
+						} else {
+							$lat = \strval( $gpxdata->trk->trkpt[0]['lat'] );
+						}
+
+						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lon'] )) {
+							$lon = \strval( $gpxdata->trk->trkseg->trkpt[0]['lon'] );  
+						} else {
+							$lon = \strval( $gpxdata->trk->trkpt[0]['lon'] );
+						}
+						
+						//$htmlstring .= '<p>Lat: '. $lat .'</p>';
+						//$htmlstring .= '<p>Lon: '. $lon .'</p>';
+						//$htmlstring .= '<p>'. $gpx_dir . $f . '</p>';
+						if ( isset( $lat ) && isset( $lon ) ) {
+							gpxview_setpostgps($postid, $lat, $lon);
+						}
 					}
-					if (isset( $gpxdata->trk->trkseg->trkpt[0]['lon'] )) {
-						$lon = (string) $gpxdata->trk->trkseg->trkpt[0]['lon'];  
-					} else {
-						$lon = (string) $gpxdata->trk->trkpt[0]['lon'];
-					}
-					
-					gpxview_setpostgps($postid, $lat, $lon);
 
 					// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
 					// only done for the first track
-					if ('true' == $showadress && $pub_2_draft) {
+					if ('true' == $showadress && $draft_2_pub) {
 						$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
 						$opts = array(
 							'http'=>array(
