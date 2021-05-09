@@ -115,6 +115,8 @@ function showmulti($attr, $content = null)
 		'mapcenter' => '0.0, 0.0', 
 		'zoom' => 8,					
 		'markertext' => 'Home address',
+		'fit' => 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
+		'ratio' => '1.5',
 	), $attr));
 
 	// Detect Language of the client request
@@ -313,12 +315,15 @@ function showmulti($attr, $content = null)
 
 					// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
 					// only done for the first track
-					if ('true' == $showadress && $draft_2_pub) {
+					// Mind: allow_url_fopen of the server has to be ON!
+					$isallowed = \ini_get('allow_url_fopen');
+					
+					if ( ('true' == $showadress) &&  ('1' == $isallowed) ) {
 						$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
 						$opts = array(
-							'http'=>array(
-							'method'=>"GET",
-							'header'=>'User-Agent: PostmanRuntime/7.26.8' // just any user-agent to fake a human access
+							  		'http'=>array(
+										'method'=>'GET',
+										'header'=>'User-Agent: PostmanRuntime/7.26.10' // just any user-agent to fake a human access
 							)
 						);
 						$context = stream_context_create($opts);
@@ -347,8 +352,8 @@ function showmulti($attr, $content = null)
 	// Generate Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		$htmlstring  .= '<div class="fotorama_multi_images" style="display : none"><figure><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
-		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="cover" 
-							  data-shadows="true" data-captions="'. $showcaption .'" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
+		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="'. $fit .'" 
+							  data-shadows="true" data-captions="'. $showcaption .'" data-ratio="'. $ratio .'" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
 		
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
@@ -394,8 +399,8 @@ function showmulti($attr, $content = null)
 
 			$phpimgdata[$imgnr-1]['id'] = $imgnr;
 			$phpimgdata[$imgnr-1]['title'] = $alttext; //$data['title'];
-			$phpimgdata[$imgnr-1]['coord'][0] = $data['lat'];
-			$phpimgdata[$imgnr-1]['coord'][1] = $data['lon'];
+			$phpimgdata[$imgnr-1]['coord'][0] = round( $data['lat'], 6 );
+			$phpimgdata[$imgnr-1]['coord'][1] = round( $data['lon'], 6 );
 
 			if ($data['thumbinsubdir']) {
 				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
@@ -458,7 +463,7 @@ function showmulti($attr, $content = null)
 	}
 	
 	// produce starting point description,  
-	if ($showadress  == 'true') {
+	if ( 'true' == $showadress ) {
 		$geoadresstest =  get_post_meta($postid,'geoadress');
 		if ( ! empty($geoadresstest[0]) ) {
 			$test = $geoadresstest[0]; // we need only the first index
@@ -473,6 +478,10 @@ function showmulti($attr, $content = null)
 					$v .= $value;
 					break;
 				}
+			}
+
+			if ( \current_user_can('edit_posts') && ('true' == $showadress) &&  ('0' == $isallowed) ) {
+				$v = 'Your Server is not set correctly! Cannot read address for GPX-Data. Check server setting "allow_url_fopen"';
 			}
 
 			$lat = get_post_meta($postid,'lat');
