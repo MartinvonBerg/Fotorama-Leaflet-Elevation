@@ -181,18 +181,10 @@ Process and save the file with the Button at the bottom.
     Optionally:
     - Add the images to the WordPress Media Library with my other plugin: https://wordpress.org/plugins/wp-wpcat-json-rest/ See there for the manual how to do that.
 
-    - If the images were added to the Media-Catalog of WordPress the WordPress 'srcset' is used for thumbnails.
-        - Note: Only with the WP 'srcset' the small icon on the leaflet map shows the thumb for the image on hover.
-        This is done by this piece of code in 'fotorama_multi.js':
-        ```JS
-        if ("srcset" in tour) { 
-            var key = Object.keys(tour.srcset)[0];
-            marker[j].bindPopup( tour["title"] + '<br><img src="' + tour.srcset[key] + '">' );
-        } else {
-            marker[j].bindPopup( tour["title"]  ); // Change here to show thumbnails on hover
-            }
-        ```
-
+    - If the images were 
+        - added to the Media-Catalog of WordPress or
+        - added together with thumbnails (see above) 'srcset' is used for thumbnails.
+        - Note: Only with 'srcset' the small icon on the leaflet map shows the thumb for the image on hover.
         - Note for Lightroom-Users: I also wrote a Lightroom-Plugin to upload the images directly to the Wordpress-Catalog and do the whole process in one Click! All image-work, updates, change of title, development can be done in Lightroom and the same image with unchanged Wordpress-ID is updated. The images in the fotorama-slider are updated automatically. Mind that ALL caches on the line from the server to your browser have to emptied for that. If you use a Plugin to convert jpg to webp the cache of this plugins must be emptied to show changed images in the slider. 
     - Example-Folder
 
@@ -204,13 +196,13 @@ Process and save the file with the Button at the bottom.
 
 4. Further Fotorama Options
 
-    The Fotorama-Slider options are fixed with this line in the source-code of 'fotorama_multi.php':
+    The Fotorama-Slider options are set by the lines of code in the source-code of 'fotorama_multi.php' starting with the following line:
     ```php
     $string  .= '<div id="fotorama" class="fotorama" data-auto="false" data-width="100%" data-fit="contain" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="true" data-hash="true">';
     ```
     The CSS is set in 'fotorama_multi.css' and 'fotorama3.css'. Further Fotorama-options are to find under : https://fotorama.io/docs/4/options/ or in fotorama.dev.js starting at line 880 under "OPTIONS = {..."
 
-    If you know what you are doing you may change the code to whatever you like. Have fun!
+    If you know what you do you migth change the code or CSS to whatever you like. Have fun!
     
 5. TODO w.r.t to FOTORAMA
     - showcaption: Setting is ignored for the firs two images 
