@@ -54,7 +54,8 @@ class FotoramaElevation {
 			   do_settings_sections("gpx_file");
 			   ?>
 			   <p><b>Hint: GPX-routes without elevation data should be converted to tracks with <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
-			   Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.</b></b> 
+			   Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.</b></br>
+			   Button 'Save GPX-File' underneath will save settings and / or GPX-File.</p> 
 			   <?php
 			   $strg = __('Save GPX-File', 'fotoramamulti');
 			   submit_button( $strg );            
@@ -198,7 +199,7 @@ class FotoramaElevation {
 				<td class="tg-0pky">Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option.</td>
 			</tr>
 			<tr>
-			<td class="tg-0pky">Fotorama</td><td></td><td></td><td></td>
+			<td class="tg-0pky"><strong>Fotorama Settings</strong></td><td></td><td></td><td></td>
 			</tr>
 			<tr>
 				<td class="tg-0pky">imgpath</td>
@@ -250,6 +251,24 @@ class FotoramaElevation {
 				<td class="tg-0pky">useCDN="false"</td>
 				<td class="tg-0pky">Use CDN for js- and css-Library-Files</td>
 			</tr>
+			<tr>
+			<td class="tg-0pky"><strong>Fotorama without admin settings</strong></td><td></td><td></td><td></td>
+			</tr>
+			<tr><td class="tg-0pky">fit</td><td class="tg-0pky">contain , cover, scaledown, none</td><td class="tg-0pky">fit="contain"</td><td class="tg-0pky">Define the scaling of Fotos for the Fotorama Slider</td></tr>
+			<tr><td class="tg-0pky">ratio</td><td class="tg-0pky">1.5</td><td class="tg-0pky">ratio="1.0"</td><td class="tg-0pky">Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now</td></tr>
+			<tr><td class="tg-0pky">background</td><td class="tg-0pky">darkgrey</td><td class="tg-0pky">background="red"</td><td class="tg-0pky">Background color of the slider defined by a valid CSS name</td></tr>
+			<tr><td class="tg-0pky">navposition</td><td class="tg-0pky">bottom , top</td><td class="tg-0pky">navposition="top"</td><td class="tg-0pky">Position of the navigation bar</td></tr>
+			<tr><td class="tg-0pky">navwidth</td><td class="tg-0pky">100%</td><td class="tg-0pky">navwidth="80%"</td><td class="tg-0pky">Width of the navigation bar in percent. Provide the '%' also!.</td></tr>
+			<tr><td class="tg-0pky">f_thumbwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">f_thumbwidth="80"</td><td class="tg-0pky">Width of the single thumbnail in the navigation bar in pixels</td></tr>
+			<tr><td class="tg-0pky">f_thumbheight</td><td class="tg-0pky">75</td><td class="tg-0pky">f_thumbheight="80"</td><td class="tg-0pky">Height of the single thumbnail in the navigation bar in pixels</td></tr>
+			<tr><td class="tg-0pky">thumbmargin</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbmargin="3"</td><td class="tg-0pky">Margin between thumbnails in pixels</td></tr>
+			<tr><td class="tg-0pky">thumbborderwidth</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbborderwidth="3"</td><td class="tg-0pky">Width of the coloured thumbnail border in pixels</td></tr>
+			<tr><td class="tg-0pky">thumbbordercolor</td><td class="tg-0pky">#ea0000</td><td class="tg-0pky">thumbbordercolor="blue"</td><td class="tg-0pky">Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken.</td></tr>
+			<tr><td class="tg-0pky">transition</td><td class="tg-0pky">crossfade , slide , dissolve</td><td class="tg-0pky">transition="slide"</td><td class="tg-0pky">Type of transition between images</td></tr>
+			<tr><td class="tg-0pky">transitionduration</td><td class="tg-0pky">400</td><td class="tg-0pky">transitionduration="200"</td><td class="tg-0pky">Duration of transition in ms</td></tr>
+			<tr><td class="tg-0pky">loop</td><td class="tg-0pky">true , false</td><td class="tg-0pky">loop="false"</td><td class="tg-0pky">Loop through images (proceed with first once the reached the las) true or false</td></tr>
+			<tr><td class="tg-0pky">autoplay</td><td class="tg-0pky">3000</td><td class="tg-0pky">autoplay="false"</td><td class="tg-0pky">Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false"</td></tr>
+			<tr><td class="tg-0pky">arrows</td><td class="tg-0pky">true , false , always</td><td class="tg-0pky">arrows="false"</td><td class="tg-0pky">Show arrows for the slider control. 'always' : Do not hide controls on hover or tap</td></tr>
 		
 			</tbody>
 			</table>

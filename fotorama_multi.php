@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.1.4
+ * Version:           0.1.5
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -29,7 +29,7 @@ require_once __DIR__ . '/inc/init_database.php';
 register_activation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
 
 // define globals and load all functions 
-const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. But where?
+const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. read from WP settings. wp_options: large_size_w. Did not work
 require_once __DIR__ . '/inc/stateTransitions.php';
 require_once __DIR__ . '/inc/fm_functions.php';
 require_once __DIR__ . '/languages/locales_i18n.php';
@@ -57,7 +57,7 @@ if ( is_admin() ) {
 		update_option('fm_plugins_checker', $fm_act_pis);
 	}
 
-	// show notice if not resetted by shutdown hook function, TODO: $fm_act_pis['show_admin_message']
+	// show notice if not resetted by shutdown hook function.
 	if ( 'true' == $fm_act_pis['show_admin_message'] ) {
 		add_action( 'all_admin_notices', '\mvbplugins\fotoramamulti\fm_error_notice' ); // all_admin_notices for multisite
 	}
@@ -117,6 +117,21 @@ function showmulti($attr, $content = null)
 		'markertext' => 'Home address',
 		'fit' => 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
 		'ratio' => '1.5',
+		'background' => 'darkgrey', // background color in CSS name
+		'nav' => 'thumbs', // Default: 'dots', 'thumbs', false, // funktioniert nicht
+		'navposition' => 'bottom', // 'top'
+		'navwidth' => '100%', // in percent
+		'f_thumbwidth' => '100', // in pixels
+		'f_thumbheight' => '75', // in pixels
+		'thumbmargin' => '2', // in pixels
+		'thumbborderwidth' => '2', // in pixels
+		'thumbbordercolor' => '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
+		'transition' => 'crossfade', // 'slide' Default 'crossfade' 'dissolve'
+		'transitionduration' => '400', // in ms
+		'loop' => 'true', // true or false
+		'autoplay' => '3000', // on with 'true' or any interval in milliseconds.
+		'arrows' => 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
+		'shadows' => 'true' , // true or false
 	), $attr));
 
 	// Detect Language of the client request
@@ -125,7 +140,19 @@ function showmulti($attr, $content = null)
 	} else {
 		$lang = 'en';
 	}
-
+	 // add inline CSS for fotorama CSS settings
+	$custom_css1 = '               
+				.fotorama__stage {
+					background-color: ' . $background . ';
+				  }';
+    wp_add_inline_style( 'fotorama_css', $custom_css1 );
+				  
+	$custom_css2 = '			  
+				.fotorama__thumb-border { 
+					border-color: '. $thumbbordercolor .';
+				}';
+	wp_add_inline_style( 'fotorama3_css', $custom_css2 );
+				
 	$mapcenter = explode(',',$mapcenter);
 
 	// Define path and url variables
@@ -352,8 +379,28 @@ function showmulti($attr, $content = null)
 	// Generate Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		$htmlstring  .= '<div class="fotorama_multi_images" style="display : none"><figure><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
-		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" data-auto="false" data-width="100%" data-navwidth="100%" data-fit="'. $fit .'" 
-							  data-shadows="true" data-captions="'. $showcaption .'" data-ratio="'. $ratio .'" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="false" data-hash="false">';
+		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" 
+							  data-autoplay="' . $autoplay .'" 
+							  data-stopautoplayontouch="true"
+							  data-width="100%" 
+							  data-allowfullscreen="native" 
+							  data-keyboard="false" 
+							  data-hash="false"
+							  data-captions="'. $showcaption .'"
+							  data-fit="'. $fit .'" 
+							  data-ratio="'. $ratio .'" 
+							  data-nav="thumbs" 
+							  data-navposition="'. $navposition. '"
+							  data-navwidth="'. $navwidth .'"
+							  data-thumbwidth="' . $f_thumbwidth . '" 
+							  data-thumbheight="' . $f_thumbheight . '" 
+							  data-thumbmargin="' . $thumbmargin . '"
+							  data-thumbborderwidth="' . $thumbborderwidth . '"
+							  data-transition="' . $transition. '"
+							  data-transitionduration="' . $transitionduration . '"
+							  data-loop="' . $loop . '"
+							  data-arrows="' . $arrows . '"
+							  data-shadows="' . $shadows . '">';
 		
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
@@ -518,6 +565,7 @@ function showmulti($attr, $content = null)
 		'mapcenter' => $mapcenter,
 		'zoom' => $zoom,
 		'markertext' => $markertext,
+		'fit' => $fit,
  		) 
 	);
 

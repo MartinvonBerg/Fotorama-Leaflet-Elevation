@@ -52,7 +52,7 @@ See under https://www.mvb1.de/skitour-schneibstein/
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.6 - 5.7 and PHP 7.4.x and 8.x.
+- The plugin was tested with wordpress versions 5.6 - 5.7.1 and PHP 7.4.x and 8.x.
 - The plugin was tested with other Plugins using leaflet Map:
 - It works together with:
     - Leaflet Map (uses the same script-handle 'leaflet_js')
@@ -93,7 +93,7 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 
 - Image and GPX-track preparation: see below
 - Shortcode:  `[gpxview]`   **Use the code as often you want per page or post! No interference between shortcodes.**
-- Parameter usage: <em>Parameter = "Value"</em>. See the table below for shortcode parameters. Separate by at least one space in between.
+- Parameter usage: <em>Parameter="Value"</em>. See the table below for shortcode parameters. Separate by at least one space in between the different parameters.
 
 
 |Shortcode|Value (Default first)|Example|Description|
@@ -120,12 +120,28 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 |minrowwidth|480|minrowwidth="480"|Minimum width of one row of the CSS-Grid. If greater than the half of the above maxwidth the Fotorama slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
 |showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not. Does not work perfectly if set to "false".|
 |useCDN|false / true|useCDN="false"|Use CDN for js- and css-Library-Files or not.|
+|**Fotorama, without settings in Admin Panel**||||
+| fit |contain , cover, scaledown, none |fit="contain"| Define the scaling of Fotos for the Fotorama Slider.|
+| ratio | 1.5 | ratio="1.0" | Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now.|
+| background | darkgrey | background="red" | Background color of the slider defined by a valid CSS name.|
+| navposition | bottom , top | navposition="top" | Position of the navigation bar.|
+| navwidth | 100% | navwidth="80%" | Width of the navigation bar in percent. Provide the '%' also!|
+| f_thumbwidth | 100 | f_thumbwidth="80" | Width of the single thumbnail in the navigation bar in pixels.|
+| f_thumbheight | 75 | f_thumbheight="80" | Height of the single thumbnail in the navigation bar in pixels.|
+| thumbmargin | 2 | thumbmargin="3" | Margin between thumbnails in pixels.|
+| thumbborderwidth | 2 | thumbborderwidth="3" | Width of the coloured thumbnail border in pixels.|
+| thumbbordercolor | #ea0000 | thumbbordercolor="blue" | Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken.| 
+| transition | crossfade , slide , dissolve | transition="slide" | Type of transition between images. |
+| transitionduration | 400 | transitionduration="200" | Duration of transition in ms |
+| loop | true , false | loop="false" | Loop through images (proceed with first once the reached the las) true or fals.|e
+| autoplay | 3000 | autoplay="false" | Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false".|
+| arrows | true , false , always | arrows="false" | Show arrows for the slider control. 'always' : Do not hide controls on hover or tap.|
 
 </br>
 
 - Example Shortcode: `[gpxview imgpath="Alben_Website" gpxpath="gpx" gpxfile="test.gpx" showalltracks="false" mapheight="400" chartheight="200" dload="true" alttext="" ignoresort="false" useCDN="false" showadress="true" showmap="true" adresstext="Start address" requiregps="true" maxwidth="1500" minrowwidth="480" showcaption="true" eletheme="lime-theme" mapcenter="48.12,12.35" zoom="8" markertext="My Address"]`
 
-- **ATTENTION** There are Admin Settings without shortcode:
+- **ATTENTION** There are Admin Settings without parameter in the shortcode:
     - Set Custom Fields for post: Set Custom Fields (geoadress, lat, lon, postimg) in post. Geoadress is for the start address shown under the elevation chart. Lat.,Lon. are for the GPS-Coords used for the Overview-Map. The custom-fields *lat*, *Lon*, *postimg* and *geoadress* are only set ONCE at the status-transition from 'draft' to 'published' only. So, if you want to change do 'published' to 'draft' to 'published' again. The data is taken from the FIRST shortcode on the page or post, only. So the images have to provide GPS-data or a GPX-track has to be used for this FIRST shortcode.
     - Generate Entries in Yoast XML-Sitemap for Fotorama Images: Generate the Entries for the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Entries are stored in Custom field `postimg`. Tested with several fotorama sliders per post! The custom field is only written if `Set Custom Fields` is checked (="true") and if the admin user is logged in. The status change is no longer required. Only usefull if you use Yoast SEO plugin. 
     
@@ -142,6 +158,7 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 - Distance Smooth: Add the track point only if it is XX meters away from the last track point (here 25m).
 - Elevation Smooth: Min. Elevation between Track-Points in Meters. Used in Statistics Calc only. Best is 4.
 - Overwrite GPX-Track: Well, self explanatory.
+- Button "Save GPX-File" : Save the settings GPX-File upload and / or the file itself! 
 
 Process and save the file with the Button at the bottom.
 
@@ -222,8 +239,7 @@ Process and save the file with the Button at the bottom.
    
 
 5. TODOs & Bugs 
-    - throws JS-Errors if another JS-File calling leaflet-map with 'L.map..' is active on the same page / post. So, with "Standard"-WP this plugin won't work if another plugin using leaflet-maps is activated. Solvable by page-dependent plugin deactivation e.g. with Asset Clean-up.
-       
+      - Update leaflet elevation to the current version with current d3.js. 
 
 3. Combination of Image-Slider and OpenStreetMap (the intended use of the plugin):
     - Very simple: combine the above mentioned paramaters in ONE shortcode
@@ -233,7 +249,7 @@ Process and save the file with the Button at the bottom.
 # Frequently Asked Questions
 
 - Why is the Start address not shown? 
-    - Check whether the custom fields *lat*, *lon*, *geoadress* are set. Use the WordPress-Plugin https://www.advancedcustomfields.com/ for that. 
+    - Check whether the custom fields *lat*, *lon*, *geoadress* are set. Use the WordPress-Plugin https://www.advancedcustomfields.com/ for that. **Important:** The server-setting *allow_url_fopen* has to be *ON* or *'1'* for that! The plugin give you a message instead of the Adress if you are logged in as Admin. 
 
 # Translation, i18n
 ## Frontend
@@ -329,11 +345,19 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.1.5 =
+
+09.05.2021: js-change to load WordPress-images with srcset and portrait-mode correctly
+
+11.05.2021: introduced an CSS-option to change the background color of the slides, and several options of fotorama are now changeable with parameters of the shortcode. Currently no admin settings for that. But the default-values are not too bad. Soo, no need to change this here. TODO: Update this readme for this settings and changes!
+
 = 0.1.4 =
 1.05.2021: PHP error correction for setting of custom-fields lat and lon from gpx-file
+6.05.2021: check server-config "allow_url_fopen" and show message if admin is logged instead of geaaddress. 
+6.05.2021: Two new fotorama options introduced, "fit" and "ratio" 
 
 = 0.1.3 =
-14.04.2021: Loading of scripts and styles changed! Now loaded only if the shortcode is on a page. So it is no longer required to fiddle with Asset Clean up.
+14.04.2021: Loading of scripts and styles changed! Now loaded only if the shortcode is on a page. So it is no longer required to use Asset Clean up for that.
 
 = 0.1.2 =
 3.04.2021: Minor php error correction

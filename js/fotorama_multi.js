@@ -123,28 +123,35 @@
                     // nur ausführen wenn images vorhanden! ansonsten das ursprüngliche belassen! php liefert reduzierte bilder nur mit wpid also wenn in wp medialib
                 if (newimages[0].srcset && ( olddata.length == newimages.length ) ) {
                         // Assumption: array newimages has the same sorting as olddata and the srcset is the same for all images
-                        let srcarray = newimages[0].srcset
                         let srcindex = 0;
-        
-                        // get the image size with is just bigger than current width
-                        for (const [key, value] of Object.entries(srcarray)) {
+                        let index = 0;
+                        let testimg = [];
+
+                        for ( const newsrc of Object.entries( newimages )) {
+                           let srcarray = newsrc[1].srcset; 
+
+                           for (const [key, value] of Object.entries(srcarray)) {
                             //console.log(`${key}: ${value}`);
                             if (key > width) {
                                 srcindex = key;
+                                testimg[index] = newimages[index].srcset[ srcindex ];
                                 break;
+                                }
                             }
-                        }
-                        
-                        olddata.forEach(replaceimg);
-                        
-                        function replaceimg(item, index) {
+
+                            let item = olddata[index];
+
                             if (mobile) {
-                                newdata[index] = {img: newimages[index].srcset[ srcindex ], alt: item.alt, thumb: item.thumb, caption: item.caption, };
+                                newdata[index] = {img: testimg[index], alt: item.alt, thumb: item.thumb, caption: item.caption, };
                             }
                             else {
-                                newdata[index] = {img: newimages[index].srcset[ srcindex ], alt: item.alt, thumb: item.thumb, full: newimages[index].srcset['2560'], caption: item.caption};
+                                newdata[index] = {img: testimg[index], alt: item.alt, thumb: item.thumb, full: newimages[index].srcset['2560'], caption: item.caption}; // TODO: replace 2560 with big_image_size !
                             }
+
+                            index++;
                         }
+                                                
+                        // load the new image data into fotorama
                         fotorama[m].load(newdata);
                         
                 } else if (olddata.length == newimages.length) {
@@ -648,7 +655,7 @@
                     fotoramaState = 'full';
                     // Options for the fullscreen
                     fotorama.setOptions({
-                        fit: 'contain'
+                        fit: 'contain' 
                     });
 
                     $('#sf' + m + '-' + nr).zoom(
@@ -660,9 +667,10 @@
                 } else {
                     // Back to normal settings
                     fotorama.setOptions({
-                        fit: 'cover'
+                        fit: phpvars[m].fit
                     }); 
                     fotoramaState = 'normal';
+                    $(window).trigger('resize');
                   
                     for (var fi = 0; fi < fotorama.data.length; fi++) { 
                         $('#sf' + m + '-' + fi).trigger('zoom.destroy');
