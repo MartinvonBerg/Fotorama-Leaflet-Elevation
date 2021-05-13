@@ -25,6 +25,7 @@ function action_shutdown( $array ) {
 		$pos = \stripos( $plugin_name, '/' );
 		$plugin_name = \substr($plugin_name, 0, $pos);
 		$not_fm_scripts = array();
+		$fm_scripts = array();
 		
 		// filter and sort the scripts loaded from all plugins and themes
 		foreach ($all['scripts'] as $script) {
@@ -59,7 +60,7 @@ function action_shutdown( $array ) {
 
 		// check the scripts if there are double filenames
 		foreach ($not_fm_scripts as $script) {
-			if ('array' == gettype( $fm_scripts) ) {
+			if ( ! empty( $fm_scripts)  ) {
 				$script_conflict = \in_array($script, $fm_scripts);
 			} else {
 				$script_conflict = false;
