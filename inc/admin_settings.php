@@ -74,10 +74,10 @@ class FotoramaElevation {
 			<hr>
             <h3>List of shortcode Parameters:</h3>
 			<p><b>Complete shortcode with the above settings: </br></b> <?php
-				$example = '[gpxview imgpath="' . $this->fotorama_elevation_options['path_to_images_for_fotorama_0'] . '" ';
+				$example = '[gpxview imgpath="' . 	$this->fotorama_elevation_options['path_to_images_for_fotorama_0'] . '" ';
 				$example.= 'gpxpath="' .            $this->fotorama_elevation_options['path_to_gpx_files_2'] . '" ';
 				$example.= 'gpxfile="test.gpx" ';
-				$example.= 'showalltracks="false" ';
+				$example.= 'showalltracks="' . 		$this->fotorama_elevation_options['showalltracks'] . '" ';
 				$example.= 'mapheight="' .          $this->fotorama_elevation_options['height_of_map_10'] . '" ';
 				$example.= 'chartheight="' .        $this->fotorama_elevation_options['height_of_chart_11'] . '" ';
 				$example.= 'dload="' .              $this->fotorama_elevation_options['download_gpx_files_3'] . '" ';
@@ -92,9 +92,26 @@ class FotoramaElevation {
 				$example.= 'minrowwidth="' .        $this->fotorama_elevation_options['min_width_css_grid_row_14'] . '" ';
 				$example.= 'showcaption="' .        $this->fotorama_elevation_options['show_caption_4'] . '" ';
 				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '" ';
-				$example.= 'mapcenter="48.12,12.35" ';
-				$example.= 'zoom="8" ';
-				$example.= 'markertext="My Address"]';
+				$example.= 'mapcenter="' . 			($this->fotorama_elevation_options['mapcenter'] ?? '48.12,12.35') . '" ';
+				$example.= 'zoom="' . 				($this->fotorama_elevation_options['zoom'] ?? '8') . '" ';
+				$example.= 'markertext="' . 		($this->fotorama_elevation_options['markertext'] ?? 'My Address') . '" ';
+				$example.= 'fit="' .				($this->fotorama_elevation_options['fit'] ?? 'cover') . '" '; // 'contain' Default, 'cover', 'scaledown', 'none'
+				$example.= 'ratio="' .				($this->fotorama_elevation_options['ratio'] ?? '1.5') . '" ';
+				$example.= 'background="' .			($this->fotorama_elevation_options['background'] ?? 'darkgrey') . '" '; // background color in CSS name
+				$example.= 'nav="' .				($this->fotorama_elevation_options['nav'] ?? 'thumbs') . '" '; // Default: 'dots', 'thumbs') . '" '; false, // funktioniert nicht
+				$example.= 'navposition="' .		($this->fotorama_elevation_options['navposition'] ?? 'bottom') . '" '; // 'top'
+				$example.= 'navwidth="' .			($this->fotorama_elevation_options['navwidth'] ?? '100%') . '" '; // in percent
+				$example.= 'f_thumbwidth="' .		($this->fotorama_elevation_options['f_thumbwidth'] ?? '100') . '" '; // in pixels
+				$example.= 'f_thumbheight="' .		($this->fotorama_elevation_options['f_thumbheight'] ?? '75') . '" '; // in pixels
+				$example.= 'thumbmargin="' .		($this->fotorama_elevation_options['thumbmargin'] ?? '2') . '" '; // in pixels
+				$example.= 'thumbborderwidth="' .	($this->fotorama_elevation_options['thumbborderwidth'] ?? '2') . '" '; // in pixels
+				$example.= 'thumbbordercolor="' .	($this->fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000') . '" '; // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
+				$example.= 'transition="' .			($this->fotorama_elevation_options['transition'] ?? 'crossfade') . '" '; // 'slide' Default 'crossfade' 'dissolve'
+				$example.= 'transitionduration="' .	($this->fotorama_elevation_options['transitionduration'] ?? '400') . '" '; // in ms
+				$example.= 'loop="' .				($this->fotorama_elevation_options['loop'] ?? 'true') . '" '; // true or false
+				$example.= 'autoplay="' .			($this->fotorama_elevation_options['autoplay'] ?? '3000') . '" '; // on with 'true' or any interval in milliseconds.
+				$example.= 'arrows="' .				($this->fotorama_elevation_options['arrows'] ?? 'true') . '" ';  // true : Default, false, 'always' : Do not hide controls on hover or tap
+				$example.= 'shadows="' .			($this->fotorama_elevation_options['shadows'] ?? 'true') . '"]'; // true or false
 			 	echo $example;
 			?></p>
 
@@ -111,166 +128,166 @@ class FotoramaElevation {
 			</style>
 
 			<table class="tg">
-			<thead>
-			<tr>
-				<th class="tg-dncm">Shortcode</th>
-				<th class="tg-dncm">Value (Default first)</th>
-				<th class="tg-dncm">Example</th>
-				<th class="tg-dncm">Description</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr>
-				<td class="tg-0pky">gpxpath</td>
-				<td class="tg-0pky">gpx</td>
-				<td class="tg-0pky">gpxpath="gpx"</td>
-				<td class="tg-0pky">Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/gpx</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">gpxfile</td>
-				<td class="tg-0pky">'' / test.gpx</td>
-				<td class="tg-0pky">gpxfile="test.gpx"</td>
-				<td class="tg-0pky">File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: "f1.gpx, f2.gpx, f3.gpx"</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">dload</td>
-				<td class="tg-0pky">yes / no</td>
-				<td class="tg-0pky">dload="yes"</td>
-				<td class="tg-0pky">Provide download link for the GPX-Tracks, if "yes".</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">showalltracks</td>
-				<td class="tg-0pky">false / true </td>
-				<td class="tg-0pky">showalltracks="true"</td>
-				<td class="tg-0pky">Show all given tracks together in one Map. Works only with one map!. Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option.</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">showadress</td>
-				<td class="tg-0pky">true / false</td>
-				<td class="tg-0pky">showadress="true"</td>
-				<td class="tg-0pky">Show start adress of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image.</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">adresstext</td>
-				<td class="tg-0pky">Startadresse</td>
-				<td class="tg-0pky">adresstext="Startadresse"</td>
-				<td class="tg-0pky">Text for header above start address</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">showmap</td>
-				<td class="tg-0pky">true / false</td>
-				<td class="tg-0pky">showmap="true"</td>
-				<td class="tg-0pky">Show the map, independent of other settinges. Currently no Admin setting for that.</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">mapheight</td>
-				<td class="tg-0pky">450</td>
-				<td class="tg-0pky">mapheight="450"</td>
-				<td class="tg-0pky">Height of the leaflet map in pixels (px)</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">chartheight</td>
-				<td class="tg-0pky">200</td>
-				<td class="tg-0pky">chartheight="200"</td>
-				<td class="tg-0pky">Height of the leaflet elevation chart in pixels (px)</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">eletheme</td>
-				<td class="tg-0pky">lime-theme</td>
-				<td class="tg-0pky">eletheme="lime-theme"</td>
-				<td class="tg-0pky">Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. Martin-theme is my special theme.</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">mapcenter</td>
-				<td class="tg-0pky">0.0,0.0</td>
-				<td class="tg-0pky">mapcenter="48.12,12.35"</td>
-				<td class="tg-0pky">Center of the map if NO tracks are defined. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option.</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">zoom</td>
-				<td class="tg-0pky">8</td>
-				<td class="tg-0pky">zoom="8"</td>
-				<td class="tg-0pky">Zoom level for the map if NO tracks are defined. There is no admin-setting for this option.</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">markertext</td>
-				<td class="tg-0pky">Home Address</td>
-				<td class="tg-0pky">markertext="My Address"</td>
-				<td class="tg-0pky">Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option.</td>
-			</tr>
-			<tr>
-			<td class="tg-0pky"><strong>Fotorama Settings</strong></td><td></td><td></td><td></td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">imgpath</td>
-				<td class="tg-0pky">Bilder</td>
-				<td class="tg-0pky">imgpath="Bilder"</td>
-				<td class="tg-0pky">Path the images relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/galleries/holiday2020</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">alttext</td>
-				<td class="tg-0pky">''</td>
-				<td class="tg-0pky">alttext="Image Slider with map from holiday"</td>
-				<td class="tg-0pky">Alltext for the fotorama slider for SEO</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">ignoresort</td>
-				<td class="tg-0pky">false / true</td>
-				<td class="tg-0pky">ignoresort="false"</td>
-				<td class="tg-0pky">Ignore custom sort even if provided by Wordpress. If checked sort by date ascending</td>
-			</tr>
-		
-			<tr>
-				<td class="tg-0pky">requiregps</td>
-				<td class="tg-0pky">true / false</td>
-				<td class="tg-0pky">requiregps="true"</td>
-				<td class="tg-0pky">Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF.</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">maxwidth</td>
-				<td class="tg-0pky">600</td>
-				<td class="tg-0pky">maxwidth="600"</td>
-				<td class="tg-0pky">Maximum width of the whole container with slider and map</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">minrowwidth</td>
-				<td class="tg-0pky">480</td>
-				<td class="tg-0pky">minrowwidth="480"</td>
-				<td class="tg-0pky">Minimum width of one row of the CSS-Grid. If greater than maxwidth/2 Fotorama and the map are never shown in one row. 
-									Mind that the max. width of the outer div may be inherited from other elements or set by the theme.</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">showcaption</td>
-				<td class="tg-0pky">true / false</td>
-				<td class="tg-0pky">showcaption="true"</td>
-				<td class="tg-0pky">Show the caption in the fotorama slider</td>
-			</tr>
-			<tr>
-				<td class="tg-0pky">useCDN</td>
-				<td class="tg-0pky">false / true</td>
-				<td class="tg-0pky">useCDN="false"</td>
-				<td class="tg-0pky">Use CDN for js- and css-Library-Files</td>
-			</tr>
-			<tr>
-			<td class="tg-0pky"><strong>Fotorama without admin settings</strong></td><td></td><td></td><td></td>
-			</tr>
-			<tr><td class="tg-0pky">fit</td><td class="tg-0pky">contain , cover, scaledown, none</td><td class="tg-0pky">fit="contain"</td><td class="tg-0pky">Define the scaling of Fotos for the Fotorama Slider</td></tr>
-			<tr><td class="tg-0pky">ratio</td><td class="tg-0pky">1.5</td><td class="tg-0pky">ratio="1.0"</td><td class="tg-0pky">Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now</td></tr>
-			<tr><td class="tg-0pky">background</td><td class="tg-0pky">darkgrey</td><td class="tg-0pky">background="red"</td><td class="tg-0pky">Background color of the slider defined by a valid CSS name</td></tr>
-			<tr><td class="tg-0pky">navposition</td><td class="tg-0pky">bottom , top</td><td class="tg-0pky">navposition="top"</td><td class="tg-0pky">Position of the navigation bar</td></tr>
-			<tr><td class="tg-0pky">navwidth</td><td class="tg-0pky">100%</td><td class="tg-0pky">navwidth="80%"</td><td class="tg-0pky">Width of the navigation bar in percent. Provide the '%' also!.</td></tr>
-			<tr><td class="tg-0pky">f_thumbwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">f_thumbwidth="80"</td><td class="tg-0pky">Width of the single thumbnail in the navigation bar in pixels</td></tr>
-			<tr><td class="tg-0pky">f_thumbheight</td><td class="tg-0pky">75</td><td class="tg-0pky">f_thumbheight="80"</td><td class="tg-0pky">Height of the single thumbnail in the navigation bar in pixels</td></tr>
-			<tr><td class="tg-0pky">thumbmargin</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbmargin="3"</td><td class="tg-0pky">Margin between thumbnails in pixels</td></tr>
-			<tr><td class="tg-0pky">thumbborderwidth</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbborderwidth="3"</td><td class="tg-0pky">Width of the coloured thumbnail border in pixels</td></tr>
-			<tr><td class="tg-0pky">thumbbordercolor</td><td class="tg-0pky">#ea0000</td><td class="tg-0pky">thumbbordercolor="blue"</td><td class="tg-0pky">Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken.</td></tr>
-			<tr><td class="tg-0pky">transition</td><td class="tg-0pky">crossfade , slide , dissolve</td><td class="tg-0pky">transition="slide"</td><td class="tg-0pky">Type of transition between images</td></tr>
-			<tr><td class="tg-0pky">transitionduration</td><td class="tg-0pky">400</td><td class="tg-0pky">transitionduration="200"</td><td class="tg-0pky">Duration of transition in ms</td></tr>
-			<tr><td class="tg-0pky">loop</td><td class="tg-0pky">true , false</td><td class="tg-0pky">loop="false"</td><td class="tg-0pky">Loop through images (proceed with first once the reached the las) true or false</td></tr>
-			<tr><td class="tg-0pky">autoplay</td><td class="tg-0pky">3000</td><td class="tg-0pky">autoplay="false"</td><td class="tg-0pky">Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false"</td></tr>
-			<tr><td class="tg-0pky">arrows</td><td class="tg-0pky">true , false , always</td><td class="tg-0pky">arrows="false"</td><td class="tg-0pky">Show arrows for the slider control. 'always' : Do not hide controls on hover or tap</td></tr>
-		
-			</tbody>
+				<thead>
+				<tr>
+					<th class="tg-dncm">Shortcode</th>
+					<th class="tg-dncm">Value (Default first)</th>
+					<th class="tg-dncm">Example</th>
+					<th class="tg-dncm">Description</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td class="tg-0pky">gpxpath</td>
+					<td class="tg-0pky">gpx</td>
+					<td class="tg-0pky">gpxpath="gpx"</td>
+					<td class="tg-0pky">Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/gpx</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">gpxfile</td>
+					<td class="tg-0pky">'' / test.gpx</td>
+					<td class="tg-0pky">gpxfile="test.gpx"</td>
+					<td class="tg-0pky">File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: "f1.gpx, f2.gpx, f3.gpx"</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">dload</td>
+					<td class="tg-0pky">yes / no</td>
+					<td class="tg-0pky">dload="yes"</td>
+					<td class="tg-0pky">Provide download link for the GPX-Tracks, if "yes".</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">showalltracks</td>
+					<td class="tg-0pky">false / true </td>
+					<td class="tg-0pky">showalltracks="true"</td>
+					<td class="tg-0pky">Show all given tracks together in one Map. Works only with one map!. Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option.</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">showadress</td>
+					<td class="tg-0pky">true / false</td>
+					<td class="tg-0pky">showadress="true"</td>
+					<td class="tg-0pky">Show start adress of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image.</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">adresstext</td>
+					<td class="tg-0pky">Startadresse</td>
+					<td class="tg-0pky">adresstext="Startadresse"</td>
+					<td class="tg-0pky">Text for header above start address</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">showmap</td>
+					<td class="tg-0pky">true / false</td>
+					<td class="tg-0pky">showmap="true"</td>
+					<td class="tg-0pky">Show the map, independent of other settinges. Currently no Admin setting for that.</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">mapheight</td>
+					<td class="tg-0pky">450</td>
+					<td class="tg-0pky">mapheight="450"</td>
+					<td class="tg-0pky">Height of the leaflet map in pixels (px)</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">chartheight</td>
+					<td class="tg-0pky">200</td>
+					<td class="tg-0pky">chartheight="200"</td>
+					<td class="tg-0pky">Height of the leaflet elevation chart in pixels (px)</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">eletheme</td>
+					<td class="tg-0pky">lime-theme</td>
+					<td class="tg-0pky">eletheme="lime-theme"</td>
+					<td class="tg-0pky">Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. Martin-theme is my special theme.</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">mapcenter</td>
+					<td class="tg-0pky">0.0,0.0</td>
+					<td class="tg-0pky">mapcenter="48.12,12.35"</td>
+					<td class="tg-0pky">Center of the map if NO tracks are defined. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option.</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">zoom</td>
+					<td class="tg-0pky">8</td>
+					<td class="tg-0pky">zoom="8"</td>
+					<td class="tg-0pky">Zoom level for the map if NO tracks are defined. There is no admin-setting for this option.</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">markertext</td>
+					<td class="tg-0pky">Home Address</td>
+					<td class="tg-0pky">markertext="My Address"</td>
+					<td class="tg-0pky">Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option.</td>
+				</tr>
+				<tr>
+				<td class="tg-0pky"><strong>Fotorama Settings</strong></td><td></td><td></td><td></td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">imgpath</td>
+					<td class="tg-0pky">Bilder</td>
+					<td class="tg-0pky">imgpath="Bilder"</td>
+					<td class="tg-0pky">Path the images relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/galleries/holiday2020</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">alttext</td>
+					<td class="tg-0pky">''</td>
+					<td class="tg-0pky">alttext="Image Slider with map from holiday"</td>
+					<td class="tg-0pky">Alltext for the fotorama slider for SEO</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">ignoresort</td>
+					<td class="tg-0pky">false / true</td>
+					<td class="tg-0pky">ignoresort="false"</td>
+					<td class="tg-0pky">Ignore custom sort even if provided by Wordpress. If checked sort by date ascending</td>
+				</tr>
+			
+				<tr>
+					<td class="tg-0pky">requiregps</td>
+					<td class="tg-0pky">true / false</td>
+					<td class="tg-0pky">requiregps="true"</td>
+					<td class="tg-0pky">Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF.</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">maxwidth</td>
+					<td class="tg-0pky">600</td>
+					<td class="tg-0pky">maxwidth="600"</td>
+					<td class="tg-0pky">Maximum width of the whole container with slider and map</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">minrowwidth</td>
+					<td class="tg-0pky">480</td>
+					<td class="tg-0pky">minrowwidth="480"</td>
+					<td class="tg-0pky">Minimum width of one row of the CSS-Grid. If greater than maxwidth/2 Fotorama and the map are never shown in one row. 
+										Mind that the max. width of the outer div may be inherited from other elements or set by the theme.</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">showcaption</td>
+					<td class="tg-0pky">true / false</td>
+					<td class="tg-0pky">showcaption="true"</td>
+					<td class="tg-0pky">Show the caption in the fotorama slider</td>
+				</tr>
+				<tr>
+					<td class="tg-0pky">useCDN</td>
+					<td class="tg-0pky">false / true</td>
+					<td class="tg-0pky">useCDN="false"</td>
+					<td class="tg-0pky">Use CDN for js- and css-Library-Files</td>
+				</tr>
+				<tr>
+				<td class="tg-0pky"><strong>Fotorama without admin settings</strong></td><td></td><td></td><td></td>
+				</tr>
+				<tr><td class="tg-0pky">fit</td><td class="tg-0pky">contain , cover, scaledown, none</td><td class="tg-0pky">fit="contain"</td><td class="tg-0pky">Define the scaling of Fotos for the Fotorama Slider</td></tr>
+				<tr><td class="tg-0pky">ratio</td><td class="tg-0pky">1.5</td><td class="tg-0pky">ratio="1.0"</td><td class="tg-0pky">Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now</td></tr>
+				<tr><td class="tg-0pky">background</td><td class="tg-0pky">darkgrey</td><td class="tg-0pky">background="red"</td><td class="tg-0pky">Background color of the slider defined by a valid CSS name</td></tr>
+				<tr><td class="tg-0pky">navposition</td><td class="tg-0pky">bottom , top</td><td class="tg-0pky">navposition="top"</td><td class="tg-0pky">Position of the navigation bar</td></tr>
+				<tr><td class="tg-0pky">navwidth</td><td class="tg-0pky">100%</td><td class="tg-0pky">navwidth="80%"</td><td class="tg-0pky">Width of the navigation bar in percent. Provide the '%' also!.</td></tr>
+				<tr><td class="tg-0pky">f_thumbwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">f_thumbwidth="80"</td><td class="tg-0pky">Width of the single thumbnail in the navigation bar in pixels</td></tr>
+				<tr><td class="tg-0pky">f_thumbheight</td><td class="tg-0pky">75</td><td class="tg-0pky">f_thumbheight="80"</td><td class="tg-0pky">Height of the single thumbnail in the navigation bar in pixels</td></tr>
+				<tr><td class="tg-0pky">thumbmargin</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbmargin="3"</td><td class="tg-0pky">Margin between thumbnails in pixels</td></tr>
+				<tr><td class="tg-0pky">thumbborderwidth</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbborderwidth="3"</td><td class="tg-0pky">Width of the coloured thumbnail border in pixels</td></tr>
+				<tr><td class="tg-0pky">thumbbordercolor</td><td class="tg-0pky">#ea0000</td><td class="tg-0pky">thumbbordercolor="blue"</td><td class="tg-0pky">Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken.</td></tr>
+				<tr><td class="tg-0pky">transition</td><td class="tg-0pky">crossfade , slide , dissolve</td><td class="tg-0pky">transition="slide"</td><td class="tg-0pky">Type of transition between images</td></tr>
+				<tr><td class="tg-0pky">transitionduration</td><td class="tg-0pky">400</td><td class="tg-0pky">transitionduration="200"</td><td class="tg-0pky">Duration of transition in ms</td></tr>
+				<tr><td class="tg-0pky">loop</td><td class="tg-0pky">true , false</td><td class="tg-0pky">loop="false"</td><td class="tg-0pky">Loop through images (proceed with first once the reached the las) true or false</td></tr>
+				<tr><td class="tg-0pky">autoplay</td><td class="tg-0pky">3000</td><td class="tg-0pky">autoplay="false"</td><td class="tg-0pky">Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false"</td></tr>
+				<tr><td class="tg-0pky">arrows</td><td class="tg-0pky">true , false , always</td><td class="tg-0pky">arrows="false"</td><td class="tg-0pky">Show arrows for the slider control. 'always' : Do not hide controls on hover or tap</td></tr>
+			
+				</tbody>
 			</table>
 
 		</div>
@@ -431,6 +448,14 @@ class FotoramaElevation {
 			'min_width_css_grid_row_14', // id
 			'Min Width of one CSS-grid Row in px', // title
 			array( $this, 'min_width_css_grid_row_14_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'leaflet_elevation_setting_section' // section
+		);
+
+		add_settings_field(
+			'fit', // id
+			'How to fit the images in Fotorama', // title
+			array( $this, 'fit_callback' ), // xy_callback erstellen und fotorama_elevation_sanitize function anpassen
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
@@ -667,6 +692,10 @@ class FotoramaElevation {
 			$sanitary_values['doYoastXmlSitemap_16'] = 'false';
 		}
 
+		if ( isset( $input['fit'] ) ) {
+			$sanitary_values['fit'] = $input['fit'];
+		}
+
 		$sanitary_values['gpx_file'] = $input['gpx_file'] ;
 
 		return $sanitary_values;
@@ -803,6 +832,19 @@ class FotoramaElevation {
 			isset( $this->fotorama_elevation_options['min_width_css_grid_row_14'] ) ? esc_attr( $this->fotorama_elevation_options['min_width_css_grid_row_14']) : '480',
 			$this->min_width/2, $this->max_width
 		);
+	}
+
+	public function fit_callback() {
+		?> <select name="fotorama_elevation_option_name[fit]" id="fit">
+			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'contain') ? 'selected' : '' ; ?>
+			<option value="contain" <?php echo $selected; ?>>Contain</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'cover') ? 'selected' : '' ; ?>
+			<option value="cover" <?php echo $selected; ?>>Cover</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'scaledown') ? 'selected' : '' ; ?>
+			<option value="scaledown" <?php echo $selected; ?>>Scaledown </option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'none') ? 'selected' : '' ; ?>
+			<option value="none" <?php echo $selected; ?>>None</option>
+		</select> <?php
 	}
 
 	public function setCustomFields_15_callback() {
