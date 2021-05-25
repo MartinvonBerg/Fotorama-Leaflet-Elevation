@@ -40,10 +40,10 @@ function fotoramamulti_activate() {
 				'height_of_map_10' 			=> "450",
 				'height_of_chart_11' 		=> "200",
 				'max_width_of_container_12' => "800",
-				'useCDN_13' 				=> "false",
+				'useCDN_13' 				=> "false",  // kein shortcode attribut
 				'min_width_css_grid_row_14' => "480",
-				'setCustomFields_15' 	=> "false",
-				'doYoastXmlSitemap_16' => "false",
+				'setCustomFields_15' 	=> "false", // kein shortcode attribut
+				'doYoastXmlSitemap_16' => "false", // kein shortcode attribut
 				'gpx_file' 			=> "test.gpx",
 				'showalltracks' 	=>  'false',
 				'mapcenter' 		=>  '0.0, 0.0', 
