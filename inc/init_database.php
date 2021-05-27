@@ -54,7 +54,7 @@ function fotoramamulti_activate() {
 				'background' 		=>  'darkgrey', // background color in CSS name
 				'nav' 				=>  'thumbs', // Default: 'dots', 'thumbs', false, // funktioniert nicht
 				'navposition' 		=>  'bottom', // 'top'
-				'navwidth' 			=>  '100%', // in percent
+				'navwidth' 			=>  '100', // in percent
 				'f_thumbwidth' 		=>  '100', // in pixels
 				'f_thumbheight' 	=>  '75', // in pixels
 				'thumbmargin' 		=>  '2', // in pixels

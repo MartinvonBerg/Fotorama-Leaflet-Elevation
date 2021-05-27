@@ -100,7 +100,7 @@ class FotoramaElevation {
 				$example.= 'background="' .			($this->fotorama_elevation_options['background'] ?? 'darkgrey') . '" '; // background color in CSS name
 				$example.= 'nav="' .				($this->fotorama_elevation_options['nav'] ?? 'thumbs') . '" '; // Default: 'dots', 'thumbs') . '" '; false, // funktioniert nicht
 				$example.= 'navposition="' .		($this->fotorama_elevation_options['navposition'] ?? 'bottom') . '" '; // 'top'
-				$example.= 'navwidth="' .			($this->fotorama_elevation_options['navwidth'] ?? '100%') . '" '; // in percent
+				$example.= 'navwidth="' .			($this->fotorama_elevation_options['navwidth'] ?? '100') . '" '; // in percent
 				$example.= 'f_thumbwidth="' .		($this->fotorama_elevation_options['f_thumbwidth'] ?? '100') . '" '; // in pixels
 				$example.= 'f_thumbheight="' .		($this->fotorama_elevation_options['f_thumbheight'] ?? '75') . '" '; // in pixels
 				$example.= 'thumbmargin="' .		($this->fotorama_elevation_options['thumbmargin'] ?? '2') . '" '; // in pixels
@@ -275,7 +275,7 @@ class FotoramaElevation {
 				<tr><td class="tg-0pky">ratio</td><td class="tg-0pky">1.5</td><td class="tg-0pky">ratio="1.0"</td><td class="tg-0pky">Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now</td></tr>
 				<tr><td class="tg-0pky">background</td><td class="tg-0pky">darkgrey</td><td class="tg-0pky">background="red"</td><td class="tg-0pky">Background color of the slider defined by a valid CSS name</td></tr>
 				<tr><td class="tg-0pky">navposition</td><td class="tg-0pky">bottom , top</td><td class="tg-0pky">navposition="top"</td><td class="tg-0pky">Position of the navigation bar</td></tr>
-				<tr><td class="tg-0pky">navwidth</td><td class="tg-0pky">100%</td><td class="tg-0pky">navwidth="80%"</td><td class="tg-0pky">Width of the navigation bar in percent. Provide the '%' also!.</td></tr>
+				<tr><td class="tg-0pky">navwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">navwidth="80"</td><td class="tg-0pky">Width of the navigation bar in percent.</td></tr>
 				<tr><td class="tg-0pky">f_thumbwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">f_thumbwidth="80"</td><td class="tg-0pky">Width of the single thumbnail in the navigation bar in pixels</td></tr>
 				<tr><td class="tg-0pky">f_thumbheight</td><td class="tg-0pky">75</td><td class="tg-0pky">f_thumbheight="80"</td><td class="tg-0pky">Height of the single thumbnail in the navigation bar in pixels</td></tr>
 				<tr><td class="tg-0pky">thumbmargin</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbmargin="3"</td><td class="tg-0pky">Margin between thumbnails in pixels</td></tr>
@@ -404,9 +404,9 @@ class FotoramaElevation {
 			'leaflet_elevation_setting_section' // section
 		);
 
-		add_settings_field(
+		add_settings_field (
 			'show_address_of_start_7', // id
-			'Show Address', // title
+			__( 'Show Address', 'fotoramamulti' ), // title
 			array( $this, 'show_address_of_start_7_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
@@ -746,7 +746,6 @@ class FotoramaElevation {
 	}
 
 	public function download_gpx_files_3_callback() {
-		$param = 1;
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[download_gpx_files_3]" id="download_gpx_files_3" value="download_gpx_files_3" %s> <label for="download_gpx_files_3">Provide download link for GPX-Files</label>',
 			( isset( $this->fotorama_elevation_options['download_gpx_files_3'] ) && $this->fotorama_elevation_options['download_gpx_files_3'] === 'true' ) ? 'checked' : '' 
@@ -776,8 +775,9 @@ class FotoramaElevation {
 
 	public function show_address_of_start_7_callback() {
 		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[show_address_of_start_7]" id="show_address_of_start_7" value="show_address_of_start_7" %s> <label for="show_address_of_start_7">Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)</label>',
-			( isset( $this->fotorama_elevation_options['show_address_of_start_7'] ) && $this->fotorama_elevation_options['show_address_of_start_7'] === 'true' ) ? 'checked' : ''
+		'<input type="checkbox" name="fotorama_elevation_option_name[show_address_of_start_7]" id="show_address_of_start_7" value="show_address_of_start_7" %s> <label for="show_address_of_start_7">%s</label>',
+		( isset ( $this->fotorama_elevation_options['show_address_of_start_7'] ) && $this->fotorama_elevation_options['show_address_of_start_7'] === 'true' ) ? 'checked' : '',
+		__( 'Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)', 'fotoramamulti' )
 		);
 	}
 
@@ -837,7 +837,7 @@ class FotoramaElevation {
 	public function fit_callback() {
 		?> <select name="fotorama_elevation_option_name[fit]" id="fit">
 			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'contain') ? 'selected' : '' ; ?>
-			<option value="contain" <?php echo $selected; ?>>Contain</option>
+			<option value='contain' <?php echo $selected; ?>>Contain</option>
 			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'cover') ? 'selected' : '' ; ?>
 			<option value="cover" <?php echo $selected; ?>>Cover</option>
 			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'scaledown') ? 'selected' : '' ; ?>
@@ -882,18 +882,47 @@ class FotoramaElevation {
 		return $inp;
 	}
 
-	private function my_sanitize_int_with_limits($inp, $min, $max) {
-		$inp = preg_replace("/[^0-9]/", "", $inp);
-		$val = intval( $inp);
-		if (filter_var($val, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max))) === false) {
-			// echo("Variable value is not within the legal range");
-			($val < $min) ? $val = $min : $val = $max;
-		} else {
-			//echo("Variable value is within the legal range");
+	private function my_sanitize_csscolor ($inp) {
+		$inp = sanitize_text_field( $inp);
+		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
+		$max = 16777216; // 24 Bit max value for CSS hex colour.
+
+		if ($inp[0] == '#') {
+			$cssdec = hexdec ( substr ( $inp, 1 ) );
+			if ( gettype ( $cssdec) == 'integer') {
+				if (filter_var($cssdec, FILTER_VALIDATE_INT, array("options" => array("min_range"=> 0, "max_range"=>$max))) === false) {
+					// echo("Variable value is not within the legal range")
+					$inp = 'red';
+				}
+			} else {
+				$inp = 'red';
+			}
 		}
+		return $inp;
+	}
+
+	private function my_sanitize_int_with_limits($inp, $min, $max) {
+		$inp1 = preg_replace("/[^0-9]/", "", $inp );
+		$val = intval( $inp1 );
+
+		$inp2 = preg_replace("/[^0-9.,]/", "", $inp );
+		$dec = \floatval( $inp2 ); 
+
+		if ( abs( $dec - $val ) < 0.0001) {
+			if (filter_var($val, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max))) === false) {
+				// echo("Variable value is not within the legal range");
+				($val < $min) ? $val = $min : $val = $max;
+			} else {
+				//echo("Variable value is within the legal range");
+			}
+		}
+		else {
+			($dec < $min) ? $dec = $min : '';
+			($dec > $max) ? $dec = $max : '';
+			$val = $dec;
+		}
+
 		return strval($val);
 	}
 
 }
-
-
