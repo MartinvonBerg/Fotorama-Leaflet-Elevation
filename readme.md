@@ -120,7 +120,6 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 |minrowwidth|480|minrowwidth="480"|Minimum width of one row of the CSS-Grid. If greater than the half of the above maxwidth the Fotorama slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
 |showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not. Does not work perfectly if set to "false".|
 |useCDN|false / true|useCDN="false"|Use CDN for js- and css-Library-Files or not.|
-|**Fotorama, without settings in Admin Panel**||||
 | fit |contain , cover, scaledown, none |fit="contain"| Define the scaling of Fotos for the Fotorama Slider.|
 | ratio | 1.5 | ratio="1.0" | Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now.|
 | background | darkgrey | background="red" | Background color of the slider defined by a valid CSS name.|
@@ -337,8 +336,10 @@ This plugin uses the great work from:
 
 # Changelog
 
-= 0.1.5 =
+= 0.2.0 =
+30.05.2021: Added Fotorama settings from 11.05.21 to the Admin Panel. Prepared translation for the whole Admin Panel settings. Translation Files will be updated later, they are currently deactivated.
 
+= 0.1.5 =
 09.05.2021: js-change to load WordPress-images with srcset and portrait-mode correctly
 
 11.05.2021: introduced an CSS-option to change the background color of the slides, and several options of fotorama are now changeable with parameters of the shortcode. Currently no admin settings for that. But the default-values are not too bad. Soo, no need to change this here. TODO: Update this readme for this settings and changes!
