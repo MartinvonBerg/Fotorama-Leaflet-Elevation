@@ -58,8 +58,8 @@ class FotoramaElevation {
 
 		?>
 		<div class="wrap">
-			<h2><?php __('Settings for Fotorama-Elevation Plugin','fotoramamulti') ?></h2>
-			<h4><?php __('General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.','fotoramamulti') ?></h4>
+			<h2><?php esc_html_e('Settings for Fotorama-Elevation Plugin','fotoramamulti') ?></h2>
+			<h4><?php esc_html_e('General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.','fotoramamulti') ?></h4>
 			<hr>
 
 			<form method="post" action="options.php" enctype="multipart/form-data">
@@ -67,9 +67,9 @@ class FotoramaElevation {
 			   settings_fields("gpx_section");
 			   do_settings_sections("gpx_file");
 			   ?>
-			   <p><b><?php __('Hint: GPX-routes without elevation data should be converted to tracks with','fotoramamulti') ?> <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
-			   <?php __('Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.','fotoramamulti') ?></b></br>
-			   <?php __('Button Save GPX-File underneath will save settings and / or GPX-File.','fotoramamulti') ?></p> 
+			   <p><b><?php esc_html_e('Hint: GPX-routes without elevation data should be converted to tracks with','fotoramamulti') ?> <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
+			   <?php esc_html_e('Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.','fotoramamulti') ?></b></br>
+			   <?php esc_html_e('Button Save GPX-File underneath will save settings and / or GPX-File.','fotoramamulti') ?></p> 
 			   <?php
 			   $strg = __('Save GPX-File', 'fotoramamulti');
 			   submit_button( $strg );            
