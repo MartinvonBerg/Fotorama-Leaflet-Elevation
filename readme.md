@@ -79,12 +79,12 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 # Update or De-Installation
 
 1. Deactivate the plugin in Admin-Area of WordPress.
-2. Optional for clean Update: Delete the Plugin-in. Stop here for De-Installation. Hint: The Wordpress-Database is cleaned upon de-installation. The Custom-Fields (lat, lon, postimg, geoaddress, admin settings ASO) are removed from your database! 
+2. Optional for clean Update: Delete the Plugin-in. Stop here for De-Installation. Hint: The Wordpress-Database is cleaned upon de-installation. The Custom-Fields ( the admin settings, only!) are removed from your database! 
 3. Do Installation with the new version. Wordpress will provide you a message window wether you are sure. If you de-installed before, all settings have to be done again. Skip Step 2. and you don't have to do that.
 
 # Upgrade Notice 
 
-Upgrade to Wordpress 5.7 and PHP 8.0 is highly recommended!
+Upgrade to Wordpress 5.7.2 and PHP 8.0+ is highly recommended!
 Due to the error corrections it is highly recommended to upgrade the Plugin! Thank's for your patience.
 
 </br>
