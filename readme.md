@@ -102,7 +102,7 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 |gpxfile|test.gpx|gpxfile="test.gpx"|File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use a comma separated list for multiple files: "f1.gpx, f2.gpx, f3.gpx" (The file name given in the GPX-section of the admin settings is NOT shown in the example shortcode!)|
 |dload|yes / no|dload="yes"|Provide download link for the GPX-Track(s), if set to "yes".|
 |showalltracks|false / true|showalltracks="true"|Show all given tracks together in one Map. Works only with one map per page! Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option as this is no useful global option.|
-|showadress|true / false|showadress="true"|Show start address of the tour. GPX-coords are taken from the the custom fields *lat* and *lon*. Field is translation ready if its value is 'start address'. Only shown if the custom field 'geoadress' is set. The adresstext is linked to the google-map-service which opens in a separate tab of the browser. **Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work ! There is no check for that!**
+|showadress|true / false|showadress="true"|Show start address of the tour. GPX-coords are taken from the the custom fields *lat* and *lon*. Field is translation ready if its value is 'start address'. Only shown if the custom field 'geoadress' is set. The adresstext is linked to the google-map-service which opens in a separate tab of the browser. **Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work ! The plugin gives you a message instead of the Start Address if you are logged in as Admin.**
 |adresstext|Start address|adresstext="Start address"|Text before the start address. Field is translation ready if its value is 'Start address'. Mind that translation may not show up if any cache is used! Even the browser cache will block the translation to show up.|
 |showmap|true / false|showmap="true"|Show the map, independent of other settings. There is no admin-setting for this option as this is no useful global option.|
 |mapheight|450|mapheight="450"|Height of the leaflet map in pixels (px). Note that this value maybe overwritten be the responsive function! Could happen that you won't see any change in the frontend if you change this value by the Admin settings.|
@@ -240,7 +240,7 @@ Process and save the file with the Button at the bottom.
 # Frequently Asked Questions
 
 - Why is the Start address not shown? 
-    - Check whether the custom fields *lat*, *lon*, *geoadress* are set. Use the WordPress-Plugin https://www.advancedcustomfields.com/ for that. **Important:** The server-setting *allow_url_fopen* has to be *ON* or *'1'* for that! The plugin give you a message instead of the Adress if you are logged in as Admin. 
+    - Check whether the custom fields *lat*, *lon*, *geoadress* are set. Use the WordPress-Plugin https://www.advancedcustomfields.com/ for that. **Important:** The server-setting *allow_url_fopen* has to be *ON* or *'1'* for that! The plugin give you a message instead of the Start Address if you are logged in as Admin. 
 
 # Translation, i18n
 ## Frontend
