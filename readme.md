@@ -145,7 +145,7 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
     - Generate Entries in Yoast XML-Sitemap for Fotorama Images: Generate the Entries for the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Entries are stored in Custom field `postimg`. Tested with several fotorama sliders per post! The custom field is only written if `Set Custom Fields` is checked (="true") and if the admin user is logged in. The status change is no longer required. Only usefull if you use Yoast SEO plugin. 
     
 
-- **ATTENTION** And there are shortcodes without Admin Settings: see the table above.
+- **ATTENTION** And there are shortcode parameters without Admin Settings: see the table above.
 
 </br>
 
