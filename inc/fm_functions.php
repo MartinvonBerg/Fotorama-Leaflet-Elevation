@@ -273,7 +273,20 @@ function gpxview_getLonLat($Exif)
  */
 function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 {
-	// get title from IPTC-data
+	/*
+	if ( false === $Exif ) {
+		// Open a the file, this should be in binary mode
+		$fp = fopen( $file, 'rb' );
+		$headers = exif_read_data( $fp ); // Exif data is not readable, always
+		if ( ! $headers ) {
+			//echo 'Error: Unable to read exif headers';
+		} else {
+			//echo 'OK: could read exif headers';
+		}
+	}
+	*/
+	// get title and file-type from IPTC-data
+	$type = wp_check_filetype($file)['type'];
 	getimagesize($file, $info);
 
 	$title = 'Galeriebild ' . strval($imageNumber+1);
@@ -339,6 +352,7 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 	
 	// get data fromt the wp database, if it is there
 	$sort = 0; $alt = ''; $caption = '';
+	
 	if ($wpid > 0) {
 		$wpmediadata = get_post( $wpid, 'ARRAY_A');
 		$wptitle = $wpmediadata['post_title']; 
@@ -353,6 +367,17 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 		$meta = wp_get_attachment_metadata($wpid);
 		$wptags = $meta["image_meta"]["keywords"]; 
 		$tags = is_array($wptags) ? $wptags : $tags;
+
+		if ( 'image/webp' == $type) {
+			$apperture = $meta["image_meta"]["aperture"];
+			$camera = $meta["image_meta"]["camera"]; 
+			$caption = $meta["image_meta"]["caption"];
+			$iso = $meta["image_meta"]["iso"];
+			$focal = $meta["image_meta"]["focal_length"] . 'mm';
+			$exptime =  '1/' . strval( 1 / \floatval( $meta["image_meta"]["shutter_speed"] ) );
+			$title = $meta["image_meta"]["title"];
+			$datetaken = wp_date( get_option( 'date_format' ), intval( $meta["image_meta"]["created_timestamp"]) );
+		}
 	}
 	
 	return array($exptime, $apperture, $iso, $focal, $camera, $datetaken, $datesort, $tags, $description, $title, $alt, $caption, $sort);

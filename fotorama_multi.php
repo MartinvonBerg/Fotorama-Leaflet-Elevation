@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.2.0
+ * Version:           0.2.1
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -162,21 +162,26 @@ function showmulti($attr, $content = null)
 	$gpx_url = $up_url . '/' . $gpxpath . '/';    // gpx_url
 	$imagepath = $up_dir . '/' . $imgpath;        // path to the images
 	$imageurl = $up_url . '/' . $imgpath;         // url to the images-url in uploads directory
+	//$ext = '.jpg';
 	$thumbheight = (string) get_option('thumbnail_size_h');
 	$thumbwidth = (string) get_option('thumbnail_size_w');
-	$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . '.jpg';
+	//$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . $ext;
 	$plugin_path = plugins_url('/', __FILE__);
 	$wp_fotomulti_path = $plugin_path . 'images/';
 	
 	// Loop through all jpg-files in the given folder, and get the required data
 	$imageNumber = 0;
-	foreach (glob($imagepath . '/*.[jJ][pP][gG]') as $file) {
+	$testarray = glob ( $imagepath . '/*.[jJwW][pPeE][gGbB]*' );
+	foreach ( glob ( $imagepath . '/*.[jJwW][pPeE][gGbB]*' ) as $file ) { // jpg here
+	//foreach ( glob ( $imagepath . '/*.[jJ][pP][gG]' ) as $file ) { // jpg here
 		// check wether current $file of the $path (=folder) is a unscaled jpg-file and not a thumbnail or a rescaled file
 		// This means: The filename must not contain 'thumb' or '[0-9]x[0-9]'. All other additions to the filename will be treated as 
 		// full scaled image-file that will be shown in the image-slider
-		$extension = pathinfo($file)['extension'];
-		$jpgfile = basename($file, '.'.$extension); 
+		$ext = '.' . pathinfo($file)['extension'];
+		//$ext = '.' . $extension;
+		$jpgfile = basename($file, $ext); 
 		$isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile); 
+		$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . $ext;
 		
 		if ( ! $isthumb) {
 
@@ -184,14 +189,14 @@ function showmulti($attr, $content = null)
 			$thumbavail = true;
 			$pathtocheck = $imagepath . '/' . $jpgfile;
 			
-			if     ( is_file($pathtocheck . $thumbcheck) ) {
+			if ( is_file( $pathtocheck . $thumbcheck ) ) {
 				$thumbs = $thumbcheck;
 				}
-			elseif ( is_file($pathtocheck . '-thumb.jpg') ) {
-				$thumbs = '-thumb.jpg';
+			elseif ( is_file($pathtocheck . '-thumb' . $ext) ) {
+				$thumbs = '-thumb' . $ext;
 				}
-			elseif ( is_file($pathtocheck . '_thumb.jpg') ) {
-				$thumbs = '_thumb.jpg';
+			elseif ( is_file($pathtocheck . '_thumb' . $ext) ) {
+				$thumbs = '_thumb' . $ext;
 				}
 			else {
 				$thumbavail = false;
@@ -206,19 +211,22 @@ function showmulti($attr, $content = null)
 			if     ( is_file($pathtocheck . $thumbcheck) ) {
 				$thumbs = $thumbcheck;
 				}
-			elseif ( is_file($pathtocheck . '-thumb.jpg') ) {
-				$thumbs = '-thumb.jpg';
+			elseif ( is_file($pathtocheck . '-thumb' . $ext) ) {
+				$thumbs = '-thumb' . $ext;
 				}
-			elseif ( is_file($pathtocheck . '_thumb.jpg') ) {
-				$thumbs = '_thumb.jpg';
+			elseif ( is_file($pathtocheck . '_thumb' . $ext) ) {
+				$thumbs = '_thumb' . $ext;
 				}
 			else {
 				$thumbinsubdir = false;
 			}
 
 			// get $Exif-Data from image and check wether image contains GPS-data, if not it will be skipped
-			$Exif = exif_read_data($file, 0, true);
-			list($lon,$lat) = gpxview_getLonLat($Exif);	
+			$Exif = exif_read_data($file, 'ANY_TAG', true);
+
+			if ( false != $Exif ) {
+				list( $lon, $lat ) = gpxview_getLonLat( $Exif) ;	
+			}
 			
 			if ( ( (is_null($lon) ) || (is_null($lat)) ) && ('true' == $requiregps) ) {
 				// do nothing, GPS-data invalid;
@@ -226,7 +234,7 @@ function showmulti($attr, $content = null)
 
 			else {
 				// Check if file with GPS-Coordinate is maybe in WP-Media-Catalog 
-				$wpimgurl = $imageurl . '/' . $jpgfile . '.jpg';
+				$wpimgurl = $imageurl . '/' . $jpgfile . $ext;
 				$wpid = attachment_url_to_postid($wpimgurl);
 	
 				// get Exif-Data-Values from $Exif and $iptc and store it to array data2
@@ -239,7 +247,7 @@ function showmulti($attr, $content = null)
 			
 				// create array to add the image-urls to Yoast-seo xml-sitemap
 				if ($doYoastXmlSitemap) {
-					$img2add = $up_url . '/' . $imgpath . '/' . $jpgfile . '.jpg';
+					$img2add = $up_url . '/' . $imgpath . '/' . $jpgfile . $ext;
 					$postimages[] = array('src' => $img2add , 'alt' => $title, 'title' => $title,);
 				}
 			
@@ -422,7 +430,7 @@ function showmulti($attr, $content = null)
 					$tmp[1] = \str_replace('w', '', $tmp[1]);
 					$finalArray[ $tmp[1] ] = $tmp[0];
 				}
-				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg';
+				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . $ext;
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
 			}
 
@@ -440,7 +448,7 @@ function showmulti($attr, $content = null)
 				
 				list($thumbwidth, $height, $type, $attr) = getimagesize( $thumbfile );
 				$finalArray[ strval( $thumbwidth ) ] = $thumburl;
-				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg';
+				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . $ext;
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
 			}
 
@@ -450,7 +458,7 @@ function showmulti($attr, $content = null)
 			$phpimgdata[$imgnr-1]['coord'][1] = round( $data['lon'], 6 );
 
 			if ($data['thumbinsubdir']) {
-				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . 
+				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $ext . '" data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . 
 				'<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">\r\n';
 				// code for the thumbnails
 				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
@@ -463,7 +471,7 @@ function showmulti($attr, $content = null)
 				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>'; 
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
-				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . '.jpg' . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
+				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $ext . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal'] . ' / f/' . $data['apperture'] . ' / ' . $data['exptime'] . 's / ISO' . $data['iso'] . ' / ' . $data['date'] . '">';
 			}
 
 			$imgnr++;
