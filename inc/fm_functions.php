@@ -273,18 +273,6 @@ function gpxview_getLonLat($Exif)
  */
 function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 {
-	/*
-	if ( false === $Exif ) {
-		// Open a the file, this should be in binary mode
-		$fp = fopen( $file, 'rb' );
-		$headers = exif_read_data( $fp ); // Exif data is not readable, always
-		if ( ! $headers ) {
-			//echo 'Error: Unable to read exif headers';
-		} else {
-			//echo 'OK: could read exif headers';
-		}
-	}
-	*/
 	// get title and file-type from IPTC-data
 	$type = wp_check_filetype($file)['type'];
 	getimagesize($file, $info);
@@ -351,22 +339,18 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 	$description = isset($Exif["IFD0"]["ImageDescription"]) ? $Exif["IFD0"]["ImageDescription"] : '';
 	
 	// get data fromt the wp database, if it is there
-	$sort = 0; $alt = ''; $caption = '';
-	
 	if ($wpid > 0) {
-		$wpmediadata = get_post( $wpid, 'ARRAY_A');
-		$wptitle = $wpmediadata['post_title']; 
-		$title = $wptitle != '' ? $wptitle : $title;
-		$caption = $wpmediadata["post_excerpt"]; // 'Beschriftung' in the Media-Catalog, means caption
-		$wpdescription = $wpmediadata["post_content"]; // 'Beschreibung' in the Media-Catalog, means $description
-		$description = $wpdescription != '' ? $wpdescription : $description;
+		$sort = 0; $alt = ''; $caption = '';
 
+		// general jpeg and webp
+		$wpmediadata = get_post( $wpid, 'ARRAY_A');
 		$sort = get_post_meta( $wpid, 'gallery_sort', true) ?? '';
 		$alt = get_post_meta( $wpid, '_wp_attachment_image_alt', true) ?? '' ;
-		
 		$meta = wp_get_attachment_metadata($wpid);
 		$wptags = $meta["image_meta"]["keywords"]; 
 		$tags = is_array($wptags) ? $wptags : $tags;
+		$wpdescription = $wpmediadata["post_content"]; // 'Beschreibung' in the Media-Catalog, means $description
+		$description = $wpdescription != '' ? $wpdescription : $description;
 
 		if ( 'image/webp' == $type) {
 			$apperture = $meta["image_meta"]["aperture"];
@@ -377,6 +361,11 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 			$exptime =  '1/' . strval( 1 / \floatval( $meta["image_meta"]["shutter_speed"] ) );
 			$title = $meta["image_meta"]["title"];
 			$datetaken = wp_date( get_option( 'date_format' ), intval( $meta["image_meta"]["created_timestamp"]) );
+		} else {
+			$wptitle = $wpmediadata['post_title']; 
+			$title = $wptitle != '' ? $wptitle : $title;
+			// set the caption (jepg)
+			$caption = $wpmediadata["post_excerpt"]; // 'Beschriftung' in the Media-Catalog, means caption
 		}
 	}
 	
