@@ -9,13 +9,18 @@
             "request": "attach",
             "name": "Attach to Chrome",
             "port": 9222,
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}",
         },
         {
             "name": "Listen for XDebug",
             "type": "php",
             "request": "launch",
-            "port": 9000
+            "port": 9000,
+            "xdebugSettings": {
+                "max_children": 200,
+                "max_data": 512,
+                "max_depth": 3
+            }
         },
         {
             "name": "Launch currently open script",

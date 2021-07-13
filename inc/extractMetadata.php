@@ -1,7 +1,22 @@
 <?php
+/** Extract Metadata from a Webp file. Only the data that is stored in the WP Media lib  * is extracted. 
+ * The remainder is not needed. Only tested for Nikon D7500 images after  * handling with Lightroom 6.14 
+ * and converson with imagemagick. Not done for all camers that are around.
+ * State: 11.07.2021 Extracton for ratinales (type 5, 10) is not correct. Mainly because the offset in data-field is not correctly extracted.
+ * As well as title, caption and keywords are not found in EXIF-data. 
+ * title is taken from XMP field. Keywords are in XMP but not correctly taken.
+ * Alternatives: 
+ *    - Upload the image with LR 6.14 after webp format is supported and write meta-data. Needs change of LR plugin.  
+ *    - Wait for WP team to react. This should be fixed soon.
+ *    - Do not use webp. The effect is only some percents.
+ *    - Write the values manually with REST-api-plugin
+ *    - Do nothing and do NOT use the caption with webp.
+ * 
+ */
+
 namespace mvbplugins\fotoramamulti;
 
-const BROKEN_FILE = '0'; // value to store in img_metadata if error extracting metadata.
+const BROKEN_FILE = false; // value to store in img_metadata if error extracting metadata.
 const MINIMUM_CHUNK_HEADER_LENGTH = 18;
 const WEBP_VERSION = 1;
 
@@ -11,7 +26,6 @@ const VP8X_EXIF = 8;
 const VP8X_XMP = 4;
 const VP8X_ANIM = 2;
 const EXIF_OFFSET = 8;
-const MYDATEFORMAT = "Y-m-d H:i:s";
 
 function getMetadata( $filename ) {
 	$parsedWebPData = extractMetadata( $filename );
@@ -20,7 +34,7 @@ function getMetadata( $filename ) {
 	}
 
 	$parsedWebPData['metadata']['WEBP_VERSION'] = WEBP_VERSION;
-	return serialize( $parsedWebPData );
+	return $parsedWebPData;
 }
 
 function extractMetadata( $filename ) {
@@ -30,7 +44,7 @@ function extractMetadata( $filename ) {
 		return false;
     }
 
-   if ( $info['fourCC'] != 'WEBP' ) {
+   if ( 'WEBP' != $info['fourCC'] ) {
 	   return false;
    }
 
@@ -42,8 +56,7 @@ function extractMetadata( $filename ) {
 }
 
 function extractMetadataFromChunks( $chunks, $filename ) {
-	$vp8Info = [];
-
+	
 	foreach ( $chunks as $chunk ) {
 		if ( ! in_array( $chunk['fourCC'], [ 'VP8 ', 'VP8L', 'VP8X', 'EXIF', 'XMP ' ] ) ) {
 			// Not a chunk containing interesting metadata
@@ -51,8 +64,6 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 		}
 
 		$chunkHeader = file_get_contents( $filename, false, null, $chunk['start'], MINIMUM_CHUNK_HEADER_LENGTH );
-
-		$head = $chunk['fourCC'];
 
 		switch ( $chunk['fourCC'] ) {
 			case 'VP8 ':
@@ -65,25 +76,42 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 				$vp8Info_3 = decodeExtendedChunkHeader( $chunkHeader );
 				break;
 			case 'EXIF':
-				$exif1 = decodeLosslessChunkHeader( $chunkHeader );
-				$exif2 = file_get_contents( $filename, false, null, $chunk['start'] + 62, $chunk['start']+$chunk['size'] );
-				hex_dump( $exif2 );
+				$exif2 = file_get_contents( $filename, false, null, $chunk['start'], $chunk['start']+$chunk['size'] );
+				//hex_dump( $exif2 );
 				$meta = get_exif_meta( $exif2 );
 				$meta['credit'] = $meta['copyright'];
 				break;
 			case 'XMP ':
-				$xmp1_ = decodeLosslessChunkHeader( $chunkHeader );
 				$xmp2 = file_get_contents( $filename, false, null, $chunk['start']+8, $chunk['start']+$chunk['size'] );
 				$p = xml_parser_create();
+				xml_parser_set_option($p,XML_OPTION_SKIP_WHITE,1);
 				xml_parse_into_struct($p, $xmp2, $vals, $index);
 				xml_parser_free($p);
-				$title = $vals[13]["value"];
+			
+				$nr = (int) ($index["DC:TITLE"][1] + $index["DC:TITLE"][0]) / 2;
+				$title = $vals[ $nr ]["value"];
+				$meta[ 'title' ] = $title;
+
+				$nr = (int) ($index["DC:DESCRIPTION"][1] + $index["DC:DESCRIPTION"][0]) / 2;
+				$caption = $vals[ $nr ]["value"];
+				$meta[ 'caption' ] = $caption;
+
 				$lens = $vals[2]["attributes"]["AUX:LENS"];
-				$datetaken = $vals[2]["attributes"]["XMP:CREATEDATE"];
+				$meta[ 'camera' ] = $meta[ 'camera' ] . ' + ' . $lens;
+
+				$tagstart = $index["RDF:BAG"][0] +1;
+				$tagend   = $index["RDF:BAG"][1] -1;
+				while ( $tagstart <= $tagend ) {
+					$tag = $vals[ $tagstart ]["value"];
+					$tagstart += 1;
+					$tags[] = $tag;
+				}
+				$meta[ 'keywords' ] = $tags; 
+
 				break;
 		}
 	}
-	return $vp8Info;
+	return $meta;
 }
 
 function decodeLossyChunkHeader( $header ) {
@@ -248,25 +276,6 @@ function hex_dump($data, $newline="<br>")
 }
 
 function get_exif_meta( $buffer ) {
-	$dateformat = MYDATEFORMAT;
-
-	/* JSON output of rest api
-"image_meta": {
-	"			aperture": "11",
-				"credit": "Martin von Berg",
-				"camera": "Nikon D7500",
-		"caption": "Wasserfall",
-				"created_timestamp": "1602938620",
-				"copyright": "Martin von Berg",
-				"focal_length": "50",
-				"iso": "10000",
-				"shutter_speed": "0.00125",
-		XMP: "title": "Wasserfall",
-				"orientation": "1",
-		"keywords": [
-			"Wasserfall"
-		]
-	*/
 
 	$tags = array( 
 		'0x010F' => array(
@@ -312,19 +321,21 @@ function get_exif_meta( $buffer ) {
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
 		), 
 		'0x829D' => array(
-			'text' => 'f_number', // FNumber
+			'text' => 'aperture', // EXIF: FNumber
 			'type' => 5, // unsigned long rational
 			'Byte' => 8, // Bytes per component: taken from data field
 			'comps'=> 2, // Number of components per data-field 
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
 		), 
+		/*
 		'0x9202' => array(
 			'text' => 'aperture', // FNumber
 			'type' => 5, // unsigned long rational
 			'Byte' => 8, // Bytes per component: taken from data field
-			'comps'=> 1, // Number of components per data-field 
+			'comps'=> 2, // Number of components per data-field 
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
-		), 
+		),
+		*/ 
 		'0x9003' => array(
 			'text' => 'created_timestamp', // DateTimeOriginal
 			'type' => 2, // ascii string
@@ -335,9 +346,16 @@ function get_exif_meta( $buffer ) {
 		'0x920A' => array(
 			'text' => 'focal_length',
 			'type' => 5, // ascii string
-			'Byte' => 0, // Bytes per component: taken from data field
-			'comps'=> 1, // Number of components per data-field 
+			'Byte' => 8, // Bytes per component: taken from data field
+			'comps'=> 2, // Number of components per data-field 
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
+		), 
+		'0xA405' => array(
+			'text' => 'focal_length_in_35mm',
+			'type' => 3, // unsigned short
+			'Byte' => 2, // Bytes per component
+			'comps'=> 2, // Number of components per data-field 
+			'offs' => 0, // offset for type 2, 5, 10, 12
 		), 
 	);
 
@@ -353,12 +371,10 @@ function get_exif_meta( $buffer ) {
 
 	if ( ('II' == $type) && ('2A00' == $check) ) {
 		$isIntel = true; // use for Endianess
-		$isMoto = false; // use for Endianess
-
+	
 	} elseif ( 'MM' == $type && ('002A' == $check) ) {
 		$isIntel = false; // use for Endianess
-		$isMoto = true;   // use for Endianess
-
+		
 	} else {
 		// intel or Motorola type not detected
 		return false;
@@ -380,10 +396,11 @@ function get_exif_meta( $buffer ) {
 			// found one tag
 			$value_of_tag = get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags );
 			$meta_key =	$tags[ $piece]['text'];
-			if ( 'datetaken' == $meta_key) {
+			if ( 'created_timestamp' == $meta_key) {
+				$meta[ 'DateTimeOriginal' ] = $value_of_tag;
 				$value_of_tag = strtotime ( $value_of_tag);
 			}	
-			$meta[ $meta_key] = $value_of_tag;
+			$meta[ $meta_key ] = $value_of_tag;
 		}
 		$bufoffs += 1;
 		if ( sizeof ( $meta ) === \sizeof( $tags) ) { break; }
@@ -396,16 +413,11 @@ function get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags ) {
 	$ncomps =  substr( $buffer, $bufoffs +4, 4) ;
 	$data =    substr( $buffer, $bufoffs +8, 4) ;
 
-	if ( $piece == '0x829D') { 
-		$a =0;
-	}
-
 	if ( $isIntel ) {
 		// revert byte order first
 		$type = binrevert( $type );
 		$ncomps = binrevert( $ncomps );
 		$data = binrevert( $data );
-		$save = $data;
 
 	} else {
 		// extract data from pieces
@@ -425,12 +437,25 @@ function get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags ) {
 		}
 		$data = \hexdec( $data);
 		return $data;
-	} elseif ( '0x0005' == $type ) { // this is a ascii string with one component
-		$ascii =  substr( $buffer, EXIF_OFFSET + hexdec($data), 8 ) ;
-		$numerator =  substr( $data, 0, 6 ); // Zähler
-		$denominator =    '0x' . substr( $data, 6, 10 ); // Nenner
-		return $numerator;
 
+	} elseif ( '0x0005' == $type ) { // this is a ascii string with one component
+		$ascii =  hexdec( substr( $buffer, EXIF_OFFSET + hexdec($data), 8 ) );
+
+		$numerator =   substr( $buffer, EXIF_OFFSET + hexdec($data)     , 4 ); // Zähler
+		$denominator = substr( $buffer, EXIF_OFFSET + hexdec($data) + 4 , 4 ); // Nenner
+
+		if ( $isIntel ) {
+			// revert byte order first
+			$numerator = binrevert( $numerator );
+			$denominator = binrevert( $denominator );
+			$numerator =   hexdec( $numerator ); // Zähler
+			$denominator = hexdec( $denominator ); // Nenner
+		} else {
+			$numerator =   hexdec( '0x' . bin2hex( $numerator   ) ); // Zähler
+			$denominator = hexdec( '0x' . bin2hex( $denominator ) ); // Nenner
+		}
+		$value_of_tag = $numerator / $denominator;
+		return $value_of_tag;
 	}
 }
 

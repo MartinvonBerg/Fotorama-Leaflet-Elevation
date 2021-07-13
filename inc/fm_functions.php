@@ -1,6 +1,8 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
+require_once __DIR__ . '/extractMetadata.php';
+
 // add the style for the grid to ALL headers!
 // Generate the inline style for the CSS-Grid. Identical for all shortcodes!
 add_action('wp_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
@@ -276,7 +278,8 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 	// get title and file-type from IPTC-data
 	$type = wp_check_filetype($file)['type'];
 	getimagesize($file, $info);
-
+	$meta = \mvbplugins\fotoramamulti\getMetadata( $file );
+	
 	$title = 'Galeriebild ' . strval($imageNumber+1);
 	if (isset($info['APP13'])) {
 		$iptc = iptcparse($info['APP13']);
@@ -361,6 +364,7 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 			$exptime =  '1/' . strval( 1 / \floatval( $meta["image_meta"]["shutter_speed"] ) );
 			$title = $meta["image_meta"]["title"];
 			$datetaken = wp_date( get_option( 'date_format' ), intval( $meta["image_meta"]["created_timestamp"]) );
+			\mvbplugins\fotoramamulti\getMetadata( $file );
 		} else {
 			$wptitle = $wpmediadata['post_title']; 
 			$title = $wptitle != '' ? $wptitle : $title;
