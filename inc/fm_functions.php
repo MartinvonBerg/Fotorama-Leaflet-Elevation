@@ -364,7 +364,6 @@ function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
 			$exptime =  '1/' . strval( 1 / \floatval( $meta["image_meta"]["shutter_speed"] ) );
 			$title = $meta["image_meta"]["title"];
 			$datetaken = wp_date( get_option( 'date_format' ), intval( $meta["image_meta"]["created_timestamp"]) );
-			\mvbplugins\fotoramamulti\getMetadata( $file );
 		} else {
 			$wptitle = $wpmediadata['post_title']; 
 			$title = $wptitle != '' ? $wptitle : $title;

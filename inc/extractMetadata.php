@@ -426,40 +426,56 @@ function get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags ) {
 	} elseif ( '0x0004' == $type ) { // this is a ascii string with one component
 		$ascii =  substr( $buffer, EXIF_OFFSET + hexdec($data), 160 ) ;
 		$gps = get_gps_data( $ascii, $buffer, $isIntel);
-		return 'GPS-data available';
+		return $gps;
 
 	} elseif ( '0x0005' == $type ) { // this is a ascii string with one component
-		$ascii =  hexdec( substr( $buffer, EXIF_OFFSET + hexdec($data), 8 ) );
-
-		$numerator =   substr( $buffer, EXIF_OFFSET + hexdec($data)     , 4 ); // Zähler
-		$denominator = substr( $buffer, EXIF_OFFSET + hexdec($data) + 4 , 4 ); // Nenner
-
-		if ( $isIntel ) {
-			// revert byte order first
-			$numerator = binrevert( $numerator );
-			$denominator = binrevert( $denominator );
-			$numerator =   hexdec( $numerator ); // Zähler
-			$denominator = hexdec( $denominator ); // Nenner
-		} else {
-			$numerator =   hexdec( '0x' . bin2hex( $numerator   ) ); // Zähler
-			$denominator = hexdec( '0x' . bin2hex( $denominator ) ); // Nenner
-		}
-		$value_of_tag = $numerator / $denominator;
+		//$ascii =  hexdec( substr( $buffer, EXIF_OFFSET + hexdec($data), 8 ) );
+		$value_of_tag = getrationale( $buffer, $data, 0, $isIntel);
 		return $value_of_tag;
+
 	} else { return false; }
 }
 
 function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
-
+	// define the gps-tags to search for
 	$tags = array( 
 		'0x0000' => array(
 			'text' => 'GPSVersionID',
-			'type' => 1, // ascii string
-			'Byte' => 1, // Bytes per component: taken from data field
+			'type' => 1, // n int8 values, number n is taken from $count, usually 4
+			'nBytes' => 1, // Bytes per component: taken from data field
 		), 
-		
+		'0x0001' => array(
+			'text' => 'GPSLatitudeRef',
+			'type' => 2, // ascii string
+			'nBytes' => 2, // Bytes per string value, so two asciis each 2 Bytes long
+		), 
+		'0x0002' => array(
+			'text' => 'GPSLatitude',
+			'type' => 5, // rational uint64, number n is taken from $count, usually 3
+			'nBytes' => 4, // relative address pointer to the data, 4 Bytes long
+		), 
+		'0x0003' => array(
+			'text' => 'GPSLongitudeRef',
+			'type' => 2, // ascii string, 
+			'nBytes' => 2, // Bytes per string value, so two asciis each 2 Bytes long
+		), 
+		'0x0004' => array(
+			'text' => 'GPSLongitude',
+			'type' => 5,  // rational uint64, number n is taken from $count, usually 3
+			'nBytes' => 4, // relative address pointer to the data, 4 Bytes long
+		), 
+		'0x0005' => array(
+			'text' => 'GPSAltitudeRef',
+			'type' => 1, // n int8 values, number n is taken from $count, usually 4
+			'nBytes' => 1, // Bytes per component: taken from data field
+		), 
+		'0x0006' => array(
+			'text' => 'GPSAltitude',
+			'type' => 5, // rational uint64, number n is taken from $count, usually 3
+			'nBytes' => 4, // relative address pointer to the data, 4 Bytes long
+		), 
 	);
-
+	// get the total number of tags
 	$nGpsTags = substr( $gpsbuffer, 0, 2) ;
 	if ( $isIntel ) {
 		// revert byte order first
@@ -469,40 +485,112 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 	}
 
 	if ( ( $nGpsTags < 1 ) || ( $nGpsTags > 31) ) { 
-		// no EXIF data
+		// no GPS data or wrong buffer selected
 		return false; 
 	}
 
-	$nGpsTags = substr( $buffer, 8, 2) ;
-	$check = strtoupper( bin2hex ( substr( $buffer, 10, 2) ) );
-
-
-	$bufflen = strlen( $buffer );
-	$bufoffs = EXIF_OFFSET + 4;
+	$bufflen = strlen( $gpsbuffer );
+	$bufoffs = 2;
 
 	while ( $bufoffs <= $bufflen) {
-		$binary = substr( $buffer, $bufoffs, 2);
-
-		if ( $isIntel) {	
-			$piece = binrevert( $binary );
-		} else {
-			$piece = '0x' . strtoupper( bin2hex ( $binary ) );
-		}
+		$piece = frombuffer( $gpsbuffer, $bufoffs, 2, $isIntel) ;
+		$bufoffs += 2;
 
 		if ( array_key_exists( $piece, $tags ) ) {
-			// found one tag
-			$value_of_tag = get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags );
+			// init data array 
+			$data = array();
+
+			// get the type fo the tag first
+			$type = hexdec( frombuffer( $gpsbuffer, $bufoffs, 2, $isIntel) );
+			//$expectedType = $tags[ $piece ]['type']; // TODO : check
+			$bufoffs += 2;
+
+			// get the number of values
+			$count = hexdec( frombuffer( $gpsbuffer, $bufoffs, 4, $isIntel) );
+			$bufoffs += 4;
+			if ( 5 == $type) { // correct number of values for pointers, it's only one pointer
+				$nvalues = $count;
+				$count = 1;
+			}
+
+			// get the data or relative pointer
+			$lendata = $tags[ $piece ]['nBytes'];
+
+			for ($i=1; $i <= $count ; $i++) { 
+				$data[] = frombuffer( $gpsbuffer, $bufoffs, $lendata, $isIntel);
+				$bufoffs += $lendata;
+			}
+
+			// special treatment of the Lat/Long-Ref
+			if ( 2 == $type) {
+				$data = \strtoupper($data[0]);
+				$data = \str_replace('0','', $data);
+				$data = \str_replace('X','', $data);
+				$data = chr (hexdec ( $data ));
+				$found = strpos( ' NSEW', $data);
+				if ( ! $found ) $data = false;
+			}
+
+			// special treatment of the Lat- / Long / Alt-itude
+			if ( 5 == $type) {
+				$rational = array();
+
+				for ($i=0; $i < $nvalues ; $i++) { 
+					$rational[] = getrationale( $buffer, $data[0], $i, $isIntel, 'gps');
+				}
+				$data = $rational;
+			}
+		
+			$value_of_tag = $data; 
 			$meta_key =	$tags[ $piece ]['text'];
-			if ( 'created_timestamp' == $meta_key) {
-				$meta[ 'DateTimeOriginal' ] = $value_of_tag;
-				$value_of_tag = strtotime ( $value_of_tag);
-			}	
 			$meta[ $meta_key ] = $value_of_tag;
 		}
-		$bufoffs += 1;
-		if ( sizeof ( $meta ) === \sizeof( $tags) ) { break; }
+		
+		if ( sizeof ( $meta ) === $nGpsTags ) { break; }
 	}
 	return $meta;
+}
+
+function frombuffer(string $buffer, int $offset, int $length, bool $isIntel) 
+{
+	$binary = substr( $buffer, $offset, $length);
+	if ( $isIntel) {	
+		$piece = binrevert( $binary );
+	} else {
+		$piece = '0x' . strtoupper( bin2hex ( $binary ) );
+	}
+	return $piece;
+}
+
+/**
+ * get the rational value out of the string buffer
+ *
+ * @param string $buffer the data buffer which contains the values
+ * @param string $pointer the relative pointer. For Exif the offset is marked by 'MM' or 'II'.
+ * @param integer $count the n'th value to search for, '0' means 1st value
+ * @param boolean $isIntel whether the byte field is to revert
+ * @return float $value_of_tag the calculated rational value
+ */
+function getrationale (string $buffer, string $pointer, int $count, bool $isIntel, string $type = 'number') {
+	$numerator =   substr( $buffer, EXIF_OFFSET + hexdec($pointer)     + $count *8 , 4 ); // Zähler
+	$denominator = substr( $buffer, EXIF_OFFSET + hexdec($pointer) + 4 + $count *8 , 4 ); // Nenner
+
+	if ( $isIntel ) {
+		// revert byte order first
+		$numerator   = binrevert( $numerator );
+		$denominator = binrevert( $denominator );
+		$numerator   =    hexdec( $numerator ); // Zähler
+		$denominator =    hexdec( $denominator ); // Nenner
+	} else {
+		$numerator =   hexdec( '0x' . bin2hex( $numerator   ) ); // Zähler
+		$denominator = hexdec( '0x' . bin2hex( $denominator ) ); // Nenner
+	}
+	if ( 'number' == $type ) {
+		$value_of_tag = $numerator / $denominator;
+	} elseif ( 'gps' == $type ) {
+		$value_of_tag = strval( $numerator ) . '/' . strval( $denominator );
+	}
+	return $value_of_tag;
 }
 
 /**
@@ -511,8 +599,11 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
  * @param string $binary binary-data as string taken from the binary buffer with EXIF-data
  * @return string the inverted binary data as hex-string
  */
-function binrevert ( $binary ) {
-	if (\strlen( $binary) == 2) {
+function binrevert ( string $binary ) {
+	if (\strlen( $binary) == 1) {
+		$val = dechex( $binary );
+		$bin = '0x' . \strtoupper( sprintf('%02s', $val ) );
+	} elseif (\strlen( $binary) == 2) {
 		$val = dechex( unpack( 'v', $binary )[1]);
 		$bin = '0x' . \strtoupper( sprintf('%04s', $val ) );
 	} elseif (\strlen( $binary) == 4) {
