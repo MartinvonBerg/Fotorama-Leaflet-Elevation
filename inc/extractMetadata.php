@@ -18,7 +18,7 @@ namespace mvbplugins\fotoramamulti;
 
 const BROKEN_FILE = false; // value to store in img_metadata if error extracting metadata.
 const MINIMUM_CHUNK_HEADER_LENGTH = 18;
-const WEBP_VERSION = 1;
+const WEBP_VERSION = '0.0.1';
 
 const VP8X_ICC = 32;
 const VP8X_ALPHA = 16;
@@ -33,7 +33,7 @@ function getMetadata( $filename ) {
 		return BROKEN_FILE;
 	}
 
-	$parsedWebPData['metadata']['WEBP_VERSION'] = WEBP_VERSION;
+	$parsedWebPData['meta_version'] = WEBP_VERSION;
 	return $parsedWebPData;
 }
 
@@ -246,35 +246,6 @@ function extractUInt32( $string ) {
 	return unpack( 'V', $string )[1];
 }
 
-function hex_dump($data, $newline="<br>")
-{
-  static $from = '';
-  static $to = '';
-
-  static $width = 16; # number of bytes per line
-
-  static $pad = '.'; # padding for non-visible characters
-
-  if ($from==='')
-  {
-    for ($i=0; $i<=0xFF; $i++)
-    {
-      $from .= chr($i);
-      $to .= ($i >= 0x20 && $i <= 0x7E) ? chr($i) : $pad;
-    }
-  }
-
-  $hex = str_split(bin2hex($data), $width*2);
-  $chars = str_split(strtr($data, $from, $to), $width);
-
-  $offset = 0;
-  foreach ($hex as $i => $line)
-  {
-    echo sprintf('%6X',$offset).' : '.implode(' ', str_split($line,2)) . ' [' . $chars[$i] . ']' . $newline;
-    $offset += $width;
-  }
-}
-
 function get_exif_meta( $buffer ) {
 
 	$tags = array( 
@@ -297,6 +268,20 @@ function get_exif_meta( $buffer ) {
 			'type' => 3, // unsigned short
 			'Byte' => 2, // Bytes per component
 			'comps'=> 2, // Number of components per data-field 
+			'offs' => 0, // offset for type 2, 5, 10, 12
+		), 
+		'0xA434' => array(
+			'text' => 'lens', // model in EXIF
+			'type' => 2, // ascii string
+			'Byte' => 0, // Bytes per component: taken from data field
+			'comps'=> 1, // Number of components per data-field 
+			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
+		),
+		'0x8825' => array(
+			'text' => 'GPSInfo',
+			'type' => 4, // unsigned short
+			'Byte' => 2, // Bytes per component
+			'comps'=> 160, // Number of components per data-field 
 			'offs' => 0, // offset for type 2, 5, 10, 12
 		), 
 		'0x8827' => array(
@@ -395,7 +380,7 @@ function get_exif_meta( $buffer ) {
 		if ( array_key_exists( $piece, $tags ) ) {
 			// found one tag
 			$value_of_tag = get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags );
-			$meta_key =	$tags[ $piece]['text'];
+			$meta_key =	$tags[ $piece ]['text'];
 			if ( 'created_timestamp' == $meta_key) {
 				$meta[ 'DateTimeOriginal' ] = $value_of_tag;
 				$value_of_tag = strtotime ( $value_of_tag);
@@ -438,6 +423,11 @@ function get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags ) {
 		$data = \hexdec( $data);
 		return $data;
 
+	} elseif ( '0x0004' == $type ) { // this is a ascii string with one component
+		$ascii =  substr( $buffer, EXIF_OFFSET + hexdec($data), 160 ) ;
+		$gps = get_gps_data( $ascii, $buffer, $isIntel);
+		return 'GPS-data available';
+
 	} elseif ( '0x0005' == $type ) { // this is a ascii string with one component
 		$ascii =  hexdec( substr( $buffer, EXIF_OFFSET + hexdec($data), 8 ) );
 
@@ -456,7 +446,63 @@ function get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags ) {
 		}
 		$value_of_tag = $numerator / $denominator;
 		return $value_of_tag;
+	} else { return false; }
+}
+
+function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
+
+	$tags = array( 
+		'0x0000' => array(
+			'text' => 'GPSVersionID',
+			'type' => 1, // ascii string
+			'Byte' => 1, // Bytes per component: taken from data field
+		), 
+		
+	);
+
+	$nGpsTags = substr( $gpsbuffer, 0, 2) ;
+	if ( $isIntel ) {
+		// revert byte order first
+		$nGpsTags = hexdec( binrevert( $nGpsTags ) );
+	} else {
+		$nGpsTags = hexdec( '0x' . bin2hex( $nGpsTags ) );
 	}
+
+	if ( ( $nGpsTags < 1 ) || ( $nGpsTags > 31) ) { 
+		// no EXIF data
+		return false; 
+	}
+
+	$nGpsTags = substr( $buffer, 8, 2) ;
+	$check = strtoupper( bin2hex ( substr( $buffer, 10, 2) ) );
+
+
+	$bufflen = strlen( $buffer );
+	$bufoffs = EXIF_OFFSET + 4;
+
+	while ( $bufoffs <= $bufflen) {
+		$binary = substr( $buffer, $bufoffs, 2);
+
+		if ( $isIntel) {	
+			$piece = binrevert( $binary );
+		} else {
+			$piece = '0x' . strtoupper( bin2hex ( $binary ) );
+		}
+
+		if ( array_key_exists( $piece, $tags ) ) {
+			// found one tag
+			$value_of_tag = get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags );
+			$meta_key =	$tags[ $piece ]['text'];
+			if ( 'created_timestamp' == $meta_key) {
+				$meta[ 'DateTimeOriginal' ] = $value_of_tag;
+				$value_of_tag = strtotime ( $value_of_tag);
+			}	
+			$meta[ $meta_key ] = $value_of_tag;
+		}
+		$bufoffs += 1;
+		if ( sizeof ( $meta ) === \sizeof( $tags) ) { break; }
+	}
+	return $meta;
 }
 
 /**
