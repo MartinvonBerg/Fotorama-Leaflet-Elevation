@@ -273,104 +273,171 @@ function gpxview_getLonLat($Exif)
  * @param int $wpid the wordpress-id of the image 
  * @return array array with dedicated information for the image
  */
-function gpxview_getEXIFData($Exif, $file, $imageNumber, $wpid)
+function getEXIFData( $file, $ext, $imageNumber, $wpid)
 {
-	// get title and file-type from IPTC-data
-	$type = wp_check_filetype($file)['type'];
-	getimagesize($file, $info);
-	$meta = \mvbplugins\fotoramamulti\getMetadata( $file );
-	
-	$title = 'Galeriebild ' . strval($imageNumber+1);
-	if (isset($info['APP13'])) {
-		$iptc = iptcparse($info['APP13']);
-		if (isset($iptc["2#005"][0])) {
-			$title =  htmlspecialchars($iptc["2#005"][0]);
+	// preset the title 
+	$title = 'notitle';
+	$ext = \strtolower( $ext );
+
+	// read exif from file independent if image is in WP database
+	if ( '.jpg' == $ext ) {
+		getimagesize($file, $info);
+		$Exif = exif_read_data($file, 'ANY_TAG', true);
+		
+		// get the title
+		if (isset($info['APP13'])) {
+			$iptc = iptcparse($info['APP13']);
+			if (isset($iptc["2#005"][0])) {
+				$title =  htmlspecialchars($iptc["2#005"][0]);
+			} 
 		} 
-	} 
-	
-	// get foto capture data
-	$exptime = $Exif["EXIF"]["ExposureTime"] ?? '--';
-	$apperture = strtok(($Exif["EXIF"]["FNumber"] ?? '-'), ' / ');
-	$iso = $Exif["EXIF"]["ISOSpeedRatings"] ?? '--';
-	if (isset($Exif["EXIF"]["FocalLengthIn35mmFilm"])) {
-	//if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
-		$focal = $Exif["EXIF"]["FocalLengthIn35mmFilm"] . 'mm';
-	} else {
-		$focal = '--mm';
+		
+		// get image capture data
+		$exptime = $Exif["EXIF"]["ExposureTime"] ?? '--';
+
+		if ( isset($Exif["EXIF"]["FNumber"] ) ) {
+			$aperture = explode("/", $Exif["EXIF"]["FNumber"]);
+			if ( sizeof( $aperture ) == 2) {
+				$aperture = $aperture[0] / $aperture[1];
+			} else { 
+				$aperture = $Exif["EXIF"]["FNumber"];
+			}
+		}
+
+		$iso = $Exif["EXIF"]["ISOSpeedRatings"] ?? '--';
+		
+		if (isset($Exif["EXIF"]["FocalLengthIn35mmFilm"])) {
+		//if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
+			$focal = $Exif["EXIF"]["FocalLengthIn35mmFilm"];
+		} else {
+			$focal = '--';
+		}
+
+		// Check setting of exif-field make (the lens information, written by my Ligtroom-Plugin)
+		// alternatively I wrote lens information to the make.
+		if (isset($Exif["IFD0"]["Make"])) {
+		//if (array_key_exists('Make', $Exif['IFD0'])) {
+			$make = $Exif["IFD0"]["Make"] ?? '';
+			$make = preg_replace('/\s+/', ' ', $make);
+		} else {
+			$make = '';
+		}
+
+		// get lens data. $make is obsolete now!
+		$lens = isset($Exif["EXIF"]["UndefinedTag:0xA434"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
+		//$lens = array_key_exists("UndefinedTag:0xA434", $Exif["EXIF"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
+		
+		// get the camera model
+		if (isset($Exif["IFD0"]["Model"])) {
+		//if (array_key_exists('Model', $Exif['IFD0'])) {
+			$model = $Exif["IFD0"]["Model"];
+		} else {
+			$model = '';
+		}
+		// combine camera model and lens data
+		if (!ctype_alpha($lens) && strlen($lens)>0) {
+			$camera = $model . ' + '. $lens;
+		} else {
+			$camera = $model;
+		}
+
+		// get date-taken information
+		if (isset($Exif["EXIF"]["DateTimeOriginal"])) {
+			$datetaken = $Exif["EXIF"]["DateTimeOriginal"];
+		} else {
+			$datetaken = '';
+		}
+
+		// get tags and $description
+		$tags = isset($iptc["2#025"]) ? $iptc["2#025"] : ''; 
+		$description = isset($Exif["IFD0"]["ImageDescription"]) ? $Exif["IFD0"]["ImageDescription"] : '';
+		
+		$data['GPS'] = $Exif['GPS'];
+		$data['title'] = $title; 
+		$data['exposure_time'] = $exptime;
+		$data['aperture'] = $aperture; 
+		$data['iso'] = $iso; 
+		$data['focal_length_in_35mm'] = $focal; 
+		$data['camera'] = $camera; 
+		$data['DateTimeOriginal'] = $datetaken; 
+		$data['keywords'] = $tags; 
+		$data['datesort'] = ''; 
+		$data['descr'] = $description; 
+		$data['alt'] = ''; 
+		$data['caption'] = ''; 
+		$data['sort'] = 0;
+
+	} elseif ( '.webp' == $ext) {
+		$data = getWebpMetadata( $file);
+		$data['exposure_time'] = '1/' . strval( 1 / $data['exposure_time'] );
+		$data['datesort'] = '';
 	}
 
-	// Check setting of exif-field make (the lens information, written by my Ligtroom-Plugin)
-	// alternatively I wrote lens information to the make.
-	if (isset($Exif["IFD0"]["Make"])) {
-	//if (array_key_exists('Make', $Exif['IFD0'])) {
-		$make = $Exif["IFD0"]["Make"] ?? '';
-		$make = preg_replace('/\s+/', ' ', $make);
-	} else {
-		$make = '';
-	}
+	// Post-Processing of $data for DateTimeOriginal
+	if ( isset( $data["DateTimeOriginal"] ) ) $data['datesort'] = $data["DateTimeOriginal"];
+	$date = wp_date( get_option( 'date_format' ), strtotime( $data['DateTimeOriginal'] ) );
+	$data['DateTimeOriginal'] = $date;
 
-	// get lens data. $make is obsolete now!
-	$lens = isset($Exif["EXIF"]["UndefinedTag:0xA434"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
-	//$lens = array_key_exists("UndefinedTag:0xA434", $Exif["EXIF"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
-	
-	// get the camera model
-	if (isset($Exif["IFD0"]["Model"])) {
-	//if (array_key_exists('Model', $Exif['IFD0'])) {
-		$model = $Exif["IFD0"]["Model"];
-	} else {
-		$model = '';
-	}
-	// combine camera model and lens data
-	if (!ctype_alpha($lens) && strlen($lens)>0) {
-		$camera = $model . ' + '. $lens;
-	} else {
-		$camera = $model;
-	}
-
-	// get date-taken information
-	if (isset($Exif["EXIF"]["DateTimeOriginal"])) {
-		$datetaken = explode(":", $Exif["EXIF"]["DateTimeOriginal"]);
-		$datesort = $Exif["EXIF"]["DateTimeOriginal"];
-		$datetaken = strtok((string) $datetaken[2], ' ') . '.' . (string) $datetaken[1] . '.' . (string) $datetaken[0];
-	} else {
-		$datetaken = '';
-		$datesort = '';
-	}
-
-	// get tags and $description
-	$tags = isset($iptc["2#025"]) ? $iptc["2#025"] : ''; 
-	$description = isset($Exif["IFD0"]["ImageDescription"]) ? $Exif["IFD0"]["ImageDescription"] : '';
-	
-	// get data fromt the wp database, if it is there
+	// get additional data from the wp database, if it is there
 	if ($wpid > 0) {
-		$sort = 0; $alt = ''; $caption = '';
-
+		
 		// general jpeg and webp
 		$wpmediadata = get_post( $wpid, 'ARRAY_A');
 		$sort = get_post_meta( $wpid, 'gallery_sort', true) ?? '';
 		$alt = get_post_meta( $wpid, '_wp_attachment_image_alt', true) ?? '' ;
 		$meta = wp_get_attachment_metadata($wpid);
-		$wptags = $meta["image_meta"]["keywords"]; 
-		$tags = is_array($wptags) ? $wptags : $tags;
-		$wpdescription = $wpmediadata["post_content"]; // 'Beschreibung' in the Media-Catalog, means $description
-		$description = $wpdescription != '' ? $wpdescription : $description;
 
-		if ( 'image/webp' == $type) {
-			$apperture = $meta["image_meta"]["aperture"];
-			$camera = $meta["image_meta"]["camera"]; 
-			$caption = $meta["image_meta"]["caption"];
-			$iso = $meta["image_meta"]["iso"];
-			$focal = $meta["image_meta"]["focal_length"] . 'mm';
-			$exptime =  '1/' . strval( 1 / \floatval( $meta["image_meta"]["shutter_speed"] ) );
-			$title = $meta["image_meta"]["title"];
-			$datetaken = wp_date( get_option( 'date_format' ), intval( $meta["image_meta"]["created_timestamp"]) );
-		} else {
-			$wptitle = $wpmediadata['post_title']; 
-			$title = $wptitle != '' ? $wptitle : $title;
-			// set the caption (jepg)
-			$caption = $wpmediadata["post_excerpt"]; // 'Beschriftung' in the Media-Catalog, means caption
-		}
+		// Sonderbehandlung wenn tags im jpg verfügbar sind
+		$wptags = $meta["image_meta"]["keywords"]; 
+		$tags = is_array($wptags) ? $wptags : '';
+		$description = $wpmediadata["post_content"] ?? ''; // 'Beschreibung' in the Media-Catalog, means $description
+		
+		$title = $meta["image_meta"]["title"];
+		$wptitle = $wpmediadata['post_title']; 
+		$title = $wptitle != '' ? $wptitle : $title;
+
+		//$description = $wpdescription != '' ? $wpdescription : $description;
+		$caption = $meta["image_meta"]["caption"] ?? '';
+		$wpcaption = $wpmediadata["post_excerpt"]; // 'Beschriftung' in the Media-Catalog, means caption
+		$caption = $wpcaption != '' ? $wpcaption : $caption;
+
+		// set the data fields 
+		$data['sort'] = $sort;
+		$data['alt'] = $alt;
+		$data['caption'] = $caption;
+		
+		$tags != '' ? $data['keywords'] = $tags : '';
+		$description != '' ? $data['descr'] = $description : '';
+		$title != '' ? $data['title'] = $title : ''; 
+		
 	}
 	
-	return array($exptime, $apperture, $iso, $focal, $camera, $datetaken, $datesort, $tags, $description, $title, $alt, $caption, $sort);
+	return $data;
+}
+
+/**
+ * check the availability of thumbnails
+ *
+ * @param string $pathtocheck 
+ * @param string $thumbcheck the basename of the file with thumbnails to search for
+ * @param string $ext the current extension ('jgp' or 'webp')
+ * @return array with result values
+ */
+function checkThumbs ( string $pathtocheck, string $thumbcheck, string $ext ) {
+	$thumbinsubdir = true;
+
+	if     ( is_file($pathtocheck . $thumbcheck) ) {
+		$thumbs = $thumbcheck;
+		}
+	elseif ( is_file($pathtocheck . '-thumb' . $ext) ) {
+		$thumbs = '-thumb' . $ext;
+		}
+	elseif ( is_file($pathtocheck . '_thumb' . $ext) ) {
+		$thumbs = '_thumb' . $ext;
+		}
+	else {
+		$thumbinsubdir = false;
+	}
+
+	return array ( $thumbinsubdir, $thumbs);
 }

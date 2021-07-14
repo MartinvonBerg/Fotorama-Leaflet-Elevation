@@ -27,7 +27,7 @@ const VP8X_XMP = 4;
 const VP8X_ANIM = 2;
 const EXIF_OFFSET = 8;
 
-function getMetadata( $filename ) {
+function getWebpMetadata( $filename ) {
 	$parsedWebPData = extractMetadata( $filename );
 	if ( ! $parsedWebPData ) {
 		return BROKEN_FILE;
@@ -99,6 +99,7 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 				$lens = $vals[2]["attributes"]["AUX:LENS"];
 				$meta[ 'camera' ] = $meta[ 'camera' ] . ' + ' . $lens;
 
+				$tags = array();
 				$tagstart = $index["RDF:BAG"][0] +1;
 				$tagend   = $index["RDF:BAG"][1] -1;
 				while ( $tagstart <= $tagend ) {
@@ -278,7 +279,7 @@ function get_exif_meta( $buffer ) {
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
 		),
 		'0x8825' => array(
-			'text' => 'GPSInfo',
+			'text' => 'GPS',
 			'type' => 4, // unsigned short
 			'Byte' => 2, // Bytes per component
 			'comps'=> 160, // Number of components per data-field 
