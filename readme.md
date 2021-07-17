@@ -181,6 +181,16 @@ Process and save the file with the Button at the bottom.
 
     Although the quality is set to 50 percent I can't see any significant difference.
 
+    **Note:** Currently (as of 2021-07-17) WP does NOT extract metadata from WEBP-images. So, currently the most effective way to handle WEBP-images is to upload them as JPEGs and let WP convert all subsizes to *.webp. That could be done with the following code in your `functions.php`:
+
+    ```php
+    add_filter( 'image_editor_output_format', function( $formats ) {
+	    $formats[ 'image/jpeg' ] = 'image/webp';
+	    return $formats;
+	    } 
+    );
+    ``` 
+
 3. Upload images with ftp (FileZilla) or even Lightroom!
     - Upload the images from Step 1 to your Wordpress site e.g. with Filezilla. Upload to the Sub-Folder `imgpath` (see table above) to 
 ./wp-content/uploads/. `imgpath` could be any allowed folder name. Do not use the WP-standard folders, like ./wp-content/uploads/2020/12 or so.
