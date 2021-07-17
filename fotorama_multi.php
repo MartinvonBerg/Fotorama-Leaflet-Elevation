@@ -242,11 +242,12 @@ function showmulti($attr, $content = null)
 				$data2[ $imageNumber ]['wpid'] = $wpid;
 				$data2[ $imageNumber ]['thumbavail'] = $thumbavail; 
 				$data2[ $imageNumber ]['thumbinsubdir'] = $thumbinsubdir;
+				$data2[ $imageNumber ]['extension'] = $ext;
 			
 				// create array to add the image-urls to Yoast-seo xml-sitemap
 				if ($doYoastXmlSitemap) {
 					$img2add = $up_url . '/' . $imgpath . '/' . $jpgfile . $ext;
-					$postimages[] = array('src' => $img2add , 'alt' => $title, 'title' => $title,);
+					$postimages[] = array('src' => $img2add , 'alt' => $data2[ $imageNumber ]['title'], 'title' => $data2[ $imageNumber ]['title'],);
 				}
 			
 				// increment imagenumber
@@ -427,7 +428,7 @@ function showmulti($attr, $content = null)
 					$tmp[1] = \str_replace('w', '', $tmp[1]);
 					$finalArray[ $tmp[1] ] = $tmp[0];
 				}
-				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . $ext;
+				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . $data['extension'];
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
 			}
 
@@ -445,7 +446,7 @@ function showmulti($attr, $content = null)
 				
 				list($thumbwidth, $height, $type, $attr) = getimagesize( $thumbfile );
 				$finalArray[ strval( $thumbwidth ) ] = $thumburl;
-				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . $ext;
+				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . $data['extension'];
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
 			}
 
@@ -455,7 +456,7 @@ function showmulti($attr, $content = null)
 			$phpimgdata[$imgnr-1]['coord'][1] = round( $data['lon'], 6 );
 
 			if ($data['thumbinsubdir']) {
-				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $ext . '" data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . 
+				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $data['extension'] . '" data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . 
 				'<br> ' . $data['camera'] . ' <br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '">\r\n';
 				// code for the thumbnails
 				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
@@ -468,7 +469,7 @@ function showmulti($attr, $content = null)
 				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>'; 
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
-				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $ext . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '">';
+				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $data['extension'] . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '">';
 			}
 
 			$imgnr++;

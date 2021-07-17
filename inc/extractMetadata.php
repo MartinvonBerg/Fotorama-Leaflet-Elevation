@@ -179,17 +179,27 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 				xml_parser_set_option($p,XML_OPTION_SKIP_WHITE,1);
 				xml_parse_into_struct($p, $xmp2, $vals, $index);
 				xml_parser_free($p);
-			
-				$nr = (int) ($index["DC:TITLE"][1] + $index["DC:TITLE"][0]) / 2;
-				$title = $vals[ $nr ]["value"];
+				
+				if ( isset( $index["DC:TITLE"] ) ) {
+					$nr = (int) ($index["DC:TITLE"][1] + $index["DC:TITLE"][0]) / 2;
+					$title = $vals[ $nr ]["value"];
+				}
 				$title != '' ? $meta[ 'title' ] = $title : $meta[ 'title' ] = 'notitle';
 
-				$nr = (int) ($index["DC:DESCRIPTION"][1] + $index["DC:DESCRIPTION"][0]) / 2;
-				$caption = $vals[ $nr ]["value"];
-				$meta[ 'caption' ] = $caption;
-
-				$lens = $vals[2]["attributes"]["AUX:LENS"];
-				$meta[ 'camera' ] = $meta[ 'camera' ] . ' + ' . $lens;
+				if ( isset( $index["DC:DESCRIPTION"] ) ) {
+					$nr = (int) ($index["DC:DESCRIPTION"][1] + $index["DC:DESCRIPTION"][0]) / 2;
+					$caption = $vals[ $nr ]["value"];
+					$meta[ 'caption' ] = $caption;
+				}
+				//$caption != '' ? $meta[ 'caption' ] = $caption : $meta[ 'caption' ] = '';
+				
+				if ( isset( $vals[2]["attributes"]["AUX:LENS"] ) ) {
+					$lens = $vals[2]["attributes"]["AUX:LENS"];
+					$meta[ 'camera' ] = $meta[ 'camera' ] . ' + ' . $lens;
+				} else {
+					$meta[ 'camera' ] = '---';
+				}
+				
 
 				$tags = array();
 				$tagstart = $index["RDF:BAG"][0] +1;
@@ -340,6 +350,8 @@ function extractUInt32( $string ) {
 }
 
 function get_exif_meta( $buffer ) {
+
+	$meta = array();
 
 	$tags = array( 
 		'0x010F' => array(
@@ -693,6 +705,8 @@ function getrationale (string $buffer, string $pointer, int $count, bool $isInte
  * @return string the inverted binary data as hex-string
  */
 function binrevert ( string $binary ) {
+	$bin = '0x00';
+
 	if (\strlen( $binary) == 1) {
 		$val = dechex( $binary );
 		$bin = '0x' . \strtoupper( sprintf('%02s', $val ) );
@@ -702,7 +716,7 @@ function binrevert ( string $binary ) {
 	} elseif (\strlen( $binary) == 4) {
 		$val = dechex( unpack( 'V', $binary )[1]);
 		$bin = '0x' . \strtoupper( sprintf('%08s', $val ) );
-	}
+	} 
 
 	return $bin; // string
 }

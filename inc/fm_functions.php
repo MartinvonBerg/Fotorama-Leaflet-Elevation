@@ -278,21 +278,31 @@ function getEXIFData( $file, $ext, $wpid)
 	// preset the title 
 	$title = 'notitle';
 	$ext = \strtolower( $ext );
-
+	
 	// read exif from file independent if image is in WP database TODO: move the jpeg part to a seperate function
 	if ( '.jpg' == $ext ) {
 		$data = getJpgMetadata( $file );
 
 	} elseif ( '.webp' == $ext) {
 		$data = getWebpMetadata( $file );
-		$data['exposure_time'] = '1/' . strval( 1 / $data['exposure_time'] );
+		if ($data['exposure_time'] > 0) {
+			$data['exposure_time'] = '1/' . strval( 1 / $data['exposure_time'] );
+		} else {
+			$data['exposure_time'] = '--';
+		}
 		$data['datesort'] = '';
+		$data['focal_length_in_35mm'] = '--';
+		$data['iso'] = '--';
+		$data['aperture'] = '--';
+		$data['DateTimeOriginal'] = '';
 	}
 
 	// Post-Processing of $data for DateTimeOriginal
-	if ( isset( $data["DateTimeOriginal"] ) ) $data['datesort'] = $data["DateTimeOriginal"];
-	$date = wp_date( get_option( 'date_format' ), strtotime( $data['DateTimeOriginal'] ) );
-	$data['DateTimeOriginal'] = $date;
+	if ( isset( $data["DateTimeOriginal"] ) ) { 
+		$data['datesort'] = $data["DateTimeOriginal"];
+		$date = wp_date( get_option( 'date_format' ), strtotime( $data['DateTimeOriginal'] ) );
+		$data['DateTimeOriginal'] = $date;
+	}
 
 	// get additional data from the wp database, if it is there
 	if ($wpid > 0) {
