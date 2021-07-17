@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.2.1
+ * Version:           0.3.0
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -170,16 +170,14 @@ function showmulti($attr, $content = null)
 	$thumbwidth = (string) get_option('thumbnail_size_w');
 	
 	
-	// Loop through all jpg-files in the given folder, and get the required data
+	// Loop through all webp- and jpg-files in the given folder, and get the required data
 	$imageNumber = 0;
 	
-	foreach ( glob ( $imagepath . '/*.[jJwW][pPeE][gGbB]*' ) as $file ) { // jpg here
-	//foreach ( glob ( $imagepath . '/*.[jJ][pP][gG]' ) as $file ) { // jpg here
+	foreach ( glob ( $imagepath . '/*.[jJwW][pPeE][gGbB]*' ) as $file ) { 
 		// check wether current $file of the $path (=folder) is a unscaled jpg-file and not a thumbnail or a rescaled file
-		// This means: The filename must not contain 'thumb' or '[0-9]x[0-9]'. All other additions to the filename will be treated as 
-		// full scaled image-file that will be shown in the image-slider
+		// This means: The filename must not contain 'thumb' or '[0-9]x[0-9]' or 'scaled'. 
+		// All other additions to the filename will be treated as full scaled image-file that will be shown in the image-slider
 		$ext = '.' . pathinfo($file)['extension'];
-		//$ext = '.' . $extension;
 		$jpgfile = basename($file, $ext); 
 		$isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled'); 
 		$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . $ext;
@@ -227,7 +225,7 @@ function showmulti($attr, $content = null)
 			// Get the WPid if the image is in the WP-Media-Library
 			$wpimgurl = $imageurl . '/' . $jpgfile . $ext;
 			$wpid = attachment_url_to_postid($wpimgurl);
-			$data2[ $imageNumber ] = getEXIFData( $imagepath . "/" . basename($file), $ext, $imageNumber, $wpid);
+			$data2[ $imageNumber ] = getEXIFData( $imagepath . "/" . basename($file), $ext, $wpid);
 
 			// convert the GPS-data to decimal values, if available
 			list( $lon, $lat ) = gpxview_getLonLat( $data2 [ $imageNumber ] ) ;
@@ -236,8 +234,7 @@ function showmulti($attr, $content = null)
 			if ( ( (is_null($lon) ) || (is_null($lat)) ) && ('true' == $requiregps) ) {	
 			} 
 			else {
-				// get Exif-Data-Values from $Exif and $iptc and store it to array data2
-				//list($exptime, $apperture, $iso, $focal, $camera, $datetaken, $datesort, $tags, $description, $title, $alt, $caption, $sort) = getEXIFData($Exif, $imagepath . "/" . basename($file), $imageNumber, $wpid);
+				// expand array data2 with information that was collected during the image loop
 				$data2[ $imageNumber ]['id'] = $imageNumber; 
 				$data2[ $imageNumber ]['lat'] = $lat; 
 				$data2[ $imageNumber ]['lon'] = $lon; 
@@ -258,9 +255,8 @@ function showmulti($attr, $content = null)
 			}
 		}
 	}
-	// check if customsort is possible, if yes sort ascending
+	// check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
 	$rowsum = $imageNumber * ($imageNumber + 1) / 2;
-
 	if ($imageNumber > 0) {
 		$csort = array_column($data2, 'sort'); // $customsort
 		$arraysum = array_sum($csort);
@@ -310,7 +306,7 @@ function showmulti($attr, $content = null)
 	}
 	
 			
-	// parse GPX-Track-Files, check if it is a file, and if so append to the string to pass to javascript
+	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	$files = explode(",", $gpxfile);
 	$i = 0; // i : gpxfilenumber
 	$gpxfile = ''; // string to pass to javascript
@@ -378,14 +374,11 @@ function showmulti($attr, $content = null)
 		}
 	}
 
-	// Generate the inline style for the CSS-Grid. Identical for all shortcodes!
-	// --> moved to header in file fm_functions.php
-	
 	// Generate the html-code start with the surrounding Div
 	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' class="mfoto_grid" style="max-width:'. $maxwidth .'px;">';
 	$imgnr = 1;
 
-	// Generate Fotorama images for fotorama-javascript-rendering
+	// Generate html for Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		$htmlstring  .= '<div class="fotorama_multi_images" style="display : none"><figure><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
 		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" 
@@ -557,14 +550,15 @@ function showmulti($attr, $content = null)
     $htmlstring  .= '</div>'; // end <div class="fm-dload"> is empty w/o dload or startadress 
 	// ----------------------------------------------------
 	
+	// end for boxmap. div ends here to have fm-dload underneath the map
 	if ($showmap  == 'true') {
-        $htmlstring  .= '</div>'; // end for boxmap. div ends here to have fm-dload underneath the map
+        $htmlstring  .= '</div>'; 
 	}
 
 	// close all html-divs
 	$htmlstring  .= '</div><!--div id=multifotobox'.$shortcodecounter.'-->';
 	
-	// pass php variabls to javascript-file for fotorama
+	// pass php variables to javascript-file for fotorama
 	wp_localize_script('fotorama_multi_js', 'wpfm_phpvars' . $shortcodecounter, array(
 		'ngpxfiles'  => $i,
 		'imagepath' => $wp_fotomulti_path,

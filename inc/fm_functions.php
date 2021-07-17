@@ -264,111 +264,27 @@ function gpxview_getLonLat($Exif)
 }
 
 /**
- * read-out single values from the Exif-Data, IPTC-Data and the WP-Media-Catalog-Database
- * If found in the Catalog this information will be preferred.
+ * Read-out single values from the Exif-Data, IPTC-Data in the file and -additionally- the WP-Media-Catalog-Database.
+ * If found in the Catalog this information will be preferred. If title is not set or equal to the filename
+ * it will be preset with 'notitle'.
  *
- * @param array $Exif the Exif-data read out from the image
  * @param string $file the directory-path to the image file 
- * @param int $imageNumber the local loop-counter for the image 
+ * @param string $ext the file extension
  * @param int $wpid the wordpress-id of the image 
- * @return array array with dedicated information for the image
+ * @return array array with collected information for the image
  */
-function getEXIFData( $file, $ext, $imageNumber, $wpid)
+function getEXIFData( $file, $ext, $wpid)
 {
 	// preset the title 
 	$title = 'notitle';
 	$ext = \strtolower( $ext );
 
-	// read exif from file independent if image is in WP database
+	// read exif from file independent if image is in WP database TODO: move the jpeg part to a seperate function
 	if ( '.jpg' == $ext ) {
-		getimagesize($file, $info);
-		$Exif = exif_read_data($file, 'ANY_TAG', true);
-		
-		// get the title
-		if (isset($info['APP13'])) {
-			$iptc = iptcparse($info['APP13']);
-			if (isset($iptc["2#005"][0])) {
-				$title =  htmlspecialchars($iptc["2#005"][0]);
-			} 
-		} 
-		
-		// get image capture data
-		$exptime = $Exif["EXIF"]["ExposureTime"] ?? '--';
-
-		if ( isset($Exif["EXIF"]["FNumber"] ) ) {
-			$aperture = explode("/", $Exif["EXIF"]["FNumber"]);
-			if ( sizeof( $aperture ) == 2) {
-				$aperture = $aperture[0] / $aperture[1];
-			} else { 
-				$aperture = $Exif["EXIF"]["FNumber"];
-			}
-		}
-
-		$iso = $Exif["EXIF"]["ISOSpeedRatings"] ?? '--';
-		
-		if (isset($Exif["EXIF"]["FocalLengthIn35mmFilm"])) {
-		//if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
-			$focal = $Exif["EXIF"]["FocalLengthIn35mmFilm"];
-		} else {
-			$focal = '--';
-		}
-
-		// Check setting of exif-field make (the lens information, written by my Ligtroom-Plugin)
-		// alternatively I wrote lens information to the make.
-		if (isset($Exif["IFD0"]["Make"])) {
-		//if (array_key_exists('Make', $Exif['IFD0'])) {
-			$make = $Exif["IFD0"]["Make"] ?? '';
-			$make = preg_replace('/\s+/', ' ', $make);
-		} else {
-			$make = '';
-		}
-
-		// get lens data. $make is obsolete now!
-		$lens = isset($Exif["EXIF"]["UndefinedTag:0xA434"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
-		//$lens = array_key_exists("UndefinedTag:0xA434", $Exif["EXIF"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
-		
-		// get the camera model
-		if (isset($Exif["IFD0"]["Model"])) {
-		//if (array_key_exists('Model', $Exif['IFD0'])) {
-			$model = $Exif["IFD0"]["Model"];
-		} else {
-			$model = '';
-		}
-		// combine camera model and lens data
-		if (!ctype_alpha($lens) && strlen($lens)>0) {
-			$camera = $model . ' + '. $lens;
-		} else {
-			$camera = $model;
-		}
-
-		// get date-taken information
-		if (isset($Exif["EXIF"]["DateTimeOriginal"])) {
-			$datetaken = $Exif["EXIF"]["DateTimeOriginal"];
-		} else {
-			$datetaken = '';
-		}
-
-		// get tags and $description
-		$tags = isset($iptc["2#025"]) ? $iptc["2#025"] : ''; 
-		$description = isset($Exif["IFD0"]["ImageDescription"]) ? $Exif["IFD0"]["ImageDescription"] : '';
-		
-		$data['GPS'] = $Exif['GPS'];
-		$data['title'] = $title; 
-		$data['exposure_time'] = $exptime;
-		$data['aperture'] = $aperture; 
-		$data['iso'] = $iso; 
-		$data['focal_length_in_35mm'] = $focal; 
-		$data['camera'] = $camera; 
-		$data['DateTimeOriginal'] = $datetaken; 
-		$data['keywords'] = $tags; 
-		$data['datesort'] = ''; 
-		$data['descr'] = $description; 
-		$data['alt'] = ''; 
-		$data['caption'] = ''; 
-		$data['sort'] = 0;
+		$data = getJpgMetadata( $file );
 
 	} elseif ( '.webp' == $ext) {
-		$data = getWebpMetadata( $file);
+		$data = getWebpMetadata( $file );
 		$data['exposure_time'] = '1/' . strval( 1 / $data['exposure_time'] );
 		$data['datesort'] = '';
 	}
@@ -393,8 +309,12 @@ function getEXIFData( $file, $ext, $imageNumber, $wpid)
 		$description = $wpmediadata["post_content"] ?? ''; // 'Beschreibung' in the Media-Catalog, means $description
 		
 		$title = $meta["image_meta"]["title"];
-		$wptitle = $wpmediadata['post_title']; 
-		$title = $wptitle != '' ? $wptitle : $title;
+		$wptitle = $wpmediadata['post_title'];
+		if ( $wptitle != basename($file, $ext) ) {
+			$title = $wptitle;
+		}
+		$oldditle = $data['title'];
+		strlen($title) > 2 ? $data['title'] = $title : $data['title'] = $oldditle;
 
 		//$description = $wpdescription != '' ? $wpdescription : $description;
 		$caption = $meta["image_meta"]["caption"] ?? '';
@@ -408,7 +328,7 @@ function getEXIFData( $file, $ext, $imageNumber, $wpid)
 		
 		$tags != '' ? $data['keywords'] = $tags : '';
 		$description != '' ? $data['descr'] = $description : '';
-		$title != '' ? $data['title'] = $title : ''; 
+		 
 		
 	}
 	

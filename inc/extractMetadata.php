@@ -1,17 +1,5 @@
 <?php
-/** Extract Metadata from a Webp file. Only the data that is stored in the WP Media lib  * is extracted. 
- * The remainder is not needed. Only tested for Nikon D7500 images after  * handling with Lightroom 6.14 
- * and converson with imagemagick. Not done for all camers that are around.
- * State: 11.07.2021 Extracton for ratinales (type 5, 10) is not correct. Mainly because the offset in data-field is not correctly extracted.
- * As well as title, caption and keywords are not found in EXIF-data. 
- * title is taken from XMP field. Keywords are in XMP but not correctly taken.
- * Alternatives: 
- *    - Upload the image with LR 6.14 after webp format is supported and write meta-data. Needs change of LR plugin.  
- *    - Wait for WP team to react. This should be fixed soon.
- *    - Do not use webp. The effect is only some percents.
- *    - Write the values manually with REST-api-plugin
- *    - Do nothing and do NOT use the caption with webp.
- * 
+/** Extract Metadata from a Webp and JPG-file. 
  */
 
 namespace mvbplugins\fotoramamulti;
@@ -19,7 +7,6 @@ namespace mvbplugins\fotoramamulti;
 const BROKEN_FILE = false; // value to store in img_metadata if error extracting metadata.
 const MINIMUM_CHUNK_HEADER_LENGTH = 18;
 const WEBP_VERSION = '0.0.1';
-
 const VP8X_ICC = 32;
 const VP8X_ALPHA = 16;
 const VP8X_EXIF = 8;
@@ -27,7 +14,112 @@ const VP8X_XMP = 4;
 const VP8X_ANIM = 2;
 const EXIF_OFFSET = 8;
 
-function getWebpMetadata( $filename ) {
+/**
+ * read out the required metadata from a jpg-file on the server. The result provides some more data than required.
+ *
+ * @param string $filename The complete path to the file in the directory.
+ * @return array The exif data a array similar to the JSON that is provided via the REST-API.
+ */
+function getJpgMetadata( string $filename ) {
+	
+	getimagesize( $filename, $info );
+	$Exif = exif_read_data( $filename, 'ANY_TAG', true );
+	
+	// get the title
+	if (isset($info['APP13'])) {
+		$iptc = iptcparse($info['APP13']);
+		if (isset($iptc["2#005"][0])) {
+			$title =  htmlspecialchars($iptc["2#005"][0]);
+		} 
+	} 
+	
+	// get image capture data
+	$exptime = $Exif["EXIF"]["ExposureTime"] ?? '--';
+
+	if ( isset($Exif["EXIF"]["FNumber"] ) ) {
+		$aperture = explode("/", $Exif["EXIF"]["FNumber"]);
+		if ( sizeof( $aperture ) == 2) {
+			$aperture = $aperture[0] / $aperture[1];
+		} else { 
+			$aperture = $Exif["EXIF"]["FNumber"];
+		}
+	}
+
+	$iso = $Exif["EXIF"]["ISOSpeedRatings"] ?? '--';
+	
+	if (isset($Exif["EXIF"]["FocalLengthIn35mmFilm"])) {
+	//if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
+		$focal = $Exif["EXIF"]["FocalLengthIn35mmFilm"];
+	} else {
+		$focal = '--';
+	}
+
+	// Check setting of exif-field make (the lens information, written by my Ligtroom-Plugin)
+	// alternatively I wrote lens information to the make.
+	if (isset($Exif["IFD0"]["Make"])) {
+	//if (array_key_exists('Make', $Exif['IFD0'])) {
+		$make = $Exif["IFD0"]["Make"] ?? '';
+		$make = preg_replace('/\s+/', ' ', $make);
+	} else {
+		$make = '';
+	}
+
+	// get lens data. $make is obsolete now!
+	$lens = isset($Exif["EXIF"]["UndefinedTag:0xA434"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
+	//$lens = array_key_exists("UndefinedTag:0xA434", $Exif["EXIF"]) ? $Exif["EXIF"]["UndefinedTag:0xA434"] : '';
+	
+	// get the camera model
+	if (isset($Exif["IFD0"]["Model"])) {
+	//if (array_key_exists('Model', $Exif['IFD0'])) {
+		$model = $Exif["IFD0"]["Model"];
+	} else {
+		$model = '';
+	}
+	// combine camera model and lens data
+	if (!ctype_alpha($lens) && strlen($lens)>0) {
+		$camera = $model . ' + '. $lens;
+	} else {
+		$camera = $model;
+	}
+
+	// get date-taken information
+	if (isset($Exif["EXIF"]["DateTimeOriginal"])) {
+		$datetaken = $Exif["EXIF"]["DateTimeOriginal"];
+	} else {
+		$datetaken = '';
+	}
+
+	// get tags and $description
+	$tags = isset($iptc["2#025"]) ? $iptc["2#025"] : ''; 
+	$description = isset($Exif["IFD0"]["ImageDescription"]) ? $Exif["IFD0"]["ImageDescription"] : '';
+	
+	$data['GPS'] = $Exif['GPS'];
+	$data['title'] = $title; 
+	$data['exposure_time'] = $exptime;
+	$data['aperture'] = $aperture; 
+	$data['iso'] = $iso; 
+	$data['focal_length_in_35mm'] = $focal; 
+	$data['camera'] = $camera; 
+	$data['DateTimeOriginal'] = $datetaken; 
+	$data['keywords'] = $tags; 
+	$data['datesort'] = ''; 
+	$data['descr'] = $description; 
+	$data['alt'] = ''; 
+	$data['caption'] = ''; 
+	$data['sort'] = 0;
+
+	return $data;
+}
+
+/**
+ * read out the required metadata from a Webp-file on the server. The result provides some more data than required.
+ * Only tested for Nikon D7500 images after handling with Lightroom 6.14 and converson with imagemagick. Not done for all cameras that are around.
+ * Title, caption and keywords are not found in EXIF-data. These are taken from XMP-data. 
+ *
+ * @param string $filename The complete path to the file in the directory.
+ * @return array The exif data a array similar to the JSON that is provided via the REST-API.
+ */
+function getWebpMetadata( string $filename ) {
 	$parsedWebPData = extractMetadata( $filename );
 	if ( ! $parsedWebPData ) {
 		return BROKEN_FILE;
@@ -90,7 +182,7 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 			
 				$nr = (int) ($index["DC:TITLE"][1] + $index["DC:TITLE"][0]) / 2;
 				$title = $vals[ $nr ]["value"];
-				$meta[ 'title' ] = $title;
+				$title != '' ? $meta[ 'title' ] = $title : $meta[ 'title' ] = 'notitle';
 
 				$nr = (int) ($index["DC:DESCRIPTION"][1] + $index["DC:DESCRIPTION"][0]) / 2;
 				$caption = $vals[ $nr ]["value"];
