@@ -20,17 +20,18 @@
 
 # Description 
 
-This is a Wordpress-Plugin for a responsive image-slider with thumbnails (based on fotorama). The images are taken from a folder in the Wordpress upload-directory. Optionally a Leaflet map is shown. This map shows the GPX-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation is used for that). The map moves synchronously with the slider, e.g. it is centered to the GPS-Position of the current image. Under the map a height-chart of the GPX-track with its statistics is shown (leaflet elevation is used for that).
-The shortcode may be used more than once per page. 
+Wordpress-Plugin to show a responsive image-slider with JPG- or WEBP-images located in a seperate FOLDER on your server. A thumbnail bar could be shown under the image slider. The images are taken from a folder in the Wordpress upload-directory. Fotorama is used for the slider and the useful settings are available. The slider works only with JPG- or WEBP-Files an not with videos.
 
-The Plugin is fully responsive and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode and on desktops only. It is deactivated for mobile devices as the usability is poor.
+Optionally a Leaflet map is shown. This map shows the GPS-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation is used for that). The map moves synchronously to the slider, e.g. it is centered to the GPS-Position of the currently shown image. Under the map a height-chart of the GPX-track with its statistics is shown. The image slider may be used more than once per page. 
 
-Although the images are expected in a folder of the Wordpress upload-directory they could have been added to the Wordpress-Media-Catalog, too. If this is the case the responsive image srcset is used and the Wordpress-information of the Media-Catalog is used for the title and the alt-tag. The slider works only with JPG-Files an not with videos. 
+The Plugin is fully responsive (lazy loading) and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode (desktops only). It is deactivated for mobile devices.
 
-The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point.
+If resized images and thumbnails are available in the folder, the responsive image srcset is used. If the images were added to WP-Media-Library the Wordpress-information of the Media-Library is used for the title and the alt-tag.  
 
-The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings e.g. shortcodes that have to be set individually for each usage are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation.
-Up to now, there is no Gutenberg-Block provided.  **It runs with Wordpress 5.7 and PHP 8.0.**
+The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where the slider is ues. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point. Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work.
+
+The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation.
+Up to now, there is no Gutenberg-Block provided.  **It runs with Wordpress 5.8 and PHP 7.2 - 8.0.1**
 
 </br>   
 
@@ -52,7 +53,7 @@ See under https://www.mvb1.de/skitour-schneibstein/
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.6 - 5.7.1 and PHP 7.4.x and 8.x.
+- The plugin was tested with wordpress versions 5.6 - 5.8.0 and PHP 7.4.2 - 8.0.1
 - The plugin was tested with other Plugins using leaflet Map:
 - It works together with:
     - Leaflet Map (uses the same script-handle 'leaflet_js')
@@ -165,15 +166,24 @@ Process and save the file with the Button at the bottom.
 
 # Image Preparation and Usage of the Fotorama-Slider 
 1. Preparation of Images (optional)
-
     - Generate Thumbnails and rescale your Images.
     I used "ImageResizer for Windows" rescaled the former full-size images and generated thumbnails. The Thumbnails have to have '_thumb', '-thumb', '200x150' or '150x150' in their filename (e.g. image1-thumb.jpg). The minimum size should be 64 x 64px. Best is 150 x 150px.
     Optionally you can store the Thumbnails to a subfolder './thumbs' but that is not required.
-    If you do not provide thumbnails the full-scaled images will be used. This will increase load time.
-    
-2. Upload images with ftp (FileZilla) or even Lightroom!
-    - Upload the images from Step 1 to your Wordpress site e.g. with Filezilla. Upload to the Sub-Folder `imgpath` (see table above) in 
-./wp-content/uploads/. Do not use the WP-standard folders, like ./wp-content/uploads/2020/12!
+    If you do not provide thumbnails the full-scaled images will be used. This will increase load time significantly.
+
+2. Convert JPGs to WEBPs (optional) 
+    To drastically reduce disk-space and download times you may use webp files. I do that converson locally on my computer and do NOT used WP for that. I use Imagemagick for that with the following powershell commands:
+
+    ```bat
+    $files = Get-ChildItem ./*.jpg
+    foreach ($f in $files) { magick ($f.BaseName + ".jpg") -quality 50 -define webp:auto-filter:true ($f.BaseName + ".webp") }
+    ```
+
+    Although the quality is set to 50 percent I can't see any significant difference.
+
+3. Upload images with ftp (FileZilla) or even Lightroom!
+    - Upload the images from Step 1 to your Wordpress site e.g. with Filezilla. Upload to the Sub-Folder `imgpath` (see table above) to 
+./wp-content/uploads/. `imgpath` could be any allowed folder name. Do not use the WP-standard folders, like ./wp-content/uploads/2020/12 or so.
         - Example:  ./wp-content/uploads/All_Albums/gallery1
     - Do not use 'thumb' or something like '4x5' or 200x150 or 150x150 (used regex: [0-9]x[0-9]) in the filename for the full-sized image. These files will be regarded as thumbnail and therefore ignored for the slider.
     
@@ -181,24 +191,19 @@ Process and save the file with the Button at the bottom.
     - Add the images to the WordPress Media Library with my other plugin: https://wordpress.org/plugins/wp-wpcat-json-rest/ See there for the manual how to do that.
 
     - If the images were 
-        - added to the Media-Catalog of WordPress or
-        - added together with thumbnails (see above) 'srcset' is used for thumbnails.
+        - added to the Media-Catalog of WordPress or added together with thumbnails (see above) the 'srcset' is used for thumbnails.
         - Note: Only with 'srcset' the small icon on the leaflet map shows the thumb for the image on hover.
         - Note for Lightroom-Users: I also wrote a Lightroom-Plugin to upload the images directly to the Wordpress-Catalog and do the whole process in one Click! All image-work, updates, change of title, development can be done in Lightroom and the same image with unchanged Wordpress-ID is updated. The images in the fotorama-slider are updated automatically. Mind that ALL caches on the line from the server to your browser have to emptied for that. If you use a Plugin to convert jpg to webp the cache of this plugins must be emptied to show changed images in the slider. 
     - Example-Folder
 
         ![folder_overview](./screen_folder1.png)
 
-3. Add the shortcode to your page or post (see above for the shortcode)
+4. Add the shortcode to your page or post (see above for the shortcode)
 
     If EXIF-Data for the caption is not provided it will be replaced by "--"   
 
-4. Further Fotorama Options
+5. Further Fotorama Options
 
-    The Fotorama-Slider options are set by the lines of code in the source-code of 'fotorama_multi.php' starting with the following line:
-    ```php
-    $string  .= '<div id="fotorama" class="fotorama" data-auto="false" data-width="100%" data-fit="contain" data-ratio="1.5" data-nav="thumbs" data-allowfullscreen="native" data-keyboard="true" data-hash="true">';
-    ```
     The CSS is set in 'fotorama_multi.css' and 'fotorama3.css'. Further Fotorama-options are to find under : https://fotorama.io/docs/4/options/ or in fotorama.dev.js starting at line 880 under "OPTIONS = {..."
 
     If you know what you do you migth change the code or CSS to whatever you like. Have fun!
@@ -218,7 +223,7 @@ Process and save the file with the Button at the bottom.
 
 2. Upload GPX-Tracks
     - Upload the Tracks to the folder  ./wp-content/uploads/gpx with ftp. 
-    - Or upload with the admin panel as described above.
+    - Or upload with the admin panel of fotorama-multi as described above.
     - The Folder "gpx" can be chosen relative to "../wp-content/uploads/" with the parameter [gpxview ...gpxpath="*path-to-gpx*"]. 
          Do not use (Back)-Slashes ('/' or '\\')  at the beginning or end of *path-to-gpx*.
 
@@ -230,7 +235,7 @@ Process and save the file with the Button at the bottom.
    
 
 5. TODOs & Bugs 
-      - Update leaflet elevation to the current version with current d3.js. 
+      - Update leaflet elevation to the current version using current d3.js. 
 
 3. Combination of Image-Slider and OpenStreetMap (the intended use of the plugin):
     - Very simple: combine the above mentioned paramaters in ONE shortcode
@@ -290,6 +295,7 @@ This plugin uses the great work from:
 - https://onlinepngtools.com/ for adaptation of the PNG-icons
 - OpenStreetMaps, OpentTopoMaps  are great services.
 - Nominatim for reverse geo-coding: https://nominatim.org/release-docs/develop/api/Reverse/
+- MediaWiki for the PHP-Code to extract EXIF-Meta from Webp images
 
 # Note for Developers
 - unit tests
@@ -335,6 +341,10 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with V5.16.0.
 
 # Changelog
+
+= 0.3.0 =
+17.07.2021: Added webp-support in preparation of Wordpress 5.8. Therefore a Metadata Extractor for EXIF and XMP-Data for webp-images was added. The used WP 5.8 test version did not extract metadata from webp at all. 
+Minor bugfixes and changes: re-introduced not to use -scaled images. The string "Galeriebild" is now translatable. It is used if no image title is available.
 
 = 0.2.0 =
 30.05.2021: Added Fotorama settings from 11.05.21 to the Admin Panel. Prepared translation for the whole Admin Panel settings. Translation Files will be updated later, they are currently deactivated.
