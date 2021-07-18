@@ -88,7 +88,7 @@ function showmulti($attr, $content = null)
 	$tracks = [];
 	$postimages = []; // array with images for the Yoast XML Sitemap
 	$thumbsdir = 'thumbs'; // we use a fixed name for the subdir containing the thumbnails
-	static $shortcodecounter=0; // counts the number of shortcodes on ONE page!
+	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
 	
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
@@ -142,16 +142,10 @@ function showmulti($attr, $content = null)
 	}
 
 	 // add inline CSS for fotorama CSS settings
-	$custom_css1 = '               
-				.fotorama__stage {
-					background-color: ' . $background . ';
-				  }';
+	$custom_css1 = ".fotorama__stage { background-color: {$background}; }";
     wp_add_inline_style( 'fotorama_css', $custom_css1 );
 				  
-	$custom_css2 = '			  
-				.fotorama__thumb-border { 
-					border-color: '. $thumbbordercolor .';
-				}';
+	$custom_css2 = ".fotorama__thumb-border { border-color: {$thumbbordercolor}; }";
 	wp_add_inline_style( 'fotorama3_css', $custom_css2 );
 				
 	$mapcenter = explode(',',$mapcenter);
@@ -224,8 +218,8 @@ function showmulti($attr, $content = null)
 			//$Exif = exif_read_data($file, 'ANY_TAG', true); // replaceget all metadata
 			// Get the WPid if the image is in the WP-Media-Library
 			$wpimgurl = $imageurl . '/' . $jpgfile . $ext;
-			$wpid = attachment_url_to_postid($wpimgurl);
-			$data2[ $imageNumber ] = getEXIFData( $imagepath . "/" . basename($file), $ext, $wpid);
+			$wpid = attachment_url_to_postid( $wpimgurl );
+			$data2[ $imageNumber ] = getEXIFData( $imagepath . "/" . basename( $file), $ext, $wpid );
 
 			// convert the GPS-data to decimal values, if available
 			list( $lon, $lat ) = gpxview_getLonLat( $data2 [ $imageNumber ] ) ;
@@ -242,6 +236,7 @@ function showmulti($attr, $content = null)
 				$data2[ $imageNumber ]['wpid'] = $wpid;
 				$data2[ $imageNumber ]['thumbavail'] = $thumbavail; 
 				$data2[ $imageNumber ]['thumbinsubdir'] = $thumbinsubdir;
+				$data2[ $imageNumber ]['thumbs'] = $thumbs;
 				$data2[ $imageNumber ]['extension'] = $ext;
 			
 				// create array to add the image-urls to Yoast-seo xml-sitemap
@@ -252,7 +247,6 @@ function showmulti($attr, $content = null)
 			
 				// increment imagenumber
 				$imageNumber++;
-				
 			}
 		}
 	}
@@ -376,50 +370,54 @@ function showmulti($attr, $content = null)
 	}
 
 	// Generate the html-code start with the surrounding Div
-	$htmlstring .= '<div id=multifotobox'.$shortcodecounter.' class="mfoto_grid" style="max-width:'. $maxwidth .'px;">';
+	$htmlstring .= "<div id=multifotobox{$shortcodecounter} class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
 	$imgnr = 1;
 
 	// Generate html for Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
-		$htmlstring  .= '<div class="fotorama_multi_images" style="display : none"><figure><figcaption></figcaption></figure></div>'; // sieht unnötig aus, aber es geht nur so
-		$htmlstring  .= '<div id="mfotorama'. $shortcodecounter .'" class="fotorama" 
-							  data-autoplay="' . $autoplay .'" 
-							  data-stopautoplayontouch="true"
-							  data-width="100%" 
-							  data-allowfullscreen="native" 
-							  data-keyboard="false" 
-							  data-hash="false"
-							  data-captions="'. $showcaption .'"
-							  data-fit="'. $fit .'" 
-							  data-ratio="'. $ratio .'" 
-							  data-nav="thumbs" 
-							  data-navposition="'. $navposition. '"
-							  data-navwidth="'. $navwidth .'%"
-							  data-thumbwidth="' . $f_thumbwidth . '" 
-							  data-thumbheight="' . $f_thumbheight . '" 
-							  data-thumbmargin="' . $thumbmargin . '"
-							  data-thumbborderwidth="' . $thumbborderwidth . '"
-							  data-transition="' . $transition. '"
-							  data-transitionduration="' . $transitionduration . '"
-							  data-loop="' . $loop . '"
-							  data-arrows="' . $arrows . '"
-							  data-shadows="' . $shadows . '">';
-		
+		// die erste Zeile sieht unnötig aus, aber es geht nur so
+		$htmlstring .= <<<EOF
+
+<div class="fotorama_multi_images" style="display:none;"><figure><figcaption></figcaption></figure></div> 
+<div id="mfotorama{$shortcodecounter}" class="fotorama" 
+		data-autoplay="{$autoplay}" 
+		data-stopautoplayontouch="true"
+		data-width="100%" 
+		data-allowfullscreen="native" 
+		data-keyboard="false" 
+		data-hash="false"
+		data-captions="{$showcaption}"
+		data-fit="{$fit}" 
+		data-ratio="{$ratio}" 
+		data-nav="thumbs" 
+		data-navposition="{$navposition}"
+		data-navwidth="{$navwidth}%"
+		data-thumbwidth="{$f_thumbwidth}" 
+		data-thumbheight="{$f_thumbheight}" 
+		data-thumbmargin="{$thumbmargin}"
+		data-thumbborderwidth="{$thumbborderwidth}"
+		data-transition="{$transition}"
+		data-transitionduration="{$transitionduration}"
+		data-loop="{$loop}"
+		data-arrows="{$arrows}"
+		data-shadows="{$shadows}">
+
+EOF;
+
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
-			// set the alt-tag for SEO
-			if ( 'notitle' == $data['title']) {
+			// set the alt-tag and the title for SEO
+			if ( 'notitle' == $data['title'] ) {
 				$data['title'] = __('Galeriebild') . ' '. \strval( $imgnr );
 			}
-			$alttext = $data["alt"] != '' ? $data["alt"] : $data["title"];
+			$alttext = $data['alt'] != '' ? $data['alt'] : $data['title'];
 
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not.
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
-			// <a href="img/large.jpg" srcset="img/large.jpg 1920w, img/medium.jpg 960w, img/little.jpg 480w"> <img src="img/thumb.jpg">
 			$srcset2 = '';
 			if ( $data['wpid'] > 0) {
 				$srcset2 = wp_get_attachment_image_srcset( $data['wpid'] );
-				$srcarr = explode(',', $srcset2);
+				$srcarr = explode( ',', $srcset2 );
 				$finalArray = [];
 
 				foreach( $srcarr as $val){
@@ -428,7 +426,7 @@ function showmulti($attr, $content = null)
 					$tmp[1] = \str_replace('w', '', $tmp[1]);
 					$finalArray[ $tmp[1] ] = $tmp[0];
 				}
-				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . $data['extension'];
+				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
 			}
 
@@ -436,45 +434,60 @@ function showmulti($attr, $content = null)
 				$finalArray = [];
 				
 				if ( $data['thumbinsubdir'] ) {
-					$thumbfile = $up_dir . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs;
-					$thumburl  = $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs;
+					$thumbfile = $up_dir . '/' . $imgpath . '/' . $thumbsdir . '/' . $data['file'] . $thumbs;
+					$thumburl  = $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data['file'] . $thumbs;
 				} else {
 					// thumbavail
-					$thumbfile = $up_dir . '/' . $imgpath . '/' . $data["file"] . $thumbs;
-					$thumburl  = $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs; 
+					$thumbfile = $up_dir . '/' . $imgpath . '/' . $data['file'] . $thumbs;
+					$thumburl  = $up_url . '/' . $imgpath . '/' . $data['file'] . $thumbs; 
 				}
 				
 				list($thumbwidth, $height, $type, $attr) = getimagesize( $thumbfile );
 				$finalArray[ strval( $thumbwidth ) ] = $thumburl;
-				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data["file"] . $data['extension'];
+				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
 			}
 
 			$phpimgdata[$imgnr-1]['id'] = $imgnr;
-			$phpimgdata[$imgnr-1]['title'] = $alttext; //$data['title'];
+			$phpimgdata[$imgnr-1]['title'] = $alttext; 
 			$phpimgdata[$imgnr-1]['coord'][0] = round( $data['lat'], 6 );
 			$phpimgdata[$imgnr-1]['coord'][1] = round( $data['lon'], 6 );
 
-			if ($data['thumbinsubdir']) {
-				$htmlstring .= '<a href="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $data['extension'] . '" data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . 
-				'<br> ' . $data['camera'] . ' <br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '">\r\n';
-				// code for the thumbnails
-				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data["file"] . $thumbs . '"></a>\r\n'; 
+			if ( $data['thumbinsubdir'] ) {
+
+				$htmlstring .= <<<EOF
+		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}" 
+		data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
+		{$data['camera']}<br> 
+		{$data['focal_length_in_35mm']}mm / f/{$data['aperture']} / {$data['exposure_time']}s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
+		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$thumbsdir}/{$data['file']}{$thumbs}"></a>
+
+EOF;
 			
-			} elseif ($data['thumbavail']) {
-				$imgurl = $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs;
-				$htmlstring .= '<a href="' . $imgurl . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . 
-				' <br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '">';
-				// this is for the thumbnails
-				$htmlstring .= '<img alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $thumbs . '"></a>'; 
+			} elseif ( $data['thumbavail'] ) {
+							
+				$htmlstring .= <<<EOF
+		<a href="{$up_url}/{$imgpath}/{$data['file']}{$thumbs}" 
+		data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
+		{$data['camera']}<br> 
+		{$data['focal_length_in_35mm']}mm / f/{$data['aperture']} / {$data['exposure_time']}s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
+		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$thumbs}"></a>
+
+EOF;
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
-				$htmlstring .= '<img loading="lazy" alt="' . $alttext .'" src="' . $up_url . '/' . $imgpath . '/' . $data["file"] . $data['extension'] . '" data-caption="'.$imgnr.' / '.$imageNumber .': ' . $data["title"] . '<br> ' . $data['camera'] . ' <br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '">';
+				$htmlstring .= <<<EOF
+		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}" 
+		data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
+		{$data['camera']}<br>
+		{$data['focal_length_in_35mm']}mm / f/{$data['aperture']} / {$data['exposure_time']}s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
+
+EOF;
 			}
 
 			$imgnr++;
 		}
-		$htmlstring  .= '</div>';
+		$htmlstring  .= "</div>";
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
