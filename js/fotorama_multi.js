@@ -451,7 +451,7 @@
                             loadTrace(m, track, i++)
                         } 
                     }
-                } else {
+                } else if ( ! hasFotorama ) {
                     // No gpx-track to show: Create simple marker
                     L.marker(opts.map.center, { title: phptracks.markertext, icon: myIcon2 } ).addTo(maps[m]);
                 }

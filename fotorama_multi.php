@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.3.0
+ * Version:           0.3.1
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -133,6 +133,7 @@ function showmulti($attr, $content = null)
 		'arrows' 			=> $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
 		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true' , // true or false
 	), $attr));
+	$mapcenter = explode(',',$mapcenter);
 
 	// Detect Language of the client request
 	if ( array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER) ) {
@@ -148,8 +149,7 @@ function showmulti($attr, $content = null)
 	$custom_css2 = ".fotorama__thumb-border { border-color: {$thumbbordercolor}; }";
 	wp_add_inline_style( 'fotorama3_css', $custom_css2 );
 				
-	$mapcenter = explode(',',$mapcenter);
-
+	
 	// Define path and url variables
 	$up_url = gpxview_get_upload_dir('baseurl');  // upload_url
 	$up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
@@ -166,8 +166,9 @@ function showmulti($attr, $content = null)
 	
 	// Loop through all webp- and jpg-files in the given folder, and get the required data
 	$imageNumber = 0;
-	
-	foreach ( glob ( $imagepath . '/*.[jJwW][pPeE][gGbB]*' ) as $file ) { 
+	$allImageFiles = preg_grep('/\.(jpe?g|webp)$/i', glob( $imagepath .'/*.*'));
+		
+	foreach ( $allImageFiles as $file ) {
 		// check wether current $file of the $path (=folder) is a unscaled jpg-file and not a thumbnail or a rescaled file
 		// This means: The filename must not contain 'thumb' or '[0-9]x[0-9]' or 'scaled'. 
 		// All other additions to the filename will be treated as full scaled image-file that will be shown in the image-slider
@@ -176,43 +177,25 @@ function showmulti($attr, $content = null)
 		$isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled'); 
 		$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . $ext;
 		
-		if ( ! $isthumb) {
+		if ( ! $isthumb ) {
 
 			// check whether thumbnails are available in the image-folder and if yes, how they are named
-			$thumbavail = true;
+			$thumbs = '';
 			$pathtocheck = $imagepath . '/' . $jpgfile;
-			
-			if     ( is_file($pathtocheck . $thumbcheck) ) {
-				$thumbs = $thumbcheck;
-				}
-			elseif ( is_file($pathtocheck . '-thumb.jpg') ) {
-				$thumbs = '-thumb.jpg';
-				}
-			elseif ( is_file($pathtocheck . '_thumb.jpg') ) {
-				$thumbs = '_thumb.jpg';
-				}
-			else {
-				$thumbavail = false;
+			list( $thumbavail, $thumbs ) = checkThumbs( $thumbs, $pathtocheck, $thumbcheck, $ext);
+
+			// search for webp-thumbs if jpg-image was converted to webp
+			if ( ( ('.jpg' == $ext) || ('.jpeg' == $ext) ) && ( ! $thumbavail ) ) {
+				$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . '.webp';
+				list( $thumbavail, $thumbs ) = checkThumbs( $thumbs, $pathtocheck, $thumbcheck, '.webp');
 			}
 					
 			// check additionally whether thumbnails are available in the sub-folder ./thumbs and if, how they are named
 			// even if there were thumbnails in the image-folder the thumbnails in ../thumbs are preferably used
 			// therefore this check runs here after the above check for the image-folder
-			$thumbinsubdir = true;
 			$pathtocheck = $imagepath . '/' . $thumbsdir . '/'. $jpgfile;
-			
-			if     ( is_file($pathtocheck . $thumbcheck) ) {
-				$thumbs = $thumbcheck;
-				}
-			elseif ( is_file($pathtocheck . '-thumb.jpg') ) {
-				$thumbs = '-thumb.jpg';
-				}
-			elseif ( is_file($pathtocheck . '_thumb.jpg') ) {
-				$thumbs = '_thumb.jpg';
-				}
-			else {
-				$thumbinsubdir = false;
-			}
+			list( $thumbinsubdir, $thumbs ) = checkThumbs( $thumbs, $pathtocheck, $thumbcheck, $ext);
+						
 			
 			// get $Exif-Data from image and check wether image contains GPS-data
 			//$Exif = exif_read_data($file, 'ANY_TAG', true); // replaceget all metadata
@@ -225,7 +208,8 @@ function showmulti($attr, $content = null)
 			list( $lon, $lat ) = gpxview_getLonLat( $data2 [ $imageNumber ] ) ;
 		
 			// do nothing, GPS-data invalid but we want only to show images WITH GPS, so skip this image;
-			if ( ( (is_null($lon) ) || (is_null($lat)) ) && ('true' == $requiregps) ) {	
+			if ( ( (is_null($lon) ) || (is_null($lat)) ) && ( 'true' == $requiregps ) ) {	
+				array_pop( $data2 );
 			} 
 			else {
 				// expand array data2 with information that was collected during the image loop
@@ -370,7 +354,7 @@ function showmulti($attr, $content = null)
 	}
 
 	// Generate the html-code start with the surrounding Div
-	$htmlstring .= "<div id=multifotobox{$shortcodecounter} class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
+	$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
 	$imgnr = 1;
 
 	// Generate html for Fotorama images for fotorama-javascript-rendering
@@ -417,17 +401,20 @@ EOF;
 			$srcset2 = '';
 			if ( $data['wpid'] > 0) {
 				$srcset2 = wp_get_attachment_image_srcset( $data['wpid'] );
-				$srcarr = explode( ',', $srcset2 );
-				$finalArray = [];
 
-				foreach( $srcarr as $val){
-					$val = trim($val);
-					$tmp = \explode(' ', $val);
-					$tmp[1] = \str_replace('w', '', $tmp[1]);
-					$finalArray[ $tmp[1] ] = $tmp[0];
-				}
-				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
-				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
+				if ( false !== $srcset2) {
+					$srcarr = explode( ',', $srcset2 );
+					$finalArray = [];
+
+					foreach( $srcarr as $val){
+						$val = trim($val);
+						$tmp = \explode(' ', $val);
+						$tmp[1] = \str_replace('w', '', $tmp[1]);
+						$finalArray[ $tmp[1] ] = $tmp[0];
+					}
+					$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
+					$phpimgdata[$imgnr-1]['srcset'] = $finalArray;
+				}	
 			}
 
 			elseif ( ($data['thumbinsubdir']) || ($data['thumbavail']) ) {
@@ -446,7 +433,7 @@ EOF;
 				$finalArray[ strval( $thumbwidth ) ] = $thumburl;
 				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
-			}
+			} else $phpimgdata[$imgnr-1]['srcset'] = array();
 
 			$phpimgdata[$imgnr-1]['id'] = $imgnr;
 			$phpimgdata[$imgnr-1]['title'] = $alttext; 
@@ -460,18 +447,18 @@ EOF;
 		data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
 		{$data['camera']}<br> 
 		{$data['focal_length_in_35mm']}mm / f/{$data['aperture']} / {$data['exposure_time']}s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
-		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$thumbsdir}/{$data['file']}{$thumbs}"></a>
+		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$thumbsdir}/{$data['file']}{$data['thumbs']}"></a>
 
 EOF;
 			
 			} elseif ( $data['thumbavail'] ) {
 							
 				$htmlstring .= <<<EOF
-		<a href="{$up_url}/{$imgpath}/{$data['file']}{$thumbs}" 
+		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}" 
 		data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
 		{$data['camera']}<br> 
 		{$data['focal_length_in_35mm']}mm / f/{$data['aperture']} / {$data['exposure_time']}s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
-		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$thumbs}"></a>
+		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}"></a>
 
 EOF;
 			
@@ -484,7 +471,6 @@ EOF;
 
 EOF;
 			}
-
 			$imgnr++;
 		}
 		$htmlstring  .= "</div>";

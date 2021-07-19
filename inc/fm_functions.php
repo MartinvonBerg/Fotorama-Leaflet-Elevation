@@ -251,7 +251,7 @@ function gpxview_setpostgps($pid, $lat, $lon)
  */
 function gpxview_getLonLat($Exif)
 {
-	if (array_key_exists('GPS',$Exif)) {
+	if (array_key_exists('GPS',$Exif) && ( null != $Exif["GPS"] ) && ( array_key_exists( 'GPSLongitude', $Exif["GPS"]) )) {
 		$lon = gpxview_getGPS($Exif["GPS"]["GPSLongitude"], $Exif["GPS"]['GPSLongitudeRef']);
 		$lat = gpxview_getGPS($Exif["GPS"]["GPSLatitude"], $Exif["GPS"]['GPSLatitudeRef']);
 	} else {
@@ -280,7 +280,7 @@ function getEXIFData( $file, $ext, $wpid)
 	$ext = \strtolower( $ext );
 	
 	// read exif from file independent if image is in WP database TODO: move the jpeg part to a seperate function
-	if ( '.jpg' == $ext ) {
+	if ( ('.jpg' == $ext) || ('.jpeg' == $ext) ) {
 		$data = getJpgMetadata( $file );
 
 	} elseif ( '.webp' == $ext) {
@@ -323,7 +323,7 @@ function getEXIFData( $file, $ext, $wpid)
 		if ( $wptitle != basename($file, $ext) ) {
 			$title = $wptitle;
 		}
-		$oldditle = $data['title'];
+		$oldditle = $data['title'] ?? 'notitle';
 		strlen($title) > 2 ? $data['title'] = $title : $data['title'] = $oldditle;
 
 		//$description = $wpdescription != '' ? $wpdescription : $description;
@@ -353,9 +353,9 @@ function getEXIFData( $file, $ext, $wpid)
  * @param string $ext the current extension ('jgp' or 'webp')
  * @return array with result values
  */
-function checkThumbs ( string $pathtocheck, string $thumbcheck, string $ext ) {
+function checkThumbs ( string $thumbs, string $pathtocheck, string $thumbcheck, string $ext ) {
 	$thumbinsubdir = true;
-
+	
 	if     ( is_file($pathtocheck . $thumbcheck) ) {
 		$thumbs = $thumbcheck;
 		}

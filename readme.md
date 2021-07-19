@@ -85,7 +85,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 
 # Upgrade Notice 
 
-Upgrade to Wordpress 5.7.2 and PHP 8.0+ is highly recommended!
+Upgrade to Wordpress 5.7.2 and PHP 7.4+ is highly recommended!
 Due to the error corrections it is highly recommended to upgrade the Plugin! Thank's for your patience.
 
 </br>
@@ -218,8 +218,9 @@ Process and save the file with the Button at the bottom.
 
     If you know what you do you migth change the code or CSS to whatever you like. Have fun!
     
-5. TODO w.r.t to FOTORAMA
-    - showcaption: Setting is ignored for the firs two images 
+5. TODO & Bugs w.r.t to FOTORAMA
+    - showcaption: Setting is ignored for the firs two images
+    - mixture of images with and without GPS-data and the option showmap="true" and requiregps="false" causes JS-errors. No standard use case. User should set showmap="false" for that case.
 
 # Usage of Leaflet Elevation    
 1. Preparation  (optional)
@@ -348,9 +349,12 @@ This plugin uses the great work from:
     phpcs -n -p . --standard=PHPCompatibility --runtime-set testVersion 7.0-
     ```
 - jquery migrate was used to update fotorama to the jquery version 3.5.1 that is currently used by WordPress. Some js code raises the "add passive event listener warning" which doesn't interfere the execution.
-- leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with V5.16.0.
+- leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.3.1 =
+19.07.2021: Bugfixes due to non-standard usecase testing in PHP and JS.
 
 = 0.3.0 =
 17.07.2021: Added webp-support in preparation of Wordpress 5.8. Therefore a Metadata Extractor for EXIF and XMP-Data for webp-images was added. The used WP 5.8 test version did not extract metadata from webp at all. 

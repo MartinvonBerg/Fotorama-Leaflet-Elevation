@@ -955,7 +955,7 @@ class FotoramaElevation {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[images_with_gps_required_5]" id="images_with_gps_required_5" value="images_with_gps_required_5" %s> <label for="images_with_gps_required_5">%s</label>',
 			( isset( $this->fotorama_elevation_options['images_with_gps_required_5'] ) && $this->fotorama_elevation_options['images_with_gps_required_5'] === 'true' ) ? 'checked' : '',
-			__( 'Show images only if they provide GPS-Data in EXIF', 'fotoramamulti' )
+			__( 'Show images only if they provide GPS-Data in EXIF. Remember to set showmap="false".' , 'fotoramamulti' )
 		);
 	}
 

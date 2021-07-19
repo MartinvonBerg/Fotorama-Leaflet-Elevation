@@ -30,8 +30,8 @@ function getJpgMetadata( string $filename ) {
 		$iptc = iptcparse($info['APP13']);
 		if (isset($iptc["2#005"][0])) {
 			$title =  htmlspecialchars($iptc["2#005"][0]);
-		} 
-	} 
+		} else $title = 'notitle';
+	} else $title = 'notitle';
 	
 	// get image capture data
 	$exptime = $Exif["EXIF"]["ExposureTime"] ?? '--';
@@ -43,7 +43,7 @@ function getJpgMetadata( string $filename ) {
 		} else { 
 			$aperture = $Exif["EXIF"]["FNumber"];
 		}
-	}
+	} else $aperture = '--';
 
 	$iso = $Exif["EXIF"]["ISOSpeedRatings"] ?? '--';
 	
@@ -55,7 +55,7 @@ function getJpgMetadata( string $filename ) {
 	}
 
 	// Check setting of exif-field make (the lens information, written by my Ligtroom-Plugin)
-	// alternatively I wrote lens information to the make.
+	// alternatively I wrote lens information to the make therefore I check for make here
 	if (isset($Exif["IFD0"]["Make"])) {
 	//if (array_key_exists('Make', $Exif['IFD0'])) {
 		$make = $Exif["IFD0"]["Make"] ?? '';
@@ -81,6 +81,7 @@ function getJpgMetadata( string $filename ) {
 	} else {
 		$camera = $model;
 	}
+	$camera == '' ? $camera = '---' : $camera; 
 
 	// get date-taken information
 	if (isset($Exif["EXIF"]["DateTimeOriginal"])) {
@@ -93,7 +94,7 @@ function getJpgMetadata( string $filename ) {
 	$tags = isset($iptc["2#025"]) ? $iptc["2#025"] : ''; 
 	$description = isset($Exif["IFD0"]["ImageDescription"]) ? $Exif["IFD0"]["ImageDescription"] : '';
 	
-	$data['GPS'] = $Exif['GPS'];
+	$data['GPS'] = $Exif['GPS'] ?? null;
 	$data['title'] = $title; 
 	$data['exposure_time'] = $exptime;
 	$data['aperture'] = $aperture; 
