@@ -221,6 +221,7 @@ Process and save the file with the Button at the bottom.
 5. TODO & Bugs w.r.t to FOTORAMA
     - showcaption: Setting is ignored for the firs two images
     - mixture of images with and without GPS-data and the option showmap="true" and requiregps="false" causes JS-errors. No standard use case. User should set showmap="false" for that case.
+    - for images without thumbnail the hover on the map is wrong, pointing to a non existing image.
 
 # Usage of Leaflet Elevation    
 1. Preparation  (optional)

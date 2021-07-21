@@ -198,8 +198,7 @@ function showmulti($attr, $content = null)
 						
 			
 			// get $Exif-Data from image and check wether image contains GPS-data
-			//$Exif = exif_read_data($file, 'ANY_TAG', true); // replaceget all metadata
-			// Get the WPid if the image is in the WP-Media-Library
+			// And get the WPid if the image is in the WP-Media-Library
 			$wpimgurl = $imageurl . '/' . $jpgfile . $ext;
 			$wpid = attachment_url_to_postid( $wpimgurl );
 			$data2[ $imageNumber ] = getEXIFData( $imagepath . "/" . basename( $file), $ext, $wpid );
@@ -288,7 +287,7 @@ function showmulti($attr, $content = null)
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	$files = explode(",", $gpxfile);
 	$i = 0; // i : gpxfilenumber
-	$gpxfile = ''; // string to pass to javascript
+	$gpxfile = ''; // string to pass to javascript // parameter $setCustomFields, $shortcodecounter, $showadress, $files, out: $gpxfile
 	foreach ($files as $file) { 
 		$f = trim($file);
 		if (is_file($gpx_dir . $f)) {
@@ -316,20 +315,14 @@ function showmulti($attr, $content = null)
 							$lon = \strval( $gpxdata->trk->trkpt[0]['lon'] );
 						}
 						
-						//$htmlstring .= '<p>Lat: '. $lat .'</p>';
-						//$htmlstring .= '<p>Lon: '. $lon .'</p>';
-						//$htmlstring .= '<p>'. $gpx_dir . $f . '</p>';
 						if ( isset( $lat ) && isset( $lon ) ) {
 							gpxview_setpostgps($postid, $lat, $lon);
 						}
 					}
 
 					// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
-					// only done for the first track
-					// Mind: allow_url_fopen of the server has to be ON!
-					$isallowed = \ini_get('allow_url_fopen');
-					
-					if ( ('true' == $showadress) &&  ('1' == $isallowed) ) {
+					// only done for the first track. Mind: allow_url_fopen of the server has to be ON!
+					if ( ('true' == $showadress) &&  ('1' == \ini_get('allow_url_fopen') ) ) {
 						$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
 						$opts = array(
 							  		'http'=>array(
@@ -433,7 +426,9 @@ EOF;
 				$finalArray[ strval( $thumbwidth ) ] = $thumburl;
 				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
 				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
-			} else $phpimgdata[$imgnr-1]['srcset'] = array();
+			} else {
+				$phpimgdata[$imgnr-1]['srcset'] = '';
+			}
 
 			$phpimgdata[$imgnr-1]['id'] = $imgnr;
 			$phpimgdata[$imgnr-1]['title'] = $alttext; 
@@ -532,7 +527,7 @@ EOF;
 				}
 			}
 
-			if ( \current_user_can('edit_posts') && ('true' == $showadress) &&  ('0' == $isallowed) ) {
+			if ( \current_user_can('edit_posts') && ('true' == $showadress) &&  ('0' == \ini_get('allow_url_fopen') ) ) {
 				$v = 'Your Server is not set correctly! Cannot read address for GPX-Data. Check server setting "allow_url_fopen"';
 			}
 

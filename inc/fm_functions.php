@@ -284,17 +284,23 @@ function getEXIFData( $file, $ext, $wpid)
 		$data = getJpgMetadata( $file );
 
 	} elseif ( '.webp' == $ext) {
-		$data = getWebpMetadata( $file );
-		if ($data['exposure_time'] > 0) {
-			$data['exposure_time'] = '1/' . strval( 1 / $data['exposure_time'] );
-		} else {
-			$data['exposure_time'] = '--';
-		}
+		// Pre-define values that may not be in the webp
 		$data['datesort'] = '';
 		$data['focal_length_in_35mm'] = '--';
 		$data['iso'] = '--';
 		$data['aperture'] = '--';
 		$data['DateTimeOriginal'] = '';
+		$data['alt'] = '';
+
+		$additionaldata = getWebpMetadata( $file );
+
+		$data = \array_merge( $data, $additionaldata);
+
+		if ($data['exposure_time'] > 0) {
+			$data['exposure_time'] = '1/' . strval( 1 / $data['exposure_time'] );
+		} else {
+			$data['exposure_time'] = '--';
+		}
 	}
 
 	// Post-Processing of $data for DateTimeOriginal

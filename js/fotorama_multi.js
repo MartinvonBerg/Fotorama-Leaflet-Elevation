@@ -23,38 +23,14 @@
         
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
-            var showalltracks = (wpfm_phpvars0.showalltracks === 'true');
+            var showalltracks = (wpfm_phpvars0.showalltracks === 'true'); // info: wpfm_phpvars0 is defined on the page by wp_localize_script in PHP
             if (numberOfMaps>1 && showalltracks) {showalltracks = false;}
     
             // Icons definieren
-            var myIcon1 = L.icon({ 
-                iconUrl: wpfm_phpvars0.imagepath + "photo.png",
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -16],
-                shadowUrl: wpfm_phpvars0.imagepath + 'shadow.png',
-                shadowSize: [48, 32],
-                shadowAnchor: [16, 32],
-            });
-            var myIcon2 = L.icon({ 
-                iconUrl: wpfm_phpvars0.imagepath + "pin-icon-wpt.png",
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -16],
-                shadowUrl: wpfm_phpvars0.imagepath + 'shadow.png',
-                shadowSize: [48, 32],
-                shadowAnchor: [16, 32],
-            });
-            var myIcon3 = L.icon({ 
-                iconUrl: wpfm_phpvars0.imagepath + "active.png",
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -16],
-                shadowUrl: wpfm_phpvars0.imagepath + 'shadow.png',
-                shadowSize: [48, 32],
-                shadowAnchor: [16, 32],
-            });
-
+            var myIcon1 = setIcon( wpfm_phpvars0.imagepath, 'photo.png', 'shadow.png');
+            var myIcon2 = setIcon( wpfm_phpvars0.imagepath, 'pin-icon-wpt.png', 'shadow.png');
+            var myIcon3 = setIcon( wpfm_phpvars0.imagepath, 'active.png', 'shadow.png');
+           
             // Kartenoptionen definieren
             var opts = {  
                 map: {
@@ -100,69 +76,26 @@
             var hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
             // define fotorama
             if ( hasFotorama ) {
-                // 1. Initialize fotorama manually.
+                // Initialize fotorama manually.
                 let $fotoramaDiv = $('#mfotorama' + m ).fotorama();
-                // 2. Get the API object.
+                // Get the API object.
                 fotorama[m] = $fotoramaDiv.data('fotorama');
-               
+                
+                // define the image data array for image replacement
                 phpvars[m] = eval('wpfm_phpvars'+m);
-
                 let newimages = phpvars[m].imgdata; 
                 let olddata = fotorama[m].data;
-                let newdata = [];
+               
+                // Define width for responsive devices
                 let width = $fotoramaDiv[0].parentElement.clientWidth;
-
                 if (mobile) {
-                    var h = window.screen.height;
-                    var w = window.screen.width;
+                    let h = window.screen.height;
+                    let w = window.screen.width;
                     h>w ? width = h : width = w;
                 }
-        
-                // replace thumbnails in html souce-code with images from srcset
-              
-                    // nur ausführen wenn images vorhanden! ansonsten das ursprüngliche belassen! php liefert reduzierte bilder nur mit wpid also wenn in wp medialib
-                if (newimages[0].srcset && ( olddata.length == newimages.length ) ) {
-                        // Assumption: array newimages has the same sorting as olddata and the srcset is the same for all images
-                        let srcindex = 0;
-                        let index = 0;
-                        let testimg = [];
 
-                        for ( const newsrc of Object.entries( newimages )) {
-                           let srcarray = newsrc[1].srcset; 
-
-                           for (const [key, value] of Object.entries(srcarray)) {
-                            //console.log(`${key}: ${value}`);
-                            if (key > width) {
-                                srcindex = key;
-                                testimg[index] = newimages[index].srcset[ srcindex ];
-                                break;
-                                }
-                            }
-
-                            let item = olddata[index];
-
-                            if (mobile) {
-                                newdata[index] = {img: testimg[index], alt: item.alt, thumb: item.thumb, caption: item.caption, };
-                            }
-                            else {
-                                newdata[index] = {img: testimg[index], alt: item.alt, thumb: item.thumb, full: newimages[index].srcset['2560'], caption: item.caption}; // TODO: replace 2560 with big_image_size !
-                            }
-
-                            index++;
-                        }
-                                                
-                        // load the new image data into fotorama
-                        fotorama[m].load(newdata);
-                        
-                } else if (olddata.length == newimages.length) {
-                    olddata.forEach(replaceimg);
-                        
-                    function replaceimg(item, index){
-                            newdata[index] = {img: item.img, alt: newimages[index].title, thumb: item.thumb, caption: item.caption, };
-                    }
-
-                    fotorama[m].load(newdata);
-                }
+                let newdata2 = replaceImageData( width, olddata, newimages);
+                if (newdata2) fotorama[m].load(newdata2);
             }
         
             //------------- leaflet - elevation part ---------------------------
@@ -505,7 +438,7 @@
                         else {
                             marker.push(new L.Marker(tour["coord"], { title: tour["title"], icon: myIcon1, id: j, riseOnHover: true, })); 
                             
-                            if ("srcset" in tour) { 
+                            if ( ("srcset" in tour) && (tour["srcset"].length > 0) ) {  // "srcset" in tour
                                 var key = Object.keys(tour.srcset)[0];
                                 //marker[j].bindPopup( tour["title"] + '<div><img src="' + tour.srcset[key] + '"><br><br><br><br><br><br></div>' );
                                 marker[j].bindPopup('<div>' + tour["title"] + '<br><img width="150px" src="' + tour.srcset[key] + '"></div>' );
@@ -876,6 +809,68 @@
                 return mylocale;
             } else {return;}
         }; 
+
+        /**
+         * Define Icons for the leaflet map.
+         * @param {string} path 
+         * @param {string} iconpng 
+         * @param {string} shadowpng 
+         * @returns {object} icon leaflet.icon-object-type
+         */
+        function setIcon(path, iconpng, shadowpng) {
+            let icon = L.icon({ 
+                iconUrl: path + iconpng,
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -16],
+                shadowUrl: path + shadowpng,
+                shadowSize: [48, 32],
+                shadowAnchor: [16, 32],
+            });
+            return icon;
+        }
+        
+        function replaceImageData(viewerwidth, oldimages, newimages) {
+            let newdata = new Array();
+
+            if (oldimages.length == newimages.length) {
+
+                for (let index=0; index<newimages.length; index++) {
+                    let item = oldimages[index];
+                    newdata[index] = Array();
+                    newdata[index].alt = newimages[index].title; // das setzt voraus, dass die arrays identisch sortiert sind!
+                    newdata[index].caption = item.caption;
+                    newdata[index].thumb = item.thumb;
+                    newdata[index].img = item.img;
+                    newdata[index].i   = item.i;
+
+                    if ('srcset' in newimages[index] && Object.keys(newimages[index].srcset).length > 0) {
+                        let srcindex = 0;
+                        let srcarray = newimages[index].srcset; 
+                        
+                        for (const [key, value] of Object.entries(srcarray)) {
+                            //console.log(`${key}: ${value}`);
+                            if (key > viewerwidth) {
+                                srcindex = key;
+                                break;
+                                }
+                        }
+                                
+                        if (mobile) {
+                            newdata[index].img = newimages[index].srcset[srcindex];
+                        }
+                        else {
+                            newdata[index].img =  newimages[index].srcset[ srcindex ];
+                            newdata[index].full = newimages[index].srcset['2560']; // TODO: replace 2560 with big_image_size !
+                        }
+                    } 
+                }
+
+            } else {
+                return null;
+            }
+            return newdata;  
+        }
     }
 
 })(document, jQuery);
