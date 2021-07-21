@@ -377,3 +377,139 @@ function checkThumbs ( string $thumbs, string $pathtocheck, string $thumbcheck, 
 
 	return array ( $thumbinsubdir, $thumbs);
 }
+
+/**
+ * get the Source Set for the current image. Either from WP-database or create from the thumbnails provided in the folder.
+ * If both not possible provide an emtpy string
+ *
+ * @param array $data the array with all collected image information
+ * @param string $up_url the wp upload url
+ * @param string $up_dir the wp upload dir on the server
+ * @param string $imgpath the current path of the 'Album' or 'gallerie' which is taken for fotorama
+ * @param string $thumbsdir the directory with thumbnails, if any
+ * @return void the srcset as array
+ */
+function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpath, string $thumbsdir ) {
+	// take srcset from WP if image was added to the WP media library
+	if ( $data['wpid'] > 0) {
+		$srcset2 = wp_get_attachment_image_srcset( $data['wpid'] );
+
+		if ( false !== $srcset2) {
+			$srcarr = explode( ',', $srcset2 );
+			$finalArray = [];
+
+			foreach( $srcarr as $val){
+				$val = trim($val);
+				$tmp = \explode(' ', $val);
+				$tmp[1] = \str_replace('w', '', $tmp[1]);
+				$finalArray[ $tmp[1] ] = $tmp[0];
+			}
+			$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
+			//$phpimgdata[$imgnr-1]['srcset'] = $finalArray;
+			$phpimgdata['srcset'] = $finalArray;
+		}	
+	}
+	// generate a 'fake' srcset if thumbnails were provided
+	elseif ( ($data['thumbinsubdir']) || ($data['thumbavail']) ) {
+		$finalArray = [];
+		
+		if ( $data['thumbinsubdir'] ) {
+			$thumbfile = $up_dir . '/' . $imgpath . '/' . $thumbsdir . '/' . $data['file'] . $data['thumbs'];
+			$thumburl  = $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data['file'] . $data['thumbs'];
+		} else {
+			// thumbavail
+			$thumbfile = $up_dir . '/' . $imgpath . '/' . $data['file'] . $data['thumbs'];
+			$thumburl  = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['thumbs']; 
+		}
+		
+		list($thumbwidth, $height, $type, $attr) = getimagesize( $thumbfile );
+		$finalArray[ strval( $thumbwidth ) ] = $thumburl;
+		$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
+		$phpimgdata['srcset'] = $finalArray;	
+	
+		// no srcset without rescaled, smaller images
+	} else {
+		$phpimgdata['srcset'] = '';
+	}
+	return $phpimgdata;
+}
+
+/**
+ * Parse GPX-Track-Files, check if every entry is a file, and if so append it to the string and the array to pass to javascript.
+ * Additionally set custom-fields and YOAST xml sitemap and get the data for the start address.
+ *
+ * @param integer $postid the id of the current post
+ * @param string $gpxfile the string with a comma seperated list with gpxfiles form the shortcode parameter
+ * @param string $gpx_dir the server directory with gpx-files from the fotorama admint settings or the shortcode parameter
+ * @param string $gpx_url the gpx url form where the gpx-file is downloadable
+ * @param string $showadress whether to show the start adress
+ * @param boolean $setCustomFields whether to set the custom fields in the post
+ * @param integer $shortcodecounter the number of the shortcode on the page / post where it is used.
+ * @return string gpxfile as string and tracks as array for the Javscript variable
+ */
+function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $gpx_url, string $showadress, bool $setCustomFields, int $shortcodecounter ) {
+	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
+	$files = explode(",", $gpxfile);
+	$i = 0; // i : gpxfilenumber : the actual number of tracks at the end of the loop
+	$gpxfile = ''; // string to pass to javascript // parameter $setCustomFields, $shortcodecounter, $showadress, $files, out: $gpxfile
+	$tracks = [];
+	
+	foreach ($files as $file) { 
+		$f = trim($file);
+		if (is_file($gpx_dir . $f)) {
+			$tracks['track_' . $i]['url'] = $gpx_url . $f;
+
+			if ($i == 0) {
+				$gpxfile .= $f;
+
+				//if ($draft_2_pub && $setCustomFields && (0 == $shortcodecounter)) {
+				if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) ) {	
+					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
+					// This is done only once to reduce load on nominatim. If requests are too frequent it will block the response!
+					$gpxdata = simplexml_load_file( $gpx_dir . $f );
+
+					if ( 'object' == gettype( $gpxdata) ) {
+						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] ) ) {
+							$lat = \strval( $gpxdata->trk->trkseg->trkpt[0]['lat'] ); 
+						} else {
+							$lat = \strval( $gpxdata->trk->trkpt[0]['lat'] );
+						}
+
+						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lon'] )) {
+							$lon = \strval( $gpxdata->trk->trkseg->trkpt[0]['lon'] );  
+						} else {
+							$lon = \strval( $gpxdata->trk->trkpt[0]['lon'] );
+						}
+						
+						if ( isset( $lat ) && isset( $lon ) ) {
+							gpxview_setpostgps($postid, $lat, $lon);
+
+							// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
+							// only done for the first track. Mind: allow_url_fopen of the server has to be ON!
+							if ( ('true' == $showadress) &&  ('1' == \ini_get('allow_url_fopen') ) ) {
+								$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
+								$opts = array(
+												'http'=>array(
+												'method'=>'GET',
+												'header'=>'User-Agent: PostmanRuntime/7.26.10' // just any user-agent to fake a human access
+									)
+								);
+								$context = stream_context_create($opts);
+								$geojson = json_decode(file_get_contents( $url , false, $context ));
+								$geoadress = (array) $geojson->address;
+								$geoadressfield = maybe_serialize($geoadress);
+								delete_post_meta($postid,'geoadress');
+								update_post_meta($postid,'geoadress', $geoadressfield,'');
+							}
+						}
+					}	
+				}		
+
+			} else {
+				$gpxfile .= ',' . $f;
+			}
+			$i++;
+		}
+	}
+	return array ( $gpxfile, $tracks, $i );
+}

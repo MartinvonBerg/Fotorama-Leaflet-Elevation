@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.3.1
+ * Version:           0.3.2
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -84,7 +84,6 @@ function showmulti($attr, $content = null)
 	// --- Variables -----------------------------------
 	$postid = get_the_ID();
 	$htmlstring = ''; 
-	$files = [];
 	$tracks = [];
 	$postimages = []; // array with images for the Yoast XML Sitemap
 	$thumbsdir = 'thumbs'; // we use a fixed name for the subdir containing the thumbnails
@@ -285,73 +284,14 @@ function showmulti($attr, $content = null)
 	
 			
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
-	$files = explode(",", $gpxfile);
-	$i = 0; // i : gpxfilenumber
-	$gpxfile = ''; // string to pass to javascript // parameter $setCustomFields, $shortcodecounter, $showadress, $files, out: $gpxfile
-	foreach ($files as $file) { 
-		$f = trim($file);
-		if (is_file($gpx_dir . $f)) {
-			$tracks['track_' . $i]['url'] = $gpx_url . $f;
-
-			if ($i == 0) {
-				$gpxfile .= $f;
-
-				//if ($draft_2_pub && $setCustomFields && (0 == $shortcodecounter)) {
-				if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) ) {	
-					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
-					// This is done only once to reduce load on nominatim. If requests are too frequent it will block the response!
-					$gpxdata = simplexml_load_file( $gpx_dir . $f );
-
-					if ( 'object' == gettype( $gpxdata) ) {
-						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] ) ) {
-							$lat = \strval( $gpxdata->trk->trkseg->trkpt[0]['lat'] ); 
-						} else {
-							$lat = \strval( $gpxdata->trk->trkpt[0]['lat'] );
-						}
-
-						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lon'] )) {
-							$lon = \strval( $gpxdata->trk->trkseg->trkpt[0]['lon'] );  
-						} else {
-							$lon = \strval( $gpxdata->trk->trkpt[0]['lon'] );
-						}
-						
-						if ( isset( $lat ) && isset( $lon ) ) {
-							gpxview_setpostgps($postid, $lat, $lon);
-						}
-					}
-
-					// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
-					// only done for the first track. Mind: allow_url_fopen of the server has to be ON!
-					if ( ('true' == $showadress) &&  ('1' == \ini_get('allow_url_fopen') ) ) {
-						$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
-						$opts = array(
-							  		'http'=>array(
-										'method'=>'GET',
-										'header'=>'User-Agent: PostmanRuntime/7.26.10' // just any user-agent to fake a human access
-							)
-						);
-						$context = stream_context_create($opts);
-						$geojson = json_decode(file_get_contents( $url , false, $context ));
-						$geoadress = (array) $geojson->address;
-						$geoadressfield = maybe_serialize($geoadress);
-						delete_post_meta($postid,'geoadress');
-						update_post_meta($postid,'geoadress', $geoadressfield,'');
-					}	
-				}		
-
-			} else {
-				$gpxfile .= ',' . $f;
-			}
-			$i++;
-		}
-	}
+	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
 
 	// Generate the html-code start with the surrounding Div
 	$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
-	$imgnr = 1;
-
+	
 	// Generate html for Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
+		$imgnr = 1;
 		// die erste Zeile sieht unnötig aus, aber es geht nur so
 		$htmlstring .= <<<EOF
 
@@ -389,47 +329,9 @@ EOF;
 			}
 			$alttext = $data['alt'] != '' ? $data['alt'] : $data['title'];
 
-			// get the image srcset if the image is in WP-Media-Catalog, otherwise not.
+			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
-			$srcset2 = '';
-			if ( $data['wpid'] > 0) {
-				$srcset2 = wp_get_attachment_image_srcset( $data['wpid'] );
-
-				if ( false !== $srcset2) {
-					$srcarr = explode( ',', $srcset2 );
-					$finalArray = [];
-
-					foreach( $srcarr as $val){
-						$val = trim($val);
-						$tmp = \explode(' ', $val);
-						$tmp[1] = \str_replace('w', '', $tmp[1]);
-						$finalArray[ $tmp[1] ] = $tmp[0];
-					}
-					$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
-					$phpimgdata[$imgnr-1]['srcset'] = $finalArray;
-				}	
-			}
-
-			elseif ( ($data['thumbinsubdir']) || ($data['thumbavail']) ) {
-				$finalArray = [];
-				
-				if ( $data['thumbinsubdir'] ) {
-					$thumbfile = $up_dir . '/' . $imgpath . '/' . $thumbsdir . '/' . $data['file'] . $thumbs;
-					$thumburl  = $up_url . '/' . $imgpath . '/' . $thumbsdir . '/' . $data['file'] . $thumbs;
-				} else {
-					// thumbavail
-					$thumbfile = $up_dir . '/' . $imgpath . '/' . $data['file'] . $thumbs;
-					$thumburl  = $up_url . '/' . $imgpath . '/' . $data['file'] . $thumbs; 
-				}
-				
-				list($thumbwidth, $height, $type, $attr) = getimagesize( $thumbfile );
-				$finalArray[ strval( $thumbwidth ) ] = $thumburl;
-				$finalArray[ strval(MAX_IMAGE_SIZE) ] = $up_url . '/' . $imgpath . '/' . $data['file'] . $data['extension'];
-				$phpimgdata[$imgnr-1]['srcset'] = $finalArray;	
-			} else {
-				$phpimgdata[$imgnr-1]['srcset'] = '';
-			}
-
+			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $imgpath, $thumbsdir );
 			$phpimgdata[$imgnr-1]['id'] = $imgnr;
 			$phpimgdata[$imgnr-1]['title'] = $alttext; 
 			$phpimgdata[$imgnr-1]['coord'][0] = round( $data['lat'], 6 );
@@ -474,38 +376,44 @@ EOF;
 	// show Map only with valid gpx-tracks and if so, generate the div
 	if ($showmap  == 'true') {
 		$mapid = 'map' . strval($shortcodecounter); 
-		$htmlstring  .= '<div id=box' . $mapid .' class="boxmap">';
-		$htmlstring  .= '<div id="'. $mapid .'" class="leafmap" style="height:'. $mapheight .'px;"></div>';
+		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
+		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"height:{$mapheight}px;\"></div>";
 		// Custom Summary
 		if ($i > 0) { // number of gpxtracks at least 1 !
-			$htmlstring  .= '<div id="elevation-div'. strval($shortcodecounter) .'" style="height:'. $chartheight .'px;" class="leaflet-control elevation"></div>';
-			$htmlstring  .= '<div id="data-summary'.strval($shortcodecounter) .'" class="data-summary">';
-			$htmlstring  .= '<span class="totlen">';
-			$htmlstring  .= '<span class="summarylabel"> </span>';
-			$htmlstring  .= '<span class="summaryvalue">0</span></span> ';
-			$htmlstring  .= '<span class="gain">';
-			$htmlstring  .= '<span class="summarylabel"> </span>';
-			$htmlstring  .= '<span class="summaryvalue">0</span> </span> ';
-			$htmlstring  .= '<span class="loss">';
-			$htmlstring  .= '<span class="summarylabel"> </span>';
-			$htmlstring  .= '<span class="summaryvalue">0</span> </span> </div>';
+			$htmlstring .= <<<EOF
+
+		<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
+		<div id="data-summary{$shortcodecounter}" class="data-summary">
+		<span class="totlen">
+		<span class="summarylabel"> </span>
+		<span class="summaryvalue">0</span></span>
+		<span class="gain">
+		<span class="summarylabel"> </span>
+		<span class="summaryvalue">0</span></span> 
+		<span class="loss">
+		<span class="summarylabel"> </span>
+		<span class="summaryvalue">0</span></span></div>
+EOF;
 		}
 		//$htmlstring  .= '</div>'; // uncommented to include fm-dload in grid of the boxmap, showing directly under the map
 	}
 	
 	// ----------------------------------------------------
 	$htmlstring  .= '<div class="fm-dload">';
+
 	// provide GPX-download if defined
-	if ( ($dload == 'true') and ($i > 0))  {
+	if ( ('true' == $dload ) and ($i > 0))  {
+		$text = t('Download', $lang);
+		
 		if ($i == 1) {
-			$htmlstring .= '<p>' . t('Download', $lang) . ': <a download="' . $gpxfile . '" href="' . $gpx_url . $gpxfile . '">'. $gpxfile .'</a></p>';
+			$htmlstring .= "<p>{$text} : <a download=\"{$gpxfile}\" href=\"{$gpx_url}{$gpxfile}\">{$gpxfile}</a></p>";
 		} else {
 			$gpxf = explode(',',$gpxfile);
-			$htmlstring .= '<p><strong>' . t('Download', $lang) . ': '; // <a download=""</a>
+			$htmlstring .= "<p><strong>{$text} : "; // <a download=""</a>
 			foreach ($gpxf as $f){
-				$htmlstring .= ' <a download="' . $f . '" href="' . $gpx_url . $f . '">'. $f .' - </a>';
+				$htmlstring .= "<a download=\"{$f}\" href=\"{$gpx_url}{$f}\">{$f} - </a>";
 			}
-			$htmlstring .= '</strong></p>';
+			$htmlstring .= "</strong></p>";
 		}
 	}
 	

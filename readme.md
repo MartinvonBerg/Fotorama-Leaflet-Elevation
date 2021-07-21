@@ -85,7 +85,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 
 # Upgrade Notice 
 
-Upgrade to Wordpress 5.7.2 and PHP 7.4+ is highly recommended!
+Upgrade to Wordpress 5.8.0 and PHP 7.4+ is highly recommended!
 Due to the error corrections it is highly recommended to upgrade the Plugin! Thank's for your patience.
 
 </br>
@@ -353,6 +353,9 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.3.2 =
+21.07.2021: Major code-rework and removal of Bugfixes.
 
 = 0.3.1 =
 19.07.2021: Bugfixes due to non-standard usecase testing in PHP and JS.

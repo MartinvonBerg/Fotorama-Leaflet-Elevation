@@ -64,7 +64,7 @@ if ( 'true' == $useCDN ) {
 	wp_register_script('leaflet_gesture_handling_js',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '1.2.1', true);
 	wp_register_script('control_fullscreen_js', $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '2.0.0', true);
 	wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-	wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.js', array('jquery'), '0.1.2', true);	
+	wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.1.2', true);	
 
 	
 }
