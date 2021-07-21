@@ -470,15 +470,15 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 
 					if ( 'object' == gettype( $gpxdata) ) {
 						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] ) ) {
-							$lat = \strval( $gpxdata->trk->trkseg->trkpt[0]['lat'] ); 
+							$lat = \strval( round( $gpxdata->trk->trkseg->trkpt[0]['lat'], 6) ); 
 						} else {
-							$lat = \strval( $gpxdata->trk->trkpt[0]['lat'] );
+							$lat = \strval( round( $gpxdata->trk->trkpt[0]['lat'], 6) );
 						}
 
 						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lon'] )) {
-							$lon = \strval( $gpxdata->trk->trkseg->trkpt[0]['lon'] );  
+							$lon = \strval( round( $gpxdata->trk->trkseg->trkpt[0]['lon'],6 ) );  
 						} else {
-							$lon = \strval( $gpxdata->trk->trkpt[0]['lon'] );
+							$lon = \strval( round( $gpxdata->trk->trkpt[0]['lon'], 6) );
 						}
 						
 						if ( isset( $lat ) && isset( $lon ) ) {

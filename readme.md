@@ -354,6 +354,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.3.3 =
+21.07.2021: Minor change (rounding of GPS-Values for google link)
+
 = 0.3.2 =
 21.07.2021: Major code-rework and removal of Bugfixes.
 
