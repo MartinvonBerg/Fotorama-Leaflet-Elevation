@@ -170,7 +170,6 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 				break;
 			case 'EXIF':
 				$exif2 = file_get_contents( $filename, false, null, $chunk['start'], $chunk['start']+$chunk['size'] );
-				//hex_dump( $exif2 );
 				$meta = get_exif_meta( $exif2 );
 				$meta['credit'] = $meta['copyright'];
 				break;
@@ -241,7 +240,7 @@ function decodeLosslessChunkHeader( $header ) {
 	// Bytes 0-3 are 'VP8L'
 	// Bytes 4-7 are chunk stream size
 	// Byte 8 is 0x2F called the signature
-	if ( $header{8} != "\x2F" ) {
+	if ( $header[8] != "\x2F" ) {
 		return [];
 	}
 	// Bytes 9-12 contain the image size
@@ -529,13 +528,12 @@ function get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags ) {
 		$data = \hexdec( $data);
 		return $data;
 
-	} elseif ( '0x0004' == $type ) { // this is a ascii string with one component
+	} elseif ( '0x0004' == $type ) { // this is a 
 		$ascii =  substr( $buffer, EXIF_OFFSET + hexdec($data), 160 ) ;
 		$gps = get_gps_data( $ascii, $buffer, $isIntel);
 		return $gps;
 
-	} elseif ( '0x0005' == $type ) { // this is a ascii string with one component
-		//$ascii =  hexdec( substr( $buffer, EXIF_OFFSET + hexdec($data), 8 ) );
+	} elseif ( '0x0005' == $type ) { // this is a 
 		$value_of_tag = getrationale( $buffer, $data, 0, $isIntel);
 		return $value_of_tag;
 
@@ -606,9 +604,9 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 			// init data array 
 			$data = array();
 
-			// get the type fo the tag first
+			// get the type of the tag first
 			$type = hexdec( frombuffer( $gpsbuffer, $bufoffs, 2, $isIntel) );
-			//$expectedType = $tags[ $piece ]['type']; // TODO : check
+			//$expectedType = $tags[ $piece ]['type']; // TODO : check if we need that
 			$bufoffs += 2;
 
 			// get the number of values
@@ -637,7 +635,7 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 				if ( ! $found ) $data = false;
 			}
 
-			// special treatment of the Lat- / Long / Alt-itude
+			// special treatment of the Lat- / Long- / Alt-itude
 			if ( 5 == $type) {
 				$rational = array();
 
@@ -706,15 +704,20 @@ function getrationale (string $buffer, string $pointer, int $count, bool $isInte
  * @return string the inverted binary data as hex-string
  */
 function binrevert ( string $binary ) {
-	$bin = '0x00';
+	$type = \gettype( $binary );
 
-	if (\strlen( $binary) == 1) {
-		$val = dechex( $binary );
+	if ( ('string' != $type) || (\strlen( $binary ) < 1 ) || (\strlen( $binary ) > 4 ) || (\strlen( $binary ) == 3 ) ) {
+	 $bin = '0x00';
+	 return $bin;
+	}
+	
+	if (\strlen( $binary ) == 1) {
+		$val = dechex( \intval( $binary ) ) ;
 		$bin = '0x' . \strtoupper( sprintf('%02s', $val ) );
-	} elseif (\strlen( $binary) == 2) {
+	} elseif (\strlen( $binary ) == 2) {
 		$val = dechex( unpack( 'v', $binary )[1]);
 		$bin = '0x' . \strtoupper( sprintf('%04s', $val ) );
-	} elseif (\strlen( $binary) == 4) {
+	} elseif (\strlen( $binary ) == 4) {
 		$val = dechex( unpack( 'V', $binary )[1]);
 		$bin = '0x' . \strtoupper( sprintf('%08s', $val ) );
 	} 

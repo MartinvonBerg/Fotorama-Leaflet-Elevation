@@ -438,7 +438,7 @@
                         else {
                             marker.push(new L.Marker(tour["coord"], { title: tour["title"], icon: myIcon1, id: j, riseOnHover: true, })); 
                             
-                            if ( ("srcset" in tour) && (tour["srcset"].length > 0) ) {  // "srcset" in tour
+                            if ( ("srcset" in tour) && (Object.keys(tour["srcset"]).length) ) {  // "srcset" in tour
                                 var key = Object.keys(tour.srcset)[0];
                                 //marker[j].bindPopup( tour["title"] + '<div><img src="' + tour.srcset[key] + '"><br><br><br><br><br><br></div>' );
                                 marker[j].bindPopup('<div>' + tour["title"] + '<br><img width="150px" src="' + tour.srcset[key] + '"></div>' );
