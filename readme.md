@@ -307,7 +307,7 @@ This plugin uses the great work from:
 - https://onlinepngtools.com/ for adaptation of the PNG-icons
 - OpenStreetMaps, OpentTopoMaps  are great services.
 - Nominatim for reverse geo-coding: https://nominatim.org/release-docs/develop/api/Reverse/
-- MediaWiki for the PHP-Code to extract EXIF-Meta from Webp images
+- MediaWiki for the PHP-Code to extract EXIF-Meta from Webp images (https://doc.wikimedia.org/mediawiki-core/1.27.3/php/WebP_8php_source.html)
 
 # Note for Developers
 - unit tests
@@ -354,11 +354,17 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.3.5 =
+29.07.2021: Bug-Fix for GPS-data extraction from Webp-Files with inconsistent GPS-Data in extractMetadata.php
+
+= 0.3.4 =
+21.07.2021: 0.3.3. did not work. So back to the old version.  (rounding of GPS-Values for google link) TODO: With webp-files the srcset is not created correctly by Wordpress. Could be wordpress core or another plugin. So, not a problem of fotorama-multi. Intime a quick fix should be realisable, meaning creating a special *own* srcset.
+
 = 0.3.3 =
 21.07.2021: Minor change (rounding of GPS-Values for google link)
 
 = 0.3.2 =
-21.07.2021: Major code-rework and removal of Bugfixes.
+21.07.2021: Major code-rework and removal of Bugfixes. Curly Braces in PHP! Arghh.
 
 = 0.3.1 =
 19.07.2021: Bugfixes due to non-standard usecase testing in PHP and JS.

@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.3.4
+ * Version:           0.3.5
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -33,7 +33,6 @@ const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_im
 require_once __DIR__ . '/inc/stateTransitions.php';
 require_once __DIR__ . '/inc/fm_functions.php';
 require_once __DIR__ . '/languages/locales_i18n.php';
-//require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
 
 // load the wpseo_sitemap_url-images callback to add images of post to the sitemap only if needed or intended
 $const2 = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16'];
@@ -423,8 +422,7 @@ EOF;
 		if ( ! empty($geoadresstest[0]) ) {
 			$test = $geoadresstest[0]; // we need only the first index
 			$geoadress = maybe_unserialize($test);	// type conversion to array
-			//$htmlstring .= '<p>'. $adresstext .': </p>';
-		
+				
 			$v = '';
 			foreach ($geoadress as $key => $value) {
 				if ($key != 'country') {

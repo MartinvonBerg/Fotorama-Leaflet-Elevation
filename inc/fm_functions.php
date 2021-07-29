@@ -436,7 +436,7 @@ function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpat
 
 /**
  * Parse GPX-Track-Files, check if every entry is a file, and if so append it to the string and the array to pass to javascript.
- * Additionally set custom-fields and YOAST xml sitemap and get the data for the start address.
+ * Additionally set custom-fields lat, lon and get the data for the start address.
  *
  * @param integer $postid the id of the current post
  * @param string $gpxfile the string with a comma seperated list with gpxfiles form the shortcode parameter

@@ -606,48 +606,51 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 
 			// get the type of the tag first
 			$type = hexdec( frombuffer( $gpsbuffer, $bufoffs, 2, $isIntel) );
-			//$expectedType = $tags[ $piece ]['type']; // TODO : check if we need that
+			$expectedType = $tags[ $piece ]['type']; 
 			$bufoffs += 2;
 
-			// get the number of values
-			$count = hexdec( frombuffer( $gpsbuffer, $bufoffs, 4, $isIntel) );
-			$bufoffs += 4;
-			if ( 5 == $type) { // correct number of values for pointers, it's only one pointer
-				$nvalues = $count;
-				$count = 1;
-			}
-
-			// get the data or relative pointer
-			$lendata = $tags[ $piece ]['nBytes'];
-
-			for ($i=1; $i <= $count ; $i++) { 
-				$data[] = frombuffer( $gpsbuffer, $bufoffs, $lendata, $isIntel);
-				$bufoffs += $lendata;
-			}
-
-			// special treatment of the Lat/Long-Ref
-			if ( 2 == $type) {
-				$data = \strtoupper($data[0]);
-				$data = \str_replace('0','', $data);
-				$data = \str_replace('X','', $data);
-				$data = chr (hexdec ( $data ));
-				$found = strpos( ' NSEW', $data);
-				if ( ! $found ) $data = false;
-			}
-
-			// special treatment of the Lat- / Long- / Alt-itude
-			if ( 5 == $type) {
-				$rational = array();
-
-				for ($i=0; $i < $nvalues ; $i++) { 
-					$rational[] = getrationale( $buffer, $data[0], $i, $isIntel, 'gps');
+			// do only if the type is correct
+			if ( $type === $expectedType){
+				// get the number of values
+				$count = hexdec( frombuffer( $gpsbuffer, $bufoffs, 4, $isIntel) );
+				$bufoffs += 4;
+				if ( 5 == $type) { // correct number of values for pointers, it's only one pointer
+					$nvalues = $count;
+					$count = 1;
 				}
-				$data = $rational;
+
+				// get the data or relative pointer
+				$lendata = $tags[ $piece ]['nBytes'];
+
+				for ($i=1; $i <= $count ; $i++) { 
+					$data[] = frombuffer( $gpsbuffer, $bufoffs, $lendata, $isIntel);
+					$bufoffs += $lendata;
+				}
+
+				// special treatment of the Lat/Long-Ref
+				if ( 2 == $type) {
+					$data = \strtoupper($data[0]);
+					$data = \str_replace('0','', $data);
+					$data = \str_replace('X','', $data);
+					$data = chr (hexdec ( $data ));
+					$found = strpos( ' NSEW', $data);
+					if ( ! $found ) $data = false;
+				}
+
+				// special treatment of the Lat- / Long- / Alt-itude
+				if ( 5 == $type) {
+					$rational = array();
+
+					for ($i=0; $i < $nvalues ; $i++) { 
+						$rational[] = getrationale( $buffer, $data[0], $i, $isIntel, 'gps');
+					}
+					$data = $rational;
+				}
+				// store the new data in array
+				$value_of_tag = $data; 
+				$meta_key =	$tags[ $piece ]['text'];
+				$meta[ $meta_key ] = $value_of_tag;
 			}
-		
-			$value_of_tag = $data; 
-			$meta_key =	$tags[ $piece ]['text'];
-			$meta[ $meta_key ] = $value_of_tag;
 		}
 		
 		if ( sizeof ( $meta ) === $nGpsTags ) { break; }
