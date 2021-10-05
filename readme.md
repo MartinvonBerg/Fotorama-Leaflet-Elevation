@@ -354,6 +354,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.3.6 =
+04.10.2021: update of http-request-method to WP standard functions in fm_functions.php. Therefore the 'user_agent' in http-header is now the standard header from WP to consistent with certificates (hopefully)
+
 = 0.3.5 =
 29.07.2021: Bug-Fix for GPS-data extraction from Webp-Files with inconsistent GPS-Data in extractMetadata.php
 

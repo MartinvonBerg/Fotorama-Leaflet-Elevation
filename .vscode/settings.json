@@ -2,4 +2,5 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.pythonPath": "C:\\Users\\Martin von Berg\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
+    "print.colourScheme": "Atelier Dune",
 }
