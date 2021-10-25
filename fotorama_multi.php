@@ -140,7 +140,7 @@ function showmulti($attr, $content = null)
 		$lang = 'en';
 	}
 
-	 // add inline CSS for fotorama CSS settings
+	// add inline CSS for fotorama CSS settings
 	$custom_css1 = ".fotorama__stage { background-color: {$background}; }";
     wp_add_inline_style( 'fotorama_css', $custom_css1 );
 				  
@@ -157,82 +157,16 @@ function showmulti($attr, $content = null)
 	$imageurl = $up_url . '/' . $imgpath;         // url to the images-url in uploads directory
 	$plugin_path = plugins_url('/', __FILE__);
 	$wp_fotomulti_path = $plugin_path . 'images/';
-	// settings for the thumbnail checking
-	$thumbheight = (string) get_option('thumbnail_size_h');
-	$thumbwidth = (string) get_option('thumbnail_size_w');
-	
+		
 	
 	// Loop through all webp- and jpg-files in the given folder, and get the required data
-	$imageNumber = 0;
-	$allImageFiles = preg_grep('/\.(jpe?g|webp)$/i', glob( $imagepath .'/*.*'));
-		
-	foreach ( $allImageFiles as $file ) {
-		// check wether current $file of the $path (=folder) is a unscaled jpg-file and not a thumbnail or a rescaled file
-		// This means: The filename must not contain 'thumb' or '[0-9]x[0-9]' or 'scaled'. 
-		// All other additions to the filename will be treated as full scaled image-file that will be shown in the image-slider
-		$ext = '.' . pathinfo($file)['extension'];
-		$jpgfile = basename($file, $ext); 
-		$isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled'); 
-		$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . $ext;
-		
-		if ( ! $isthumb ) {
+	require_once __DIR__ . '/inc/readImageFolder.php';
+	$folder = new ReadImageFolder( $imagepath, $thumbsdir, $imageurl, $requiregps );
+	$folder->readFolder();
+	$data2 = $folder->getImagesForGallery();
+	$imageNumber = $folder->getImageNumber();
+	$folder = null;
 
-			// check whether thumbnails are available in the image-folder and if yes, how they are named
-			// für diesen Teil mit checkThumbs wird ca. 38% der Gesamtlaufzeit bei Aufruf des Shortcodes verbraucht! wobei ca. 80% von is_file oder file_exists verbraucht wird!
-			$thumbs = '';
-			$pathtocheck = $imagepath . '/' . $jpgfile;
-			list( $thumbavail, $thumbs ) = checkThumbs( $thumbs, $pathtocheck, $thumbcheck, $ext);
-
-			// search for webp-thumbs if jpg-image was converted to webp
-			if ( ( ('.jpg' == $ext) || ('.jpeg' == $ext) ) && ( ! $thumbavail ) ) {
-				$thumbcheck = '-' . $thumbwidth . 'x' . $thumbheight . '.webp';
-				list( $thumbavail, $thumbs ) = checkThumbs( $thumbs, $pathtocheck, $thumbcheck, '.webp');
-			}
-					
-			// check additionally whether thumbnails are available in the sub-folder ./thumbs and if, how they are named
-			// even if there were thumbnails in the image-folder the thumbnails in ../thumbs are preferably used
-			// therefore this check runs here after the above check for the image-folder
-			$pathtocheck = $imagepath . '/' . $thumbsdir . '/'. $jpgfile;
-			list( $thumbinsubdir, $thumbs ) = checkThumbs( $thumbs, $pathtocheck, $thumbcheck, $ext);
-						
-			
-			// get $Exif-Data from image and check wether image contains GPS-data
-			// And get the WPid if the image is in the WP-Media-Library
-			$wpimgurl = $imageurl . '/' . $jpgfile . $ext;
-			$wpid = attachment_url_to_postid( $wpimgurl );
-			$data2[ $imageNumber ] = getEXIFData( $imagepath . "/" . basename( $file), $ext, $wpid );
-
-			// convert the GPS-data to decimal values, if available
-			// Dieser Teil braucht ebenfalls ca. 38% der Laufzeit bei Aufruf des shortcodes, wobei ca. 50% von gpxview_GPS2Num verbraucht wird
-			list( $lon, $lat ) = gpxview_getLonLat( $data2 [ $imageNumber ] ) ;
-		
-			// do nothing, GPS-data invalid but we want only to show images WITH GPS, so skip this image;
-			if ( ( (is_null($lon) ) || (is_null($lat)) ) && ( 'true' == $requiregps ) ) {	
-				array_pop( $data2 );
-			} 
-			else {
-				// expand array data2 with information that was collected during the image loop
-				$data2[ $imageNumber ]['id'] = $imageNumber; 
-				$data2[ $imageNumber ]['lat'] = $lat; 
-				$data2[ $imageNumber ]['lon'] = $lon; 
-				$data2[ $imageNumber ]['file'] = $jpgfile;
-				$data2[ $imageNumber ]['wpid'] = $wpid;
-				$data2[ $imageNumber ]['thumbavail'] = $thumbavail; 
-				$data2[ $imageNumber ]['thumbinsubdir'] = $thumbinsubdir;
-				$data2[ $imageNumber ]['thumbs'] = $thumbs;
-				$data2[ $imageNumber ]['extension'] = $ext;
-			
-				// create array to add the image-urls to Yoast-seo xml-sitemap
-				if ($doYoastXmlSitemap) {
-					$img2add = $up_url . '/' . $imgpath . '/' . $jpgfile . $ext;
-					$postimages[] = array('src' => $img2add , 'alt' => $data2[ $imageNumber ]['title'], 'title' => $data2[ $imageNumber ]['title'],);
-				}
-			
-				// increment imagenumber
-				$imageNumber++;
-			}
-		}
-	}
 	// check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
 	$rowsum = $imageNumber * ($imageNumber + 1) / 2;
 	if ($imageNumber > 0) {
@@ -263,8 +197,14 @@ function showmulti($attr, $content = null)
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 	}
 
-	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap && ( $draft_2_pub) ) { 
-			
+	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap && $draft_2_pub ) { 
+		// TODO: update this code
+		// create array to add the image-urls to Yoast-seo xml-sitemap
+		if ($doYoastXmlSitemap) {
+			$img2add = $up_url . '/' . $imgpath . '/' . $jpgfile . $ext;
+			$postimages[] = array('src' => $img2add , 'alt' => $data2[ $imageNumber ]['title'], 'title' => $data2[ $imageNumber ]['title'],);
+		}
+
 		if ( (0 == $shortcodecounter) ) {
 			delete_post_meta($postid,'postimg');
 
@@ -283,7 +223,6 @@ function showmulti($attr, $content = null)
 		update_post_meta( $postid, 'postimg', $postimages, '' );
 	}
 	
-			
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
 
