@@ -179,11 +179,12 @@ function gpxview_get_upload_dir($param, $subfolder = '')
 function gpxview_GPS2Num($coordPart)
 {
 	$parts = explode('/', $coordPart);
+	$Nparts = count( $parts );
 
-	if (count($parts) <= 0)
+	if ( $Nparts <= 0)
 		return 0;
 
-	if (count($parts) == 1)
+	if ( $Nparts == 1)
 		return $parts[0];
 
 	return floatval($parts[0]) / floatval($parts[1]);
@@ -198,13 +199,15 @@ function gpxview_GPS2Num($coordPart)
  */
 function gpxview_getGPS($exifCoord, $hemi)
 {
-	if ( ! is_array($exifCoord)) {
+	if ( ! is_array($exifCoord) ) {
 		return null;
 	}
 
-	$degrees = count($exifCoord) > 0 ? gpxview_GPS2Num($exifCoord[0]) : 0;
-	$minutes = count($exifCoord) > 1 ? gpxview_GPS2Num($exifCoord[1]) : 0;
-	$seconds = count($exifCoord) > 2 ? gpxview_GPS2Num($exifCoord[2]) : 0;
+	$NExifCoords = count($exifCoord);
+
+	$degrees = $NExifCoords > 0 ? gpxview_GPS2Num($exifCoord[0]) : 0;
+	$minutes = $NExifCoords > 1 ? gpxview_GPS2Num($exifCoord[1]) : 0;
+	$seconds = $NExifCoords > 2 ? gpxview_GPS2Num($exifCoord[2]) : 0;
 
 	$flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
 
@@ -349,33 +352,6 @@ function getEXIFData( $file, $ext, $wpid)
 	}
 	
 	return $data;
-}
-
-/**
- * check the availability of thumbnails
- *
- * @param string $pathtocheck 
- * @param string $thumbcheck the basename of the file with thumbnails to search for
- * @param string $ext the current extension ('jgp' or 'webp')
- * @return array with result values
- */
-function checkThumbs ( string $thumbs, string $pathtocheck, string $thumbcheck, string $ext ) {
-	$thumbinsubdir = true;
-	
-	if     ( is_file($pathtocheck . $thumbcheck) ) {
-		$thumbs = $thumbcheck;
-		}
-	elseif ( is_file($pathtocheck . '-thumb' . $ext) ) {
-		$thumbs = '-thumb' . $ext;
-		}
-	elseif ( is_file($pathtocheck . '_thumb' . $ext) ) {
-		$thumbs = '_thumb' . $ext;
-		}
-	else {
-		$thumbinsubdir = false;
-	}
-
-	return array ( $thumbinsubdir, $thumbs);
 }
 
 /**
