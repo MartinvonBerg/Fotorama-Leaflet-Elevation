@@ -354,6 +354,10 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.4.0 =
+26.10.2021: Start of Code Refactoring and Performance Optimization. Introduced a Class for the read-out out the gallery-folder. Time reduced by 20% from the request time. 
+Update of Readme after Performance Optimization.
+
 = 0.3.6 =
 04.10.2021: update of http-request-method to WP standard functions in fm_functions.php. Therefore the 'user_agent' in http-header is now the standard header from WP to consistent with certificates (hopefully)
 
@@ -382,7 +386,7 @@ Minor bugfixes and changes: re-introduced not to use -scaled images. The string 
 = 0.1.5 =
 09.05.2021: js-change to load WordPress-images with srcset and portrait-mode correctly
 
-11.05.2021: introduced an CSS-option to change the background color of the slides, and several options of fotorama are now changeable with parameters of the shortcode. Currently no admin settings for that. But the default-values are not too bad. Soo, no need to change this here. TODO: Update this readme for this settings and changes!
+11.05.2021: introduced an CSS-option to change the background color of the slides, and several options of fotorama are now changeable with parameters of the shortcode. Currently no admin settings for that. But the default-values are not too bad. Soo, no need to change this here. 
 
 = 0.1.4 =
 1.05.2021: PHP error correction for setting of custom-fields lat and lon from gpx-file

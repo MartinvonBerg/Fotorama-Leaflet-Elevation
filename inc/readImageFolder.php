@@ -115,7 +115,6 @@ final class ReadImageFolder
             if ( ! $isthumb) {
 
                 // check whether thumbnails are available in the image-folder and if yes, how they are named
-                // für diesen Teil mit checkThumbs wird ca. 38% der Gesamtlaufzeit bei Aufruf des Shortcodes verbraucht! wobei ca. 80% von is_file oder file_exists verbraucht wird!
                 $thumbs = '';
                 $pathtocheck = $this->imagepath . '/' . $jpgfile;
                 [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, $ext);
@@ -139,7 +138,6 @@ final class ReadImageFolder
                 $data2[$this->imageNumber] = getEXIFData($this->imagepath . "/" . basename($file), $ext, $wpid);
 
                 // convert the GPS-data to decimal values, if available
-                // Dieser Teil braucht ebenfalls ca. 38% der Laufzeit bei Aufruf des shortcodes, wobei ca. 50% von gpxview_GPS2Num verbraucht wird
                 [$lon, $lat] = gpxview_getLonLat($data2[$this->imageNumber]);
 
                 // do nothing, GPS-data invalid but we want only to show images WITH GPS, so skip this image;

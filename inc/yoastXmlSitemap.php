@@ -14,6 +14,7 @@ namespace mvbplugins\fotoramamulti;
  * @return array $images the images from the custom field 'postimg'
  */
 function filter_wpseo_sitemap_urlimages( $images, $post_id ) { 
+	// TODO: update this
 	//$postimages  = array('src' => 'https://127.0.0.1/wordpress/wp-content/uploads/Alben_Website/Rettenstein/Kitzb_Alpen_2018-5.jpg', 
 	//				       'title' => 'Test-Bild', 
 	//				       'alt' => 'bild mit nix drin', ); 
@@ -32,7 +33,7 @@ function filter_wpseo_sitemap_urlimages( $images, $post_id ) {
 				elseif ( empty( $singleimg['alt'] ) ) {
 					$singleimg['alt'] = $singleimg['title'];
 				}
-				$images[] = $singleimg; // write image to XML-Sitemap TODO: add title if empty, or vive versa
+				$images[] = $singleimg; // write image to XML-Sitemap TODO: add title if empty, or vice versa
 			}			
 		}
 	}

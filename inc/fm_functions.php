@@ -282,7 +282,7 @@ function getEXIFData( $file, $ext, $wpid)
 	$title = 'notitle';
 	$ext = \strtolower( $ext );
 	
-	// read exif from file independent if image is in WP database TODO: move the jpeg part to a seperate function
+	// read exif from file independent if image is in WP database
 	if ( ('.jpg' == $ext) || ('.jpeg' == $ext) ) {
 		$data = getJpgMetadata( $file );
 
