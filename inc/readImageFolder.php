@@ -30,6 +30,7 @@ final class ReadImageFolder
     protected $thumbsdir  = ''; // string
     protected $imageurl   = ''; // string
     protected $requiregps = ''; // string
+    protected $ignoresort = ''; // string
     
     // PHP 7.4 version
     /*
@@ -42,6 +43,7 @@ final class ReadImageFolder
     protected string $thumbsdir  = ''; // string
     protected string $imageurl   = ''; // string
     protected string $requiregps = ''; // string
+    protected string $ignoresort = ''; // string
     */
 
     /**
@@ -52,7 +54,7 @@ final class ReadImageFolder
      * @param string $url complete url to the images
      * @param string $gps whether gps is required or not
      */
-    public function __construct(string $folder, string $dir, string $url, string $gps)
+    public function __construct(string $folder, string $dir, string $url, string $gps, string $ignoresort)
     {
         $this->imageNumber = 0;
         $this->imagepath = $folder;
@@ -70,6 +72,9 @@ final class ReadImageFolder
         $this->thumbsdir  = $dir;
         $this->imageurl   = $url;
         $this->requiregps = $gps;
+        $this->ignoresort = $ignoresort;
+
+        $this->readFolder();
     }
 
     /**
@@ -97,7 +102,7 @@ final class ReadImageFolder
      *
      * @return void
      */
-    public function readFolder()
+    private function readFolder()
     {
         // Remark to variables: Not all variables are defined as class variables. So the exist only locally within this function.
         $data2 = [];
@@ -112,7 +117,7 @@ final class ReadImageFolder
             $isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled');
             $thumbcheck = '-' . $this->thumbwidth . 'x' . $this->thumbheight . $ext;
 
-            if ( ! $isthumb) {
+            if ( ! $isthumb ) {
 
                 // check whether thumbnails are available in the image-folder and if yes, how they are named
                 $thumbs = '';
@@ -160,6 +165,21 @@ final class ReadImageFolder
                 }
             }
         }
+
+        // check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
+        $rowsum = $this->imageNumber * ($this->imageNumber + 1) / 2;
+
+        if ($this->imageNumber > 0) {
+            $csort = array_column($data2, 'sort'); // $customsort
+            $arraysum = array_sum($csort);
+        
+            if ( ($rowsum !== $arraysum) or ('true' === $this->ignoresort) ) {
+                $csort = array_column($data2, 'datesort');
+            }
+            // sort images asending with date-taken
+            array_multisort($csort, SORT_ASC, $data2);
+        }
+
         $this->result = $data2;
     }
 

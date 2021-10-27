@@ -161,25 +161,12 @@ function showmulti($attr, $content = null)
 	
 	// Loop through all webp- and jpg-files in the given folder, and get the required data
 	require_once __DIR__ . '/inc/readImageFolder.php';
-	$folder = new ReadImageFolder( $imagepath, $thumbsdir, $imageurl, $requiregps );
-	$folder->readFolder();
+	$folder = new ReadImageFolder( $imagepath, $thumbsdir, $imageurl, $requiregps, $ignoresort );
 	$data2 = $folder->getImagesForGallery();
 	$imageNumber = $folder->getImageNumber();
 	$folder = null;
 
-	// check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
-	$rowsum = $imageNumber * ($imageNumber + 1) / 2;
-	if ($imageNumber > 0) {
-		$csort = array_column($data2, 'sort'); // $customsort
-		$arraysum = array_sum($csort);
-	
-		if ( ($rowsum != $arraysum) or ('true' == $ignoresort) ) {
-			$csort = array_column($data2, 'datesort');
-		}
-		// sort images asending with date-taken
-		array_multisort($csort, SORT_ASC, $data2);
-	}
-	
+	// ------------- custom fields, move to admin and class
 	// on Status change from published to draft delete Custom-Fields 'lat' 'lon' and 'postimages' from the post
 	// delete always as we may have this plugin before and do want to delete the custom fields now. 
 	// But the deletion requires a status transition from published to draft and back
@@ -193,19 +180,23 @@ function showmulti($attr, $content = null)
 	// on the status transition of the post from 'draft' to 'published'.
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
-	if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) && ( $imageNumber > 0)) {
+	if ( \current_user_can('edit_posts') && $setCustomFields && (0 === $shortcodecounter) && ( $imageNumber > 0)) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 	}
 
-	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap && $draft_2_pub ) { 
-		// TODO: update this code
+	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap && $draft_2_pub ) {
 		// create array to add the image-urls to Yoast-seo xml-sitemap
-		if ($doYoastXmlSitemap) {
-			$img2add = $up_url . '/' . $imgpath . '/' . $jpgfile . $ext;
-			$postimages[] = array('src' => $img2add , 'alt' => $data2[ $imageNumber ]['title'], 'title' => $data2[ $imageNumber ]['title'],);
+		$firstpart = $up_url . \DIRECTORY_SEPARATOR . $imgpath . \DIRECTORY_SEPARATOR;
+		foreach ($data2 as $data) {
+			$img2add = $firstpart . $data['file'] . $data['extension'];
+			$postimages[] = array(
+				'src' => $img2add,
+				'alt' => $data['title'],
+				'title' => $data['title']
+			);
 		}
 
-		if ( (0 == $shortcodecounter) ) {
+		if ( (0 === $shortcodecounter) ) {
 			delete_post_meta($postid,'postimg');
 
 		} else {
@@ -223,9 +214,10 @@ function showmulti($attr, $content = null)
 		update_post_meta( $postid, 'postimg', $postimages, '' );
 	}
 	
+	// --------------- HTML -------------------
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
-
+		
 	// Generate the html-code start with the surrounding Div
 	$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
 	
