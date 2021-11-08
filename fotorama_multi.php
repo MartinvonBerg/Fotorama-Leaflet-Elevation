@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.4.0
+ * Version:           0.4.1
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -165,6 +165,20 @@ function showmulti($attr, $content = null)
 	$data2 = $folder->getImagesForGallery();
 	$imageNumber = $folder->getImageNumber();
 	$folder = null;
+
+	// check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
+	// Did not work to move it to the class for reading out images. So it is still here.
+	$rowsum = $imageNumber * ($imageNumber + 1) / 2;
+	if ($imageNumber > 0) {
+		$csort = array_column($data2, 'sort'); // $customsort
+		$arraysum = array_sum($csort);
+	
+		if ( ($rowsum != $arraysum) or ('true' == $ignoresort) ) {
+			$csort = array_column($data2, 'datesort');
+		}
+		// sort images asending with date-taken
+		array_multisort($csort, SORT_ASC, $data2);
+	}
 
 	// ------------- custom fields, move to admin and class
 	// on Status change from published to draft delete Custom-Fields 'lat' 'lon' and 'postimages' from the post

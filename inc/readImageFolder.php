@@ -165,7 +165,7 @@ final class ReadImageFolder
                 }
             }
         }
-
+        /*
         // check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
         $rowsum = $this->imageNumber * ($this->imageNumber + 1) / 2;
 
@@ -179,7 +179,7 @@ final class ReadImageFolder
             // sort images asending with date-taken
             array_multisort($csort, SORT_ASC, $data2);
         }
-
+        */
         $this->result = $data2;
     }
 

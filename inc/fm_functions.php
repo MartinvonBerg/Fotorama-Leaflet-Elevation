@@ -464,9 +464,18 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 							// only done for the first track. Mind: allow_url_fopen of the server has to be ON!
 							if ( ('true' == $showadress) &&  ('1' == \ini_get('allow_url_fopen') ) ) {
 								$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
-								$resp = wp_remote_get( $url );
-								$body = \json_decode( \wp_remote_retrieve_body( $resp ) );
-								$geoadress = (array) $body->address;
+								$opts = array(
+									'http'=>array(
+									'method'=>'GET',
+									'header'=>'User-Agent: PostmanRuntime/7.26.10' // just any user-agent to fake a human access
+									)
+								);
+								$context = stream_context_create($opts);
+								$geojson = json_decode(file_get_contents( $url , false, $context ));
+								$geoadress = (array) $geojson->address;
+								//$resp = wp_remote_get( $url );
+								//$body = \json_decode( \wp_remote_retrieve_body( $resp ) );
+								//$geoadress = (array) $body->address;
 								$geoadressfield = maybe_serialize($geoadress);
 								delete_post_meta($postid,'geoadress');
 								update_post_meta($postid,'geoadress', $geoadressfield,'');

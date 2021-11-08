@@ -354,6 +354,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.4.1 =
+07.11.2021: sorting of images back to the main php file. Did not work if added to the class.
+
 = 0.4.0 =
 26.10.2021: Start of Code Refactoring and Performance Optimization. Introduced a Class for the read-out out the gallery-folder. Time reduced by 20% from the request time. 
 Update of Readme after Performance Optimization.
