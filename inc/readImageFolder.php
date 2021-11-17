@@ -192,15 +192,16 @@ final class ReadImageFolder
      * @param string $ext the current extension ('jgp' or 'webp')
      * @return array<bool, string> with result values for $thumbinsubdir and $thumbs-extension
      */
+
     private function checkThumbs(string $thumbs, string $pathtocheck, string $thumbcheck, string $ext)
     {
         $thumbinsubdir = true;
 
-        if (\in_array($pathtocheck . $thumbcheck, $this->allImageFiles)) {
+        if (is_file($pathtocheck . $thumbcheck)) {
             $thumbs = $thumbcheck;
-        } elseif (\in_array($pathtocheck . '-thumb' . $ext, $this->allImageFiles)) {
+        } elseif (is_file($pathtocheck . '-thumb' . $ext)) {
             $thumbs = '-thumb' . $ext;
-        } elseif (\in_array($pathtocheck . '_thumb' . $ext, $this->allImageFiles)) {
+        } elseif (is_file($pathtocheck . '_thumb' . $ext)) {
             $thumbs = '_thumb' . $ext;
         } else {
             $thumbinsubdir = false;
