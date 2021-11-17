@@ -354,6 +354,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.4.2 =
+17.11.2021: BugFix for search of thumbnails in function checkthumbs of class readImageFolder. Tested on site www.mvb1.de with thumbs in same folder, subfolder and images in WordPress Library. OK.
+
 = 0.4.1 =
 07.11.2021: sorting of images back to the main php file. Did not work if added to the class.
 
