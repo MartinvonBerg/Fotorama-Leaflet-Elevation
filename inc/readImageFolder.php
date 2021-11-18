@@ -31,7 +31,9 @@ final class ReadImageFolder
     protected $imageurl   = ''; // string
     protected $requiregps = ''; // string
     protected $ignoresort = ''; // string
-    
+    protected $hasThumbsDir = false; // bool
+    protected $allThumbFiles; // array
+
     // PHP 7.4 version
     /*
     protected int $imageNumber; // int Hint: type declaration only since PHP 7.4.0 allowed
@@ -44,6 +46,8 @@ final class ReadImageFolder
     protected string $imageurl   = ''; // string
     protected string $requiregps = ''; // string
     protected string $ignoresort = ''; // string
+    protected bool $hasThumbsDir = false;
+    protected array $allThumbFiles; // array
     */
 
     /**
@@ -106,7 +110,20 @@ final class ReadImageFolder
     {
         // Remark to variables: Not all variables are defined as class variables. So the exist only locally within this function.
         $data2 = [];
-        if ($this->thumbsdir === '') return;
+        
+        if ($this->thumbsdir === '') {
+            // this class variable has to be set by _construct and the class has to be instaniated with a non-empty string-value for $dir = $thumbsdir
+            return;
+        } else {
+            $pathtocheck = $this->imagepath . '/' . $this->thumbsdir;
+            $this->hasThumbsDir = is_dir($pathtocheck);
+
+            // get thumbnails from subdirectory ./thumbs only
+            $thumbfiles = glob($pathtocheck . '/*.*');
+            if ($thumbfiles === false) $thumbfiles = [];
+            $sorted = preg_grep('/\.(jpe?g|webp)$/i', $thumbfiles);
+            if ($sorted !== false) $this->allThumbFiles = $sorted;
+        }
 
         foreach ($this->allImageFiles as $file) {
             // check wether current $file of the $path (=folder) is a unscaled jpg-file and not a thumbnail or a rescaled file
@@ -115,9 +132,11 @@ final class ReadImageFolder
             $ext = '.' . pathinfo($file, PATHINFO_EXTENSION);
             $jpgfile = basename($file, $ext);
             $isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled');
-            $thumbcheck = '-' . $this->thumbwidth . 'x' . $this->thumbheight . $ext;
 
             if ( ! $isthumb ) {
+
+                $thumbcheck = '-' . $this->thumbwidth . 'x' . $this->thumbheight . $ext;
+                $thumbinsubdir = false;
 
                 // check whether thumbnails are available in the image-folder and if yes, how they are named
                 $thumbs = '';
@@ -130,11 +149,13 @@ final class ReadImageFolder
                     [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, '.webp');
                 }
 
-                // check additionally whether thumbnails are available in the sub-folder ./thumbs and if, how they are named
+                // check conditionally whether thumbnails are available in the sub-folder ./thumbs and if, how they are named
                 // even if there were thumbnails in the image-folder the thumbnails in ../thumbs are preferably used
                 // therefore this check runs here after the above check for the image-folder
-                $pathtocheck = $this->imagepath . '/' . $this->thumbsdir . '/' . $jpgfile;
-                [$thumbinsubdir, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, $ext);
+                if ($this->hasThumbsDir) {
+                    $pathtocheck = $this->imagepath . '/' . $this->thumbsdir . '/' . $jpgfile;
+                    [$thumbinsubdir, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, $ext);
+                }
 
                 // get $Exif-Data from image and check wether image contains GPS-data
                 // And get the WPid if the image is in the WP-Media-Library
@@ -165,21 +186,7 @@ final class ReadImageFolder
                 }
             }
         }
-        /*
-        // check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
-        $rowsum = $this->imageNumber * ($this->imageNumber + 1) / 2;
-
-        if ($this->imageNumber > 0) {
-            $csort = array_column($data2, 'sort'); // $customsort
-            $arraysum = array_sum($csort);
-        
-            if ( ($rowsum !== $arraysum) or ('true' === $this->ignoresort) ) {
-                $csort = array_column($data2, 'datesort');
-            }
-            // sort images asending with date-taken
-            array_multisort($csort, SORT_ASC, $data2);
-        }
-        */
+    
         $this->result = $data2;
     }
 
@@ -190,23 +197,28 @@ final class ReadImageFolder
      * @param string $pathtocheck the path that will be checked for thumbnails
      * @param string $thumbcheck the basename of the file with thumbnails to search for
      * @param string $ext the current extension ('jgp' or 'webp')
-     * @return array<bool, string> with result values for $thumbinsubdir and $thumbs-extension
+     * @return array<bool, string> with result values for $thumbinpath and $thumbs-extension
      */
 
     private function checkThumbs(string $thumbs, string $pathtocheck, string $thumbcheck, string $ext)
     {
-        $thumbinsubdir = true;
+        $thumbInPath = true;
 
-        if (is_file($pathtocheck . $thumbcheck)) {
+        if ($this->hasThumbsDir)
+            $searcharray = $this->allThumbFiles;
+        else 
+            $searcharray = $this->allImageFiles;
+      
+        if (\in_array($pathtocheck . $thumbcheck, $searcharray)) {
             $thumbs = $thumbcheck;
-        } elseif (is_file($pathtocheck . '-thumb' . $ext)) {
+        } elseif (\in_array($pathtocheck . '-thumb' . $ext, $searcharray)) {
             $thumbs = '-thumb' . $ext;
-        } elseif (is_file($pathtocheck . '_thumb' . $ext)) {
+        } elseif (\in_array($pathtocheck . '_thumb' . $ext, $searcharray)) {
             $thumbs = '_thumb' . $ext;
         } else {
-            $thumbinsubdir = false;
+            $thumbInPath = false;
         }
-
-        return [$thumbinsubdir, $thumbs];
+        
+        return [$thumbInPath, $thumbs];
     }
 }
