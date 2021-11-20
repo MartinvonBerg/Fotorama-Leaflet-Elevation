@@ -81,7 +81,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 
 1. Deactivate the plugin in Admin-Area of WordPress.
 2. Optional for clean Update: Delete the Plugin-in. Stop here for De-Installation. Hint: The Wordpress-Database is cleaned upon de-installation. The Custom-Fields ( the admin settings, only!) are removed from your database! 
-3. Do Installation with the new version. Wordpress will provide you a message window wether you are sure. If you de-installed before, all settings have to be done again. Skip Step 2. and you don't have to do that.
+3. Do Installation with the new version. Wordpress will provide you a message window wether you are sure. If you de-installed before, all settings have to be done again. Skip Step 2. and you don't have to do that. But mind to install in the same directory. This works only if you always install from a release OR the downloaded zip.
 
 # Upgrade Notice 
 
@@ -119,7 +119,8 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 |requiregps|true / false|requiregps="true"|Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF. Or show images also if the do NOT provide GPS-data.|
 |maxwidth|600|maxwidth="600"|Maximum width of the whole container with slider and map. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
 |minrowwidth|480|minrowwidth="480"|Minimum width of one row of the CSS-Grid. If greater than the half of the above maxwidth the Fotorama slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
-|showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not. Does not work perfectly if set to "false".|
+|showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not. Works now.|
+|shortcaption|true / false|shortcaption="true"|Show the first line ('title') of the caption only. Don't show other EXIF-Information taken from the image. The 'title' is taken from the EXIF-title tag, if available. There is no admin-setting for this option.|
 |useCDN|false / true|useCDN="false"|Use CDN for js- and css-Library-Files or not.|
 | fit |contain , cover, scaledown, none |fit="contain"| Define the scaling of Fotos for the Fotorama Slider.|
 | ratio | 1.5 | ratio="1.0" | Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now.|
@@ -353,6 +354,12 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.5.0 =
+20.11.2021:
+    - fixed the setting for showcaption. Caption is now hidden with dispaly:none in CSS if parameter = false. That works.
+    - added a parameter to show a shortened caption only: do this with shortcaption=true. No Admin Panel setting for that.
+    - fixed size of leaflet marker popups
 
 = 0.4.3 =
 18.11.2021: Further re-optimization of function checkthumbs of class readImageFolder as 0.4.2 was a hotfix only

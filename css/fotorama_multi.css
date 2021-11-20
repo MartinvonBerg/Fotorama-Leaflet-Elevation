@@ -34,6 +34,10 @@
 
 
 /*------------------ leaflet ------------------------------*/
+.leaf_pup_img {
+  min-width: 100px !important;
+}
+
 .boxmap {
   border-top: 1px solid lightslategray; 
   padding: 5px 5px 5px 5px; 

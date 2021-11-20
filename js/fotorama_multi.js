@@ -441,7 +441,10 @@
                             if ( ("srcset" in tour) && (Object.keys(tour["srcset"]).length) ) {  // "srcset" in tour
                                 var key = Object.keys(tour.srcset)[0];
                                 //marker[j].bindPopup( tour["title"] + '<div><img src="' + tour.srcset[key] + '"><br><br><br><br><br><br></div>' );
-                                marker[j].bindPopup('<div>' + tour["title"] + '<br><img width="150px" src="' + tour.srcset[key] + '"></div>' );
+                                marker[j].bindPopup('<div>' + tour["title"] + '<br><img class="leaf_pup_img" src="' + tour.srcset[key] + '"></div>', {
+                                    maxWidth: "auto",
+                                    //minWidth: "120px"
+                                });
                             } else {
                                 marker[j].bindPopup( tour["title"]  );
                             }

@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.4.3
+ * Version:           0.5.0
  * Author:            Martin von Berg
  * Author URI:        https://www.mvb1.de/info/ueber-mich/
  * License:           GPL-2.0
@@ -130,6 +130,7 @@ function showmulti($attr, $content = null)
 		'autoplay' 			=> $fotorama_elevation_options['autoplay'] ?? '3000', // on with 'true' or any interval in milliseconds.
 		'arrows' 			=> $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
 		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true' , // true or false
+		'shortcaption'		=> 'false'
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
 
@@ -146,6 +147,11 @@ function showmulti($attr, $content = null)
 				  
 	$custom_css2 = ".fotorama__thumb-border { border-color: {$thumbbordercolor}; }";
 	wp_add_inline_style( 'fotorama3_css', $custom_css2 );
+
+	if ( $showcaption === 'false') {
+		$custom_css3 = ".fotorama__caption__wrap { display: none; }";
+		wp_add_inline_style( 'fotorama3_css', $custom_css3 );
+	}
 				
 	
 	// Define path and url variables
@@ -283,35 +289,37 @@ EOF;
 			$phpimgdata[$imgnr-1]['coord'][0] = round( $data['lat'], 6 );
 			$phpimgdata[$imgnr-1]['coord'][1] = round( $data['lon'], 6 );
 
+			// generate the caption
+			if ( $shortcaption === 'false') {
+				$caption = <<<EOF
+				data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
+				{$data['camera']}<br>
+				{$data['focal_length_in_35mm']} mm / f/{$data['aperture']} / {$data['exposure_time']} s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
+				EOF;
+			} else {
+				$caption = "data-caption=\"{$imgnr} / {$imageNumber}: {$data['title']}\"";
+			}
+
 			if ( $data['thumbinsubdir'] ) {
 
 				$htmlstring .= <<<EOF
-		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}" 
-		data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
-		{$data['camera']}<br> 
-		{$data['focal_length_in_35mm']}mm / f/{$data['aperture']} / {$data['exposure_time']}s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
+		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"
+		 {$caption}
 		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$thumbsdir}/{$data['file']}{$data['thumbs']}"></a>
-
 EOF;
 			
 			} elseif ( $data['thumbavail'] ) {
 							
 				$htmlstring .= <<<EOF
 		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}" 
-		data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
-		{$data['camera']}<br> 
-		{$data['focal_length_in_35mm']}mm / f/{$data['aperture']} / {$data['exposure_time']}s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
+		 {$caption}
 		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}"></a>
-
 EOF;
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
 				$htmlstring .= <<<EOF
 		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}" 
-		data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
-		{$data['camera']}<br>
-		{$data['focal_length_in_35mm']}mm / f/{$data['aperture']} / {$data['exposure_time']}s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
-
+		 {$caption}
 EOF;
 			}
 			$imgnr++;
