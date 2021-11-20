@@ -31,7 +31,7 @@ If resized images and thumbnails are available in the folder, the responsive ima
 The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where the slider is ues. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point. Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work.
 
 The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation.
-Up to now, there is no Gutenberg-Block provided.  **It runs with Wordpress 5.8 and PHP 7.2 - 8.0.1**
+Up to now, there is no Gutenberg-Block provided.  **It runs with Wordpress 5.8.2 and PHP 7.2 - 8.0.1**
 
 </br>   
 
@@ -53,7 +53,7 @@ See under https://www.mvb1.de/skitour-schneibstein/
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.6 - 5.8.0 and PHP 7.4.2 - 8.0.1
+- The plugin was tested with wordpress versions 5.6 - 5.8.2 and PHP 7.4.2 - 8.0.1
 - The plugin was tested with other Plugins using leaflet Map:
 - It works together with:
     - Leaflet Map (uses the same script-handle 'leaflet_js')
@@ -85,7 +85,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 
 # Upgrade Notice 
 
-Upgrade to Wordpress 5.8.0 and PHP 7.4+ is highly recommended!
+Upgrade to Wordpress 5.8.2 and PHP 7.4+ is highly recommended!
 Due to the error corrections it is highly recommended to upgrade the Plugin! Thank's for your patience.
 
 </br>
@@ -120,7 +120,7 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 |maxwidth|600|maxwidth="600"|Maximum width of the whole container with slider and map. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
 |minrowwidth|480|minrowwidth="480"|Minimum width of one row of the CSS-Grid. If greater than the half of the above maxwidth the Fotorama slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
 |showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not. Works now.|
-|shortcaption|true / false|shortcaption="true"|Show the first line ('title') of the caption only. Don't show other EXIF-Information taken from the image. The 'title' is taken from the EXIF-title tag, if available. There is no admin-setting for this option.|
+|shortcaption|false / true|shortcaption="true"|Show the first line ('title') of the caption only. Don't show other EXIF-Information taken from the image. The 'title' is taken from the EXIF-title tag, if available. There is no admin-setting for this option.|
 |useCDN|false / true|useCDN="false"|Use CDN for js- and css-Library-Files or not.|
 | fit |contain , cover, scaledown, none |fit="contain"| Define the scaling of Fotos for the Fotorama Slider.|
 | ratio | 1.5 | ratio="1.0" | Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now.|
