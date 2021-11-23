@@ -93,17 +93,19 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 # Usage
 
 - Image and GPX-track preparation: see below
-- Shortcode:  `[gpxview]`   **Use the code as often you want per page or post! No interference between shortcodes.**
-- Parameter usage: <em>Parameter="Value"</em>. See the table below for shortcode parameters. Separate by at least one space in between the different parameters.
+- Shortcode:  `[gpxview]`   **Use the shortcode as often you want per page or post! No interference between shortcodes.**
+- Parameters of the shortcode: <em>Parameter="Value"</em>. See the table below for the parameters. Separate the parameters by at least one space in between.
+- NOTE: It is NOT required to provide ALL parameters listed hereafter! You only have to provide parameters that should be different to the admin settings, or where no admin setting is available.
+- Examples: see after table.
 
 
 |Shortcode|Value (Default first)|Example|Description|
 |:--------|:--------------------|:------|:----------|
-|gpxpath|gpx|gpxpath="gpx"|Path to file(s) with GPX-Track(s) relative to the WordPress upload folder, e.g: ../wordpress/wp-content/uploads/gpx. Do not use trailing slashes!|
-|gpxfile|test.gpx|gpxfile="test.gpx"|File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use a comma separated list for multiple files: "f1.gpx, f2.gpx, f3.gpx" (The file name given in the GPX-section of the admin settings is NOT shown in the example shortcode!)|
+|gpxpath|gpx|gpxpath="gpx"|Path to file(s) with GPX-Track(s) relative to the WordPress upload folder, e.g: "gpx". Do not use trailing slashes! So, complete path is e.g. "usr/www/html/wordpress/wp-content/uploads/gpx/"|
+|gpxfile|test.gpx|gpxfile="test.gpx"|File with gpx-track, e.g: "test.gpx". Use a comma separated list for multiple files: "f1.gpx, f2.gpx, f3.gpx" (The file name given in the GPX-section of the admin settings is NOT shown in the example shortcode!). Leave empty if you don't want to show a GPX-track.|
 |dload|yes / no|dload="yes"|Provide download link for the GPX-Track(s), if set to "yes".|
 |showalltracks|false / true|showalltracks="true"|Show all given tracks together in one Map. Works only with one map per page! Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option as this is no useful global option.|
-|showadress|true / false|showadress="true"|Show start address of the tour. GPX-coords are taken from the the custom fields *lat* and *lon*. Field is translation ready if its value is 'start address'. Only shown if the custom field 'geoadress' is set. The adresstext is linked to the google-map-service which opens in a separate tab of the browser. **Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work ! The plugin gives you a message instead of the Start Address if you are logged in as Admin.**
+|showadress|true / false|showadress="true"|Show start address of the tour. GPX-coords are taken from the the custom fields *lat* and *lon*. Field is translation ready if its value is 'start address'. Only shown if the custom field 'geoadress' of the post is set. The adresstext is linked to the google-map-service which opens in a separate tab of the browser. **Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work ! The plugin gives you a message if not, instead of the Start Address if you are logged in as Admin.**
 |adresstext|Start address|adresstext="Start address"|Text before the start address. Field is translation ready if its value is 'Start address'. Mind that translation may not show up if any cache is used! Even the browser cache will block the translation to show up.|
 |showmap|true / false|showmap="true"|Show the map, independent of other settings. There is no admin-setting for this option as this is no useful global option.|
 |mapheight|450|mapheight="450"|Height of the leaflet map in pixels (px). Note that this value maybe overwritten be the responsive function! Could happen that you won't see any change in the frontend if you change this value by the Admin settings.|
@@ -113,15 +115,15 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 |zoom|8|zoom="8"|Zoom level for the map if NO tracks and images are used. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
 |markertext|Home Address|markertext="My Address"|Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
 |**Fotorama**||||
-|imgpath|Bilder|imgpath="Bilder"|Path the images relative to the Wordpress upload folder, e.g: ../wordpress/wp-content/uploads/galleries/holiday2020. Do not use trailing slashes!|
-|alttext|''|alttext="Image Slider with map from holiday"|Alt-text for the fotorama slider for SEO|
+|imgpath|Bilder|imgpath="Bilder"|Path the images relative to the Wordpress upload folder e.g. "galleries/holiday2021". Do not use trailing slashes! So, complete path is e.g. "usr/www/html/wordpress/wp-content/uploads/galleries/holiday2021/"|
+|alttext|''|alttext="Image Slider with map from holiday"|Alt-text for the fotorama slider for SEO.|
 |ignoresort|false / true|ignoresort="false"|Ignore custom sort even if provided by Wordpress. If checked (="true") sort by image-taken-date ascending. The custom sort is only provided if the images were added to a separate folder of WP Media library and the custom field "gallery_sort" was set! This setting may be done with the WP REST API, see also: https://github.com/MartinvonBerg/Ext_REST_Media_Lib|
 |requiregps|true / false|requiregps="true"|Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF. Or show images also if the do NOT provide GPS-data.|
 |maxwidth|600|maxwidth="600"|Maximum width of the whole container with slider and map. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
 |minrowwidth|480|minrowwidth="480"|Minimum width of one row of the CSS-Grid. If greater than the half of the above maxwidth the Fotorama slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
-|showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not. Works now.|
+|showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not.|
 |shortcaption|false / true|shortcaption="true"|Show the first line ('title') of the caption only. Don't show other EXIF-Information taken from the image. The 'title' is taken from the EXIF-title tag, if available. There is no admin-setting for this option.|
-|useCDN|false / true|useCDN="false"|Use CDN for js- and css-Library-Files or not.|
+|useCDN|false / true|useCDN="false"|Use CDN for js- and css-Library-Files or not. Experimental.|
 | fit |contain , cover, scaledown, none |fit="contain"| Define the scaling of Fotos for the Fotorama Slider.|
 | ratio | 1.5 | ratio="1.0" | Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now.|
 | background | darkgrey | background="red" | Background color of the slider defined by a valid CSS name.|
@@ -140,7 +142,8 @@ Due to the error corrections it is highly recommended to upgrade the Plugin! Tha
 
 </br>
 
-- Example Shortcode: `[gpxview imgpath="Alben_Website" gpxpath="gpx" gpxfile="test.gpx" showalltracks="false" mapheight="400" chartheight="200" dload="true" alttext="" ignoresort="false" useCDN="false" showadress="true" showmap="true" adresstext="Start address" requiregps="true" maxwidth="1500" minrowwidth="480" showcaption="true" eletheme="lime-theme" mapcenter="48.12,12.35" zoom="8" markertext="My Address"]`
+- Example minimal Shortcode: `[gpxview imgpath="galleries/holiday2021"]`
+- Example complete Shortcode: `[gpxview imgpath="Alben_Website" gpxpath="gpx" gpxfile="test.gpx" showalltracks="false" mapheight="400" chartheight="200" dload="true" alttext="" ignoresort="false" useCDN="false" showadress="true" showmap="true" adresstext="Start address" requiregps="true" maxwidth="1500" minrowwidth="480" showcaption="true" eletheme="lime-theme" mapcenter="48.12,12.35" zoom="8" markertext="My Address"]`
 
 - **ATTENTION** There are Admin Settings without parameter in the shortcode:
     - Set Custom Fields for post: Set Custom Fields (geoadress, lat, lon, postimg) in post. Geoadress is for the start address shown under the elevation chart. Lat.,Lon. are for the GPS-Coords used for the Overview-Map. The custom-fields *lat*, *Lon*, *postimg* and *geoadress* are only set ONCE at the status-transition from 'draft' to 'published' only. So, if you want to change do 'published' to 'draft' to 'published' again. The data is taken from the FIRST shortcode on the page or post, only. So the images have to provide GPS-data or a GPX-track has to be used for this FIRST shortcode.
