@@ -13,4 +13,5 @@ function custom_mime_types( $mimes ) {
 	
 	return $mimes;
 	}
+	
 add_filter( 'upload_mimes', '\mvbplugins\fotoramamulti\custom_mime_types' );

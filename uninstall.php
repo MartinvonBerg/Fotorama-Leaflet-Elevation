@@ -4,7 +4,7 @@
  *
  * Description:       uninstall script - Fotorama Multi Slider -automatically run by WP
  * Author:            Martin von Berg
- * Author URI:        https://www.mvb1.de/info/ueber-mich/
+ * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License:           GPL-2.0
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */

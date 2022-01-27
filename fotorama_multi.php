@@ -10,9 +10,9 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.5.0
+ * Version:           0.5.1
  * Author:            Martin von Berg
- * Author URI:        https://www.mvb1.de/info/ueber-mich/
+ * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License:           GPL-2.0
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
@@ -87,6 +87,7 @@ function showmulti($attr, $content = null)
 	$postimages = []; // array with images for the Yoast XML Sitemap
 	$thumbsdir = 'thumbs'; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
+	$currentTheme = \get_stylesheet();
 	
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
@@ -275,11 +276,25 @@ EOF;
 
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
-			// set the alt-tag and the title for SEO
-			if ( 'notitle' == $data['title'] ) {
-				$data['title'] = __('Galeriebild') . ' '. \strval( $imgnr );
+
+			// set the alt-tag for SEO 
+			// $data['alt'] is only set if image is in wp media library, otherwise it is empty.
+			if ( $data['alt'] !== '') {
+				$alttext = $data['alt'];
+			} elseif ( $data['descr'] !== '' ) {
+				$alttext = $data['descr'];
+			} elseif ( $data['title'] !== 'notitle'	) {
+				$alttext = $data['title'];
+			} else {
+				$alttext = __('Galeriebild') . ' ' . \strval( $imgnr );
 			}
-			$alttext = $data['alt'] != '' ? $data['alt'] : $data['title'];
+
+			// set the caption-title (1st line). For JPGs the title is copied from $iptc["2#005"], otherwise it is 'notitle'.
+			if ( $data['title'] === 'notitle' && $data['descr'] === '' ) { 
+				$data['title'] = __('Galeriebild') . ' ' . \strval( $imgnr );
+			} elseif ( $data['descr'] != '' ) {
+				$data['title'] = substr( $data['descr'], 0, 80); 
+			}
 
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
@@ -291,17 +306,26 @@ EOF;
 
 			// generate the caption
 			if ( $shortcaption === 'false') {
-				$caption = <<<EOF
-				data-caption="{$imgnr} / {$imageNumber}: {$data['title']}<br>
-				{$data['camera']}<br>
-				{$data['focal_length_in_35mm']} mm / f/{$data['aperture']} / {$data['exposure_time']} s / ISO{$data['iso']} / {$data['DateTimeOriginal']}">
-				EOF;
+				// hot-fix for the new 2022 theme of WordPress. With usage of '<br>' or other html-tages the string of the caption is partly replaced by html-entities, e.g. &#8222 or so.
+				// Due to this the caption is not correct and fotorama breaks. Theoretically the usage of <br> within the string is NOT correct. It's better to use <p></p> for the three lines.
+				// But these HTML-tags are also replace by html-entities, which leads to inconsitencies.
+				// The only fif for the moment is to remove linebreaks for 2022-theme, or to use shortcaption, or no caption at all.
+				// In CSS there is no method to force line-breaks. I could be done with JS or jQuery but this is somewhat overdone.
+				// TODO: Find a better solution for that.
+				if ( $currentTheme == 'twentytwentytwo')
+					$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' ' . $data['camera'] . ' ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
+				else
+					$caption = "data-caption=\"{$imgnr} / {$imageNumber}: {$data['title']}<br>{$data['camera']}<br>{$data['focal_length_in_35mm']} mm / f/{$data['aperture']} / {$data['exposure_time']} s / ISO{$data['iso']} / {$data['DateTimeOriginal']}\"";
+				//$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' lnbrk ' . $data['camera'] . ' lnbrk ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
+				
 			} else {
-				$caption = "data-caption=\"{$imgnr} / {$imageNumber}: {$data['title']}\"";
-			}
+				//$caption = "data-caption=\"{$imgnr} / {$imageNumber}: {$data['title']}\"";
+				$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . '"';
+			};
+
+			if ( $showcaption === 'false') $caption = '';
 
 			if ( $data['thumbinsubdir'] ) {
-
 				$htmlstring .= <<<EOF
 		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"
 		 {$caption}
@@ -318,10 +342,10 @@ EOF;
 			
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
 				$htmlstring .= <<<EOF
-		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}" 
-		 {$caption}
+		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"
+		 {$caption}>
 EOF;
-			}
+			};
 			$imgnr++;
 		}
 		$htmlstring  .= "</div>";

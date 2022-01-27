@@ -32,13 +32,13 @@ If resized images and thumbnails are available in the folder, the responsive ima
 The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where the slider is ues. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point. Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work.
 
 The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation.
-Up to now, there is no Gutenberg-Block provided.  **It runs with WordPress 5.8.2 and PHP 7.2 - 8.0.1**
+Up to now, there is no Gutenberg-Block provided.  **It runs with WordPress 5.9 and PHP 7.2 - 8.0.1**
 
 </br>
 
 # Usage for those in a hurry
-- Install Pugin and activate.
-- Do all global settings for the plugin: Wordpress > Login to Admin > Settings > Fotorama-Elevation.
+- Install current **Release** of the Plugin and activate.
+- Do all global, common settings for the plugin: Wordpress > Login to Admin > Settings > Fotorama-Elevation.
 - Upload photos to e.g. "usr/www/html/wordpress/wp-content/uploads/holiday2021/"
 - Add this shortcode to post: [gpxview imgpath="holiday2021"] if photos **do have GPS-Data**.
 - Add this shortcode to post: [gpxview imgpath="holiday2021" requiregps="false" showmap="false"] if photos **don't have GPS-Data**.
@@ -52,7 +52,7 @@ If you like this plugin buy me a coffee or a beer:
 </br>    
 
 # Live Example or Demo
-See under https://www.mvb1.de/skitour-schneibstein/
+See under https://www.berg-reise-foto.de/tourenbericht-skitour/skitour-auf-den-sextner-stein-in-sudtirol/
 
 ## Screenshot
 
@@ -62,7 +62,7 @@ See under https://www.mvb1.de/skitour-schneibstein/
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.6 - 5.8.2 and PHP 7.4.2 - 8.0.1
+- The plugin was tested with wordpress versions 5.6 - 5.9 and PHP 7.4.2 - 8.0.1
 - The plugin was tested with other Plugins using leaflet Map:
 - It works together with:
     - Leaflet Map (uses the same script-handle 'leaflet_js')
@@ -94,8 +94,8 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 
 # Upgrade Notice 
 
-Upgrade to WordPress 5.8.2 and PHP 7.4+ is highly recommended!
-Due to the error corrections it is highly recommended to upgrade the Plugin! Thank's for your patience.
+Upgrade to WordPress 5.9 and PHP 7.4+ is highly recommended! PHP 8.0.x is even better!
+Due to the error corrections it is highly recommended to upgrade the Plugin to 0.5.1! Thank's for your patience.
 
 </br>
 
@@ -368,6 +368,12 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.5.1 =
+25.01.2022:
+    - replace mvb1.de by berg-reise-foto.de
+    - bugfix for caption together with WordPress 5.9 and 2022-theme and for shortcaption with no thumbnails. Test with WP 5.9.
+    - updated the data selection for alt-tag and caption for images that are NOT in the Media Library. EXIF-ImageDescription is now also used.
+
 = 0.5.0 =
 20.11.2021:
     - fixed the setting for showcaption. Caption is now hidden with dispaly:none in CSS if parameter = false. That works.
@@ -378,7 +384,7 @@ This plugin uses the great work from:
 18.11.2021: Further re-optimization of function checkthumbs of class readImageFolder as 0.4.2 was a hotfix only
 
 = 0.4.2 =
-17.11.2021: BugFix for search of thumbnails in function checkthumbs of class readImageFolder. Tested on site www.mvb1.de with thumbs in same folder, subfolder and images in WordPress Library. OK.
+17.11.2021: BugFix for search of thumbnails in function checkthumbs of class readImageFolder. Tested on site www.mvb1.de (now www.berg-reise-foto.de) with thumbs in same folder, subfolder and images in WordPress Library. OK.
 
 = 0.4.1 =
 07.11.2021: sorting of images back to the main php file. Did not work if added to the class.
@@ -406,7 +412,7 @@ Update of Readme after Performance Optimization.
 19.07.2021: Bugfixes due to non-standard usecase testing in PHP and JS.
 
 = 0.3.0 =
-17.07.2021: Added webp-support in preparation of WordPress 5.8. Therefore a Metadata Extractor for EXIF and XMP-Data for webp-images was added. The used WP 5.8 test version did not extract metadata from webp at all. 
+17.07.2021: Added webp-support in preparation of WordPress 5.8.x Therefore a Metadata Extractor for EXIF and XMP-Data for webp-images was added. The used WP 5.8 test version did not extract metadata from webp at all. 
 Minor bugfixes and changes: re-introduced not to use -scaled images. The string "Galeriebild" is now translatable. It is used if no image title is available.
 
 = 0.2.0 =

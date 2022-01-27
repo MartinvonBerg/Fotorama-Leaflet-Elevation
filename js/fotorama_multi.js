@@ -20,7 +20,7 @@
         var fotoramaState = 'normal'; // for zooming
         var zoomeffect = 'mouseover'; // for: https://www.jacklmoore.com/zoom/
         var zpadding = [30,30];
-        
+
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
             var showalltracks = (wpfm_phpvars0.showalltracks === 'true'); // info: wpfm_phpvars0 is defined on the page by wp_localize_script in PHP
@@ -38,7 +38,7 @@
                     zoom: 5,
                     markerZoomAnimation: false,
                     zoomControl: false,
-                    gestureHandling: true,            
+                    gestureHandling: true,
                 },
                 zoomControl: {
                     position: 'topleft',

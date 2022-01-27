@@ -11,7 +11,7 @@ $post_state_pub_2_draft = false;
 $post_state_draft_2_pub = false;
 
 // set globals on status transitions
-function on_all_status_transitions( $new_status, $old_status, $postid ) {
+function on_all_status_transitions( $new_status, $old_status ) {
 	global $post_state_pub_2_draft;
 	global $post_state_draft_2_pub;
 
