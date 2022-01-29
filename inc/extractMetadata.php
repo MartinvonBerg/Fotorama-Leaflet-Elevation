@@ -95,7 +95,6 @@ function getJpgMetadata( string $filename ) {
 	$description = isset($Exif["IFD0"]["ImageDescription"]) ? $Exif["IFD0"]["ImageDescription"] : '';
 	
 	$data['GPS'] = $Exif['GPS'] ?? null;
-	$data['title'] = $title; 
 	$data['exposure_time'] = $exptime;
 	$data['aperture'] = $aperture; 
 	$data['iso'] = $iso; 
@@ -104,21 +103,27 @@ function getJpgMetadata( string $filename ) {
 	$data['DateTimeOriginal'] = $datetaken; 
 	$data['keywords'] = $tags; 
 	$data['datesort'] = ''; 
+	$data['sort'] = 0;
+
+	$data['title'] = $title; 
 	$data['descr'] = $description; 
 	$data['alt'] = ''; 
 	$data['caption'] = ''; 
-	$data['sort'] = 0;
-
+	
 	return $data;
 }
 
 /**
- * read out the required metadata from a Webp-file on the server. The result provides some more data than required.
+ * Read out the required metadata from a Webp-file on the server. The result provides some more data than required.
  * Only tested for Nikon D7500 images after handling with Lightroom 6.14 and converson with imagemagick. Not done for all cameras that are around.
  * Title, caption and keywords are not found in EXIF-data. These are taken from XMP-data. 
+ * This keys are set in the returned array: 
+ * 		credit, copyright, title, caption, camera, keywords, GPS, make, 
+ * 		orientation, lens, iso, exposure-time, aperture, focal-length, created-timestamp.
+ * 		alt and description are not set.
  *
  * @param string $filename The complete path to the file in the directory.
- * @return array The exif data a array similar to the JSON that is provided via the REST-API.
+ * @return array The exif data array similar to the JSON that is provided via the REST-API.
  */
 function getWebpMetadata( string $filename ) {
 	$parsedWebPData = extractMetadata( $filename );
@@ -200,7 +205,6 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 					$meta[ 'camera' ] = '---';
 				}
 				
-
 				$tags = array();
 				$tagstart = $index["RDF:BAG"][0] +1;
 				$tagend   = $index["RDF:BAG"][1] -1;

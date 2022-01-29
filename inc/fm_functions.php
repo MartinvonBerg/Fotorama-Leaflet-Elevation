@@ -294,6 +294,7 @@ function getEXIFData( $file, $ext, $wpid)
 		$data['aperture'] = '--';
 		$data['DateTimeOriginal'] = '';
 		$data['alt'] = '';
+		$data['descr'] = '';
 
 		$additionaldata = getWebpMetadata( $file );
 
@@ -325,7 +326,7 @@ function getEXIFData( $file, $ext, $wpid)
 		// Sonderbehandlung wenn tags im jpg verfügbar sind
 		$wptags = $meta["image_meta"]["keywords"]; 
 		$tags = is_array($wptags) ? $wptags : '';
-		$description = $wpmediadata["post_content"] ?? ''; // 'Beschreibung' in the Media-Catalog, means $description
+		$description = $wpmediadata["post_content"] ?? ''; // 'Beschreibung' in the Media-Catalog, means description
 		
 		$title = $meta["image_meta"]["title"];
 		$wptitle = $wpmediadata['post_title'];
@@ -347,8 +348,25 @@ function getEXIFData( $file, $ext, $wpid)
 		
 		$tags != '' ? $data['keywords'] = $tags : '';
 		$description != '' ? $data['descr'] = $description : '';
-		 
-		
+		 	
+	} else {
+		// Post-Processing of $data for title and alt for images not in media catalog. Only title and alt are used later on.
+		// JPG: alt and caption are empty for images not in Media-Catalog.
+		// WEBP: alt and description are empty for images not in Media-Catalog.
+
+		// no-title -> caption -> description -> alt -> notitle.
+		if ( $data['title'] === 'notitle' ) { 
+			if ( $data['caption'] !== '') $data['title'] = $data['caption'];
+			elseif ( $data['descr'] !== '') $data['title'] = $data['descr'];
+			elseif ( $data['alt'] !== '') $data['title'] = $data['alt'];	
+		} 
+
+		// no-alt -> title -> caption -> description -> ''
+		if ( $data['alt'] === '' ) { 
+			if ( $data['title'] !== 'notitle') $data['alt'] = $data['title'];
+			elseif ( $data['caption'] !== '') $data['alt'] = $data['caption'];
+			elseif ( $data['descr'] !== '') $data['alt'] = $data['descr'];	
+		} 
 	}
 	
 	return $data;

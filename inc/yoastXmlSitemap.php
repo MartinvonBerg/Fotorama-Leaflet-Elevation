@@ -26,13 +26,13 @@ function filter_wpseo_sitemap_urlimages( $images, $post_id ) {
 		
 		if ( 'array' == gettype( $postimages) || 'object' == gettype( $postimages) ) {
 			foreach ($postimages as $singleimg) {
-				if ( empty( $singleimg['title'] ) ) {
+				if ( empty( $singleimg['title'] && ( $singleimg['alt'] !== '' ) ) ) {
 					$singleimg['title'] = $singleimg['alt'];
 				}
-				elseif ( empty( $singleimg['alt'] ) ) {
-					$singleimg['alt'] = $singleimg['title'];
-				}
-				$images[] = $singleimg; // write image to XML-Sitemap 
+				// append the image only if it is not in the array yet.
+				$key = array_search($singleimg['src'], array_column($images, 'src'));
+				if ( $key === false)
+					$images[] = $singleimg; // write image to XML-Sitemap 
 			}			
 		}
 	}

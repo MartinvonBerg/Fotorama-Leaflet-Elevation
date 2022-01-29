@@ -205,14 +205,15 @@ function showmulti($attr, $content = null)
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 	}
 
-	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap && $draft_2_pub ) {
+	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap ) {
 		// create array to add the image-urls to Yoast-seo xml-sitemap
-		$firstpart = $up_url . \DIRECTORY_SEPARATOR . $imgpath . \DIRECTORY_SEPARATOR;
+		$firstpart = $up_url . '/' . $imgpath . '/'; // workaround for local test site.
+
 		foreach ($data2 as $data) {
 			$img2add = $firstpart . $data['file'] . $data['extension'];
 			$postimages[] = array(
 				'src' => $img2add,
-				'alt' => $data['title'],
+				'alt' => $data['alt'],
 				'title' => $data['title']
 			);
 		}
@@ -277,24 +278,11 @@ EOF;
 		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($data2 as $data) {
 
-			// set the alt-tag for SEO 
-			// $data['alt'] is only set if image is in wp media library, otherwise it is empty.
-			if ( $data['alt'] !== '') {
-				$alttext = $data['alt'];
-			} elseif ( $data['descr'] !== '' ) {
-				$alttext = $data['descr'];
-			} elseif ( $data['title'] !== 'notitle'	) {
-				$alttext = $data['title'];
-			} else {
-				$alttext = __('Galeriebild') . ' ' . \strval( $imgnr );
+			// set the alt-tag and the title for SEO
+			if ( 'notitle' == $data['title'] ) {
+				$data['title'] = __('Galeriebild') . ' '. \strval( $imgnr );
 			}
-
-			// set the caption-title (1st line). For JPGs the title is copied from $iptc["2#005"], otherwise it is 'notitle'.
-			if ( $data['title'] === 'notitle' && $data['descr'] === '' ) { 
-				$data['title'] = __('Galeriebild') . ' ' . \strval( $imgnr );
-			} elseif ( $data['descr'] != '' ) {
-				$data['title'] = substr( $data['descr'], 0, 80); 
-			}
+			$alttext = $data['alt'] != '' ? $data['alt'] : $data['title'];
 
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
