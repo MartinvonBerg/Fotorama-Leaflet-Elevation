@@ -380,6 +380,16 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.6.1 =
+30.01.2022:
+    - Further refinement of selection of alt and title for the YOAST sitemap.
+
+= 0.6.0 =
+29.01.2022:
+    - replacement of bike-hike-map by CycleOSM. The former is no longer available.
+    - Update and rework for YOAST-XML-Sitemap. It is no longer required to change the state from publish -> draft -> publish. Just login to your admin-account and call the post in your browser.
+    - The title and alt tag are now also filled from caption and description, if available.
+
 = 0.5.1 =
 25.01.2022:
     - replace mvb1.de by berg-reise-foto.de

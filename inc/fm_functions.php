@@ -330,6 +330,7 @@ function getEXIFData( $file, $ext, $wpid)
 		
 		$title = $meta["image_meta"]["title"];
 		$wptitle = $wpmediadata['post_title'];
+		$wptitle = \str_replace( $ext, '', $wptitle);
 		if ( $wptitle != basename($file, $ext) ) {
 			$title = $wptitle;
 		}
@@ -349,24 +350,24 @@ function getEXIFData( $file, $ext, $wpid)
 		$tags != '' ? $data['keywords'] = $tags : '';
 		$description != '' ? $data['descr'] = $description : '';
 		 	
-	} else {
-		// Post-Processing of $data for title and alt for images not in media catalog. Only title and alt are used later on.
-		// JPG: alt and caption are empty for images not in Media-Catalog.
-		// WEBP: alt and description are empty for images not in Media-Catalog.
+	} 
+	// Post-Processing of $data for title and alt for images not in media catalog. Only title and alt are used later on.
+	// JPG: alt and caption are empty for images not in Media-Catalog.
+	// WEBP: alt and description are empty for images not in Media-Catalog.
 
-		// no-title -> caption -> description -> alt -> notitle.
-		if ( $data['title'] === 'notitle' ) { 
-			if ( $data['caption'] !== '') $data['title'] = $data['caption'];
-			elseif ( $data['descr'] !== '') $data['title'] = $data['descr'];
-			elseif ( $data['alt'] !== '') $data['title'] = $data['alt'];	
-		} 
+	// no-title -> caption -> description -> alt -> notitle.
+	if ( $data['title'] === 'notitle' ) {
+		if ( $data['caption'] !== '') $data['title'] = $data['caption'];
+		elseif ( $data['descr'] !== '') $data['title'] = $data['descr'];
+		elseif ( $data['alt'] !== '') $data['title'] = $data['alt'];	
+	}
 
-		// no-alt -> title -> caption -> description -> ''
-		if ( $data['alt'] === '' ) { 
-			if ( $data['title'] !== 'notitle') $data['alt'] = $data['title'];
-			elseif ( $data['caption'] !== '') $data['alt'] = $data['caption'];
-			elseif ( $data['descr'] !== '') $data['alt'] = $data['descr'];	
-		} 
+	// no-alt -> title -> caption -> description -> ''
+	if ( $data['alt'] === '' ) {
+		if ( $data['descr'] !== '') $data['alt'] = $data['descr'];
+		elseif ( $data['caption'] !== '') $data['alt'] = $data['caption'];
+		elseif ( $data['title'] !== 'notitle') $data['alt'] = $data['title'];
+			
 	}
 	
 	return $data;
