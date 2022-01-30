@@ -271,7 +271,7 @@ Process and save the file with the Button at the bottom.
 # Frequently Asked Questions
 
 - Why is the Start address not shown? 
-    - Check whether the custom fields *lat*, *lon*, *geoadress* are set. Use the WordPress-Plugin https://www.advancedcustomfields.com/ for that. **Important:** The server-setting *allow_url_fopen* has to be *ON* or *'1'* for that! The plugin give you a message instead of the Start Address if you are logged in as Admin. 
+    - Check whether the custom fields *lat*, *lon*, *geoadress* are set. Use the WordPress-Plugin https://www.admincolumns.com/ for that. **Important:** The server-setting *allow_url_fopen* has to be *ON* or *'1'* for that! The plugin give you a message instead of the Start Address if you are logged in as Admin. 
 - My YOAST sitemap is broken. What can I do?
 
     This happens occasionally if you are using many images in posts or pages. Due to that the generated XML-Code gets too long.
