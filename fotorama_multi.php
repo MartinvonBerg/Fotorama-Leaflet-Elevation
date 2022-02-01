@@ -28,21 +28,17 @@ if ( ! defined('ABSPATH' )) {
 require_once __DIR__ . '/inc/init_database.php';
 register_activation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
 
-// define globals and load all functions 
+// define global Constants  
 const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. read from WP settings. wp_options: large_size_w. Did not work
+const THUMBSDIR = 'thumbs';
+
+// load all functions
 require_once __DIR__ . '/inc/stateTransitions.php';
 require_once __DIR__ . '/inc/fm_functions.php';
 require_once __DIR__ . '/languages/locales_i18n.php';
+require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 
-// load the wpseo_sitemap_url-images callback to add images of post to the sitemap only if needed or intended
-$const2 = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16'];
-if ($const2 == 'true') {
-	require_once __DIR__ . '/inc/yoastXmlSitemap.php';
-	add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\do_addfilter_for_yoast');
-}
-
-
-// --- show admin page if request is for admin page
+// -------- show admin page if request is for admin page
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin_settings.php';
 	$fotorama_elevation = new FotoramaElevation();
@@ -63,7 +59,7 @@ if ( is_admin() ) {
 }
 add_action( 'shutdown', '\mvbplugins\fotoramamulti\action_shutdown', 10, 1 );
 
-// ------------------------------------------------------------
+// ------------------ shortcode function ------------------------------------------
 // define the shortcode to generate the image-slider with map
 add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 
@@ -76,16 +72,13 @@ function showmulti($attr, $content = null)
 	global $post_state_pub_2_draft;
 	global $post_state_draft_2_pub;
 	$pub_2_draft = $post_state_pub_2_draft ?? false;
-	$draft_2_pub = $post_state_draft_2_pub ?? false;
 	$setCustomFields = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15'] == 'true'; // liefert 'true'
-	$doYoastXmlSitemap = get_option( 'fotorama_elevation_option_name' )['doYoastXmlSitemap_16'] == 'true';
 	
 	// --- Variables -----------------------------------
 	$postid = get_the_ID();
 	$htmlstring = ''; 
 	$tracks = [];
-	$postimages = []; // array with images for the Yoast XML Sitemap
-	$thumbsdir = 'thumbs'; // we use a fixed name for the subdir containing the thumbnails
+	$thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
 	$currentTheme = \get_stylesheet();
 	
@@ -164,7 +157,7 @@ function showmulti($attr, $content = null)
 	$imageurl = $up_url . '/' . $imgpath;         // url to the images-url in uploads directory
 	$plugin_path = plugins_url('/', __FILE__);
 	$wp_fotomulti_path = $plugin_path . 'images/';
-		
+
 	
 	// Loop through all webp- and jpg-files in the given folder, and get the required data
 	require_once __DIR__ . '/inc/readImageFolder.php';
@@ -205,37 +198,7 @@ function showmulti($attr, $content = null)
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 	}
 
-	if ( \current_user_can('edit_posts') && $setCustomFields && $doYoastXmlSitemap ) {
-		// create array to add the image-urls to Yoast-seo xml-sitemap
-		$firstpart = $up_url . '/' . $imgpath . '/'; // workaround for local test site.
-
-		foreach ($data2 as $data) {
-			$img2add = $firstpart . $data['file'] . $data['extension'];
-			$postimages[] = array(
-				'src' => $img2add,
-				'alt' => $data['alt'],
-				'title' => $data['title']
-			);
-		}
-
-		if ( (0 === $shortcodecounter) ) {
-			delete_post_meta($postid,'postimg');
-
-		} else {
-			$myimgfrompost = get_post_meta($postid,'postimg'); // read array with post_images from custom-field of post
-			
-			if ( ! empty($myimgfrompost) ) {
-				$test = $myimgfrompost[0]; // we need only the first index
-				$existimages = maybe_unserialize($test);	// type conversion to array
-				//append new images at the end of array
-				$postimages = \array_merge($existimages, $postimages);
-			}
-		}
-
-		$postimages = maybe_serialize($postimages);
-		update_post_meta( $postid, 'postimg', $postimages, '' );
-	}
-	
+		
 	// --------------- HTML -------------------
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
