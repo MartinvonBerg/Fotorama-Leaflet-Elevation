@@ -19,7 +19,7 @@ use phpGPX\Models\Bounds;
  * @param string $path destination path for GPX-Track
  * @param string $newfile name for GPX-Track-file
  * @param float $smooth value for distance smoothing in meters
- * @param float $elesmooth value for elevation smoothing in meters
+ * @param int $elesmooth value for elevation smoothing in meters
  *
  * @return string description with simple stats as written to metadata of gpx-track
  */
@@ -151,7 +151,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
  * @param bool $reduce reduce track or not
  * @param float $smooth value for track smoothing in meters
  *
- * @return array bounds of track and segment 
+ * @return array<mixed> bounds of track and segment 
  */
 function getBounds($segment, $reduce, $smooth) {
     $minlat = 180;
@@ -213,7 +213,7 @@ function getBounds($segment, $reduce, $smooth) {
  * Calc 3D-Distance between trackpoints
  *
  * @param float $lat1
- * @param float $lon2
+ * @param float $lon1
  * @param float $lat2
  * @param float $lon2
  *

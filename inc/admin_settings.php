@@ -14,7 +14,7 @@ require_once $path . 'custom_mime_types.php';
 require_once $path . 'parseGPX.php'; 
 
 class FotoramaElevation {
-	private $fotorama_elevation_options;
+	private $fotorama_elevation_options; // missing typehints for PHP 7.4+
 	private $fotorama_option2;
 	private $up_dir = '';    
 	private $min_height_map = 100;

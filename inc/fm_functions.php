@@ -4,8 +4,12 @@ namespace mvbplugins\fotoramamulti;
 require_once __DIR__ . '/extractMetadata.php';
 
 // add the style for the grid to ALL headers!
-// Generate the inline style for the CSS-Grid. Identical for all shortcodes!
 add_action('wp_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
+/**
+ * Generate the inline style for the CSS-Grid. Identical for all shortcodes!
+ *
+ * @return void none
+ */
 function fotorama_multi_styles( ) {
 	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
 	$stylestring  = '<style id="fotorama_multi_inline_css" type="text/css">';
@@ -14,8 +18,12 @@ function fotorama_multi_styles( ) {
 	echo $stylestring;
 }
 
-// define the shutdown callback 
-function action_shutdown( $array ) { 
+/**
+ * define the shutdown callback
+ *
+ * @return void
+ */
+function action_shutdown( ) { 
     
 	$fm_act_pis = \get_option('fm_plugins_checker');
 
@@ -26,8 +34,11 @@ function action_shutdown( $array ) {
 		$plugin_name = plugin_basename( __FILE__ );
 		$pos = \stripos( $plugin_name, '/' );
 		$plugin_name = \substr($plugin_name, 0, $pos);
-		$not_fm_scripts = array();
-		$fm_scripts = array();
+		$not_fm_scripts = [];
+		$not_fm_scripts_complete = [];
+		$conflicting_plugin = [];
+		$conflicting_script = [];
+		$fm_scripts = [];
 		
 		// filter and sort the scripts loaded from all plugins and themes
 		foreach ($all['scripts'] as $script) {
@@ -104,7 +115,12 @@ function action_shutdown( $array ) {
 		\update_option('fm_plugins_checker', $fm_act_pis);
 	}
 }
-	
+
+/**
+ * Display the error notice in admin panel if plugins are conflicting
+ *
+ * @return void none
+ */
 function fm_error_notice() {
 	// error : red
 	// is-dimissable : click away and forget.
@@ -126,6 +142,11 @@ function fm_error_notice() {
     <?php
 }
 
+/**
+ * Get all scripts and styles
+ *
+ * @return array('scripts' => array<int, mixed>, 'styles' => array<int, mixed>)
+ */
 function get_scripts_styles() {
 
     $result = [];
@@ -181,11 +202,11 @@ function gpxview_GPS2Num($coordPart)
 	$parts = explode('/', $coordPart);
 	$Nparts = count( $parts );
 
-	if ( $Nparts <= 0)
+	if ( $Nparts = 0)
 		return 0;
 
 	if ( $Nparts == 1)
-		return $parts[0];
+		return floatval($parts[0]);
 
 	return floatval($parts[0]) / floatval($parts[1]);
 }
@@ -193,7 +214,7 @@ function gpxview_GPS2Num($coordPart)
 /**
  * calculate GPS-coordinates to float together with earth hemisphere
  *
- * @param array $exif-Coord One GPS-Coordinate taken from Exif in jpg-image in [degrees, minutes, seconds]
+ * @param array $exifCoord One GPS-Coordinate taken from Exif in jpg-image in [degrees, minutes, seconds]
  * @param string $hemi earth hemisphere. If "W" or "S" it is the west or south half of earth
  * @return float|null gps-coordinate as number or null if $exif-Coord is not an array
  */
@@ -281,6 +302,7 @@ function getEXIFData( $file, $ext, $wpid)
 	// preset the title 
 	$title = 'notitle';
 	$ext = \strtolower( $ext );
+	$data = [];
 	
 	// read exif from file independent if image is in WP database
 	if ( ('.jpg' == $ext) || ('.jpeg' == $ext) ) {
@@ -382,9 +404,12 @@ function getEXIFData( $file, $ext, $wpid)
  * @param string $up_dir the wp upload dir on the server
  * @param string $imgpath the current path of the 'Album' or 'gallerie' which is taken for fotorama
  * @param string $thumbsdir the directory with thumbnails, if any
- * @return void the srcset as array
+ * @return array<string> the srcset as array
  */
 function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpath, string $thumbsdir ) {
+
+	$phpimgdata = [];
+
 	// take srcset from WP if image was added to the WP media library
 	if ( $data['wpid'] > 0) {
 		$srcset2 = wp_get_attachment_image_srcset( $data['wpid'] );
@@ -440,7 +465,7 @@ function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpat
  * @param string $showadress whether to show the start adress
  * @param boolean $setCustomFields whether to set the custom fields in the post
  * @param integer $shortcodecounter the number of the shortcode on the page / post where it is used.
- * @return string gpxfile as string and tracks as array for the Javscript variable
+ * @return array<int, array<string, array<string, string>>|int|string> gpxfile as string and tracks as array for the Javscript variable
  */
 function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $gpx_url, string $showadress, bool $setCustomFields, int $shortcodecounter ) {
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript

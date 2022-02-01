@@ -1,6 +1,12 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
+/**
+ * Add custom mime types to the predefined mime tpyes for different kindes of GPX-files.
+ *
+ * @param  array<string, string> $mimes
+ * @return array<string, string>
+ */
 function custom_mime_types( $mimes ) { 
 	// Add new MIME types here
 	$mimes['kml'] = 'application/vnd.google-earth.kml+xml';

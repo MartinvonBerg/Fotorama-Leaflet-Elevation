@@ -10,7 +10,13 @@ global $post_state_draft_2_pub;
 $post_state_pub_2_draft = false;
 $post_state_draft_2_pub = false;
 
-// set globals on status transitions
+/**
+ * set globals for status transitions
+ *
+ * @param  string $new_status
+ * @param  string $old_status
+ * @return void
+ */
 function on_all_status_transitions( $new_status, $old_status ) {
 	global $post_state_pub_2_draft;
 	global $post_state_draft_2_pub;

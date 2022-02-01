@@ -26,7 +26,8 @@ if ( ! defined('ABSPATH' )) {
 
 // init the database settings for the admin panel on first activation of the plugin. Does not overwrite
 require_once __DIR__ . '/inc/init_database.php';
-register_activation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
+register_activation_hook( plugin_basename( __FILE__ ) ,   '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
+register_deactivation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_deactivate' );
 
 // define global Constants  
 const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. read from WP settings. wp_options: large_size_w. Did not work
@@ -43,6 +44,7 @@ if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin_settings.php';
 	$fotorama_elevation = new FotoramaElevation();
 	
+	// do the check for activated plugins that may conflict with leaflet.js
 	$wp_act_pis = get_option('active_plugins');
 	$wp_act_pis = \implode(', ',$wp_act_pis);
 	$fm_act_pis = \get_option('fm_plugins_checker');
@@ -70,7 +72,6 @@ function showmulti($attr, $content = null)
 
 	// Define global Values and Variables. We need the globals for the state-transition of the post
 	global $post_state_pub_2_draft;
-	global $post_state_draft_2_pub;
 	$pub_2_draft = $post_state_pub_2_draft ?? false;
 	$setCustomFields = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15'] == 'true'; // liefert 'true'
 	
@@ -80,7 +81,7 @@ function showmulti($attr, $content = null)
 	$tracks = [];
 	$thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
-	$currentTheme = \get_stylesheet();
+	$currentTheme = \get_stylesheet(); // required for special caption for theme 2022 with WP 5.9
 	
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
@@ -187,11 +188,9 @@ function showmulti($attr, $content = null)
 	if ($pub_2_draft) {
 		delete_post_meta($postid,'lat');
 		delete_post_meta($postid,'lon');
-		delete_post_meta($postid,'postimg');
 		delete_post_meta($postid,'geoadress');
 	}
 
-	// on the status transition of the post from 'draft' to 'published'.
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
 	if ( \current_user_can('edit_posts') && $setCustomFields && (0 === $shortcodecounter) && ( $imageNumber > 0)) {
