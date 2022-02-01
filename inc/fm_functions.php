@@ -465,7 +465,7 @@ function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpat
  * @param string $showadress whether to show the start adress
  * @param boolean $setCustomFields whether to set the custom fields in the post
  * @param integer $shortcodecounter the number of the shortcode on the page / post where it is used.
- * @return array<int, array<string, array<string, string>>|int|string> gpxfile as string and tracks as array for the Javscript variable
+ * @return array{string, array, int} gpxfile as string and tracks as array for the Javscript variable
  */
 function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $gpx_url, string $showadress, bool $setCustomFields, int $shortcodecounter ) {
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
