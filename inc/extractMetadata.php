@@ -123,7 +123,7 @@ function getJpgMetadata( string $filename ) {
  * 		alt and description are not set.
  *
  * @param string $filename The complete path to the file in the directory.
- * @return array The exif data array similar to the JSON that is provided via the REST-API.
+ * @return array|false The exif data array similar to the JSON that is provided via the REST-API.
  */
 function getWebpMetadata( string $filename ) {
 	$parsedWebPData = extractMetadata( $filename );
@@ -155,6 +155,8 @@ function extractMetadata( $filename ) {
 
 function extractMetadataFromChunks( $chunks, $filename ) {
 	
+	$meta = [];
+
 	foreach ( $chunks as $chunk ) {
 		if ( ! in_array( $chunk['fourCC'], [ 'VP8 ', 'VP8L', 'VP8X', 'EXIF', 'XMP ' ] ) ) {
 			// Not a chunk containing interesting metadata
@@ -185,6 +187,8 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 				xml_parse_into_struct($p, $xmp2, $vals, $index);
 				xml_parser_free($p);
 				
+				$title = '';
+
 				if ( isset( $index["DC:TITLE"] ) ) {
 					$nr = (int) ($index["DC:TITLE"][1] + $index["DC:TITLE"][0]) / 2;
 					$title = $vals[ $nr ]["value"];
@@ -205,14 +209,18 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 					$meta[ 'camera' ] = '---';
 				}
 				
-				$tags = array();
-				$tagstart = $index["RDF:BAG"][0] +1;
-				$tagend   = $index["RDF:BAG"][1] -1;
-				while ( $tagstart <= $tagend ) {
-					$tag = $vals[ $tagstart ]["value"];
-					$tagstart += 1;
-					$tags[] = $tag;
+				$tags = [];
+
+				if ( isset( $index["RDF:BAG"] ) ) {
+					$tagstart = $index["RDF:BAG"][0] +1;
+					$tagend   = $index["RDF:BAG"][1] -1;
+					while ( $tagstart <= $tagend ) {
+						$tag = $vals[ $tagstart ]["value"];
+						$tagstart += 1;
+						$tags[] = $tag;
+					}
 				}
+
 				$meta[ 'keywords' ] = $tags; 
 
 				break;
@@ -282,7 +290,7 @@ function decodeExtendedChunkHeader( $header ) {
  *
  * @param string $filename
  * @param integer $maxChunks
- * @return array $info
+ * @return false|array $info
  */
 function findChunksFromFile( $filename, $maxChunks = -1 ) {
 	$file = fopen( $filename, 'rb' );
@@ -355,7 +363,7 @@ function extractUInt32( $string ) {
 
 function get_exif_meta( $buffer ) {
 
-	$meta = array();
+	$meta = [];
 
 	$tags = array( 
 		'0x010F' => array(
@@ -545,6 +553,8 @@ function get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags ) {
 }
 
 function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
+	$meta = [];
+
 	// define the gps-tags to search for
 	$tags = array( 
 		'0x0000' => array(
@@ -606,7 +616,7 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 
 		if ( array_key_exists( $piece, $tags ) ) {
 			// init data array 
-			$data = array();
+			$data = [];
 
 			// get the type of the tag first
 			$type = hexdec( frombuffer( $gpsbuffer, $bufoffs, 2, $isIntel) );
@@ -617,9 +627,10 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 			if ( $type === $expectedType){
 				// get the number of values
 				$count = hexdec( frombuffer( $gpsbuffer, $bufoffs, 4, $isIntel) );
+				$nvalues = $count;
 				$bufoffs += 4;
 				if ( 5 == $type) { // correct number of values for pointers, it's only one pointer
-					$nvalues = $count;
+					//$nvalues = $count;
 					$count = 1;
 				}
 
@@ -643,7 +654,7 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 
 				// special treatment of the Lat- / Long- / Alt-itude
 				if ( 5 == $type) {
-					$rational = array();
+					$rational = [];
 
 					for ($i=0; $i < $nvalues ; $i++) { 
 						$rational[] = getrationale( $buffer, $data[0], $i, $isIntel, 'gps');
@@ -685,6 +696,7 @@ function frombuffer(string $buffer, int $offset, int $length, bool $isIntel)
 function getrationale (string $buffer, string $pointer, int $count, bool $isIntel, string $type = 'number') {
 	$numerator =   substr( $buffer, EXIF_OFFSET + hexdec($pointer)     + $count *8 , 4 ); // Zähler
 	$denominator = substr( $buffer, EXIF_OFFSET + hexdec($pointer) + 4 + $count *8 , 4 ); // Nenner
+	$value_of_tag = 0;
 
 	if ( $isIntel ) {
 		// revert byte order first
@@ -712,6 +724,7 @@ function getrationale (string $buffer, string $pointer, int $count, bool $isInte
  */
 function binrevert ( string $binary ) {
 	$type = \gettype( $binary );
+	$bin = '0x00';
 
 	if ( ('string' != $type) || (\strlen( $binary ) < 1 ) || (\strlen( $binary ) > 4 ) || (\strlen( $binary ) == 3 ) ) {
 	 $bin = '0x00';

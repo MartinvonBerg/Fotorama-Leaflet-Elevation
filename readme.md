@@ -95,7 +95,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 # Upgrade Notice 
 
 Upgrade to WordPress 5.9 and PHP 7.4+ is highly recommended! PHP 8.0.x is even better!
-Due to the error corrections it is highly recommended to upgrade the Plugin to 0.5.1! Thank's for your patience.
+Due to the error corrections it is highly recommended to upgrade the Plugin to 0.7.1! Thank's for your patience.
 
 </br>
 
@@ -379,6 +379,15 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.7.1 =
+02.02.2022:
+    - Minor PHP Warning corrections and changes to satisfy PHPstan (level 5)
+
+= 0.7.0 =
+01.02.2022:
+    - Complete rework of YOAST sitemap generation. The images are now no longer written to the field 'postimg'. The folder is analysed on demand, so the state-transition publish -> draft -> publish is n longer required. Was a bit annoying. All remaining fields in post and Pages are deleted if you deactivate and activate the plugin once. No further action required. 
+    - Additionally all php-code written by my was checked with PHPStan. This forces some code refinement, mainly in docblocks.
 
 = 0.6.1 =
 30.01.2022:

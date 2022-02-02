@@ -74,11 +74,12 @@ class FotoramaElevation {
 			
 			<hr>
             <h3>List of shortcode Parameters:</h3>
-			<p><b>Complete shortcode with the above settings: </br></b> <?php
+			<p><b>Complete EXAMPLE shortcode with the above settings (No need to use it in Post!): </br></b> <?php
 				$example = '[gpxview imgpath="' . 	$this->fotorama_elevation_options['path_to_images_for_fotorama_0'] . '" ';
 				$example.= 'gpxpath="' .            $this->fotorama_elevation_options['path_to_gpx_files_2'] . '" ';
 				$example.= 'gpxfile="test.gpx" ';
-				$example.= 'showalltracks="' . 		$this->fotorama_elevation_options['showalltracks'] . '" ';
+				//$example.= 'showalltracks="' . 		$this->fotorama_elevation_options['showalltracks'] . '" ';
+				$example.= 'showalltracks="boolean" ';
 				$example.= 'mapheight="' .          $this->fotorama_elevation_options['height_of_map_10'] . '" ';
 				$example.= 'chartheight="' .        $this->fotorama_elevation_options['height_of_chart_11'] . '" ';
 				$example.= 'dload="' .              $this->fotorama_elevation_options['download_gpx_files_3'] . '" ';
