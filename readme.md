@@ -383,6 +383,7 @@ This plugin uses the great work from:
 = 0.7.1 =
 02.02.2022:
     - Minor PHP Warning corrections and changes to satisfy PHPstan (level 5)
+    - Always load local assets (CSS + JS). Usage of CDN does currently not work. Sorry.
 
 = 0.7.0 =
 01.02.2022:

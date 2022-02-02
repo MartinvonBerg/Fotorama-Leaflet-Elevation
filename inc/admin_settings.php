@@ -1018,7 +1018,7 @@ class FotoramaElevation {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[useCDN_13]" id="useCDN_13" value="useCDN_13" %s> <label for="useCDN_13">%s</label>',
 			( isset( $this->fotorama_elevation_options['useCDN_13'] ) && $this->fotorama_elevation_options['useCDN_13'] === 'true' ) ? 'checked' : '',
-			__( 'Use CDN for js- and css-Library-Files', 'fotoramamulti' )
+			__( 'Use CDN for js- and css-Library-Files (Ignored! Does not work at the moment!)', 'fotoramamulti' )
 		);
 	}
 
