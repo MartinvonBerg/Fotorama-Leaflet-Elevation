@@ -72,7 +72,9 @@ function showmulti($attr, $content = null)
 
 	// Define global Values and Variables. We need the globals for the state-transition of the post
 	global $post_state_pub_2_draft;
+	global $post_state_draft_2_pub;
 	$pub_2_draft = $post_state_pub_2_draft ?? false;
+	$draft_2_pub = $post_state_draft_2_pub ?? false;
 	$setCustomFields = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15'] == 'true'; // liefert 'true'
 	
 	// --- Variables -----------------------------------
@@ -182,15 +184,40 @@ function showmulti($attr, $content = null)
 	}
 
 	// ------------- custom fields, move to admin and class
-	// on Status change from published to draft delete Custom-Fields 'lat' 'lon' and 'postimages' from the post
-	// delete always as we may have this plugin before and do want to delete the custom fields now. 
-	// But the deletion requires a status transition from published to draft and back
+	// On Status change from published to draft delete Custom-Fields 'lat' 'lon' and 'geoadress' from the post.
+	// But the update requires now a status transition from published to draft and back.
+	
 	if ($pub_2_draft) {
 		delete_post_meta($postid,'lat');
 		delete_post_meta($postid,'lon');
 		delete_post_meta($postid,'geoadress');
+
+		// Does not work in Quick-Edit-Mode. The pages has to be open in editor to set the parent.
+		foreach ($data2 as $data) {
+			if ($data['wpid'] > 0){
+				$media_post = wp_update_post( 
+					array(
+					'ID'            => $data['wpid'],
+					'post_parent'   => '',
+				), false );
+			}
+		}
 	}
 
+	// on Status change from draft to published set the parent of the image, if they are in the WP media library.
+	// Does not work in Quick-Edit-Mode. The pages has to be open in editor to set the parent.
+	if ($draft_2_pub){
+		foreach ($data2 as $data) {
+			if ($data['wpid'] > 0){
+				$media_post = wp_update_post( 
+					array(
+					'ID'            => $data['wpid'],
+					'post_parent'   => $postid,
+				), false );
+			}
+		}
+	}
+	
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
 	if ( \current_user_can('edit_posts') && $setCustomFields && (0 === $shortcodecounter) && ( $imageNumber > 0)) {
@@ -283,13 +310,13 @@ EOF;
 EOF;
 			
 			} elseif ( $data['thumbavail'] ) {
-							
+					
 				$htmlstring .= <<<EOF
 		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}" 
 		 {$caption}
 		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}"></a>
 EOF;
-			
+
 			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
 				$htmlstring .= <<<EOF
 		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"

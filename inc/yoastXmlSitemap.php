@@ -3,7 +3,11 @@
 namespace mvbplugins\fotoramamulti;
 
 /**
- * PHP Class for Wordpress YOAST SEO plugin to append images to the sitemap
+ * PHP Class for Wordpress YOAST SEO plugin to append images to the sitemap.
+ * The images are added as \<image\> 'under' the post were the fotorama shortcode was added.
+ * Optionally the permalink is added instead of the link to the image file.
+ * If the shortcode is used more than once on different posts / pages the images are also 
+ * added more the once to the sitemap.
  *
  */
 class fotoramaSitemaps
@@ -13,6 +17,7 @@ class fotoramaSitemaps
 	protected $up_url;
 	protected $up_dir;
 	protected $doSitemap;
+	protected $addPermalink = true; // TODO: provide admin settings for that, but no shortcode parameter.
 	
 	/* for PHP 7.4+
 	protected string $thumbs;
@@ -20,6 +25,7 @@ class fotoramaSitemaps
 	protected string $up_url;
 	protected string $up_dir;
 	protected bool $doSitemap; 
+	protected bool $addPermalink = true;
 	*/
 
 	/**
@@ -95,8 +101,13 @@ class fotoramaSitemaps
 
 					// loop through all images and append to output array. skip image if already in.
 					foreach ($folderImages as $item) {
+						
 						$newimage = [];
-						$newimage['src'] = $imageurl . '/' . $item['file'] . $item['extension'];
+						if ($item['wpid'] > 0 && $this->addPermalink == true) {
+							$newimage['src'] = \get_the_permalink( $item['wpid']);
+						} else {
+							$newimage['src'] = $imageurl . '/' . $item['file'] . $item['extension'];
+						}
 
 						if (!empty($item['title'])) {
 							$newimage['title'] = strip_tags($item['title']);

@@ -17,7 +17,9 @@
 
 namespace mvbplugins\fotoramamulti;
 
-// ---------- class ReadImageFolder to readout a given folder on the server --------------------
+/**
+ * Class ReadImageFolder to readout a given folder on the server.
+ */
 final class ReadImageFolder
 {
     // PHP 7.3 version :: damit ist PHPstan und PHPInsights nicht erfolgreich, bzw. zu viele Fehlermeldungen
@@ -82,9 +84,9 @@ final class ReadImageFolder
     }
 
     /**
-     * provide the result of the readFolder function as array
+     * Provide the result of the readFolder function as array.
      *
-     * @return array<int, array<string, mixed>> array with all images in the folder an adjacent information
+     * @return array<int, array<string, mixed>> array with all images in the folder and relevant information.
      */
     public function getImagesForGallery()
     {
