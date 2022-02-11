@@ -17,7 +17,7 @@ class fotoramaSitemaps
 	protected $up_url;
 	protected $up_dir;
 	protected $doSitemap;
-	protected $addPermalink = true; // TODO: provide admin settings for that, but no shortcode parameter.
+	protected $addPermalink = false; 
 	
 	/* for PHP 7.4+
 	protected string $thumbs;
@@ -37,6 +37,7 @@ class fotoramaSitemaps
 		// Get Values from Admin settings page and global Constant
 		$this->doSitemap  = get_option('fotorama_elevation_option_name')['doYoastXmlSitemap_16'] == 'true';
 		$this->requiregps = get_option('fotorama_elevation_option_name')['images_with_gps_required_5'];
+		$this->addPermalink = get_option( 'fotorama_elevation_option_name')['useCDN_13'] == 'true';
 		$this->thumbs = THUMBSDIR;
 
 		// Define path and url variables

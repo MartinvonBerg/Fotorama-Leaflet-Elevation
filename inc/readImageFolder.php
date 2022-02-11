@@ -163,6 +163,7 @@ final class ReadImageFolder
                 // And get the WPid if the image is in the WP-Media-Library
                 $wpimgurl = $this->imageurl . '/' . $jpgfile . $ext;
                 $wpid = attachment_url_to_postid($wpimgurl);
+                $permalink = \get_the_permalink( $wpid);
                 $data2[$this->imageNumber] = getEXIFData($this->imagepath . "/" . basename($file), $ext, $wpid);
 
                 // convert the GPS-data to decimal values, if available
@@ -182,6 +183,7 @@ final class ReadImageFolder
                     $data2[$this->imageNumber]['thumbinsubdir'] = $thumbinsubdir;
                     $data2[$this->imageNumber]['thumbs'] = $thumbs;
                     $data2[$this->imageNumber]['extension'] = $ext;
+                    $data2[$this->imageNumber]['permalink'] = $permalink;
 
                     // increment imagenumber
                     $this->imageNumber++;

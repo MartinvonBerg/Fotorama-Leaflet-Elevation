@@ -500,6 +500,12 @@
                 m = parseInt(source);
                 hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
 
+                // set the linkg to the attachment in the info button.
+                if ( phpvars[m].imgdata[nr].permalink != '') {
+                    $('.fm-attach-link a').attr("href",phpvars[m].imgdata[nr].permalink);
+                }
+                
+
                 if ( hasMap && phpvars[m].imgdata[nr].coord[0] ) {
                     //console.log('change in: ' + e.currentTarget.id + ' index: ' + nr + 'Koord: ' + phpvars[m].imgdata[nr].coord[0] + ':' + phpvars[m].imgdata[nr].coord[1] ); 
                     if (e.type === 'fotorama:load') {

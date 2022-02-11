@@ -562,7 +562,7 @@ class FotoramaElevation {
 		*/
 		add_settings_field(
 			'useCDN_13', // id
-			__( 'Use CDN', 'fotoramamulti' ), // title
+			__( 'Add Permalink', 'fotoramamulti' ), // title. Attention: Variable re-used for add Permalink. Variable name is misleading!
 			array( $this, 'useCDN_13_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'fotorama_elevation_setting_section' // section
@@ -1018,7 +1018,7 @@ class FotoramaElevation {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[useCDN_13]" id="useCDN_13" value="useCDN_13" %s> <label for="useCDN_13">%s</label>',
 			( isset( $this->fotorama_elevation_options['useCDN_13'] ) && $this->fotorama_elevation_options['useCDN_13'] === 'true' ) ? 'checked' : '',
-			__( 'Use CDN for js- and css-Library-Files (Ignored! Does not work at the moment!)', 'fotoramamulti' )
+			__( 'Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.', 'fotoramamulti' )
 		);
 	}
 
@@ -1047,7 +1047,7 @@ class FotoramaElevation {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[setCustomFields_15]" id="setCustomFields_15" value="setCustomFields_15" %s> <label for="setCustomFields_15">%s</label>',
 			( isset( $this->fotorama_elevation_options['setCustomFields_15'] ) && $this->fotorama_elevation_options['setCustomFields_15'] === 'true' ) ? 'checked' : '',
-			__('Set Custom Fields (geoadress, lat, lon, postimg) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map','fotoramamulti')
+			__('Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.','fotoramamulti')
 		);
 	}
 
@@ -1055,7 +1055,7 @@ class FotoramaElevation {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[doYoastXmlSitemap_16]" id="doYoastXmlSitemap_16" value="doYoastXmlSitemap_16" %s> <label for="doYoastXmlSitemap_16">%s</label>',
 			( isset( $this->fotorama_elevation_options['doYoastXmlSitemap_16'] ) && $this->fotorama_elevation_options['doYoastXmlSitemap_16'] === 'true' ) ? 'checked' : '',
-			__('Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Stored in Custom field `postimg`','fotoramamulti')
+			__('Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO.','fotoramamulti')
 		);
 	}
 

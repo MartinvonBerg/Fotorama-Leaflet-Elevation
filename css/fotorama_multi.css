@@ -1,6 +1,19 @@
 /* special CSS for the wp_fotorama_elevation */
 
 /*------------- fotorama -----------------------*/
+.fm-attach-link {
+    margin-bottom: 10px;
+    position: absolute;
+    margin-top: 10px;
+    margin-left: 10px;
+    padding-top: 6px;
+    padding-bottom: 3px;
+    color: white;
+    box-shadow: 1px 3px 14px 0px rgb(0 0 0 / 68%);
+    background: #22222285;
+    border-radius: 4px;
+}
+
 .fotorama__nav__shaft {
   margin-bottom: 2px;
 }
