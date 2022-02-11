@@ -382,7 +382,7 @@ This plugin uses the great work from:
 
 = 0.8.0 =
 03.02.2022:
-Changes for images that were added to the WP media library. Not relevant if you don't add your images to the WP Media Library.
+Changes for images that were added to the WP media library. Not relevant if you do not add your images to the WP Media Library.
     - Set the Post (parent) that uses the image, if it is in the WP media library and at Post status transition from draft to published. Does not work in Quick-Edit. Reset the parent if the post-status is changed from publishedd to draft. In WP only ONE parent is possible, not more. So this relationship is unique.
     - Add a CODE-option to add the permalink of the image to the YOAST sitemap. Admin option is Add Permalink. If unset the link to the image-file is added.
     - Same Admin option is used to add an icon to fotorama-slider at the top left to link to the attachment page of the image.
