@@ -382,7 +382,7 @@ This plugin uses the great work from:
 
 = 0.8.1 =
 19.02.2022:
-Refine the logic the show the info button in the top right: Only do so if all images are in WP.
+Refine the logic the show to info button in the top right: Only do so if all images are in WP.
 
 = 0.8.0 =
 03.02.2022:
