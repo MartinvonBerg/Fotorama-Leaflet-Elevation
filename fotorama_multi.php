@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.8.0
+ * Version:           0.8.1
  * Author:            Martin von Berg
  * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License:           GPL-2.0
@@ -168,6 +168,7 @@ function showmulti($attr, $content = null)
 	$folder = new ReadImageFolder( $imagepath, $thumbsdir, $imageurl, $requiregps, $ignoresort );
 	$data2 = $folder->getImagesForGallery();
 	$imageNumber = $folder->getImageNumber();
+	$allImgInWPLibrary = $folder->areAllImgInWPLibrary();
 	$folder = null;
 
 	// check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
@@ -414,7 +415,7 @@ EOF;
         $htmlstring  .= '</div>'; 
 	}
 
-	if ($addPermalink){
+	if ($addPermalink && $allImgInWPLibrary && ($i < 2) && ( $imageNumber > 0)){
 		$htmlstring  .= '<div class="fm-attach-link">';
 		$htmlstring .= '<a href="" target="_blank">';
 		$htmlstring .= '<div class="fm-itemsButtons" type="info"><svg height="20px" style="fill: rgb(255, 255, 255);" version="1.1" viewBox="0 0 46 100" width="46px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M35.162,0c6.696,0,10.043,4.567,10.043,9.789c0,6.522-5.814,12.555-13.391,12.555c-6.344,0-10.045-3.752-9.869-9.947   C21.945,7.176,26.35,0,35.162,0z M14.543,100c-5.287,0-9.164-3.262-5.463-17.615l6.07-25.457c1.057-4.077,1.23-5.707,0-5.707   c-1.588,0-8.451,2.816-12.51,5.59L0,52.406C12.863,41.48,27.662,35.072,34.004,35.072c5.285,0,6.168,6.361,3.525,16.148   L30.58,77.98c-1.234,4.729-0.703,6.359,0.527,6.359c1.586,0,6.787-1.963,11.896-6.041L46,82.377C33.488,95.1,19.83,100,14.543,100z   "></path></g><g></svg></div>';

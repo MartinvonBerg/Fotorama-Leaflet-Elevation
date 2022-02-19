@@ -35,6 +35,7 @@ final class ReadImageFolder
     protected $ignoresort = ''; // string
     protected $hasThumbsDir = false; // bool
     protected $allThumbFiles; // array
+    protected $allImgInWPLibrary = true; // bool
 
     // PHP 7.4 version
     /*
@@ -50,6 +51,7 @@ final class ReadImageFolder
     protected string $ignoresort = ''; // string
     protected bool $hasThumbsDir = false;
     protected array $allThumbFiles; // array
+    protected bppl $allImgInWPLibrary = true; // bool
     */
 
     /**
@@ -101,6 +103,16 @@ final class ReadImageFolder
     public function getImageNumber()
     {
         return $this->imageNumber;
+    }
+
+    /**
+     * Return whether all images are in the WP Library
+     *
+     * @return bool false if at least one of the images is not in the WP Library
+     */
+    public function areAllImgInWPLibrary()
+    {
+        return $this->allImgInWPLibrary;
     }
 
     /**
@@ -164,6 +176,10 @@ final class ReadImageFolder
                 $wpimgurl = $this->imageurl . '/' . $jpgfile . $ext;
                 $wpid = attachment_url_to_postid($wpimgurl);
                 $permalink = \get_the_permalink( $wpid);
+                if ($wpid == 0) {
+                    $permalink = '';
+                    $this->allImgInWPLibrary = false;
+                }
                 $data2[$this->imageNumber] = getEXIFData($this->imagepath . "/" . basename($file), $ext, $wpid);
 
                 // convert the GPS-data to decimal values, if available

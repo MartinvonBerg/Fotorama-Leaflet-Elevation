@@ -380,6 +380,10 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.8.1 =
+19.02.2022:
+Refine the logic the show the info button in the top right: Only do so if all images are in WP.
+
 = 0.8.0 =
 03.02.2022:
 Changes for images that were added to the WP media library. Not relevant if you do not add your images to the WP Media Library.
