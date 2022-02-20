@@ -380,6 +380,10 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.8.2 =
+20.02.2022:
+Bug removal in ExtractMetadata for webp-files. Correction of caption-text for webp-files.
+
 = 0.8.1 =
 19.02.2022:
 Refine the logic the show to info button in the top right: Only do so if all images are in WP.

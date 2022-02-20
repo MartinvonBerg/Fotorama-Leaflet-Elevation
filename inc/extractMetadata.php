@@ -179,6 +179,7 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 				$exif2 = file_get_contents( $filename, false, null, $chunk['start'], $chunk['start']+$chunk['size'] );
 				$meta = get_exif_meta( $exif2 );
 				$meta['credit'] = $meta['copyright'];
+				$meta['camera'] = $meta['camera'] . ' + ' . $meta['lens'];
 				break;
 			case 'XMP ':
 				$xmp2 = file_get_contents( $filename, false, null, $chunk['start']+8, $chunk['start']+$chunk['size'] );
@@ -201,14 +202,14 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 					$meta[ 'caption' ] = $caption;
 				}
 				//$caption != '' ? $meta[ 'caption' ] = $caption : $meta[ 'caption' ] = '';
-				
+				/*
 				if ( isset( $vals[2]["attributes"]["AUX:LENS"] ) ) {
 					$lens = $vals[2]["attributes"]["AUX:LENS"];
 					$meta[ 'camera' ] = $meta[ 'camera' ] . ' + ' . $lens;
 				} else {
 					$meta[ 'camera' ] = '---';
 				}
-				
+				*/
 				$tags = [];
 
 				if ( isset( $index["RDF:BAG"] ) ) {
@@ -498,11 +499,14 @@ function get_exif_meta( $buffer ) {
 			// found one tag
 			$value_of_tag = get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags );
 			$meta_key =	$tags[ $piece ]['text'];
+
 			if ( 'created_timestamp' == $meta_key) {
 				$meta[ 'DateTimeOriginal' ] = $value_of_tag;
 				$value_of_tag = strtotime ( $value_of_tag);
-			}	
-			$meta[ $meta_key ] = $value_of_tag;
+			}
+			
+			if ( $value_of_tag )	
+				$meta[ $meta_key ] = $value_of_tag;
 		}
 		$bufoffs += 1;
 		if ( sizeof ( $meta ) === \sizeof( $tags) ) { break; }

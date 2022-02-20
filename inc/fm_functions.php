@@ -317,6 +317,8 @@ function getEXIFData( $file, $ext, $wpid)
 		$data['DateTimeOriginal'] = '';
 		$data['alt'] = '';
 		$data['descr'] = '';
+		$data['title'] = $title;
+		$data['camera'] = '---';
 
 		$additionaldata = getWebpMetadata( $file );
 
@@ -379,15 +381,15 @@ function getEXIFData( $file, $ext, $wpid)
 
 	// no-title -> caption -> description -> alt -> notitle.
 	if ( $data['title'] === 'notitle' ) {
-		if ( $data['caption'] !== '') $data['title'] = $data['caption'];
-		elseif ( $data['descr'] !== '') $data['title'] = $data['descr'];
-		elseif ( $data['alt'] !== '') $data['title'] = $data['alt'];	
+		if ( ! empty( $data['caption'] ) ) $data['title'] = $data['caption'];
+		elseif ( ! empty( $data['descr'] ) ) $data['title'] = $data['descr'];
+		elseif ( ! empty( $data['alt'] ) ) $data['title'] = $data['alt'];	
 	}
 
 	// no-alt -> title -> caption -> description -> ''
 	if ( $data['alt'] === '' ) {
-		if ( $data['descr'] !== '') $data['alt'] = $data['descr'];
-		elseif ( $data['caption'] !== '') $data['alt'] = $data['caption'];
+		if ( ! empty( $data['descr'] ) ) $data['alt'] = $data['descr'];
+		elseif ( ! empty( $data['caption'] ) ) $data['alt'] = $data['caption'];
 		elseif ( $data['title'] !== 'notitle') $data['alt'] = $data['title'];
 			
 	}
