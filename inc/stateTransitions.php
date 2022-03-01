@@ -24,9 +24,11 @@ function on_all_status_transitions( $new_status, $old_status ) {
 	if ( $new_status != $old_status ) {
 		if ( $old_status == "draft" ) {
 			$post_state_draft_2_pub = true;	
+			$post_state_pub_2_draft = false;
 		}
 		elseif ($old_status == "publish") {
 			$post_state_pub_2_draft = true;
+			$post_state_draft_2_pub = false;
 		}		
 	}
 }

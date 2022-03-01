@@ -249,11 +249,12 @@ function decodeLossyChunkHeader( $header ) {
 	];
 }
 
-function decodeLosslessChunkHeader( $header ) {
+function decodeLosslessChunkHeader( $header )
+{ // @codeCoverageIgnore
 	// Bytes 0-3 are 'VP8L'
 	// Bytes 4-7 are chunk stream size
 	// Byte 8 is 0x2F called the signature
-	if ( $header[8] != "\x2F" ) {
+	if ( ($header[8] != "\x2F") || (strlen($header)<12) ) {
 		return [];
 	}
 	// Bytes 9-12 contain the image size
@@ -320,7 +321,7 @@ function findChunks( $file, $maxChunks = -1 ) {
  
 		// Create basic info structure
 		$info = [
-			'fileSize' => extractUInt32( $fileSize ),
+			'fileSize' => unpack( 'V', $fileSize )[1],
 			'fourCC' => $fourCC,
 			'chunks' => [],
 		];
@@ -339,7 +340,7 @@ function findChunks( $file, $maxChunks = -1 ) {
 			if ( !$chunkSize || strlen( $chunkSize ) != 4 ) {
 				return $info;
 			}
-			$intChunkSize = extractUInt32( $chunkSize );
+			$intChunkSize = unpack( 'V', $chunkSize )[1];
  
 			// Add chunk info to the info structure
 			$info['chunks'][] = [
@@ -358,10 +359,6 @@ function findChunks( $file, $maxChunks = -1 ) {
 		return $info;
 }
  
-function extractUInt32( $string ) {
-	return unpack( 'V', $string )[1];
-}
-
 function get_exif_meta( $buffer ) {
 
 	$meta = [];
@@ -487,14 +484,8 @@ function get_exif_meta( $buffer ) {
 	$bufoffs = EXIF_OFFSET + 4;
 
 	while ( $bufoffs <= $bufflen) {
-		$binary = substr( $buffer, $bufoffs, 2);
-
-		if ( $isIntel) {	
-			$piece = binrevert( $binary );
-		} else {
-			$piece = '0x' . strtoupper( bin2hex ( $binary ) );
-		}
-
+		$piece = frombuffer( $buffer, $bufoffs, 2, $isIntel );
+		
 		if ( array_key_exists( $piece, $tags ) ) {
 			// found one tag
 			$value_of_tag = get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags );
@@ -514,49 +505,53 @@ function get_exif_meta( $buffer ) {
 	return $meta;
 }
 
-function get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags ) {
-	$type =    substr( $buffer, $bufoffs +2, 2) ;
-	$ncomps =  substr( $buffer, $bufoffs +4, 4) ;
-	$data =    substr( $buffer, $bufoffs +8, 4) ;
+function get_meta_from_piece( bool $isIntel, string $buffer, int $bufoffs, $piece, $tags ) 
+{ // @codeCoverageIgnore
+	$type = substr( $buffer, $bufoffs +2, 2);
+	$ncomps = substr( $buffer, $bufoffs +4, 4);
+	$data = substr( $buffer, $bufoffs +8, 4);
 
-	if ( $isIntel ) {
-		// revert byte order first
+	if ( $isIntel ) { // revert byte order first
 		$type = binrevert( $type );
 		$ncomps = binrevert( $ncomps );
 		$data = binrevert( $data );
-
-	} else {
-		// extract data from pieces
+	} else { // extract data from pieces
 		$type = '0x' . strtoupper( bin2hex ( $type) );
 		$ncomps = '0x' . strtoupper( bin2hex ( $ncomps ) );
 		$data = '0x' . strtoupper( bin2hex ( $data ) );
-
 	}
 
 	if ( '0x0002' == $type ) { // this is a ascii string with one component
-		$ascii =  substr( $buffer, EXIF_OFFSET + hexdec($data), hexdec($ncomps)-1 ) ;
+		$ascii =  substr( $buffer, EXIF_OFFSET + hexdec($data), hexdec($ncomps) -1 );
 		return $ascii;
-
 	} elseif ( '0x0003' == $type ) { // this is a integer with 2 components
 		if ( ! $isIntel) {
 			$data = substr( $data, 0, 6);
 		}
 		$data = \hexdec( $data);
 		return $data;
-
 	} elseif ( '0x0004' == $type ) { // this is a 
-		$ascii =  substr( $buffer, EXIF_OFFSET + hexdec($data), 160 ) ;
+		$ascii =  substr( $buffer, EXIF_OFFSET + hexdec($data), 160 );
 		$gps = get_gps_data( $ascii, $buffer, $isIntel);
 		return $gps;
-
 	} elseif ( '0x0005' == $type ) { // this is a 
 		$value_of_tag = getrationale( $buffer, $data, 0, $isIntel);
 		return $value_of_tag;
-
-	} else { return false; }
+	} else { 
+		return false; 
+	}
 }
 
-function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
+/**
+ * Extract GPS-Data from the EXIF-Header
+ *
+ * @param  string  $gpsbuffer the binary string buffer with gpsdata taken from the EXIF-header
+ * @param  string  $buffer the complete EXIF-header as binary string
+ * @param  boolean $isIntel is the buffer input a intel 'II' representation. Actually the defines the Endianess.
+ * @return false|array the GPS-Data as associative array or false if no GPS-Data found
+ */
+function get_gps_data( string $gpsbuffer, string $buffer, bool $isIntel ) 
+{ // @codeCoverageIgnore
 	$meta = [];
 
 	// define the gps-tags to search for
@@ -598,14 +593,8 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 		), 
 	);
 	// get the total number of tags
-	$nGpsTags = substr( $gpsbuffer, 0, 2) ;
-	if ( $isIntel ) {
-		// revert byte order first
-		$nGpsTags = hexdec( binrevert( $nGpsTags ) );
-	} else {
-		$nGpsTags = hexdec( '0x' . bin2hex( $nGpsTags ) );
-	}
-
+	$nGpsTags = hexdec( frombuffer( $gpsbuffer, 0, 2, $isIntel) );
+	
 	if ( ( $nGpsTags < 1 ) || ( $nGpsTags > 31) ) { 
 		// no GPS data or wrong buffer selected
 		return false; 
@@ -633,21 +622,21 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 				$count = hexdec( frombuffer( $gpsbuffer, $bufoffs, 4, $isIntel) );
 				$nvalues = $count;
 				$bufoffs += 4;
-				if ( 5 == $type) { // correct number of values for pointers, it's only one pointer
+
+				if ( 5 == $type ) { // correct number of values for pointers, it's only one pointer
 					//$nvalues = $count;
 					$count = 1;
 				}
 
 				// get the data or relative pointer
 				$lendata = $tags[ $piece ]['nBytes'];
-
 				for ($i=1; $i <= $count ; $i++) { 
 					$data[] = frombuffer( $gpsbuffer, $bufoffs, $lendata, $isIntel);
 					$bufoffs += $lendata;
 				}
 
 				// special treatment of the Lat/Long-Ref
-				if ( 2 == $type) {
+				if ( 2 == $type ) {
 					$data = \strtoupper($data[0]);
 					$data = \str_replace('0','', $data);
 					$data = \str_replace('X','', $data);
@@ -657,14 +646,14 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 				}
 
 				// special treatment of the Lat- / Long- / Alt-itude
-				if ( 5 == $type) {
+				if ( 5 == $type ) {
 					$rational = [];
-
 					for ($i=0; $i < $nvalues ; $i++) { 
 						$rational[] = getrationale( $buffer, $data[0], $i, $isIntel, 'gps');
 					}
 					$data = $rational;
 				}
+				
 				// store the new data in array
 				$value_of_tag = $data; 
 				$meta_key =	$tags[ $piece ]['text'];
@@ -677,14 +666,29 @@ function get_gps_data( $gpsbuffer, $buffer, $isIntel ) {
 	return $meta;
 }
 
+/**
+ * Convert a string buffer to its binary representation depending on given parameters. 
+ * For an alphanumeric string the output is its character code, which is reverted if it isIntel=true.
+ * Example 'AB' -> 0x4142 or 0x4241
+ *
+ * @param  string  $buffer input that should be converted to a binary.  
+ * @param  integer $offset where to start the conversion within the buffer
+ * @param  integer $length length of the string that sould be converted 
+ * @param  boolean $isIntel is the buffer input a intel 'II' representation. Actually the defines the Endianess.
+ * @return string the piece of the data as hex-string
+ */
 function frombuffer(string $buffer, int $offset, int $length, bool $isIntel) 
-{
+{ // @codeCoverageIgnore
+	if ( (strlen( $buffer) < ( $offset + $length )) || ($length == 0) ) return '0x00';
+
 	$binary = substr( $buffer, $offset, $length);
+
 	if ( $isIntel) {	
 		$piece = binrevert( $binary );
 	} else {
 		$piece = '0x' . strtoupper( bin2hex ( $binary ) );
 	}
+
 	return $piece;
 }
 
@@ -692,16 +696,21 @@ function frombuffer(string $buffer, int $offset, int $length, bool $isIntel)
  * get the rational value out of the string buffer
  *
  * @param string $buffer the data buffer which contains the values
- * @param string $pointer the relative pointer. For Exif the offset is marked by 'MM' or 'II'.
+ * @param string $pointer the relative pointer as hex value like 'AF'. For Exif the offset is marked by 'MM' or 'II'.
  * @param integer $count the n'th value to search for, '0' means 1st value
  * @param boolean $isIntel whether the byte field is to revert
- * @return float $value_of_tag the calculated rational value
+ * @return float $value_of_tag the calculated rational value = nominator / denominator.
  */
-function getrationale (string $buffer, string $pointer, int $count, bool $isIntel, string $type = 'number') {
-	$numerator =   substr( $buffer, EXIF_OFFSET + hexdec($pointer)     + $count *8 , 4 ); // Zähler
-	$denominator = substr( $buffer, EXIF_OFFSET + hexdec($pointer) + 4 + $count *8 , 4 ); // Nenner
-	$value_of_tag = 0;
+function getrationale (string $buffer, string $pointer, int $count, bool $isIntel, string $type = 'number')
+{ // @codeCoverageIgnore
+	$value_of_tag = 0.0;
+	$explength = EXIF_OFFSET + hexdec($pointer) + 8 + $count*8;
 
+	if ( strlen( $buffer ) < $explength ) return $value_of_tag;
+
+	$numerator =   substr( $buffer, EXIF_OFFSET + hexdec($pointer)     + $count*8 , 4 ); // Zähler
+	$denominator = substr( $buffer, EXIF_OFFSET + hexdec($pointer) + 4 + $count*8 , 4 ); // Nenner
+	
 	if ( $isIntel ) {
 		// revert byte order first
 		$numerator   = binrevert( $numerator );
@@ -712,39 +721,44 @@ function getrationale (string $buffer, string $pointer, int $count, bool $isInte
 		$numerator =   hexdec( '0x' . bin2hex( $numerator   ) ); // Zähler
 		$denominator = hexdec( '0x' . bin2hex( $denominator ) ); // Nenner
 	}
+
 	if ( 'number' == $type ) {
 		$value_of_tag = $numerator / $denominator;
 	} elseif ( 'gps' == $type ) {
 		$value_of_tag = strval( $numerator ) . '/' . strval( $denominator );
 	}
+
 	return $value_of_tag;
 }
 
 /**
- * revert a binary string to a reverted hex-string
+ * Revert a binary string to a reverted hex-string. The output of this function is inconsistent!
+ * For length=(2 / 4) the function provides the reverted character codes. Example 'AZ' -> 0x5A41. 
+ * But for length = 1 the function provides the digit to hex conversion. So '1' -> 0x01. And for anything else than [0-9] it responds with 0x00.
  *
  * @param string $binary binary-data as string taken from the binary buffer with EXIF-data
  * @return string the inverted binary data as hex-string
  */
-function binrevert ( string $binary ) {
-	$type = \gettype( $binary );
-	$bin = '0x00';
-
-	if ( ('string' != $type) || (\strlen( $binary ) < 1 ) || (\strlen( $binary ) > 4 ) || (\strlen( $binary ) == 3 ) ) {
-	 $bin = '0x00';
-	 return $bin;
+function binrevert (string $binary)
+{ // @codeCoverageIgnore
+	switch ( \strlen( $binary) ) {
+		case 1:
+			$val = dechex( \intval( $binary ) ) ;
+			$bin = '0x' . \strtoupper( sprintf('%02s', $val ) );
+			return $bin;
+			break;
+		case 2:
+			$val = dechex( unpack( 'v', $binary )[1]);
+			$bin = '0x' . \strtoupper( sprintf('%04s', $val ) );
+			return $bin;
+			break;
+		case 4:
+			$val = dechex( unpack( 'V', $binary )[1]);
+			$bin = '0x' . \strtoupper( sprintf('%08s', $val ) );
+			return $bin;
+			break;
+		default:
+			return '0x00';
+			break;
 	}
-	
-	if (\strlen( $binary ) == 1) {
-		$val = dechex( \intval( $binary ) ) ;
-		$bin = '0x' . \strtoupper( sprintf('%02s', $val ) );
-	} elseif (\strlen( $binary ) == 2) {
-		$val = dechex( unpack( 'v', $binary )[1]);
-		$bin = '0x' . \strtoupper( sprintf('%04s', $val ) );
-	} elseif (\strlen( $binary ) == 4) {
-		$val = dechex( unpack( 'V', $binary )[1]);
-		$bin = '0x' . \strtoupper( sprintf('%08s', $val ) );
-	} 
-
-	return $bin; // string
 }

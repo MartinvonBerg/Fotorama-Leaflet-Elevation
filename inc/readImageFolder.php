@@ -61,6 +61,7 @@ final class ReadImageFolder
      * @param string $dir name of the directory with thumbnails
      * @param string $url complete url to the images
      * @param string $gps whether gps is required or not
+     * @param string $ignoresort whether to ignore the sorting or not
      */
     public function __construct(string $folder, string $dir, string $url, string $gps, string $ignoresort)
     {
@@ -175,7 +176,7 @@ final class ReadImageFolder
                 // And get the WPid if the image is in the WP-Media-Library
                 $wpimgurl = $this->imageurl . '/' . $jpgfile . $ext;
                 $wpid = attachment_url_to_postid($wpimgurl);
-                $permalink = \get_the_permalink( $wpid);
+                $permalink = \get_the_permalink( $wpid );
                 if ($wpid == 0) {
                     $permalink = '';
                     $this->allImgInWPLibrary = false;
@@ -219,7 +220,6 @@ final class ReadImageFolder
      * @param string $ext the current extension ('jgp' or 'webp')
      * @return array<bool, string> with result values for $thumbinpath and $thumbs-extension
      */
-
     private function checkThumbs(string $thumbs, string $pathtocheck, string $thumbcheck, string $ext)
     {
         $thumbInPath = true;

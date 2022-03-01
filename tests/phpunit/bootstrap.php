@@ -21,7 +21,7 @@ $comp_path = "C:/Users/Martin von Berg/AppData/Roaming/Composer"; // TODO: get t
 require_once $comp_path . '/vendor/autoload.php';
 
 // Include the class for PluginTestCase
-require_once __DIR__ . '../../src/Process.php';
+//require_once __DIR__ . '../../src/Process.php';
 //include_once __DIR__ . '../../src/WrapStateTransition.php';
 
 //require_once __DIR__ . '/../../classes/Process.php';

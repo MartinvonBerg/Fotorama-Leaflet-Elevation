@@ -1,0 +1,70 @@
+<?php
+use wppunk\Subscribe\Process;
+
+use PHPUnit\Framework\TestCase;
+use function Brain\Monkey\setUp;
+use function Brain\Monkey\tearDown;
+use function Brain\Monkey\Functions\stubs;
+use function Brain\Monkey\Functions\expect;
+use function Brain\Monkey\Actions\expectDone;
+use function Brain\Monkey\Filters\expectApplied;
+
+final class ProcessWithBrainMonkeyTest extends TestCase {
+	public function setUp(): void {
+		$_POST = [];
+		parent::setUp();
+		setUp();
+	}
+	public function tearDown(): void {
+		tearDown();
+		parent::tearDown();
+	}
+	public function test_success_process() {
+		global $wpdb;
+		$email          = 'i@wp-punk.com';
+		$_POST['email'] = $email;
+		expect( 'check_ajax_referer' )
+			->with( 'subscribe', 'nonce' )
+			->once();
+		stubs(
+			[
+				'esc_html__',
+				'wp_unslash',
+				'sanitize_email',
+			]
+		);
+		$wpdb         = Mockery::mock( 'wpdb' );
+		$wpdb->prefix = 'punk_';
+		$wpdb
+			->shouldReceive( 'prepare' )
+			->once()
+			->with(
+				'INSERT INTO ' . $wpdb->prefix . 'subscribers (email) VALUES (%s)',
+				$email
+			)
+			->andReturn( "INSERT INTO punk_subscribers (email) VALUES ('$email')" );
+		$wpdb
+			->shouldReceive( 'query' )
+			->with( "INSERT INTO punk_subscribers (email) VALUES ('$email')" )
+			->once()
+			->andReturn( 1 );
+		expect( 'wp_send_json_success' )
+			->with( 'You have successfully subscribed' )
+			->once();
+		expectDone( 'subscriber_added' )
+			->once()
+			->with( $email );
+		expectApplied( 'subscriber_email' )
+			->once()
+			->with( $email )
+			->andReturn( $email );
+		$process = new Process();
+		$process->save();
+	}
+	public function test_add_hooks() {
+		$process = new Process();
+		$process->add_hooks();
+		$this->assertEquals( 10, has_action( 'wp_ajax_save_form', [ $process, 'save' ] ) );
+		$this->assertEquals( 10, has_action( 'wp_ajax_nopriv_save_form', [ $process, 'save' ] ) );
+	}
+}
