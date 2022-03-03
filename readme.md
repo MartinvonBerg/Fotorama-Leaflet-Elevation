@@ -381,20 +381,16 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.8.3 =
-01.03.2022:
-Start implementation of unit tests with PHPunit und BrainMonkey. Minor changes in already tested function to improve code coverage or testatbility.
+01.03.2022: Start implementation of unit tests with PHPunit und BrainMonkey. Minor changes in already tested function to improve code coverage or testatbility.
 
 = 0.8.2 =
-20.02.2022:
-Bug removal in ExtractMetadata for webp-files. Correction of caption-text for webp-files.
+20.02.2022: Bug removal in ExtractMetadata for webp-files. Correction of caption-text for webp-files.
 
 = 0.8.1 =
-19.02.2022:
-Refine the logic the show to info button in the top right: Only do so if all images are in WP.
+19.02.2022: Refine the logic the show to info button in the top right: Only do so if all images are in WP.
 
 = 0.8.0 =
-03.02.2022:
-Changes for images that were added to the WP media library. Not relevant if you do not add your images to the WP Media Library.
+03.02.2022: Changes for images that were added to the WP media library. Not relevant if you do not add your images to the WP Media Library.
     - Set the Post (parent) that uses the image, if it is in the WP media library and at Post status transition from draft to published. Does not work in Quick-Edit. Reset the parent if the post-status is changed from publishedd to draft. In WP only ONE parent is possible, not more. So this relationship is unique.
     - Add a CODE-option to add the permalink of the image to the YOAST sitemap. Admin option is Add Permalink. If unset the link to the image-file is added.
     - Same Admin option is used to add an icon to fotorama-slider at the top left to link to the attachment page of the image.
@@ -406,8 +402,9 @@ Changes for images that were added to the WP media library. Not relevant if you 
 
 = 0.7.0 =
 01.02.2022:
-    - Complete rework of YOAST sitemap generation. The images are now no longer written to the field 'postimg'. The folder is analysed on demand, so the state-transition publish -> draft -> publish is n longer required. Was a bit annoying. All remaining fields in post and Pages are deleted if you deactivate and activate the plugin once. No further action required. 
-    - Additionally all php-code written by my was checked with PHPStan. This forces some code refinement, mainly in docblocks.
+    - Complete rework of YOAST sitemap generation. The images are now no longer written to the field 'postimg'. The folder is analysed on request, so the state-transition publish -> draft -> publish is n longer required. 
+    - All remaining fields in post and Pages are deleted if you deactivate and activate the plugin once. No further action required. 
+    - Additionally all php-code written by me was checked with PHPStan. This forces some code refinement, mainly in docblocks.
 
 = 0.6.1 =
 30.01.2022:
