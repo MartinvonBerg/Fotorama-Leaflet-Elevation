@@ -186,4 +186,31 @@ final class decodeLLChunkHeaderTest extends TestCase {
 		];
 	}
 
+	public function testGetMetaFromPiece_2() {
+		include_once 'C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\tests\src\WrapExtractMetadata.php';
+		
+		$tested = new mvbplugins\fotoramamulti\WrapExtractMetadata();
+		$buffer = hex2bin("0000030002000300030004000500060006");
+		$bufoffs = -1;
+		$result = $tested::getMetaFromPiece( false, $buffer, $bufoffs, 0, 0 );
+		$this->assertEquals( $result, 3 );
+    }
+
+	public function testGetExifMeta() {
+		include_once 'C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\tests\src\WrapExtractMetadata.php';
+		
+		$tested = new mvbplugins\fotoramamulti\WrapExtractMetadata();
+		$buffer = 'EXIF0000MM' . hex2bin("002A");
+		$result = $tested::getExifMeta( $buffer );
+		$this->assertEquals( $result, [] );
+
+		$buffer = 'AFFE0000MM' . hex2bin("002A");
+		$result = $tested::getExifMeta( $buffer );
+		$this->assertEquals( $result, false );
+
+		$buffer = 'EXIF0000II' . hex2bin("002A");
+		$result = $tested::getExifMeta( $buffer );
+		$this->assertEquals( $result, false );
+    }
+
 }

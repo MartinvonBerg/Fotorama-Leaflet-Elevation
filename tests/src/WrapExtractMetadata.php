@@ -35,6 +35,24 @@ class WrapExtractMetadata {
     {
         return \mvbplugins\fotoramamulti\get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags); 
     }
-    
+
+    public function getWebpMetaDataFromFile( string $filename )
+    {
+        return \mvbplugins\fotoramamulti\getWebpMetadata( $filename ); 
+    }
+
+    public function decodeLossyChunkHeaderFromString( string $header )
+    {
+        return \mvbplugins\fotoramamulti\decodeLossyChunkHeader( $header );
+    }
+
+    public function getExifMeta( $buffer ) 
+    {
+        return \mvbplugins\fotoramamulti\get_exif_meta( $buffer );
+    }
+
+    public function getJpgMetaData( string $filename ) {
+        return \mvbplugins\fotoramamulti\getJpgMetadata( $filename );
+    }
 
 }

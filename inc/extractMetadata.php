@@ -1,9 +1,7 @@
 <?php
-/** Extract Metadata from a Webp and JPG-file. 
- */
-
 namespace mvbplugins\fotoramamulti;
 
+// Extract Metadata from a Webp and JPG-file. 
 const BROKEN_FILE = false; // value to store in img_metadata if error extracting metadata.
 const MINIMUM_CHUNK_HEADER_LENGTH = 18;
 const WEBP_VERSION = '0.0.1';
@@ -20,8 +18,8 @@ const EXIF_OFFSET = 8;
  * @param string $filename The complete path to the file in the directory.
  * @return array The exif data a array similar to the JSON that is provided via the REST-API.
  */
-function getJpgMetadata( string $filename ) {
-	
+function getJpgMetadata( string $filename ) : array 
+{	
 	getimagesize( $filename, $info );
 	$Exif = exif_read_data( $filename, 'ANY_TAG', true );
 	
@@ -135,7 +133,13 @@ function getWebpMetadata( string $filename ) {
 	return $parsedWebPData;
 }
 
-function extractMetadata( $filename ) {
+/**
+ * Extract EXIF and XMP metadata from a file
+ *
+ * @param  string $filename the file to analyse
+ * @return false|array array with metadata of false on failure
+ */
+function extractMetadata( string $filename ) {
 	
 	$info = findChunksFromFile( $filename, 100 ); //RiffExtractor 
 	if ( $info === false ) {
@@ -230,13 +234,20 @@ function extractMetadataFromChunks( $chunks, $filename ) {
 	return $meta;
 }
 
-function decodeLossyChunkHeader( $header ) {
+/**
+ * Decode a lossy Header and set Compression, Width and Height of the image
+ *
+ * @param  string $header the header to decode as binary string
+ * @return array array with decoded data: compression, width, height or empty array on failure
+ */
+function decodeLossyChunkHeader( string $header ) : array
+{
 	// Bytes 0-3 are 'VP8 '
 	// Bytes 4-7 are the VP8 stream size
 	// Bytes 8-10 are the frame tag
 	// Bytes 11-13 are 0x9D 0x01 0x2A called the sync code
 	$syncCode = substr( $header, 11, 3 );
-	if ( $syncCode != "\x9D\x01\x2A" ) {
+	if ( ($syncCode != "\x9D\x01\x2A") || (strlen($header)<18) ) {
 		return [];
 	}
 	// Bytes 14-17 are image size
@@ -249,7 +260,13 @@ function decodeLossyChunkHeader( $header ) {
 	];
 }
 
-function decodeLosslessChunkHeader( $header )
+/**
+ * Decode a lossless Header and set Compression, Width and Height of the image
+ *
+ * @param  string $header the header to decode as binary string
+ * @return array array with decoded data: compression, width, height or empty array on failure
+ */
+function decodeLosslessChunkHeader( string $header ) : array
 { // @codeCoverageIgnore
 	// Bytes 0-3 are 'VP8L'
 	// Bytes 4-7 are chunk stream size
@@ -268,7 +285,14 @@ function decodeLosslessChunkHeader( $header )
 	];
 }
 
-function decodeExtendedChunkHeader( $header ) {
+/**
+ * Decode a Extended Chunk Header and set Compression, animated, transparency, Width, Height of the image
+ *
+ * @param  string $header the header to decode as binary string
+ * @return array array with decoded data: compression, width, height or empty array on failure
+ */
+function decodeExtendedChunkHeader( string $header ) : array 
+{
 	// Bytes 0-3 are 'VP8X'
 	// Byte 4-7 are chunk length
 	// Byte 8-11 are a flag bytes
@@ -358,8 +382,14 @@ function findChunks( $file, $maxChunks = -1 ) {
  
 		return $info;
 }
- 
-function get_exif_meta( $buffer ) {
+
+/**
+ * Extract the EXIF Metadata from a binary string a return as array.
+ *
+ * @param  string $buffer binary string buffer. The data with EXIF data.
+ * @return false|array
+ */
+function get_exif_meta( string $buffer ) {
 
 	$meta = [];
 
@@ -505,6 +535,16 @@ function get_exif_meta( $buffer ) {
 	return $meta;
 }
 
+/**
+ * Extract metadata from a binary string with metadata and return with dedicated type. Use a byte offset to do so. 
+ *
+ * @param  boolean $isIntel is the buffer input a intel 'II' representation. Actually the defines the Endianess.
+ * @param  string  $buffer the buffer with metadata that will be used for extraction
+ * @param  integer $bufoffs the offset where to start the extraction in $buffer
+ * @param  [type]  $piece unused parameter
+ * @param  [type]  $tags unused parameter
+ * @return mixed the extracted metadata in different types
+ */
 function get_meta_from_piece( bool $isIntel, string $buffer, int $bufoffs, $piece, $tags ) 
 { // @codeCoverageIgnore
 	$type = substr( $buffer, $bufoffs +2, 2);
@@ -677,7 +717,7 @@ function get_gps_data( string $gpsbuffer, string $buffer, bool $isIntel )
  * @param  boolean $isIntel is the buffer input a intel 'II' representation. Actually the defines the Endianess.
  * @return string the piece of the data as hex-string
  */
-function frombuffer(string $buffer, int $offset, int $length, bool $isIntel) 
+function frombuffer(string $buffer, int $offset, int $length, bool $isIntel) :string
 { // @codeCoverageIgnore
 	if ( (strlen( $buffer) < ( $offset + $length )) || ($length == 0) ) return '0x00';
 
@@ -701,7 +741,7 @@ function frombuffer(string $buffer, int $offset, int $length, bool $isIntel)
  * @param boolean $isIntel whether the byte field is to revert
  * @return float $value_of_tag the calculated rational value = nominator / denominator.
  */
-function getrationale (string $buffer, string $pointer, int $count, bool $isIntel, string $type = 'number')
+function getrationale (string $buffer, string $pointer, int $count, bool $isIntel, string $type = 'number') :float
 { // @codeCoverageIgnore
 	$value_of_tag = 0.0;
 	$explength = EXIF_OFFSET + hexdec($pointer) + 8 + $count*8;
@@ -739,7 +779,7 @@ function getrationale (string $buffer, string $pointer, int $count, bool $isInte
  * @param string $binary binary-data as string taken from the binary buffer with EXIF-data
  * @return string the inverted binary data as hex-string
  */
-function binrevert (string $binary)
+function binrevert (string $binary) :string
 { // @codeCoverageIgnore
 	switch ( \strlen( $binary) ) {
 		case 1:
