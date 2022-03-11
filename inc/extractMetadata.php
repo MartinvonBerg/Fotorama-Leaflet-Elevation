@@ -20,6 +20,7 @@ const EXIF_OFFSET = 8;
  */
 function getJpgMetadata( string $filename ) : array 
 {	
+	$info = [];
 	getimagesize( $filename, $info );
 	$Exif = exif_read_data( $filename, 'ANY_TAG', true );
 	
@@ -739,9 +740,9 @@ function frombuffer(string $buffer, int $offset, int $length, bool $isIntel) :st
  * @param string $pointer the relative pointer as hex value like 'AF'. For Exif the offset is marked by 'MM' or 'II'.
  * @param integer $count the n'th value to search for, '0' means 1st value
  * @param boolean $isIntel whether the byte field is to revert
- * @return float $value_of_tag the calculated rational value = nominator / denominator.
+ * @return string|float $value_of_tag the calculated rational value = nominator / denominator or as string.
  */
-function getrationale (string $buffer, string $pointer, int $count, bool $isIntel, string $type = 'number') :float
+function getrationale (string $buffer, string $pointer, int $count, bool $isIntel, string $type = 'number')
 { // @codeCoverageIgnore
 	$value_of_tag = 0.0;
 	$explength = EXIF_OFFSET + hexdec($pointer) + 8 + $count*8;

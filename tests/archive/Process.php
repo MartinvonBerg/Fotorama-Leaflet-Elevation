@@ -1,5 +1,6 @@
 <?php
 namespace wppunk\Subscribe;
+
 class Process {
 	public function add_hooks() {
 		add_action( 'wp_ajax_save_form', [ $this, 'save' ] );

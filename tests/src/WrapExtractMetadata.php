@@ -51,7 +51,8 @@ class WrapExtractMetadata {
         return \mvbplugins\fotoramamulti\get_exif_meta( $buffer );
     }
 
-    public function getJpgMetaData( string $filename ) {
+    public function getJpgMetaData( string $filename ) 
+    {
         return \mvbplugins\fotoramamulti\getJpgMetadata( $filename );
     }
 
