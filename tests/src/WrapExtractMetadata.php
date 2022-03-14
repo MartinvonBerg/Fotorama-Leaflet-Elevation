@@ -46,7 +46,7 @@ class WrapExtractMetadata {
         return \mvbplugins\fotoramamulti\decodeLossyChunkHeader( $header );
     }
 
-    public function getExifMeta( $buffer ) 
+    public function getExifMeta( string $buffer ) 
     {
         return \mvbplugins\fotoramamulti\get_exif_meta( $buffer );
     }
@@ -54,6 +54,16 @@ class WrapExtractMetadata {
     public function getJpgMetaData( string $filename ) 
     {
         return \mvbplugins\fotoramamulti\getJpgMetadata( $filename );
+    }
+
+    public function wrapExtractMetadataFromChunks( array $chunks, string $filename ) 
+    {
+        return \mvbplugins\fotoramamulti\extractMetadataFromChunks( $chunks, $filename );
+    }
+
+    public function FindChunks( string $filename )
+    {
+        return \mvbplugins\fotoramamulti\findChunks( $filename);
     }
 
 }

@@ -124,7 +124,8 @@ function getJpgMetadata( string $filename ) : array
  * @param string $filename The complete path to the file in the directory.
  * @return array|false The exif data array similar to the JSON that is provided via the REST-API.
  */
-function getWebpMetadata( string $filename ) {
+function getWebpMetadata( string $filename ) 
+{
 	$parsedWebPData = extractMetadata( $filename );
 	if ( ! $parsedWebPData ) {
 		return BROKEN_FILE;
@@ -140,7 +141,8 @@ function getWebpMetadata( string $filename ) {
  * @param  string $filename the file to analyse
  * @return false|array array with metadata of false on failure
  */
-function extractMetadata( string $filename ) {
+function extractMetadata( string $filename ) 
+{
 	
 	$info = findChunksFromFile( $filename, 100 ); //RiffExtractor 
 	if ( $info === false ) {
@@ -158,7 +160,15 @@ function extractMetadata( string $filename ) {
    return $metadata;
 }
 
-function extractMetadataFromChunks( $chunks, $filename ) {
+/**
+ * extractMetadataFromChunks for a given filename
+ *
+ * @param  array  $chunks the previously extracted chunks from the file
+ * @param  string $filename the file to analyse
+ * @return array metadata from chunks in array
+ */
+function extractMetadataFromChunks( array $chunks, string $filename ) :array
+{
 	
 	$meta = [];
 
@@ -241,7 +251,7 @@ function extractMetadataFromChunks( $chunks, $filename ) {
  * @param  string $header the header to decode as binary string
  * @return array array with decoded data: compression, width, height or empty array on failure
  */
-function decodeLossyChunkHeader( string $header ) : array
+function decodeLossyChunkHeader( string $header ) :array
 {
 	// Bytes 0-3 are 'VP8 '
 	// Bytes 4-7 are the VP8 stream size
@@ -267,7 +277,7 @@ function decodeLossyChunkHeader( string $header ) : array
  * @param  string $header the header to decode as binary string
  * @return array array with decoded data: compression, width, height or empty array on failure
  */
-function decodeLosslessChunkHeader( string $header ) : array
+function decodeLosslessChunkHeader( string $header ) :array
 { // @codeCoverageIgnore
 	// Bytes 0-3 are 'VP8L'
 	// Bytes 4-7 are chunk stream size
@@ -292,7 +302,7 @@ function decodeLosslessChunkHeader( string $header ) : array
  * @param  string $header the header to decode as binary string
  * @return array array with decoded data: compression, width, height or empty array on failure
  */
-function decodeExtendedChunkHeader( string $header ) : array 
+function decodeExtendedChunkHeader( string $header ) :array 
 {
 	// Bytes 0-3 are 'VP8X'
 	// Byte 4-7 are chunk length
@@ -313,20 +323,29 @@ function decodeExtendedChunkHeader( string $header ) : array
 }
 
 /**
- * findchunks
+ * findchunks (EXIF-Data) in a given file
  *
- * @param string $filename
- * @param integer $maxChunks
- * @return false|array $info
+ * @param string $filename the file to analyse
+ * @param integer $maxChunks max number of chunks
+ * @return false|array fals on failure or array with extracted chunks
  */
-function findChunksFromFile( $filename, $maxChunks = -1 ) {
+function findChunksFromFile( string $filename, int $maxChunks = -1 ) 
+{
 	$file = fopen( $filename, 'rb' );
 	$info = findChunks( $file, $maxChunks );
 	fclose( $file );
 	return $info;
 }
- 
-function findChunks( $file, $maxChunks = -1 ) {
+
+/**
+ * findchunks (EXIF-Data) in a given file
+ *
+ * @param resource|string $filename the file to analyse
+ * @param integer $maxChunks max number of chunks
+ * @return false|array fals on failure or array with extracted chunks
+ */
+function findChunks( $file, int $maxChunks = -1 ) 
+{
 		$riff = fread( $file, 4 );
 		if ( $riff !== 'RIFF' ) {
 			return false;
@@ -390,7 +409,8 @@ function findChunks( $file, $maxChunks = -1 ) {
  * @param  string $buffer binary string buffer. The data with EXIF data.
  * @return false|array
  */
-function get_exif_meta( string $buffer ) {
+function get_exif_meta( string $buffer ) 
+{
 
 	$meta = [];
 
