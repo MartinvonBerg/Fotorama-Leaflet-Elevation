@@ -14,6 +14,12 @@
     border-radius: 4px;
 }
 
+@media screen and (max-width: 574px) {
+  .fm-attach-link {
+    display: none !important
+  }
+} 
+
 .fotorama__nav__shaft {
   margin-bottom: 2px;
 }
@@ -39,7 +45,14 @@
   -webkit-box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68); 
   box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68);
   background: #22222285; 
+}
+
+@media screen and (max-width: 480px) {
+  .fotorama__caption__wrap {
+    display: none !important
   }
+} 
+
 .fotorama__nav--thumbs {
     background: rgb(144,144,144);
     background: linear-gradient(0deg, rgba(144,144,144,1) 0%, rgba(249,249,249,1) 91%);

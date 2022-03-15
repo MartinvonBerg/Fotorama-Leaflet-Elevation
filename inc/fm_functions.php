@@ -198,7 +198,7 @@ function gpxview_get_upload_dir($param, $subfolder = '')
  * @return float GPS coordinates as number
  */
 function gpxview_GPS2Num($coordPart)
-{
+{ // toTest
 	$parts = explode('/', $coordPart);
 	$Nparts = count( $parts );
 
@@ -219,7 +219,7 @@ function gpxview_GPS2Num($coordPart)
  * @return float|null gps-coordinate as number or null if $exif-Coord is not an array
  */
 function gpxview_getGPS($exifCoord, $hemi)
-{
+{ // toTest
 	if ( ! is_array($exifCoord) ) {
 		return null;
 	}
@@ -274,7 +274,7 @@ function gpxview_setpostgps($pid, $lat, $lon)
  * @return array ($lon, $lat) the GPS-coordinates
  */
 function gpxview_getLonLat($Exif)
-{
+{ // toTest
 	if (array_key_exists('GPS',$Exif) && ( null != $Exif["GPS"] ) && ( array_key_exists( 'GPSLongitude', $Exif["GPS"]) )) {
 		$lon = gpxview_getGPS($Exif["GPS"]["GPSLongitude"], $Exif["GPS"]['GPSLongitudeRef']);
 		$lat = gpxview_getGPS($Exif["GPS"]["GPSLatitude"], $Exif["GPS"]['GPSLatitudeRef']);

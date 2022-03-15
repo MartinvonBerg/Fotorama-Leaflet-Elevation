@@ -14,7 +14,7 @@ require_once $path . 'custom_mime_types.php';
 require_once $path . 'parseGPX.php'; 
 
 class FotoramaElevation {
-	private $fotorama_elevation_options; // missing typehints for PHP 7.4+
+	private $fotorama_elevation_options; // TODO: missing typehints for PHP 7.4+
 	private $fotorama_option2;
 	private $up_dir = '';    
 	private $min_height_map = 100;
@@ -1174,10 +1174,34 @@ class FotoramaElevation {
         __( 'shadows', 'fotoramamulti' )
 		);
 	    }
-
-	private function my_sanitize_path ($inp) {
+	
+	/**
+	 * Clean user input to one single string containing only relevant characters with using 'sanitize_text_field'
+	 * filter_var with 'FILTER_SANITIZE_STRING'.
+	 *
+	 * @param  string $inp the input string to be sanitized
+	 * @return string sanitized string
+	 */	
+	private static function my_sanitize_text ( string $inp) :string
+	{
 		$inp = sanitize_text_field( $inp);
 		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
+		return $inp;
+	}
+
+	/**
+	 * Standardize a path:
+	 *  - no leading or trailing slashes
+	 *  - no other characters than 'A-Za-z0-9-_/'
+	 *  - and clean user input to one single string containing only relevant characters
+	 *
+	 * @param  string $inp the input path to be sanitized
+	 * @return string sanitized path
+	 */
+	private function my_sanitize_path (string $inp) :string
+	{
+		$inp = $this::my_sanitize_text( $inp );
+		
 		$inp = preg_replace("/[^A-Za-z0-9-_\/]/", "", $inp);
 		$inp = rtrim($inp,'/');
 		$inp = rtrim($inp,'\\');
@@ -1186,53 +1210,50 @@ class FotoramaElevation {
 		return $inp;
 	}
 
-	private function my_sanitize_text ($inp) {
-		$inp = sanitize_text_field( $inp);
-		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
-		return $inp;
-	}
-
-	private function my_sanitize_csscolor ($inp) {
-		$inp = sanitize_text_field( $inp);
-		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
+	/**
+	 * check if a hex string starting with # is within given limits. All other strings are just returned.
+	 * Only works together with a fallback to 'red' if invalid CSS-color-names are used.
+	 *
+	 * @param  string $inp the color value as plain string or as hex string
+	 * @return string the sanitized color
+	 */
+	private function my_sanitize_csscolor ( string $inp ) :string
+	{
+		$inp = $this::my_sanitize_text( $inp );
+		$min = 0;
 		$max = 16777216; // 24 Bit max value for CSS hex colour.
 
 		if ($inp[0] == '#') {
 			$cssdec = hexdec ( substr ( $inp, 1 ) );
-			if ( gettype ( $cssdec) == 'integer') {
-				if (filter_var($cssdec, FILTER_VALIDATE_INT, array("options" => array("min_range"=> 0, "max_range"=>$max))) === false) {
-					// echo("Variable value is not within the legal range")
-					$inp = 'red';
-				}
-			} else {
+			if ( filter_var($cssdec, FILTER_VALIDATE_INT, array("options" => array("min_range"=> $min, "max_range"=>$max))) === false) {
 				$inp = 'red';
-			}
-		}
+			} 
+		} 
 		return $inp;
 	}
 
 	/**
-	 * Check the value and range of numbers (integers AND float!)
+	 * Check the value and range of numbers (integers AND float!). Scientific notation not allowed.
 	 *
-	 * @param string $inp the number to check
-	 * @param integer|float $min minimal value
-	 * @param integer|float $max maximal value
-	 * @return void
+	 * @param string $inp the number as string to check where all Non-digits are ignored. So 1e10 will be 110.
+	 * @param integer|float $min minimal value.
+	 * @param integer|float $max maximal value.
+	 * @return string the converted value as string.
 	 */
-	private function my_sanitize_int_with_limits($inp, $min, $max) {
-		$inp1 = preg_replace("/[^0-9]/", "", $inp );
-		$val = intval( $inp1 );
+	private function my_sanitize_int_with_limits( string $inp, $min, $max) :string
+	{
+		if ( ! \is_numeric($min) || ( ! \is_numeric( $max) ))
+			return 0;
+			
+		$inp1 = preg_replace("/[^0-9-]/", "", $inp );
+		$val = intval( $inp1 ); // the integer-value
 
-		$inp2 = preg_replace("/[^0-9.,]/", "", $inp );
-		$dec = \floatval( $inp2 ); 
+		$inp2 = preg_replace("/[^0-9.,-]/", "", $inp );
+		$dec = \floatval( $inp2 ); // the float value
 
-		if ( abs( $dec - $val ) < 0.0001) {
-			if (filter_var($val, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max))) === false) {
-				// echo("Variable value is not within the legal range");
+		if ( (abs( $dec - $val ) < 0.0001) && (filter_var($val, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max))) === false) ) 
+		{			
 				($val < $min) ? $val = $min : $val = $max;
-			} else {
-				//echo("Variable value is within the legal range");
-			}
 		}
 		else {
 			($dec < $min) ? $dec = $min : '';
@@ -1243,23 +1264,32 @@ class FotoramaElevation {
 		return strval($val);
 	}
 
-	private function my_sanitize_special ( $inp, $checks ) {
-		$inp = sanitize_text_field( $inp);
-		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
-
+	/**
+	 * Convert a string value to an integer within given min- / max-Limits or to 'false' / 'true' if input is 'FaLse' or 'TrUe' or so. Return 'false' as fallback.
+	 *
+	 * @param  string $inp the input value from field autoplay which could be true, false or an integer-value
+	 * @param  array  $checks array of arrays where $checks[0] and $checks[1] are not used. 
+	 * 				  $checks[2] defines the target value for the type conversion (only integer supported) and the min / max-Value.
+	 * @return string the converted input value: 'false' or 'true' or string from integer value from $inp
+	 */
+	private function my_sanitize_special( string $inp, array $checks ) :string
+	{
+		$inp = $this::my_sanitize_text( $inp );
+		
 		if ( strtolower ( $inp ) == 'false' ) { return 'false'; }
 		if ( strtolower ( $inp ) == 'true'  ) { return 'true'; }
 
-		if ( $checks[2][0] == 'integer' ) {
-			//$inp1 = preg_replace("/[^0-9]/", "", $inp );
+		if ( ($checks[2][0] == 'integer') && \is_numeric( $inp ) ) {
 			$val = intval( $inp );
+		} else {
+			return 'false';
 		}
 
 		$min = $checks[2][1];
 		$max= $checks[2][2];
 
 		if (filter_var($val, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max))) === false) {
-			// echo("Variable value is not within the legal range");
+			// echo("Variable value is not within the legal range"); Restrict to min / max-Value.
 			($val < $min) ? $val = $min : $val = $max;
 		} else {
 			//echo("Variable value is within the legal range"). Do nothing.
