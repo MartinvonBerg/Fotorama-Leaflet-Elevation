@@ -179,7 +179,7 @@ function get_scripts_styles() {
  * @param string $subfolder  subfolder to append to basedir or baseurl
  * @return string the base appended with subfolder
  */
-function gpxview_get_upload_dir($param, $subfolder = '')
+function gpxview_get_upload_dir($param, $subfolder = '') :string
 {
 	$upload_dir = wp_get_upload_dir();
 	$url = $upload_dir[$param];
@@ -300,7 +300,7 @@ function gpxview_getLonLat( array $Exif) :array
  * @param int $wpid the wordpress-id of the image 
  * @return array array with collected information for the image
  */
-function getEXIFData( $file, $ext, $wpid)
+function getEXIFData( $file, $ext, $wpid) :array
 {
 	// preset the title 
 	$title = 'notitle';
@@ -411,8 +411,8 @@ function getEXIFData( $file, $ext, $wpid)
  * @param string $thumbsdir the directory with thumbnails, if any
  * @return array<string> the srcset as array
  */
-function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpath, string $thumbsdir ) {
-
+function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpath, string $thumbsdir ) :array
+{
 	$phpimgdata = [];
 
 	// take srcset from WP if image was added to the WP media library
@@ -472,7 +472,8 @@ function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpat
  * @param integer $shortcodecounter the number of the shortcode on the page / post where it is used.
  * @return array{string, array, int} gpxfile as string and tracks as array for the Javscript variable
  */
-function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $gpx_url, string $showadress, bool $setCustomFields, int $shortcodecounter ) {
+function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $gpx_url, string $showadress, bool $setCustomFields, int $shortcodecounter ) :array
+{
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	$files = explode(",", $gpxfile);
 	$i = 0; // i : gpxfilenumber : the actual number of tracks at the end of the loop

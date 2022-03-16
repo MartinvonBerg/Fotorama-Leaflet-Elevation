@@ -83,38 +83,3 @@ final class FmFunctionsTest extends TestCase {
     }
 
 }
-
-/**
- * calculate GPS-coordinates to float together with earth hemisphere
- *
- * @param array $exifCoord One GPS-Coordinate taken from Exif in jpg-image in [degrees, minutes, seconds]
- * @param string $hemi earth hemisphere. If "W" or "S" it is the west or south half of earth
- * @return float|null gps-coordinate as number or null if $exif-Coord is not an array
- */
-/*
-function gpxview_getGPS( array $exifCoord, string $hemi)
-{ 
-	if ( empty($exifCoord) ) 
-		return null;
-	
-	$flip = ( ($hemi == 'W') or ($hemi == 'S') ) ? -1 : 1;
-	$gpsvalue = 0;
-	$i = 0;
-
-	foreach( $exifCoord as $val ) {
-		$gpsvalue = $gpsvalue + gpxview_GPS2Num( $val ) / 60**$i;
-		++$i;
-
-		if ($i == 3) 
-			break;
-	}
-	
-	$gpsvalue = $flip * $gpsvalue;
-
-	if ( abs($gpsvalue) > 180.000 )
-		$gpsvalue = null;
-	
-	return $gpsvalue;
-	
-}
-*/
