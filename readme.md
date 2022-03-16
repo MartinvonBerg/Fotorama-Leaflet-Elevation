@@ -95,7 +95,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 # Upgrade Notice 
 
 Upgrade to WordPress 5.9 and PHP 7.4+ is highly recommended! PHP 8.0.x is even better!
-Due to the error corrections it is highly recommended to upgrade the Plugin to 0.7.1! Thank's for your patience. No need to update to 0.8.x if your images are not in the WP Media library. If so, no need to update to 0.8.3.
+Due to the error corrections it is highly recommended to upgrade the Plugin to 0.7.1! Thank's for your patience. No need to update to 0.8.x if your images are not in the WP Media library. If so, no need to update to 0.9.0.
 
 </br>
 
@@ -337,7 +337,7 @@ This plugin uses the great work from:
 
 # Note for Developers
 - unit tests
-    - No unit testing done at all. I know these are a must for professional software development. But, this is a hobbyist project that I did just for fun. 
+    - Meaningful tests with PHPunit and BrainMonkey are done. Meaningful means that functions / methods that would have needed mock-ups to a great extent were not tested. Means that functions that make use of lots of or sophisticated WP-functions are not tested. Testing these would require the re-design of WP-functions in BrainMonkey what is simply not efficient and useful.
 - integration tests
     - done on my local test suite and on my live site 
 - system tests
@@ -379,6 +379,9 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.9.0 =
+16.03.2022: PHPunit tests finalized. Only useful and meaningful tests where conducted.
 
 = 0.8.3 =
 01.03.2022: Start implementation of unit tests with PHPunit und BrainMonkey. Minor changes in already tested function to improve code coverage or testatbility.

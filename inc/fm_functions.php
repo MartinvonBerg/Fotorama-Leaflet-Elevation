@@ -145,10 +145,10 @@ function fm_error_notice() {
 /**
  * Get all scripts and styles
  *
- * @return array('scripts' => array<int, mixed>, 'styles' => array<int, mixed>)
+ * @return array{scripts: array<int, mixed>, styles: array<int, mixed>}
  */
-function get_scripts_styles() {
-
+function get_scripts_styles() :array
+{
     $result = [];
     $result['scripts'] = [];
     $result['styles'] = [];
@@ -214,7 +214,7 @@ function gpxview_GPS2Num( string $coordPart ) :float
 /**
  * calculate GPS-coordinates to float together with earth hemisphere
  *
- * @param array $exifCoord One GPS-Coordinate taken from Exif in jpg-image in [degrees, minutes, seconds]
+ * @param array<int,string> $exifCoord One GPS-Coordinate taken from Exif in jpg-image in [degrees, minutes, seconds]
  * @param string $hemi earth hemisphere. If "W" or "S" it is the west or south half of earth
  * @return float|null gps-coordinate as number or null if $exif-Coord is not an array
  */
@@ -273,8 +273,9 @@ function gpxview_setpostgps($pid, $lat, $lon)
 /**
  * get GPS-Longitude 'lon' and Latitude 'lat' from the Exif-Data in the image
  *
- * @param array $Exif the Exif-data read out from the image
- * @return array ($lon, $lat) the GPS-coordinates
+ * @param array{GPS: array<string, string|array<int,string>>} $Exif the Exif-data read out from the image.
+ * //param array{GPS: array{GPSLongitude: array<int,string>, GPSLatitude: array<int,string>, GPSLongitudeRef:string, GPSLatitudeRef:string}}
+ * @return array<int, float|null> ($lon, $lat) the GPS-coordinates
  */
 function gpxview_getLonLat( array $Exif) :array
 { 
@@ -298,9 +299,9 @@ function gpxview_getLonLat( array $Exif) :array
  * @param string $file the directory-path to the image file 
  * @param string $ext the file extension
  * @param int $wpid the wordpress-id of the image 
- * @return array array with collected information for the image
+ * @return array<string, mixed> array with collected information for the image
  */
-function getEXIFData( $file, $ext, $wpid) :array
+function getEXIFData( string $file, string $ext, int $wpid) :array
 {
 	// preset the title 
 	$title = 'notitle';
@@ -324,7 +325,6 @@ function getEXIFData( $file, $ext, $wpid) :array
 		$data['camera'] = '---';
 
 		$additionaldata = getWebpMetadata( $file );
-
 		$data = \array_merge( $data, $additionaldata);
 
 		if ($data['exposure_time'] > 0) {
@@ -404,12 +404,12 @@ function getEXIFData( $file, $ext, $wpid) :array
  * get the Source Set for the current image. Either from WP-database or create from the thumbnails provided in the folder.
  * If both not possible provide an emtpy string
  *
- * @param array $data the array with all collected image information
+ * @param array<string, mixed> $data the array with all collected image information
  * @param string $up_url the wp upload url
  * @param string $up_dir the wp upload dir on the server
  * @param string $imgpath the current path of the 'Album' or 'gallerie' which is taken for fotorama
  * @param string $thumbsdir the directory with thumbnails, if any
- * @return array<string> the srcset as array
+ * @return array<string, array<int|string, string>|string> the srcset as array
  */
 function getSrcset ( array $data, string $up_url, string $up_dir, string $imgpath, string $thumbsdir ) :array
 {
@@ -507,7 +507,7 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 							$lon = \strval( $gpxdata->trk->trkpt[0]['lon'] );
 						}
 						
-						if ( isset( $lat ) && isset( $lon ) ) {
+						if ( \is_numeric( $lat ) && \is_numeric( $lon ) ) {
 							gpxview_setpostgps($postid, $lat, $lon);
 
 							// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
@@ -537,7 +537,7 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 			} else {
 				$gpxfile .= ',' . $f;
 			}
-			$i++;
+			++$i;
 		}
 	}
 	return array ( $gpxfile, $tracks, $i );
