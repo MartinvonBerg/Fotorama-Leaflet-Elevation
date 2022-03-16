@@ -192,21 +192,21 @@ function gpxview_get_upload_dir($param, $subfolder = '')
 }
 
 /**
- * Convert one part of GPS coordinates to float
+ * Convert one part of GPS coordinates to float. That is a string defined by nominator/denominator
  *
  * @param string $coordPart gpx coordinate-part, degree, minute or second
  * @return float GPS coordinates as number
  */
-function gpxview_GPS2Num($coordPart)
-{ // toTest
+function gpxview_GPS2Num( string $coordPart ) :float
+{
 	$parts = explode('/', $coordPart);
 	$Nparts = count( $parts );
 
-	if ( $Nparts = 0)
-		return 0;
-
 	if ( $Nparts == 1)
 		return floatval($parts[0]);
+
+	if ( floatval($parts[1]) == 0)
+		return 0;
 
 	return floatval($parts[0]) / floatval($parts[1]);
 }
@@ -218,26 +218,29 @@ function gpxview_GPS2Num($coordPart)
  * @param string $hemi earth hemisphere. If "W" or "S" it is the west or south half of earth
  * @return float|null gps-coordinate as number or null if $exif-Coord is not an array
  */
-function gpxview_getGPS($exifCoord, $hemi)
-{ // toTest
-	if ( ! is_array($exifCoord) ) {
+function gpxview_getGPS( array $exifCoord, string $hemi)
+{ 
+	if ( empty($exifCoord) ) 
 		return null;
+	
+	$flip = ( ($hemi == 'W') or ($hemi == 'S') ) ? -1 : 1;
+	$gpsvalue = 0;
+	$i = 0;
+
+	foreach( $exifCoord as $val ) {
+		$gpsvalue = $gpsvalue + gpxview_GPS2Num( $val ) / 60**$i;
+		++$i;
+
+		if ($i == 3) 
+			break;
 	}
+	
+	$gpsvalue = $flip * $gpsvalue;
 
-	$NExifCoords = count($exifCoord);
-
-	$degrees = $NExifCoords > 0 ? gpxview_GPS2Num($exifCoord[0]) : 0;
-	$minutes = $NExifCoords > 1 ? gpxview_GPS2Num($exifCoord[1]) : 0;
-	$seconds = $NExifCoords > 2 ? gpxview_GPS2Num($exifCoord[2]) : 0;
-
-	$flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
-
-	$gpsvalue = $flip * ($degrees + $minutes / 60 + $seconds / 3600);
-	if (($gpsvalue <= 180.0) && ($gpsvalue >= -180.0) && is_numeric($gpsvalue)) {
-		return $gpsvalue;
-	} else {
-		return null;
-	}
+	if ( abs($gpsvalue) > 180.000 )
+		$gpsvalue = null;
+	
+	return $gpsvalue;
 }
 
 /**
@@ -273,8 +276,8 @@ function gpxview_setpostgps($pid, $lat, $lon)
  * @param array $Exif the Exif-data read out from the image
  * @return array ($lon, $lat) the GPS-coordinates
  */
-function gpxview_getLonLat($Exif)
-{ // toTest
+function gpxview_getLonLat( array $Exif) :array
+{ 
 	if (array_key_exists('GPS',$Exif) && ( null != $Exif["GPS"] ) && ( array_key_exists( 'GPSLongitude', $Exif["GPS"]) )) {
 		$lon = gpxview_getGPS($Exif["GPS"]["GPSLongitude"], $Exif["GPS"]['GPSLongitudeRef']);
 		$lat = gpxview_getGPS($Exif["GPS"]["GPSLatitude"], $Exif["GPS"]['GPSLatitudeRef']);
