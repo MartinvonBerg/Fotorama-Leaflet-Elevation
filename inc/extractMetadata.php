@@ -681,6 +681,7 @@ function get_gps_data( string $gpsbuffer, string $buffer, bool $isIntel )
 			if ( $type === $expectedType){
 				// get the number of values
 				$count = hexdec( frombuffer( $gpsbuffer, $bufoffs, 4, $isIntel) );
+				if ($count > $bufflen) break;
 				$nvalues = $count;
 				$bufoffs += 4;
 
