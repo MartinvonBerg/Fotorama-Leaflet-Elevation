@@ -95,7 +95,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 # Upgrade Notice 
 
 Upgrade to WordPress 5.9 and PHP 7.4+ is highly recommended! PHP 8.0.x is even better!
-Due to the error corrections it is highly recommended to upgrade the Plugin to 0.7.1! Thank's for your patience. No need to update to 0.8.x if your images are not in the WP Media library. If so, no need to update to 0.9.0.
+Due to the error corrections it is highly recommended to upgrade the Plugin to 0.9.0! Thank's for your patience.
 
 </br>
 
@@ -382,6 +382,7 @@ This plugin uses the great work from:
 
 = 0.9.0 =
 16.03.2022: PHPunit tests finalized. Only useful and meaningful tests where conducted.
+29.03.2022: PHP Error Correction in ExtractMetadata.php. 
 
 = 0.8.3 =
 01.03.2022: Start implementation of unit tests with PHPunit und BrainMonkey. Minor changes in already tested function to improve code coverage or testatbility.
