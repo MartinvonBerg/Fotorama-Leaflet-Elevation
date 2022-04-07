@@ -33,14 +33,30 @@
 			"help": "The GPX-file in your GPX-directory (see Admin Settings)",
 			"callback": "onChangeGpxfile"
 		},
+		"mapheight": {
+			"type": "string",
+			"default": "450",
+			"section": "map",
+			"label": "Height of Map",
+			"help": "Height of the leaflet elevation map in px",
+			"callback": "onChangeMapheight"
+		},
 		"eletheme": {
 			"type": "string",
 			"default": null,
 			"section": "chart",
-			"label": "Select Chart Theme:",
+			"label": "Chart Theme",
 			"help": "",
 			"callback": "onChangeEletheme",
 			"options": []
+		},
+		"chartheight": {
+			"type": "string",
+			"default": "200",
+			"section": "chart",
+			"label": "Height of Chart",
+			"help": "Height of the leaflet elevation chart in px",
+			"callback": "onChangeChartheight"
 		}
 	}
 }

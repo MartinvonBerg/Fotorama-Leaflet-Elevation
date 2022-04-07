@@ -16,7 +16,7 @@ import {
 	InspectorControls,
 } from '@wordpress/block-editor';
 
- import {
+import {
 	TextControl,
 	PanelBody,
 	PanelRow,
@@ -42,31 +42,64 @@ import './editor.scss';
  */
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
-	const { imgpath, gpxfile, eletheme } = attributes;
-	const aff= require('./block.json')['attributes']; // attributes from File loaded.
+	const { imgpath, gpxfile, eletheme, chartheight, mapheight } = attributes;
+	const aff =  require('./block.json')['attributes']; // attributes from File loaded.
+	let entries = Object.entries(aff);
 	const ns = 'fotoramamulti';
 	let mykey = '';
-	
+		
 	const onChangeImgpath = ( newContent ) => {
 		debugger;
 		setAttributes( {imgpath: newContent } )
 	}
 
-	const onChangeGpxfile= ( newContent ) => {
+	const onChangeGpxfile = ( newContent ) => {
 		setAttributes( {gpxfile: newContent } )
 	}
 
-	const onChangeEletheme= ( newContent ) => {
+	const onChangeEletheme = ( newContent ) => {
 		setAttributes( {eletheme: newContent } )
 	}
 
+	const onChangeChartheight = ( newContent ) => {
+		setAttributes( {chartheight: newContent } )
+	}
+
+	const onChangeMapheight = ( newContent ) => {
+		setAttributes( {mapheight: newContent } )
+	}
+
+	const Tl2 = () => (
+		<PanelBody {...entries}
+			
+			title={ __( 'Chart', ns )}
+			initialOpen={true}>
+
+			{entries.map((attr, index) => (
+				<>
+				  {attr[1].section == 'chart' &&
+					<PanelRow key={index.toString()}>
+						<fieldset>
+							<TextControl {...mykey=attr[0]}
+								key={mykey}
+								label={__(aff[mykey]['label'], ns) }
+								value = { eval(mykey) } 
+								onChange={ eval(aff[mykey]['callback']) }
+								help={__(aff[mykey]['help'], ns)}
+							/>
+						</fieldset>	
+					</PanelRow>
+				  }
+				</>
+			)
+			)}
+		</PanelBody> 
+	)
+	
+
 	/*
 	**** Map
-	'mapheight' 		=> $fotorama_elevation_options['height_of_map_10'] ?? '450',
 	'showmap' 			=> 'true',
-
-	**** Chart
-	'chartheight' 		=> $fotorama_elevation_options['height_of_chart_11'] ?? '200',
 
 	**** Fotorama
 	'requiregps' 		=> $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
@@ -101,7 +134,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	'thumbmargin' 		=> $fotorama_elevation_options['thumbmargin'] ?? '2', // in pixels
 	'thumbborderwidth' 	=> $fotorama_elevation_options['thumbborderwidth'] ?? '2', // in pixels
 	'thumbbordercolor' 	=> $fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
-	
 	*/ 
 	
 	return (
@@ -109,7 +141,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls>
 				<PanelBody
 							title={ __( 'Fotorama', ns )}
-							initialOpen={true}
+							initialOpen={false}
 				>
 					<PanelRow>
 						<fieldset>
@@ -124,7 +156,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				<PanelBody
 							title={ __( 'Map', ns )}
-							initialOpen={true}
+							initialOpen={false}
 				>
 					<PanelRow>
 						<fieldset>
@@ -139,11 +171,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				<PanelBody
 							title={ __( 'Chart', ns )}
-							initialOpen={true}
+							initialOpen={false}
 				>
 					<SelectControl
 						label={ __( 'Select Chart Theme:', ns  ) }
-						value={ eletheme } // lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme, martin-theme. 
+						value={ eletheme } 
 						onChange={ onChangeEletheme }
 						options={ [
 							{ value: null, label: 'Select Chart Theme', disabled: true },
@@ -157,15 +189,67 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ value: 'yellow-theme', label: 'yellow-theme' }
 						] }
 					/>
+					<PanelRow>
+						<fieldset>
+						<TextControl {...mykey='chartheight'}
+								label={__(aff[mykey]['label'], ns) }
+								value = { eval(mykey) }
+								onChange={eval(aff[mykey]['callback']) }
+								help={__(aff[mykey]['help'], ns)}
+							/>
+						</fieldset>
+					</PanelRow>
 				</PanelBody>
+				
+				{Tl2 (aff, attributes )}
+				
 			</InspectorControls>
 
 			<div {...blockProps}>
 				<p><strong>Your Fotorama Settings:</strong></p>
-				<p>Image-Path: <strong>{imgpath}</strong></p>
-				<p>GPX-File: <strong>{gpxfile}</strong></p>
-				<p>Chart Theme: <strong>{eletheme}</strong></p>
+				<TextList aff={aff} values={attributes} />
 			</div>
 		</>
 	);
+}
+
+function TextList(props) {
+	const aff = props.aff;
+	let entries = Object.entries(aff);
+	
+	return (
+	  <ul>
+		{entries.map((attr, index) =>
+		   <p key={index.toString()}>{attr[1].label}: <strong>{props.values[attr[0]]}</strong></p>
+		)}
+	  </ul>
+	);
+}
+
+function PanelRowList(props) {
+	const aff = props.aff;
+	let entries = Object.entries(aff);
+	const ns = 'fotoramamulti';
+	debugger;
+	const code = (
+		<PanelBody {...entries}
+				title={ __( 'Fotorama', ns )}
+				initialOpen={true}>
+			{entries.map((attr, index) => (
+				<PanelRow key={index.toString()}>
+					<fieldset>
+						<TextControl {...props}
+							key={index.toString()}
+							label={__(attr[1].label, ns) }
+							value = { props.values[attr[0]] }
+							/* onChange={ eval(props.aff[attr[0]]['callback'])  } */
+							help={__(attr[1].help, ns)}
+						/>
+					</fieldset>	
+				</PanelRow>)
+			)}
+		</PanelBody>
+	);
+
+	return code;
 }

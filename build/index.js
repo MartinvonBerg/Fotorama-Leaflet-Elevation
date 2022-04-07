@@ -66,12 +66,15 @@ function Edit(_ref) {
   const {
     imgpath,
     gpxfile,
-    eletheme
+    eletheme,
+    chartheight,
+    mapheight
   } = attributes;
 
   const aff = (__webpack_require__(/*! ./block.json */ "./src/block.json").attributes); // attributes from File loaded.
 
 
+  let entries = Object.entries(aff);
   const ns = 'fotoramamulti';
   let mykey = '';
 
@@ -93,12 +96,34 @@ function Edit(_ref) {
       eletheme: newContent
     });
   };
+
+  const onChangeChartheight = newContent => {
+    setAttributes({
+      chartheight: newContent
+    });
+  };
+
+  const onChangeMapheight = newContent => {
+    setAttributes({
+      mapheight: newContent
+    });
+  };
+
+  const Tl2 = () => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, entries, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Chart', ns),
+    initialOpen: true
+  }), entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, attr[1].section == 'chart' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, {
+    key: index.toString()
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
+    key: mykey,
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
+    value: eval(mykey),
+    onChange: eval(aff[mykey]['callback']),
+    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
+  })))))));
   /*
   **** Map
-  'mapheight' 		=> $fotorama_elevation_options['height_of_map_10'] ?? '450',
   'showmap' 			=> 'true',
-  	**** Chart
-  'chartheight' 		=> $fotorama_elevation_options['height_of_chart_11'] ?? '200',
   	**** Fotorama
   'requiregps' 		=> $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
   'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'yes',
@@ -126,13 +151,12 @@ function Edit(_ref) {
   'thumbmargin' 		=> $fotorama_elevation_options['thumbmargin'] ?? '2', // in pixels
   'thumbborderwidth' 	=> $fotorama_elevation_options['thumbborderwidth'] ?? '2', // in pixels
   'thumbbordercolor' 	=> $fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
-  
   */
 
 
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Fotorama', ns),
-    initialOpen: true
+    initialOpen: false
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = 'imgpath', {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
     value: eval(mykey),
@@ -140,7 +164,7 @@ function Edit(_ref) {
     help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
   }))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Map', ns),
-    initialOpen: true
+    initialOpen: false
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = 'gpxfile', {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
     value: eval(mykey),
@@ -148,11 +172,10 @@ function Edit(_ref) {
     help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
   }))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Chart', ns),
-    initialOpen: true
+    initialOpen: false
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.SelectControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Select Chart Theme:', ns),
-    value: eletheme // lime-theme, steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme, martin-theme. 
-    ,
+    value: eletheme,
     onChange: onChangeEletheme,
     options: [{
       value: null,
@@ -183,7 +206,44 @@ function Edit(_ref) {
       value: 'yellow-theme',
       label: 'yellow-theme'
     }]
-  }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, "Your Fotorama Settings:")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, "Image-Path: ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, imgpath)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, "GPX-File: ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, gpxfile)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, "Chart Theme: ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, eletheme))));
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = 'chartheight', {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
+    value: eval(mykey),
+    onChange: eval(aff[mykey]['callback']),
+    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
+  }))))), Tl2(aff, attributes)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, "Your Fotorama Settings:")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(TextList, {
+    aff: aff,
+    values: attributes
+  })));
+}
+
+function TextList(props) {
+  const aff = props.aff;
+  let entries = Object.entries(aff);
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("ul", null, entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", {
+    key: index.toString()
+  }, attr[1].label, ": ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, props.values[attr[0]]))));
+}
+
+function PanelRowList(props) {
+  const aff = props.aff;
+  let entries = Object.entries(aff);
+  const ns = 'fotoramamulti';
+  debugger;
+  const code = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, entries, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Fotorama', ns),
+    initialOpen: true
+  }), entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, {
+    key: index.toString()
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
+    key: index.toString(),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(attr[1].label, ns),
+    value: props.values[attr[0]]
+    /* onChange={ eval(props.aff[attr[0]]['callback'])  } */
+    ,
+    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(attr[1].help, ns)
+  }))))));
+  return code;
 }
 
 /***/ }),
@@ -352,7 +412,7 @@ function _extends() {
   \************************/
 /***/ (function(module) {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"fotoramamulti/fotorama-multi","version":"0.9.0","title":"Fotorama Elevation","category":"media","icon":"embed-photo","description":"Provide settings for the Fotorama-Elevation shortcode.","keywords":["fotorama","elevatin","map","chart","slider","image"],"supports":{"html":false,"customClassName":false},"textdomain":"fotorama-multi","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"imgpath":{"type":"string","default":"none","section":"fotorama","label":"Image Path","help":"Path to your images in the uploads folder.","callback":"onChangeImgpath"},"gpxfile":{"type":"string","default":"test.gpx","section":"map","label":"GPX-File","help":"The GPX-file in your GPX-directory (see Admin Settings)","callback":"onChangeGpxfile"},"eletheme":{"type":"string","default":null,"section":"chart","label":"Select Chart Theme:","help":"","callback":"onChangeEletheme","options":[]}}}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"fotoramamulti/fotorama-multi","version":"0.9.0","title":"Fotorama Elevation","category":"media","icon":"embed-photo","description":"Provide settings for the Fotorama-Elevation shortcode.","keywords":["fotorama","elevatin","map","chart","slider","image"],"supports":{"html":false,"customClassName":false},"textdomain":"fotorama-multi","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"imgpath":{"type":"string","default":"none","section":"fotorama","label":"Image Path","help":"Path to your images in the uploads folder.","callback":"onChangeImgpath"},"gpxfile":{"type":"string","default":"test.gpx","section":"map","label":"GPX-File","help":"The GPX-file in your GPX-directory (see Admin Settings)","callback":"onChangeGpxfile"},"mapheight":{"type":"string","default":"450","section":"map","label":"Height of Map","help":"Height of the leaflet elevation map in px","callback":"onChangeMapheight"},"eletheme":{"type":"string","default":null,"section":"chart","label":"Chart Theme","help":"","callback":"onChangeEletheme","options":[]},"chartheight":{"type":"string","default":"200","section":"chart","label":"Height of Chart","help":"Height of the leaflet elevation chart in px","callback":"onChangeChartheight"}}}');
 
 /***/ })
 
