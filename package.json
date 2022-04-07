@@ -1,0 +1,21 @@
+{
+	"name": "fotorama-multi",
+	"version": "0.9.0",
+	"description": "Provide settings for the Fotorama-Elevation shortcode by a Gutenberg block",
+	"author": "Martin von Berg",
+	"license": "GPL-2.0",
+	"homepage": "https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/",
+	"main": "build/index.js",
+	"scripts": {
+		"build": "wp-scripts build",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"start": "wp-scripts start"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^22.3.0"
+	}
+}

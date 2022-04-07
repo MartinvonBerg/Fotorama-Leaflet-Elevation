@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "fotoramamulti/fotorama-multi",
+	"version": "0.9.0",
+	"title": "Fotorama Elevation",
+	"category": "media",
+	"icon": "embed-photo",
+	"description": "Provide settings for the Fotorama-Elevation shortcode.",
+	"keywords": [ "fotorama", "elevatin", "map", "chart", "slider", "image" ],
+	"supports": {
+		"html": false,
+		"customClassName": false
+	},
+	"textdomain": "fotorama-multi",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"attributes": {
+		"imgpath": {
+			"type": "string",
+			"default": "none",
+			"section": "fotorama",
+			"label": "Image Path",
+			"help": "Path to your images in the uploads folder.",
+			"callback": "onChangeImgpath"
+		},
+		"gpxfile": {
+			"type": "string",
+			"default": "test.gpx",
+			"section": "map",
+			"label": "GPX-File",
+			"help": "The GPX-file in your GPX-directory (see Admin Settings)",
+			"callback": "onChangeGpxfile"
+		},
+		"eletheme": {
+			"type": "string",
+			"default": null,
+			"section": "chart",
+			"label": "Select Chart Theme:",
+			"help": "",
+			"callback": "onChangeEletheme",
+			"options": []
+		}
+	}
+}
