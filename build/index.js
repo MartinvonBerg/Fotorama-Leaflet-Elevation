@@ -68,7 +68,8 @@ function Edit(_ref) {
     gpxfile,
     eletheme,
     chartheight,
-    mapheight
+    mapheight,
+    showmap
   } = attributes;
 
   const aff = (__webpack_require__(/*! ./block.json */ "./src/block.json").attributes); // attributes from File loaded.
@@ -109,10 +110,55 @@ function Edit(_ref) {
     });
   };
 
-  const ControListChart = () => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, currentSection = arguments[2], (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, entries, {
+  const toggleShowmap = () => {
+    setAttributes({
+      showmap: !showmap
+    });
+  };
+
+  const ControListChart = () => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, entries, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Chart', ns),
-    initialOpen: true
-  }), entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, attr[1].section == 'chart' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, {
+    initialOpen: false
+  }), entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, attr[1].section == 'chart' && attr[1]['options'] === undefined && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, {
+    key: index.toString()
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
+    key: mykey,
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
+    value: eval(mykey),
+    onChange: eval(aff[mykey]['callback']),
+    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
+  })))))), entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, attr[1].section == 'chart' && attr[1]['options'] !== undefined && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.SelectControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
+    key: mykey,
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
+    value: eval(mykey),
+    onChange: eval(aff[mykey]['callback']),
+    options: attr[1]['options']
+  }))))));
+
+  const ControListMap = () => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, entries, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Map', ns),
+    initialOpen: false
+  }), entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, attr[1].section === 'map' && attr[1].type !== 'boolean' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, {
+    key: index.toString()
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
+    key: mykey,
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
+    value: eval(mykey),
+    onChange: eval(aff[mykey]['callback']),
+    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
+  })))))), entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, attr[1].section === 'map' && attr[1].type === 'boolean' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, {
+    key: index.toString()
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.ToggleControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
+    key: mykey,
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
+    checked: eval(mykey),
+    onChange: eval(aff[mykey]['callback'])
+  }))))))));
+
+  const ControListFotorama = () => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, entries, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Fotorama', ns),
+    initialOpen: false
+  }), entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, attr[1].section == 'fotorama' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, {
     key: index.toString()
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
     key: mykey,
@@ -122,9 +168,7 @@ function Edit(_ref) {
     help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
   }))))))));
   /*
-  **** Map
-  'showmap' 			=> 'true',
-  	**** Fotorama
+  **** Fotorama
   'requiregps' 		=> $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
   'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'yes',
   	'showadress' 		=> $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
@@ -154,69 +198,7 @@ function Edit(_ref) {
   */
 
 
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Fotorama', ns),
-    initialOpen: false
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = 'imgpath', {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
-    value: eval(mykey),
-    onChange: eval(aff[mykey]['callback']),
-    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
-  }))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Map', ns),
-    initialOpen: false
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = 'gpxfile', {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
-    value: eval(mykey),
-    onChange: eval(aff[mykey]['callback']),
-    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
-  })))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = 'mapheight', {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
-    value: eval(mykey),
-    onChange: eval(aff[mykey]['callback']),
-    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
-  }))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Chart', ns),
-    initialOpen: false
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.SelectControl, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Select Chart Theme:', ns),
-    value: eletheme,
-    onChange: onChangeEletheme,
-    options: [{
-      value: null,
-      label: 'Select Chart Theme',
-      disabled: true
-    }, {
-      value: 'lightblue-theme',
-      label: 'lightblue-theme'
-    }, {
-      value: 'lime-theme',
-      label: 'lime-theme'
-    }, {
-      value: 'magenta-theme',
-      label: 'magenta-theme'
-    }, {
-      value: 'martin-theme',
-      label: 'martin-theme'
-    }, {
-      value: 'purple-theme',
-      label: 'purple-theme'
-    }, {
-      value: 'red-theme',
-      label: 'red-theme'
-    }, {
-      value: 'steelblue-theme',
-      label: 'steelblue-theme'
-    }, {
-      value: 'yellow-theme',
-      label: 'yellow-theme'
-    }]
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = 'chartheight', {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
-    value: eval(mykey),
-    onChange: eval(aff[mykey]['callback']),
-    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
-  }))))), ControListChart(aff, attributes, 'chart')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, "Your Fotorama Settings:")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(TextList, {
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, ControListFotorama(aff, attributes), ControListMap(aff, attributes), ControListChart(aff, attributes)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, "Your Fotorama Settings:")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(TextList, {
     aff: aff,
     values: attributes
   })));
@@ -227,7 +209,7 @@ function TextList(props) {
   let entries = Object.entries(aff);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("ul", null, entries.map((attr, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", {
     key: index.toString()
-  }, attr[1].label, ": ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, props.values[attr[0]]))));
+  }, attr[1].label, ": ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, props.values[attr[0]].toString()))));
 }
 
 /***/ }),
@@ -396,7 +378,7 @@ function _extends() {
   \************************/
 /***/ (function(module) {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"fotoramamulti/fotorama-multi","version":"0.9.0","title":"Fotorama Elevation","category":"media","icon":"embed-photo","description":"Provide settings for the Fotorama-Elevation shortcode.","keywords":["fotorama","elevatin","map","chart","slider","image"],"supports":{"html":false,"customClassName":false},"textdomain":"fotorama-multi","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"imgpath":{"type":"string","default":"none","section":"fotorama","label":"Image Path","help":"Path to your images in the uploads folder.","callback":"onChangeImgpath"},"gpxfile":{"type":"string","default":"test.gpx","section":"map","label":"GPX-File","help":"The GPX-file in your GPX-directory (see Admin Settings)","callback":"onChangeGpxfile"},"mapheight":{"type":"number","default":450,"section":"map","label":"Height of Map","help":"Height of the leaflet elevation map in px","callback":"onChangeMapheight"},"eletheme":{"type":"string","default":null,"section":"chart","label":"Chart Theme","help":"","callback":"onChangeEletheme","options":[]},"chartheight":{"type":"number","default":200,"section":"chart","label":"Height of Chart","help":"Height of the leaflet elevation chart in px","callback":"onChangeChartheight"}}}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"fotoramamulti/fotorama-multi","version":"0.9.0","title":"Fotorama Elevation","category":"media","icon":"embed-photo","description":"Provide settings for the Fotorama-Elevation shortcode.","keywords":["fotorama","elevatin","map","chart","slider","image"],"supports":{"html":false,"customClassName":false},"textdomain":"fotorama-multi","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"imgpath":{"type":"string","default":"none","section":"fotorama","label":"Image Path","help":"Path to your images in the uploads folder.","callback":"onChangeImgpath"},"gpxfile":{"type":"string","default":"test.gpx","section":"map","label":"GPX-File","help":"The GPX-file in your GPX-directory (see Admin Settings)","callback":"onChangeGpxfile"},"mapheight":{"type":"number","default":450,"section":"map","label":"Height of Map","help":"Height of the leaflet elevation map in px","callback":"onChangeMapheight"},"showmap":{"type":"boolean","default":true,"section":"map","label":"Show map","help":"show map","callback":"toggleShowmap"},"eletheme":{"type":"string","default":"martin-theme","section":"chart","label":"Chart Theme","help":"","callback":"onChangeEletheme","options":[{"value":null,"label":"Select Chart Theme","disabled":true},{"value":"lightblue-theme","label":"lightblue-theme"},{"value":"lime-theme","label":"lime-theme"},{"value":"magenta-theme","label":"magenta-theme"},{"value":"martin-theme","label":"martin-theme"},{"value":"purple-theme","label":"purple-theme"},{"value":"red-theme","label":"red-theme"},{"value":"steelblue-theme","label":"steelblue-theme"},{"value":"yellow-theme","label":"yellow-theme"}]},"chartheight":{"type":"number","default":200,"section":"chart","label":"Height of Chart","help":"Height of the leaflet elevation chart in px","callback":"onChangeChartheight"}}}');
 
 /***/ })
 

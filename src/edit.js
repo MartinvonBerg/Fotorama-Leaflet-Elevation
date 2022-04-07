@@ -20,6 +20,7 @@ import {
 	TextControl,
 	PanelBody,
 	PanelRow,
+	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
 
@@ -41,7 +42,7 @@ import './editor.scss';
  */
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
-	const { imgpath, gpxfile, eletheme, chartheight, mapheight } = attributes;
+	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap } = attributes;
 	const aff =  require('./block.json')['attributes']; // attributes from File loaded.
 	let entries = Object.entries(aff);
 	let currentSection = '';
@@ -67,18 +68,106 @@ export default function Edit( { attributes, setAttributes } ) {
 	const onChangeMapheight = ( newContent ) => {
 		setAttributes( { mapheight: parseInt(newContent) } )
 	}
+	
+	const toggleShowmap = () => {
+		setAttributes( { showmap: ! showmap } )
+	}
 
 	const ControListChart = () => (
 		<>
-		{currentSection=arguments[2]}
-		
 		<PanelBody {...entries}
 			title={ __( 'Chart', ns )}
-			initialOpen={true}>
+			initialOpen={false}>
 
 			{entries.map((attr, index) => (
 				<>
-				  {attr[1].section == 'chart' &&
+				  {attr[1].section == 'chart' && attr[1]['options'] === undefined &&
+					<PanelRow key={index.toString()}>
+						<fieldset>
+							<TextControl {...mykey=attr[0]}
+								key={mykey}
+								label={__(aff[mykey]['label'], ns) }
+								value = { eval(mykey) } 
+								onChange={ eval(aff[mykey]['callback']) }
+								help={__(aff[mykey]['help'], ns)}
+							/>
+						</fieldset>	
+					</PanelRow>
+				  }
+				</>
+			))}
+			{entries.map((attr, index) => (
+				<>
+				  {attr[1].section == 'chart' && attr[1]['options'] !== undefined &&	
+					<SelectControl {...mykey=attr[0]}
+						key={mykey}
+						label={__(aff[mykey]['label'], ns) }
+						value = { eval(mykey) } 
+						onChange={ eval(aff[mykey]['callback']) }
+						options={ attr[1]['options'] }
+					/>
+				  }
+				</> 
+			))}
+
+		</PanelBody> 
+		</>
+	) 
+
+	const ControListMap = () => (
+		<>	
+		<PanelBody {...entries}
+			title={ __( 'Map', ns )}
+			initialOpen={false}>
+
+			{entries.map((attr, index) => (
+				<>
+				  {attr[1].section === 'map' && attr[1].type !== 'boolean' &&
+					<PanelRow key={index.toString()}>
+						<fieldset>
+							<TextControl {...mykey=attr[0]}
+								key={mykey}
+								label={__(aff[mykey]['label'], ns) }
+								value = { eval(mykey) } 
+								onChange={ eval(aff[mykey]['callback']) }
+								help={__(aff[mykey]['help'], ns)}
+							/>
+						</fieldset>	
+					</PanelRow>
+				  }
+				</>
+			)
+			)}
+			{entries.map((attr, index) => (
+				<>
+				  {attr[1].section === 'map' && attr[1].type === 'boolean' &&
+					<PanelRow key={index.toString()}>
+						<fieldset>
+							<ToggleControl {...mykey=attr[0]}
+								key={mykey}
+								label={__(aff[mykey]['label'], ns) }
+								checked={ eval(mykey) }
+								onChange={ eval(aff[mykey]['callback']) }
+							/>
+						</fieldset>
+					</PanelRow>
+			 		}
+			    </>
+			 )
+		 	)}
+		</PanelBody> 
+		</>
+	)
+
+	const ControListFotorama = () => (
+		<>	
+		<PanelBody {...entries}
+			title={ __( 'Fotorama', ns )}
+			initialOpen={false}>
+
+			{entries.map((attr, index) => (
+				<>
+				  {attr[1].section == 'fotorama' &&
 					<PanelRow key={index.toString()}>
 						<fieldset>
 							<TextControl {...mykey=attr[0]}
@@ -97,12 +186,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		</PanelBody> 
 		</>
 	) 
-	
 
 	/*
-	**** Map
-	'showmap' 			=> 'true',
-
 	**** Fotorama
 	'requiregps' 		=> $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
 	'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'yes',
@@ -141,80 +226,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody
-							title={ __( 'Fotorama', ns )}
-							initialOpen={false}
-				>
-					<PanelRow>
-						<fieldset>
-							<TextControl {...mykey='imgpath'}
-								label={__(aff[mykey]['label'], ns) }
-								value = { eval(mykey) } 
-								onChange={ eval(aff[mykey]['callback']) }
-								help={__(aff[mykey]['help'], ns)}
-							/>
-						</fieldset>
-					</PanelRow>
-				</PanelBody>
-				<PanelBody
-							title={ __( 'Map', ns )}
-							initialOpen={false}
-				>
-					<PanelRow>
-						<fieldset>
-						<TextControl {...mykey='gpxfile'}
-								label={__(aff[mykey]['label'], ns) }
-								value = { eval(mykey) }
-								onChange={eval(aff[mykey]['callback']) }
-								help={__(aff[mykey]['help'], ns)}
-							/>
-						</fieldset>
-					</PanelRow>
-					<PanelRow>
-						<fieldset>
-						<TextControl {...mykey='mapheight'}
-								label={__(aff[mykey]['label'], ns) }
-								value = { eval(mykey) } 
-								onChange={ eval(aff[mykey]['callback']) }
-								help={__(aff[mykey]['help'], ns)}
-							/>
-						</fieldset>
-					</PanelRow>
-				</PanelBody>
-				<PanelBody
-							title={ __( 'Chart', ns )}
-							initialOpen={false}
-				>
-					<SelectControl
-						label={ __( 'Select Chart Theme:', ns  ) }
-						value={ eletheme } 
-						onChange={ onChangeEletheme }
-						options={ [
-							{ value: null, label: 'Select Chart Theme', disabled: true },
-							{ value: 'lightblue-theme', label: 'lightblue-theme' },
-							{ value: 'lime-theme', label: 'lime-theme' },
-							{ value: 'magenta-theme', label: 'magenta-theme' },
-							{ value: 'martin-theme', label: 'martin-theme' },
-							{ value: 'purple-theme', label: 'purple-theme' },
-							{ value: 'red-theme', label: 'red-theme' },
-							{ value: 'steelblue-theme', label: 'steelblue-theme' },
-							{ value: 'yellow-theme', label: 'yellow-theme' }
-						] }
-					/>
-					<PanelRow>
-						<fieldset>
-						<TextControl {...mykey='chartheight'}
-								label={__(aff[mykey]['label'], ns) }
-								value = { eval(mykey) }
-								onChange={ eval(aff[mykey]['callback']) }
-								help={__(aff[mykey]['help'], ns)}
-							/>
-						</fieldset>
-					</PanelRow>
-				</PanelBody>
-
-				{ControListChart (aff, attributes, 'chart' )}
-				
+				{ControListFotorama (aff, attributes )}
+				{ControListMap (aff, attributes )}
+				{ControListChart (aff, attributes )}
 			</InspectorControls>
 
 			<div {...blockProps}>
@@ -232,7 +246,7 @@ function TextList(props) {
 	return (
 	  <ul>
 		{entries.map((attr, index) =>
-		   <p key={index.toString()}>{attr[1].label}: <strong>{props.values[attr[0]]}</strong></p>
+		   <p key={index.toString()}>{attr[1].label}: <strong>{props.values[attr[0]].toString()}</strong></p>
 		)}
 	  </ul>
 	);

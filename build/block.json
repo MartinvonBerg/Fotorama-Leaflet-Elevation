@@ -41,14 +41,32 @@
 			"help": "Height of the leaflet elevation map in px",
 			"callback": "onChangeMapheight"
 		},
+		"showmap": {
+			"type": "boolean",
+			"default": true,
+			"section": "map",
+			"label": "Show map",
+			"help": "show map",
+			"callback": "toggleShowmap"
+		},
 		"eletheme": {
 			"type": "string",
-			"default": null,
+			"default": "martin-theme",
 			"section": "chart",
 			"label": "Chart Theme",
 			"help": "",
 			"callback": "onChangeEletheme",
-			"options": []
+			"options": [
+				{ "value": null, "label": "Select Chart Theme", "disabled": true },
+				{ "value": "lightblue-theme", "label": "lightblue-theme"},
+				{ "value": "lime-theme", "label": "lime-theme"},
+				{ "value": "magenta-theme", "label": "magenta-theme"},
+				{ "value": "martin-theme", "label": "martin-theme"},
+				{ "value": "purple-theme", "label": "purple-theme"},
+				{ "value": "red-theme", "label": "red-theme"},
+				{ "value": "steelblue-theme", "label": "steelblue-theme"},
+				{ "value": "yellow-theme", "label": "yellow-theme"}
+			]
 		},
 		"chartheight": {
 			"type": "number",
