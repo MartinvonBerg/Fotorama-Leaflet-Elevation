@@ -20,7 +20,6 @@ import {
 	TextControl,
 	PanelBody,
 	PanelRow,
-	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
 
@@ -45,33 +44,35 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { imgpath, gpxfile, eletheme, chartheight, mapheight } = attributes;
 	const aff =  require('./block.json')['attributes']; // attributes from File loaded.
 	let entries = Object.entries(aff);
+	let currentSection = '';
 	const ns = 'fotoramamulti';
 	let mykey = '';
 		
 	const onChangeImgpath = ( newContent ) => {
-		debugger;
-		setAttributes( {imgpath: newContent } )
+		setAttributes( { imgpath: newContent } )
 	}
 
 	const onChangeGpxfile = ( newContent ) => {
-		setAttributes( {gpxfile: newContent } )
+		setAttributes( { gpxfile: newContent } )
 	}
 
 	const onChangeEletheme = ( newContent ) => {
-		setAttributes( {eletheme: newContent } )
+		setAttributes( { eletheme: newContent } )
 	}
 
 	const onChangeChartheight = ( newContent ) => {
-		setAttributes( {chartheight: newContent } )
+		setAttributes( { chartheight: parseInt(newContent) } )
 	}
 
 	const onChangeMapheight = ( newContent ) => {
-		setAttributes( {mapheight: newContent } )
+		setAttributes( { mapheight: parseInt(newContent) } )
 	}
 
-	const Tl2 = () => (
+	const ControListChart = () => (
+		<>
+		{currentSection=arguments[2]}
+		
 		<PanelBody {...entries}
-			
 			title={ __( 'Chart', ns )}
 			initialOpen={true}>
 
@@ -94,7 +95,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			)
 			)}
 		</PanelBody> 
-	)
+		</>
+	) 
 	
 
 	/*
@@ -168,6 +170,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</fieldset>
 					</PanelRow>
+					<PanelRow>
+						<fieldset>
+						<TextControl {...mykey='mapheight'}
+								label={__(aff[mykey]['label'], ns) }
+								value = { eval(mykey) } 
+								onChange={ eval(aff[mykey]['callback']) }
+								help={__(aff[mykey]['help'], ns)}
+							/>
+						</fieldset>
+					</PanelRow>
 				</PanelBody>
 				<PanelBody
 							title={ __( 'Chart', ns )}
@@ -194,14 +206,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						<TextControl {...mykey='chartheight'}
 								label={__(aff[mykey]['label'], ns) }
 								value = { eval(mykey) }
-								onChange={eval(aff[mykey]['callback']) }
+								onChange={ eval(aff[mykey]['callback']) }
 								help={__(aff[mykey]['help'], ns)}
 							/>
 						</fieldset>
 					</PanelRow>
 				</PanelBody>
-				
-				{Tl2 (aff, attributes )}
+
+				{ControListChart (aff, attributes, 'chart' )}
 				
 			</InspectorControls>
 
@@ -224,32 +236,4 @@ function TextList(props) {
 		)}
 	  </ul>
 	);
-}
-
-function PanelRowList(props) {
-	const aff = props.aff;
-	let entries = Object.entries(aff);
-	const ns = 'fotoramamulti';
-	debugger;
-	const code = (
-		<PanelBody {...entries}
-				title={ __( 'Fotorama', ns )}
-				initialOpen={true}>
-			{entries.map((attr, index) => (
-				<PanelRow key={index.toString()}>
-					<fieldset>
-						<TextControl {...props}
-							key={index.toString()}
-							label={__(attr[1].label, ns) }
-							value = { props.values[attr[0]] }
-							/* onChange={ eval(props.aff[attr[0]]['callback'])  } */
-							help={__(attr[1].help, ns)}
-						/>
-					</fieldset>	
-				</PanelRow>)
-			)}
-		</PanelBody>
-	);
-
-	return code;
 }

@@ -33,7 +33,5 @@ registerBlockType('fotoramamulti/fotorama-multi', {
 	/**
 	 * Front end output is rendered by ServerSideCallback in PHP. So no function here.
 	 */
-	 save() {
-		null
-	}
+	 save() { null }
 });

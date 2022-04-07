@@ -34,8 +34,8 @@
 			"callback": "onChangeGpxfile"
 		},
 		"mapheight": {
-			"type": "string",
-			"default": "450",
+			"type": "number",
+			"default": 450,
 			"section": "map",
 			"label": "Height of Map",
 			"help": "Height of the leaflet elevation map in px",
@@ -51,8 +51,8 @@
 			"options": []
 		},
 		"chartheight": {
-			"type": "string",
-			"default": "200",
+			"type": "number",
+			"default": 200,
 			"section": "chart",
 			"label": "Height of Chart",
 			"help": "Height of the leaflet elevation chart in px",
