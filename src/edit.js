@@ -42,46 +42,73 @@ import './editor.scss';
  */
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
-	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap } = attributes;
+	const { imgpath, gpxfile, eletheme, chartheight,
+		 	mapheight, showmap, showadress, adresstext, requiregps, showcaption, shortcaption,
+			dload, maxwidth, minrowwidth} = attributes;
 	const aff =  require('./block.json')['attributes']; // attributes from File loaded.
 	let entries = Object.entries(aff);
-	let currentSection = '';
 	const ns = 'fotoramamulti';
 	let mykey = '';
-		
+	let attsPart = '';
+	
+	// functions for the fotorama
 	const onChangeImgpath = ( newContent ) => {
 		setAttributes( { imgpath: newContent } )
 	}
+	const toggleShowadress = () => {
+		setAttributes( { showadress: ! showadress } )
+	}
+	const onChangeAdresstext = ( newContent ) => {
+		setAttributes( { adresstext: newContent } )
+	}
+	const toggleRequiregps = () => {
+		setAttributes( { requiregps: ! requiregps } )
+	}
+	const toggleShowcaption = () => {
+		setAttributes( { showcaption: ! showcaption } )
+	}
+	const toggleShortcaption = () => {
+		setAttributes( { shortcaption: ! shortcaption } )
+	}
+	const onChangeMaxwidth = ( newContent ) => {
+		setAttributes( { maxwidth: parseInt(newContent) } )
+	}
+	const onChangeMinrowwidth = ( newContent ) => {
+		setAttributes( { minrowwidth: parseInt(newContent) } )
+	}
 
+
+	// functions for the map
 	const onChangeGpxfile = ( newContent ) => {
 		setAttributes( { gpxfile: newContent } )
 	}
-
-	const onChangeEletheme = ( newContent ) => {
-		setAttributes( { eletheme: newContent } )
+	const toggleDload = () => {
+		setAttributes( { dload: ! dload } )
 	}
-
-	const onChangeChartheight = ( newContent ) => {
-		setAttributes( { chartheight: parseInt(newContent) } )
-	}
-
 	const onChangeMapheight = ( newContent ) => {
 		setAttributes( { mapheight: parseInt(newContent) } )
 	}
-	
 	const toggleShowmap = () => {
 		setAttributes( { showmap: ! showmap } )
 	}
 
-	const ControListChart = () => (
-		<>
+	// functions for the chart
+	const onChangeEletheme = ( newContent ) => {
+		setAttributes( { eletheme: newContent } )
+	}
+	const onChangeChartheight = ( newContent ) => {
+		setAttributes( { chartheight: parseInt(newContent) } )
+	} 
+
+	const ControlList = () => (
+		<>	
 		<PanelBody {...entries}
-			title={ __( 'Chart', ns )}
+			title={ __( attsPart, ns )}
 			initialOpen={false}>
 
 			{entries.map((attr, index) => (
 				<>
-				  {attr[1].section == 'chart' && attr[1]['options'] === undefined &&
+				  {attr[1].section === attsPart && attr[1].type !== 'boolean' && attr[1]['options'] === undefined &&
 					<PanelRow key={index.toString()}>
 						<fieldset>
 							<TextControl {...mykey=attr[0]}
@@ -94,11 +121,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						</fieldset>	
 					</PanelRow>
 				  }
-				</>
-			))}
-			{entries.map((attr, index) => (
-				<>
-				  {attr[1].section == 'chart' && attr[1]['options'] !== undefined &&	
+				  {attr[1].section == attsPart && attr[1]['options'] !== undefined &&	
 					<SelectControl {...mykey=attr[0]}
 						key={mykey}
 						label={__(aff[mykey]['label'], ns) }
@@ -107,40 +130,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ attr[1]['options'] }
 					/>
 				  }
-				</> 
-			))}
-
-		</PanelBody> 
-		</>
-	) 
-
-	const ControListMap = () => (
-		<>	
-		<PanelBody {...entries}
-			title={ __( 'Map', ns )}
-			initialOpen={false}>
-
-			{entries.map((attr, index) => (
-				<>
-				  {attr[1].section === 'map' && attr[1].type !== 'boolean' &&
-					<PanelRow key={index.toString()}>
-						<fieldset>
-							<TextControl {...mykey=attr[0]}
-								key={mykey}
-								label={__(aff[mykey]['label'], ns) }
-								value = { eval(mykey) } 
-								onChange={ eval(aff[mykey]['callback']) }
-								help={__(aff[mykey]['help'], ns)}
-							/>
-						</fieldset>	
-					</PanelRow>
-				  }
-				</>
-			)
-			)}
-			{entries.map((attr, index) => (
-				<>
-				  {attr[1].section === 'map' && attr[1].type === 'boolean' &&
+				  {attr[1].section === attsPart && attr[1].type === 'boolean' &&
 					<PanelRow key={index.toString()}>
 						<fieldset>
 							<ToggleControl {...mykey=attr[0]}
@@ -151,84 +141,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</fieldset>
 					</PanelRow>
-			 		}
-			    </>
-			 )
-		 	)}
-		</PanelBody> 
-		</>
-	)
-
-	const ControListFotorama = () => (
-		<>	
-		<PanelBody {...entries}
-			title={ __( 'Fotorama', ns )}
-			initialOpen={false}>
-
-			{entries.map((attr, index) => (
-				<>
-				  {attr[1].section == 'fotorama' &&
-					<PanelRow key={index.toString()}>
-						<fieldset>
-							<TextControl {...mykey=attr[0]}
-								key={mykey}
-								label={__(aff[mykey]['label'], ns) }
-								value = { eval(mykey) } 
-								onChange={ eval(aff[mykey]['callback']) }
-								help={__(aff[mykey]['help'], ns)}
-							/>
-						</fieldset>	
-					</PanelRow>
-				  }
+			 	  }
 				</>
 			)
 			)}
 		</PanelBody> 
 		</>
-	) 
+	)
 
-	/*
-	**** Fotorama
-	'requiregps' 		=> $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
-	'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'yes',
-
-	'showadress' 		=> $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
-	'adresstext' 		=> $fotorama_elevation_options['text_for_start_address_8'] ?? 'Startadresse',
-
-	'maxwidth' 			=> $fotorama_elevation_options['max_width_of_container_12'] ?? '600', 
-	'minrowwidth' 		=> $fotorama_elevation_options['min_width_css_grid_row_14'] ?? '480',
-
-	'showcaption' 		=> $fotorama_elevation_options['show_caption_4'] ?? 'true',
-	'shortcaption'		=> 'false'
-
-	'fit' 				=> $fotorama_elevation_options['fit'] ?? 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
-	'ratio' 			=> $fotorama_elevation_options['ratio'] ?? '1.5',
-	'background' 		=> $fotorama_elevation_options['background'] ?? 'darkgrey', // background color in CSS name
-	'arrows' 			=> $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
-	'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true' , // true or false
-
-	'transition' 		=> $fotorama_elevation_options['transition'] ?? 'crossfade', // 'slide' Default 'crossfade' 'dissolve'
-	'transitionduration' => $fotorama_elevation_options['transitionduration'] ?? '400', // in ms
-	'loop' 				=> $fotorama_elevation_options['loop'] ?? 'true', // true or false
-	'autoplay' 			=> $fotorama_elevation_options['autoplay'] ?? '3000', // on with 'true' or any interval in milliseconds.
-		
-
-	*** Thumbnails
-	'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
-	'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
-	'f_thumbwidth' 		=> $fotorama_elevation_options['f_thumbwidth'] ?? '100', // in pixels
-	'f_thumbheight' 	=> $fotorama_elevation_options['f_thumbheight'] ?? '75', // in pixels
-	'thumbmargin' 		=> $fotorama_elevation_options['thumbmargin'] ?? '2', // in pixels
-	'thumbborderwidth' 	=> $fotorama_elevation_options['thumbborderwidth'] ?? '2', // in pixels
-	'thumbbordercolor' 	=> $fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
-	*/ 
-	
 	return (
 		<>
 			<InspectorControls>
-				{ControListFotorama (aff, attributes )}
-				{ControListMap (aff, attributes )}
-				{ControListChart (aff, attributes )}
+				{ControlList (aff, attributes, attsPart='fotorama' )}
+				{ControlList (aff, attributes, attsPart='map' )}
+				{ControlList (aff, attributes, attsPart='chart' )}
 			</InspectorControls>
 
 			<div {...blockProps}>
@@ -251,3 +177,27 @@ function TextList(props) {
 	  </ul>
 	);
 }
+
+/*
+	**** Fotorama
+	'fit' 				=> $fotorama_elevation_options['fit'] ?? 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
+	'ratio' 			=> $fotorama_elevation_options['ratio'] ?? '1.5',
+	'background' 		=> $fotorama_elevation_options['background'] ?? 'darkgrey', // background color in CSS name
+	'arrows' 			=> $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
+	'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true' , // true or false
+
+	'transition' 		=> $fotorama_elevation_options['transition'] ?? 'crossfade', // 'slide' Default 'crossfade' 'dissolve'
+	'transitionduration' => $fotorama_elevation_options['transitionduration'] ?? '400', // in ms
+	'loop' 				=> $fotorama_elevation_options['loop'] ?? 'true', // true or false
+	'autoplay' 			=> $fotorama_elevation_options['autoplay'] ?? '3000', // on with 'true' or any interval in milliseconds.
+	
+
+	*** Thumbnails
+	'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
+	'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
+	'f_thumbwidth' 		=> $fotorama_elevation_options['f_thumbwidth'] ?? '100', // in pixels
+	'f_thumbheight' 	=> $fotorama_elevation_options['f_thumbheight'] ?? '75', // in pixels
+	'thumbmargin' 		=> $fotorama_elevation_options['thumbmargin'] ?? '2', // in pixels
+	'thumbborderwidth' 	=> $fotorama_elevation_options['thumbborderwidth'] ?? '2', // in pixels
+	'thumbbordercolor' 	=> $fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
+	*/ 

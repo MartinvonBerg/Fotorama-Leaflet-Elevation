@@ -25,6 +25,63 @@
 			"help": "Path to your images in the uploads folder.",
 			"callback": "onChangeImgpath"
 		},
+		"showadress": {
+			"type": "boolean",
+			"default": true,
+			"section": "fotorama",
+			"label": "Show Address",
+			"help": "Show start adress of the tour",
+			"callback": "toggleShowadress"
+		},
+		"adresstext": {
+			"type": "string",
+			"default": "Startadresse",
+			"section": "fotorama",
+			"label": "Start Address Text",
+			"help": "Text for header above start address",
+			"callback": "onChangeAdresstext"
+		},
+		"requiregps": {
+			"type": "boolean",
+			"default": true,
+			"section": "fotorama",
+			"label": "GPS-Data im Image required",
+			"help": "Show image only if it provides GPS-Data in its EXIF",
+			"callback": "toggleRequiregps"
+		},
+		"showcaption": {
+			"type": "boolean",
+			"default": true,
+			"section": "fotorama",
+			"label": "Show Caption",
+			"help": "Show the caption in the fotorama slider",
+			"callback": "toggleShowcaption"
+		},
+		"shortcaption": {
+			"type": "boolean",
+			"default": false,
+			"section": "fotorama",
+			"label": "Short Caption",
+			"help": "Shorten Caption to first line only",
+			"callback": "toggleShortcaption"
+		},
+		"maxwidth": {
+			"type": "number",
+			"default": 600,
+			"section": "fotorama",
+			"label": "Max Width of Container",
+			"help": "Maximum width of the whole container with slider and map in px",
+			"callback": "onChangeMaxwidth"
+		},
+		"minrowwidth": {
+			"type": "number",
+			"default": 480,
+			"section": "fotorama",
+			"label": "Minimum row width",
+			"help": "Minimum width of one row (slider or map) of the CSS-Grid in px",
+			"callback": "onChangeMinrowwidth"
+		},
+	
 		"gpxfile": {
 			"type": "string",
 			"default": "test.gpx",
@@ -32,6 +89,14 @@
 			"label": "GPX-File",
 			"help": "The GPX-file in your GPX-directory (see Admin Settings)",
 			"callback": "onChangeGpxfile"
+		},
+		"dload": {
+			"type": "boolean",
+			"default": true,
+			"section": "map",
+			"label": "Allow Download GPX-File",
+			"help": "Provide download link for the GPX-Track(s)",
+			"callback": "toggleDload"
 		},
 		"mapheight": {
 			"type": "number",
@@ -49,6 +114,7 @@
 			"help": "show map",
 			"callback": "toggleShowmap"
 		},
+
 		"eletheme": {
 			"type": "string",
 			"default": "martin-theme",
