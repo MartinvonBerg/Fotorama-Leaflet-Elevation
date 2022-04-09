@@ -45,7 +45,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
 	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap, showadress, adresstext, 
 			requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio,
-			background, arrows, shadows, transition, transitionduration, loop, autoplay,
+			background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort,
 			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor} = attributes;
 	const aff =  require('./block.json')['attributes']; // attributes from File loaded.
 	let entries = Object.entries(aff);
@@ -66,10 +66,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 		if (aff[source].type === 'number' && source === 'ratio') {
 			if( ! isNaN( newContent) ) {
-				setAttributes( {[source]: Number(newContent) } )
+				setAttributes( {[source]: Number(newContent) } ) // TODO : check this
 			}
 		}	
 	}
+	// TODO: think of color picker for CSS!
 	
 	const ControlList = () => (
 		<>	
@@ -131,8 +132,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ControlList (aff, attributes, attsPart='Chart' )}
 			</InspectorControls>
 			<div {...blockProps}>
-				<p><strong>Your Fotorama Settings:</strong></p>
-				<TextList aff={aff} values={attributes} />
+				<p><strong>Fotorama Settings on the right side.</strong></p>
 			</div>
 		</>
 	)

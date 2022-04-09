@@ -42,8 +42,15 @@
 			"type": "boolean",
 			"default": true,
 			"section": "Slider",
-			"label": "GPS-Data im Image required",
+			"label": "GPS-Data in Image required",
 			"help": "Show image only if it provides GPS-Data in its EXIF"
+		},
+		"ignoresort": {
+			"type": "boolean",
+			"default": false,
+			"section": "Slider",
+			"label": "Ignore Custom Sort",
+			"help": "Ignore custom sort even if provided by Wordpress. Sort ascending by date taken if checked"
 		},
 		"showcaption": {
 			"type": "boolean",
@@ -92,7 +99,7 @@
 			"default": 1.5,
 			"section": "Slider",
 			"label": "Width / Height Ratio",
-			"help": "Define the width / height ratio of the Fotorama slider"
+			"help": "Define the width / height ratio of the slider"
 		},
 		"background": {
 			"type": "string",
@@ -225,15 +232,15 @@
 			"type": "number",
 			"default": 100,
 			"section": "Thumbs",
-			"label": "Thumbs Height",
-			"help": "Height of Thumbnails in px"
+			"label": "Thumbs Width",
+			"help": "Width of single Thumbnail in px"
 		},
 		"f_thumbheight": {
 			"type": "number",
 			"default": 75,
 			"section": "Thumbs",
-			"label": "Thumbs Width",
-			"help": "Width of single Thumbnail in px"
+			"label": "Thumbs Height",
+			"help": "Height of Thumbnails in px"
 		},
 		"thumbmargin": {
 			"type": "number",

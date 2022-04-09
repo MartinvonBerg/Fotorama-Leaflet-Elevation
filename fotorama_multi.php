@@ -92,13 +92,13 @@ function showmulti($attr, $content = null)
  	
 	// Extract shortcode-Parameters and set Default-Values
 	extract ( shortcode_atts ( array (
-		'gpxpath' 			=> $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx',
+		'gpxpath' 			=> $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx', // not in gtb block
 		'gpxfile' 			=> 'test.gpx',
 		'mapheight' 		=> $fotorama_elevation_options['height_of_map_10'] ?? '450',
 		'chartheight' 		=> $fotorama_elevation_options['height_of_chart_11'] ?? '200',
 		'imgpath' 			=> $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
-		'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'yes', 
-		'alttext' 			=> $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '',
+		'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'true', 
+		'alttext' 			=> $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '', // not in gtb block
 		'ignoresort' 		=> $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', 
 		'showadress' 		=> $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
 		'showmap' 			=> 'true',
@@ -108,14 +108,14 @@ function showmulti($attr, $content = null)
 		'minrowwidth' 		=> $fotorama_elevation_options['min_width_css_grid_row_14'] ?? '480',
 		'showcaption' 		=> $fotorama_elevation_options['show_caption_4'] ?? 'true',
 		'eletheme' 			=> $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'], 
-		'showalltracks' 	=> $fotorama_elevation_options['showalltracks'] ?? 'false',
-		'mapcenter' 		=> $fotorama_elevation_options['mapcenter'] ?? '0.0, 0.0', 
-		'zoom' 				=> $fotorama_elevation_options['zoom'] ?? 8,					
-		'markertext' 		=> $fotorama_elevation_options['markertext'] ?? 'Home address',
+		'showalltracks' 	=> $fotorama_elevation_options['showalltracks'] ?? 'false', // not in gtb block
+		'mapcenter' 		=> $fotorama_elevation_options['mapcenter'] ?? '0.0, 0.0', // not in gtb block
+		'zoom' 				=> $fotorama_elevation_options['zoom'] ?? 8,		// not in gtb block			
+		'markertext' 		=> $fotorama_elevation_options['markertext'] ?? 'Home address', // not in gtb block
 		'fit' 				=> $fotorama_elevation_options['fit'] ?? 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
 		'ratio' 			=> $fotorama_elevation_options['ratio'] ?? '1.5',
 		'background' 		=> $fotorama_elevation_options['background'] ?? 'darkgrey', // background color in CSS name
-		'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', false, // funktioniert nicht
+		'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', false, // funktioniert nicht // not in gtb block
 		'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
 		'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
 		'f_thumbwidth' 		=> $fotorama_elevation_options['f_thumbwidth'] ?? '100', // in pixels

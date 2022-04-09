@@ -34,12 +34,20 @@ function fotoramamulti_fotorama_multi_block_init() {
 add_action( 'init', '\mvbplugins\fotoramamulti\fotoramamulti_fotorama_multi_block_init', 10, 1 );
 
 function shortcodewrapper ( $attr ) {
-    // TODO: check the input, do only if key available and imgpath ok and gpxfile exists
-    $imgp =  ' imgpath="'. $attr['imgpath' ] .'"';
-    $gpxf =  ' gpxfile="'. $attr['gpxfile' ] .'"';
-    $elet = ' eletheme="'. $attr['eletheme'] .'"';
-
-	if ( ! is_admin() ) {
-		echo do_shortcode('[gpxview' . $imgp . ' ' . $gpxf . ' ' . $elet . ']');	
+	$string = file_get_contents(WP_PLUGIN_DIR . '/fotorama_multi/build/block.json');
+	$json_attr = json_decode($string, true)['attributes'];
+	$param = '';
+	foreach ( $attr as $key=>$val) {
+		// TODO: Fit Images , maxwidth, minrowwidth, geht nicht
+		$default = $json_attr[$key]['default'];
+		if ($val != $default) {
+			$param = $param . ' ' . $key . '="' . \var_export($val, true) . '"';
+		}
+	}
+	$param = \str_replace('"\'', '"', $param);
+	$param = \str_replace('\'"', '"', $param);
+    
+   	if ( ! is_admin() ) {
+		echo do_shortcode('[gpxview' . $param . ']');	
 	} 
 }
