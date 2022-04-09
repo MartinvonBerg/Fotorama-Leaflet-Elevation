@@ -20,108 +20,168 @@
 		"imgpath": {
 			"type": "string",
 			"default": "none",
-			"section": "fotorama",
+			"section": "Select",
 			"label": "Image Path",
-			"help": "Path to your images in the uploads folder.",
-			"callback": "onChangeImgpath"
+			"help": "Path to your images in the uploads folder."
 		},
 		"showadress": {
 			"type": "boolean",
 			"default": true,
-			"section": "fotorama",
+			"section": "Slider",
 			"label": "Show Address",
-			"help": "Show start adress of the tour",
-			"callback": "toggleShowadress"
+			"help": "Show start adress of the tour"
 		},
 		"adresstext": {
 			"type": "string",
 			"default": "Startadresse",
-			"section": "fotorama",
+			"section": "Slider",
 			"label": "Start Address Text",
-			"help": "Text for header above start address",
-			"callback": "onChangeAdresstext"
+			"help": "Text for header above start address"
 		},
 		"requiregps": {
 			"type": "boolean",
 			"default": true,
-			"section": "fotorama",
+			"section": "Slider",
 			"label": "GPS-Data im Image required",
-			"help": "Show image only if it provides GPS-Data in its EXIF",
-			"callback": "toggleRequiregps"
+			"help": "Show image only if it provides GPS-Data in its EXIF"
 		},
 		"showcaption": {
 			"type": "boolean",
 			"default": true,
-			"section": "fotorama",
+			"section": "Slider",
 			"label": "Show Caption",
-			"help": "Show the caption in the fotorama slider",
-			"callback": "toggleShowcaption"
+			"help": "Show the caption in the fotorama slider"
 		},
 		"shortcaption": {
 			"type": "boolean",
 			"default": false,
-			"section": "fotorama",
+			"section": "Slider",
 			"label": "Short Caption",
-			"help": "Shorten Caption to first line only",
-			"callback": "toggleShortcaption"
+			"help": "Shorten Caption to first line only"
 		},
 		"maxwidth": {
 			"type": "number",
 			"default": 600,
-			"section": "fotorama",
+			"section": "Slider",
 			"label": "Max Width of Container",
-			"help": "Maximum width of the whole container with slider and map in px",
-			"callback": "onChangeMaxwidth"
+			"help": "Maximum width of the whole container with slider and map in px"
 		},
 		"minrowwidth": {
 			"type": "number",
 			"default": 480,
-			"section": "fotorama",
+			"section": "Slider",
 			"label": "Minimum row width",
-			"help": "Minimum width of one row (slider or map) of the CSS-Grid in px",
-			"callback": "onChangeMinrowwidth"
+			"help": "Minimum width of one row (slider or map) of the CSS-Grid in px"
+		},
+		"fit": {
+			"type": "string",
+			"default": "cover",
+			"section": "Slider",
+			"label": "Fit Images",
+			"help": "",
+			"options": [
+				{ "value": null, "label": "Select how to fit the images", "disabled": true },
+				{ "value": "cover", "label": "cover"},
+				{ "value": "contain", "label": "contain"},
+				{ "value": "scaledown", "label": "scaledown"},
+				{ "value": "none", "label": "none"}				
+			]
+		},
+		"ratio": {
+			"type": "number",
+			"default": 1.5,
+			"section": "Slider",
+			"label": "Width / Height Ratio",
+			"help": "Define the width / height ratio of the Fotorama slider"
+		},
+		"background": {
+			"type": "string",
+			"default": "darkgrey",
+			"section": "Slider",
+			"label": "Background Colour",
+			"help": "Background Colour as CSS-Name."
+		},
+		"arrows": {
+			"type": "boolean",
+			"default": true,
+			"section": "Slider",
+			"label": "Show Arrows"
+		},
+		"shadows": {
+			"type": "boolean",
+			"default": true,
+			"section": "Slider",
+			"label": "Show Shadows"
+		},
+		"transition": {
+			"type": "string",
+			"default": "slide",
+			"section": "Slider",
+			"label": "Transition Effect",
+			"help": "",
+			"options": [
+				{ "value": null, "label": "Select the slide transition effect", "disabled": true },
+				{ "value": "slide", "label": "slide"},
+				{ "value": "crossfade", "label": "crossfade"},
+				{ "value": "dissolve", "label": "dissolve"}			
+			]
+		},
+		"transitionduration": {
+			"type": "number",
+			"default": 400,
+			"section": "Slider",
+			"label": "Transition Duration",
+			"help": "Duration of slide transition in ms"
+		},
+		"loop": {
+			"type": "boolean",
+			"default": true,
+			"section": "Slider",
+			"label": "Loop through images (proceed with first once reached the last)"
+		},
+		"autoplay": {
+			"type": "string",
+			"default": "false",
+			"section": "Slider",
+			"label": "Autoplay",
+			"help": "Autoplay the slider. On with true or any numeric interval in milliseconds. Of with false"
 		},
 	
 		"gpxfile": {
 			"type": "string",
 			"default": "test.gpx",
-			"section": "map",
+			"section": "Select",
 			"label": "GPX-File",
-			"help": "The GPX-file in your GPX-directory (see Admin Settings)",
-			"callback": "onChangeGpxfile"
+			"help": "The GPX-file in your GPX-directory (see Admin Settings)"
 		},
 		"dload": {
 			"type": "boolean",
 			"default": true,
-			"section": "map",
+			"section": "Map",
 			"label": "Allow Download GPX-File",
-			"help": "Provide download link for the GPX-Track(s)",
-			"callback": "toggleDload"
+			"help": "Provide download link for the GPX-Track(s)"
 		},
 		"mapheight": {
 			"type": "number",
 			"default": 450,
-			"section": "map",
+			"section": "Map",
 			"label": "Height of Map",
-			"help": "Height of the leaflet elevation map in px",
-			"callback": "onChangeMapheight"
+			"help": "Height of the leaflet elevation map in px"
 		},
 		"showmap": {
 			"type": "boolean",
 			"default": true,
-			"section": "map",
+			"section": "Map",
 			"label": "Show map",
-			"help": "show map",
-			"callback": "toggleShowmap"
+			"help": "show map"
 		},
 
 		"eletheme": {
 			"type": "string",
 			"default": "martin-theme",
-			"section": "chart",
+			"section": "Chart",
 			"label": "Chart Theme",
 			"help": "",
-			"callback": "onChangeEletheme",
 			"options": [
 				{ "value": null, "label": "Select Chart Theme", "disabled": true },
 				{ "value": "lightblue-theme", "label": "lightblue-theme"},
@@ -137,10 +197,64 @@
 		"chartheight": {
 			"type": "number",
 			"default": 200,
-			"section": "chart",
+			"section": "Chart",
 			"label": "Height of Chart",
-			"help": "Height of the leaflet elevation chart in px",
-			"callback": "onChangeChartheight"
+			"help": "Height of the leaflet elevation chart in px"
+		},
+
+		"navposition": {
+			"type": "string",
+			"default": "bottom",
+			"section": "Thumbs",
+			"label": "Thumbnails Position",
+			"help": "",
+			"options": [
+				{ "value": null, "label": "Select Thumbnails Position", "disabled": true },
+				{ "value": "bottom", "label": "Bottom"},
+				{ "value": "top", "label": "Top"}
+			]
+		},
+		"navwidth": {
+			"type": "number",
+			"default": 100,
+			"section": "Thumbs",
+			"label": "Thumbs bar width",
+			"help": "Width of Thumbnails bar in Percent of Slider width."
+		},
+		"f_thumbwidth": {
+			"type": "number",
+			"default": 100,
+			"section": "Thumbs",
+			"label": "Thumbs Height",
+			"help": "Height of Thumbnails in px"
+		},
+		"f_thumbheight": {
+			"type": "number",
+			"default": 75,
+			"section": "Thumbs",
+			"label": "Thumbs Width",
+			"help": "Width of single Thumbnail in px"
+		},
+		"thumbmargin": {
+			"type": "number",
+			"default": 2,
+			"section": "Thumbs",
+			"label": "Thumbs Margin",
+			"help": "Margin of Thumbnails in px"
+		},
+		"thumbborderwidth": {
+			"type": "number",
+			"default": 2,
+			"section": "Thumbs",
+			"label": "Thumbs Border",
+			"help": "Border of Thumbnails in px"
+		},
+		"thumbbordercolor": {
+			"type": "string",
+			"default": "#ea0000",
+			"section": "Thumbs",
+			"label": "Thumbs Border Colour",
+			"help": "Colour of Thumbnails Border as CSS Hex Color"
 		}
 	}
 }
