@@ -86,92 +86,85 @@ function Edit(_ref) {
   let entries = Object.entries(aff);
   const ns = 'fotoramamulti';
   let mykey = '';
-  let attsPart = ''; // functions for the fotorama
-
-  const onChangeImgpath = newContent => {
-    setAttributes({
-      imgpath: newContent
-    });
-  };
-
+  let attsPart = '';
+  /*
+  var a = ["aab1","aac6","aad5","aag5","aahs9"];
+  for (var i = 0; i < a.length; i++) {        
+    	window[aff[i]] = function(){
+    	};
+  }
+  	entries.map((attr, index) => {
+  document[attr[1].callback] = function( newContent ){
+  	let mykey=eval(attr[0]);
+  	setAttributes( {mykey:newContent} )
+  }
+  })
+  debugger;
+  	// functions for the fotorama
+  const onChangeImgpath = ( newContent ) => {
+  setAttributes( { imgpath: newContent } )
+  }
   const toggleShowadress = () => {
-    setAttributes({
-      showadress: !showadress
-    });
-  };
-
-  const onChangeAdresstext = newContent => {
-    setAttributes({
-      adresstext: newContent
-    });
-  };
-
+  setAttributes( { showadress: ! showadress } )
+  }
+  const onChangeAdresstext = ( newContent ) => {
+  setAttributes( { adresstext: newContent } )
+  }
   const toggleRequiregps = () => {
-    setAttributes({
-      requiregps: !requiregps
-    });
-  };
-
+  setAttributes( { requiregps: ! requiregps } )
+  }
   const toggleShowcaption = () => {
-    setAttributes({
-      showcaption: !showcaption
-    });
-  };
-
+  setAttributes( { showcaption: ! showcaption } )
+  }
   const toggleShortcaption = () => {
-    setAttributes({
-      shortcaption: !shortcaption
-    });
-  };
-
-  const onChangeMaxwidth = newContent => {
-    setAttributes({
-      maxwidth: parseInt(newContent)
-    });
-  };
-
-  const onChangeMinrowwidth = newContent => {
-    setAttributes({
-      minrowwidth: parseInt(newContent)
-    });
-  }; // functions for the map
-
-
-  const onChangeGpxfile = newContent => {
-    setAttributes({
-      gpxfile: newContent
-    });
-  };
-
+  setAttributes( { shortcaption: ! shortcaption } )
+  }
+  const onChangeMaxwidth = ( newContent ) => {
+  setAttributes( { maxwidth: parseInt(newContent) } )
+  }
+  const onChangeMinrowwidth = ( newContent ) => {
+  setAttributes( { minrowwidth: parseInt(newContent) } )
+  }
+  	// functions for the map
+  const onChangeGpxfile = ( newContent ) => {
+  setAttributes( { gpxfile: newContent } )
+  }
   const toggleDload = () => {
-    setAttributes({
-      dload: !dload
-    });
-  };
-
-  const onChangeMapheight = newContent => {
-    setAttributes({
-      mapheight: parseInt(newContent)
-    });
-  };
-
+  setAttributes( { dload: ! dload } )
+  }
+  const onChangeMapheight = ( newContent ) => {
+  setAttributes( { mapheight: parseInt(newContent) } )
+  }
   const toggleShowmap = () => {
-    setAttributes({
-      showmap: !showmap
-    });
-  }; // functions for the chart
+  setAttributes( { showmap: ! showmap } )
+  }
+  // functions for the chart
+  const onChangeEletheme = ( newContent ) => {
+  setAttributes( { eletheme: newContent } )
+  }
+  const onChangeChartheight = ( newContent ) => {
+  setAttributes( { chartheight: parseInt(newContent) } )
+  } 
+  */
 
+  const onChangeHandler = (newContent, source) => {
+    if (aff[source].type === 'string') {
+      setAttributes({
+        [source]: newContent
+      });
+    }
 
-  const onChangeEletheme = newContent => {
-    setAttributes({
-      eletheme: newContent
-    });
-  };
+    if (aff[source].type === 'boolean') {
+      setAttributes({
+        [source]: newContent
+      });
+    }
 
-  const onChangeChartheight = newContent => {
-    setAttributes({
-      chartheight: parseInt(newContent)
-    });
+    if (aff[source].type === 'number') {
+      setAttributes({
+        [source]: parseInt(newContent)
+      });
+    }
   };
 
   const ControlList = () => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, entries, {
@@ -182,22 +175,25 @@ function Edit(_ref) {
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
     key: mykey,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
-    value: eval(mykey),
-    onChange: eval(aff[mykey]['callback']),
+    value: eval(mykey) //onChange={ eval(aff[mykey]['callback']) }
+    ,
+    onChange: newContent => onChangeHandler(newContent, attr[0]),
     help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['help'], ns)
   })))), attr[1].section == attsPart && attr[1]['options'] !== undefined && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.SelectControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
     key: mykey,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
-    value: eval(mykey),
-    onChange: eval(aff[mykey]['callback']),
+    value: eval(mykey) //onChange={ eval(aff[mykey]['callback']) }
+    ,
+    onChange: event => onChangeHandler(event, attr[0]),
     options: attr[1]['options']
   })), attr[1].section === attsPart && attr[1].type === 'boolean' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, {
     key: index.toString()
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("fieldset", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.ToggleControl, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, mykey = attr[0], {
     key: mykey,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(aff[mykey]['label'], ns),
-    checked: eval(mykey),
-    onChange: eval(aff[mykey]['callback'])
+    checked: eval(mykey) // onChange={ eval(aff[mykey]['callback']) }
+    ,
+    onChange: event => onChangeHandler(event, attr[0])
   }))))))));
 
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, ControlList(aff, attributes, attsPart = 'fotorama'), ControlList(aff, attributes, attsPart = 'map'), ControlList(aff, attributes, attsPart = 'chart')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, "Your Fotorama Settings:")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(TextList, {

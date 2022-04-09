@@ -50,6 +50,20 @@ export default function Edit( { attributes, setAttributes } ) {
 	const ns = 'fotoramamulti';
 	let mykey = '';
 	let attsPart = '';
+		/*
+	var a = ["aab1","aac6","aad5","aag5","aahs9"];
+	for (var i = 0; i < a.length; i++) {        
+    	window[aff[i]] = function(){
+    	};
+	}
+	
+	entries.map((attr, index) => {
+		document[attr[1].callback] = function( newContent ){
+			let mykey=eval(attr[0]);
+			setAttributes( {mykey:newContent} )
+		}
+	})
+	debugger;
 	
 	// functions for the fotorama
 	const onChangeImgpath = ( newContent ) => {
@@ -99,7 +113,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	const onChangeChartheight = ( newContent ) => {
 		setAttributes( { chartheight: parseInt(newContent) } )
 	} 
-
+	*/
+	const onChangeHandler = (newContent, source) => {
+		if (aff[source].type === 'string') {
+			setAttributes( {[source]: newContent} )
+		} 
+		if (aff[source].type === 'boolean') {
+			setAttributes( {[source]: newContent} )
+		}
+		if (aff[source].type === 'number') {
+			setAttributes( {[source]: parseInt(newContent) } )
+		}	
+	}
+	
 	const ControlList = () => (
 		<>	
 		<PanelBody {...entries}
@@ -115,7 +141,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								key={mykey}
 								label={__(aff[mykey]['label'], ns) }
 								value = { eval(mykey) } 
-								onChange={ eval(aff[mykey]['callback']) }
+								//onChange={ eval(aff[mykey]['callback']) }
+								onChange={(newContent) => onChangeHandler(newContent, attr[0])}
 								help={__(aff[mykey]['help'], ns)}
 							/>
 						</fieldset>	
@@ -126,7 +153,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						key={mykey}
 						label={__(aff[mykey]['label'], ns) }
 						value = { eval(mykey) } 
-						onChange={ eval(aff[mykey]['callback']) }
+						//onChange={ eval(aff[mykey]['callback']) }
+						onChange={(event) => onChangeHandler(event, attr[0])}
 						options={ attr[1]['options'] }
 					/>
 				  }
@@ -137,7 +165,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								key={mykey}
 								label={__(aff[mykey]['label'], ns) }
 								checked={ eval(mykey) }
-								onChange={ eval(aff[mykey]['callback']) }
+								// onChange={ eval(aff[mykey]['callback']) }
+								onChange={(event) => onChangeHandler(event, attr[0])}
 							/>
 						</fieldset>
 					</PanelRow>
