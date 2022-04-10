@@ -22,7 +22,8 @@ import {
 	PanelRow,
 	ToggleControl,
 	SelectControl,
-	ServerSideRender
+	ColorPicker,
+	BaseControl
 } from '@wordpress/components';
 
 /**
@@ -46,8 +47,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap, showadress, adresstext, 
 			requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio,
 			background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort,
-			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor} = attributes;
-	const aff =  require('./block.json')['attributes']; // attributes from File loaded.
+			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor, color} = attributes;
+	const aff =  require('./block.json')['attributes']; // aff: attributes from File loaded.
 	let entries = Object.entries(aff);
 	const ns = 'fotoramamulti';
 	let mykey = '';
@@ -64,24 +65,21 @@ export default function Edit( { attributes, setAttributes } ) {
 			if (isNaN(newContent)) newContent = 0;
 			setAttributes( {[source]: parseInt(newContent) } )
 		}
-		if (aff[source].type === 'number' && source === 'ratio') {
-			if( ! isNaN( newContent) ) {
-				setAttributes( {[source]: Number(newContent) } ) // TODO : check this
-			}
+		if (aff[source].type === 'string' && source === 'ratio') {
+			newContent = newContent.replace(/[^\d.-]/g, '');
+			setAttributes( {[source]: newContent } ) 
 		}	
 	}
-	// TODO: think of color picker for CSS!
-	
+		
 	const ControlList = () => (
 		<>	
 		<PanelBody {...entries}
 			title={ __( attsPart, ns )}
 			initialOpen={attsPart === 'Select' ? true : false}
 		>
-
 			{entries.map((attr, index) => (
 				<>
-				  {attr[1].section === attsPart && attr[1].type !== 'boolean' && attr[1]['options'] === undefined &&
+				  {attr[1].section === attsPart && attr[1].type !== 'boolean' && attr[1]['options'] === undefined && ! attr[1].label.includes('Colour')  &&
 					<PanelRow key={index.toString()}>
 						<fieldset>
 							<TextControl {...mykey=attr[0]}
@@ -93,6 +91,21 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</fieldset>	
 					</PanelRow>
+				  }
+				  {attr[1].section === attsPart && attr[1].type !== 'boolean' && attr[1]['options'] === undefined && attr[1].label.includes('Colour')  &&
+				    <PanelRow key={index.toString()}>	
+						<BaseControl 
+							{...mykey=attr[0]}
+							label={__(aff[mykey]['label'], ns) }>		
+							<ColorPicker 
+								color={ eval(mykey) }
+								onChange={(newContent) => onChangeHandler(newContent, attr[0])}
+								enableAlpha={false}
+								defaultValue="#000"
+								copyFormat="hex"
+							/>
+						</BaseControl>
+					</PanelRow>		
 				  }
 				  {attr[1].section == attsPart && attr[1]['options'] !== undefined &&	
 					<SelectControl {...mykey=attr[0]}
@@ -121,7 +134,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		</PanelBody> 
 		</>
 	)
-	
+
 	return (
 		<>
 			<InspectorControls>
@@ -133,6 +146,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<div {...blockProps}>
 				<p><strong>Fotorama Settings on the right side.</strong></p>
+				{/*<TextList aff={aff} values={attributes} />*/}
 			</div>
 		</>
 	)

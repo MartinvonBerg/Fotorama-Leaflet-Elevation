@@ -89,13 +89,11 @@
 			"options": [
 				{ "value": null, "label": "Select how to fit the images", "disabled": true },
 				{ "value": "cover", "label": "cover"},
-				{ "value": "contain", "label": "contain"},
-				{ "value": "scaledown", "label": "scaledown"},
-				{ "value": "none", "label": "none"}				
+				{ "value": "contain", "label": "contain"}	
 			]
 		},
 		"ratio": {
-			"type": "number",
+			"type": "string",
 			"default": 1.5,
 			"section": "Slider",
 			"label": "Width / Height Ratio",
