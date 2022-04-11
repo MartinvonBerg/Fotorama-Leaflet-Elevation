@@ -68,7 +68,7 @@
 		},
 		"maxwidth": {
 			"type": "number",
-			"default": 600,
+			"default": 800,
 			"section": "Slider",
 			"label": "Max Width of Container",
 			"help": "Maximum width of the whole container with slider and map in px"

@@ -46,7 +46,11 @@ function shortcodewrapper ( $attr ) {
 	$param = \str_replace('"\'', '"', $param);
 	$param = \str_replace('\'"', '"', $param);
     
-   	if ( ! is_admin() ) {
-		echo do_shortcode('[gpxview' . $param . ']');	
-	} 
+	if ( $GLOBALS["editing"] ) {
+		// back end render	
+		return '<div>' . do_shortcode('[gpxview' . $param . ']') . '</div>';
+	} else {
+		// frontend render
+		echo do_shortcode('[gpxview' . $param . ']');
+	}
 }

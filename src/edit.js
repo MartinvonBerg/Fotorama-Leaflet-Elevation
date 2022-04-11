@@ -23,7 +23,8 @@ import {
 	ToggleControl,
 	SelectControl,
 	ColorPicker,
-	BaseControl
+	BaseControl,
+	ServerSideRender
 } from '@wordpress/components';
 
 /**
@@ -47,10 +48,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap, showadress, adresstext, 
 			requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio,
 			background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort,
-			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor, color} = attributes;
+			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor} = attributes;
 	const aff =  require('./block.json')['attributes']; // aff: attributes from File loaded.
 	let entries = Object.entries(aff);
-	const ns = 'fotoramamulti';
+	const ns = 'fotoramamulti'; // the namespace for i18n
 	let mykey = '';
 	let attsPart = '';
 		
@@ -148,8 +149,28 @@ export default function Edit( { attributes, setAttributes } ) {
 				<p><strong>Fotorama Settings on the right side.</strong></p>
 				{/*<TextList aff={aff} values={attributes} />*/}
 			</div>
+			<Ssr attributes={attributes} />
 		</>
 	)
+}
+
+function Ssr(attributes) {
+      
+	let blockContent = <p>{ __( 'Serve Side Render failed!' ) }</p>;
+	
+	let attr = attributes.attributes;
+	blockContent = <ServerSideRender
+		block="fotoramamulti/fotorama-multi"
+		attributes = {attr}
+	/>;
+		
+	if (blockContent.props.children == null)
+		blockContent = <p>{ __( 'Serve Side Render failed!' ) }</p>;
+
+	return (
+		<Fragment>
+			{ blockContent }
+		</Fragment>);
 }
 
 function TextList(props) {
