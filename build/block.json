@@ -159,6 +159,21 @@
 			"label": "GPX-File",
 			"help": "The GPX-file in your GPX-directory (see Admin Settings)"
 		},
+		"gpxpath": {
+			"type": "string",
+			"default": "gpx",
+			"section": "Map",
+			"label": "GPX-Path",
+			"help": "Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder"
+		},
+		"alttext": {
+			"type": "string",
+			"default": "",
+			"section": "Slider",
+			"label": "Alt-Text",
+			"help": "Alltext for the whole fotorama slider for SEO"
+		},
+
 		"dload": {
 			"type": "boolean",
 			"default": true,
@@ -171,7 +186,7 @@
 			"default": 450,
 			"section": "Map",
 			"label": "Height of Map",
-			"help": "Height of the leaflet elevation map in px"
+			"help": "Height of the leaflet elevation map in px (is recalculated in Browser. Might show no effect if too big.)"
 		},
 		"showmap": {
 			"type": "boolean",
@@ -204,7 +219,7 @@
 			"default": 200,
 			"section": "Chart",
 			"label": "Height of Chart",
-			"help": "Height of the leaflet elevation chart in px"
+			"help": "Height of the leaflet elevation chart in px (is recalculated in Browser. Might show no effect if too big.)"
 		},
 
 		"navposition": {
@@ -219,11 +234,12 @@
 				{ "value": "top", "label": "Top"}
 			]
 		},
+	
 		"navwidth": {
 			"type": "number",
 			"default": 100,
 			"section": "Thumbs",
-			"label": "Thumbs bar width",
+			"label": "Thumbnails bar width",
 			"help": "Width of Thumbnails bar in Percent of Slider width."
 		},
 		"f_thumbwidth": {

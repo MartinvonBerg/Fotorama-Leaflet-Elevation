@@ -23,9 +23,9 @@ import {
 	ToggleControl,
 	SelectControl,
 	ColorPicker,
-	BaseControl,
-	ServerSideRender
+	BaseControl
 } from '@wordpress/components';
+//import ServerSideRender from '@wordpress/server-side-render';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -46,7 +46,7 @@ import './editor.scss';
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
 	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap, showadress, adresstext, 
-			requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio,
+			requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio, gpxpath, alttext,
 			background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort,
 			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor} = attributes;
 	const aff =  require('./block.json')['attributes']; // aff: attributes from File loaded.
@@ -149,14 +149,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				<p><strong>Fotorama Settings on the right side.</strong></p>
 				{/*<TextList aff={aff} values={attributes} />*/}
 			</div>
-			<Ssr attributes={attributes} />
+			{/*<Ssr attributes={attributes} />*/}
 		</>
 	)
 }
 
 function Ssr(attributes) {
-      
-	let blockContent = <p>{ __( 'Serve Side Render failed!' ) }</p>;
+    let blockContent = <p>{ __( 'Serve Side Render failed!' ) }</p>;
 	
 	let attr = attributes.attributes;
 	blockContent = <ServerSideRender

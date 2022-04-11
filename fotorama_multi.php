@@ -92,13 +92,13 @@ function showmulti($attr, $content = null)
  	
 	// Extract shortcode-Parameters and set Default-Values
 	extract ( shortcode_atts ( array (
-		'gpxpath' 			=> $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx', // not in gtb block
+		'gpxpath' 			=> $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx', 
 		'gpxfile' 			=> 'test.gpx',
 		'mapheight' 		=> $fotorama_elevation_options['height_of_map_10'] ?? '450',
 		'chartheight' 		=> $fotorama_elevation_options['height_of_chart_11'] ?? '200',
 		'imgpath' 			=> $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
 		'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'true', 
-		'alttext' 			=> $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '', // not in gtb block
+		'alttext' 			=> $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '', 
 		'ignoresort' 		=> $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', 
 		'showadress' 		=> $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
 		'showmap' 			=> 'true',
@@ -115,7 +115,7 @@ function showmulti($attr, $content = null)
 		'fit' 				=> $fotorama_elevation_options['fit'] ?? 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
 		'ratio' 			=> $fotorama_elevation_options['ratio'] ?? '1.5',
 		'background' 		=> $fotorama_elevation_options['background'] ?? 'darkgrey', // background color in CSS name
-		'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', false, // funktioniert nicht // not in gtb block
+		//'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', 'false' // funktioniert nicht: andere Werte als thums zeigen nicht alle Bilder im Slider!
 		'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
 		'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
 		'f_thumbwidth' 		=> $fotorama_elevation_options['f_thumbwidth'] ?? '100', // in pixels
@@ -293,8 +293,8 @@ EOF;
 				// The only fif for the moment is to remove linebreaks for 2022-theme, or to use shortcaption, or no caption at all.
 				// In CSS there is no method to force line-breaks. I could be done with JS or jQuery but this is somewhat overdone.
 				// TODO: Find a better solution for that.
-				if ( $currentTheme == 'twentytwentytwo')
-					$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' ' . $data['camera'] . ' ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
+				if ( true )
+					$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' || ' . $data['camera'] . ' || ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
 				else
 					$caption = "data-caption=\"{$imgnr} / {$imageNumber}: {$data['title']}<br>{$data['camera']}<br>{$data['focal_length_in_35mm']} mm / f/{$data['aperture']} / {$data['exposure_time']} s / ISO{$data['iso']} / {$data['DateTimeOriginal']}\"";
 				//$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' lnbrk ' . $data['camera'] . ' lnbrk ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
@@ -329,7 +329,7 @@ EOF;
 			};
 			$imgnr++;
 		}
-		$htmlstring  .= "</div>";
+		$htmlstring  .= "</div><!--div id=end-of-slider -->";
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
@@ -415,7 +415,7 @@ EOF;
 	if ($showmap  == 'true') {
         $htmlstring  .= '</div>'; 
 	}
-
+	
 	if ($addPermalink && $allImgInWPLibrary && ($i < 2) && ( $imageNumber > 0)){
 		$htmlstring  .= '<div class="fm-attach-link">';
 		$htmlstring .= '<a href="" target="_blank">';
