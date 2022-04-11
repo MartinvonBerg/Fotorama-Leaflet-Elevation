@@ -63,8 +63,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			setAttributes( {[source]: newContent} )
 		}
 		if (aff[source].type === 'number' && source !== 'ratio') {
-			if (isNaN(newContent)) newContent = 0;
-			setAttributes( {[source]: parseInt(newContent) } )
+			newContent = newContent.replace(/[^\d-]/g, '');
+			setAttributes( {[source]: newContent } )
 		}
 		if (aff[source].type === 'string' && source === 'ratio') {
 			newContent = newContent.replace(/[^\d.-]/g, '');

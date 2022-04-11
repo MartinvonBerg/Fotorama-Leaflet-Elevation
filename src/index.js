@@ -33,6 +33,5 @@ registerBlockType('fotoramamulti/fotorama-multi', {
 	/**
 	 * Front end output is rendered by ServerSideCallback in PHP. So no function here.
 	 */
-	// TODO: Solve the issue with invalid json.
 	 save: () => {return null}
 });

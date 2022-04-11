@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.9.0
+ * Version:           0.10.0
  * Author:            Martin von Berg
  * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License:           GPL-2.0
@@ -126,7 +126,7 @@ function showmulti($attr, $content = null)
 		'transition' 		=> $fotorama_elevation_options['transition'] ?? 'crossfade', // 'slide' Default 'crossfade' 'dissolve'
 		'transitionduration' => $fotorama_elevation_options['transitionduration'] ?? '400', // in ms
 		'loop' 				=> $fotorama_elevation_options['loop'] ?? 'true', // true or false
-		'autoplay' 			=> $fotorama_elevation_options['autoplay'] ?? '3000', // on with 'true' or any interval in milliseconds.
+		'autoplay' 			=> $fotorama_elevation_options['autoplay'] ?? 'false', // on with 'true' or any interval in milliseconds.
 		'arrows' 			=> $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
 		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true' , // true or false
 		'shortcaption'		=> 'false'
@@ -276,6 +276,19 @@ EOF;
 			}
 			$alttext = $data['alt'] != '' ? $data['alt'] : $data['title'];
 
+			// generate the caption for html and javascript
+			if ( $shortcaption === 'false') {
+				$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' || ' . $data['camera'] . ' || ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
+				$jscaption = $imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' || ' . $data['camera'] . ' || ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'];	
+			} else {
+				$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . '"';
+				$jscaption = $imgnr. ' / ' .$imageNumber . ': ' . $data["title"];
+			};
+			if ( $showcaption === 'false') {
+				$caption = '';
+				$jscaption = '';
+			}
+
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
 			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $imgpath, $thumbsdir );
@@ -284,28 +297,9 @@ EOF;
 			$phpimgdata[$imgnr-1]['coord'][0] = round( $data['lat'], 6 );
 			$phpimgdata[$imgnr-1]['coord'][1] = round( $data['lon'], 6 );
 			$phpimgdata[$imgnr-1]['permalink'] = $data['permalink'] ?? '';
+			$phpimgdata[$imgnr-1]['jscaption'] = $jscaption;
 
-			// generate the caption
-			if ( $shortcaption === 'false') {
-				// hot-fix for the new 2022 theme of WordPress. With usage of '<br>' or other html-tages the string of the caption is partly replaced by html-entities, e.g. &#8222 or so.
-				// Due to this the caption is not correct and fotorama breaks. Theoretically the usage of <br> within the string is NOT correct. It's better to use <p></p> for the three lines.
-				// But these HTML-tags are also replace by html-entities, which leads to inconsitencies.
-				// The only fif for the moment is to remove linebreaks for 2022-theme, or to use shortcaption, or no caption at all.
-				// In CSS there is no method to force line-breaks. I could be done with JS or jQuery but this is somewhat overdone.
-				// TODO: Find a better solution for that.
-				if ( true )
-					$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' || ' . $data['camera'] . ' || ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
-				else
-					$caption = "data-caption=\"{$imgnr} / {$imageNumber}: {$data['title']}<br>{$data['camera']}<br>{$data['focal_length_in_35mm']} mm / f/{$data['aperture']} / {$data['exposure_time']} s / ISO{$data['iso']} / {$data['DateTimeOriginal']}\"";
-				//$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' lnbrk ' . $data['camera'] . ' lnbrk ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
-				
-			} else {
-				//$caption = "data-caption=\"{$imgnr} / {$imageNumber}: {$data['title']}\"";
-				$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . '"';
-			};
-
-			if ( $showcaption === 'false') $caption = '';
-
+			// --------------- Proceed with HTML -------------------
 			if ( $data['thumbinsubdir'] ) {
 				$htmlstring .= <<<EOF
 		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"

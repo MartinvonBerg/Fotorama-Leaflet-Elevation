@@ -504,10 +504,11 @@
                 if ( phpvars[m].imgdata[nr].permalink != '') {
                     $('.fm-attach-link a').attr("href",phpvars[m].imgdata[nr].permalink);
                 }
-                
-                let text = $('.fotorama__caption__wrap').html();
-                text = text.replace('||', '<br>');
-                $('.fotorama__caption__wrap').html(text);
+                if ( phpvars[m].imgdata[nr].jscaption != '') {
+                    let text = phpvars[m].imgdata[nr].jscaption ;
+                    text = text.replaceAll('||', '<br>');
+                    $('.fotorama__caption__wrap').html(text);
+                }
                 
 
                 if ( hasMap && phpvars[m].imgdata[nr].coord[0] ) {

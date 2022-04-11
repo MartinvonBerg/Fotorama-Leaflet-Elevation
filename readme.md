@@ -31,8 +31,9 @@ If resized images and thumbnails are available in the folder, the responsive ima
 
 The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where the slider is ues. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point. Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work.
 
-The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation.
-Up to now, there is no Gutenberg-Block provided.  **It runs with WordPress 5.9 and PHP 7.2 - 8.0.1**
+The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation. 
+**NEW:Settings may be done with a Gutenberg Block** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh teh page on the frontend. Attention: If the Gutenberg block is used more then once on the page the second height-chart is sometimes not correctly drawn. I can't finde the error for that.
+**It runs with WordPress 5.9 and PHP 7.2 - 8.0.1**
 
 </br>
 
@@ -40,6 +41,7 @@ Up to now, there is no Gutenberg-Block provided.  **It runs with WordPress 5.9 a
 - Install current **Release** of the Plugin and activate.
 - Do all global, common settings for the plugin: Wordpress > Login to Admin > Settings > Fotorama-Elevation.
 - Upload photos to e.g. "usr/www/html/wordpress/wp-content/uploads/holiday2021/"
+- Add the **Gutenberg Block** to your page an provide settings **OR**
 - Add this shortcode to post: [gpxview imgpath="holiday2021"] if photos **do have GPS-Data**.
 - Add this shortcode to post: [gpxview imgpath="holiday2021" requiregps="false" showmap="false"] if photos **don't have GPS-Data**.
 - Done!
@@ -108,46 +110,45 @@ Due to the error corrections it is highly recommended to upgrade the Plugin to 0
 - Examples: see after table.
 
 
-|Shortcode|Value (Default first)|Example|Description|
-|:--------|:--------------------|:------|:----------|
-|gpxpath|gpx|gpxpath="gpx"|Path to file(s) with GPX-Track(s) relative to the WordPress upload folder, e.g: "gpx". Do not use trailing slashes! So, complete path is e.g. "usr/www/html/wordpress/wp-content/uploads/gpx/"|
-|gpxfile|test.gpx|gpxfile="test.gpx"|File with gpx-track, e.g: "test.gpx". Use a comma separated list for multiple files: "f1.gpx, f2.gpx, f3.gpx" (The file name given in the GPX-section of the admin settings is NOT shown in the example shortcode!). Leave empty if you don't want to show a GPX-track.|
-|dload|yes / no|dload="yes"|Provide download link for the GPX-Track(s), if set to "yes".|
-|showalltracks|false / true|showalltracks="true"|Show all given tracks together in one Map. Works only with one map per page! Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option as this is no useful global option. NOTE: It is required to use the GPX-Uploader with setting 'GPX-Parsing' activated for showalltracks to work. See under 'Usage of the admin section GPX-File upload'.|
-|showadress|true / false|showadress="true"|Show start address of the tour. GPX-coords are taken from the the custom fields *lat* and *lon*. Field is translation ready if its value is 'start address'. Only shown if the custom field 'geoadress' of the post is set. The adresstext is linked to the google-map-service which opens in a separate tab of the browser. **Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work ! The plugin gives you a message if not, instead of the Start Address if you are logged in as Admin.**
-|adresstext|Start address|adresstext="Start address"|Text before the start address. Field is translation ready if its value is 'Start address'. Mind that translation may not show up if any cache is used! Even the browser cache will block the translation to show up.|
-|showmap|true / false|showmap="true"|Show the map, independent of other settings. There is no admin-setting for this option as this is no useful global option.|
-|mapheight|450|mapheight="450"|Height of the leaflet map in pixels (px). Note that this value maybe overwritten be the responsive function! Could happen that you won't see any change in the frontend if you change this value by the Admin settings.|
-|chartheight|200|chartheight="200"|Height of the leaflet elevation chart in pixels (px)|
-|eletheme|lime-theme|eletheme="lime-theme"|Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. And Martin-theme is my special theme.|
-|mapcenter|0.0,0.0|mapcenter="48.12,12.35"|Center of the map if NO tracks and images are used. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
-|zoom|8|zoom="8"|Zoom level for the map if NO tracks and images are used. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
-|markertext|Home Address|markertext="My Address"|Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
+|Shortcode|Values (Default first)|Gtb|Example|Description|
+|:--------|:--------------------|:--|:------|:----------|
+|gpxpath|gpx|X|gpxpath="gpx"|Path to file(s) with GPX-Track(s) relative to the WordPress upload folder, e.g: "gpx". Do not use trailing slashes! So, complete path is e.g. "usr/www/html/wordpress/wp-content/uploads/gpx/"|
+|gpxfile|test.gpx|X|gpxfile="test.gpx"|File with gpx-track, e.g: "test.gpx". Use a comma separated list for multiple files: "f1.gpx, f2.gpx, f3.gpx" (The file name given in the GPX-section of the admin settings is NOT shown in the example shortcode!). Leave empty if you don't want to show a GPX-track.|
+|dload|yes / no|X|dload="yes"|Provide download link for the GPX-Track(s), if set to "yes".|
+|showalltracks|false / true|--|showalltracks="true"|Show all given tracks together in one Map. Works only with one map per page! Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option as this is no useful global option. NOTE: It is required to use the GPX-Uploader with setting 'GPX-Parsing' activated for showalltracks to work. See under 'Usage of the admin section GPX-File upload'.|
+|showadress|true / false|X|showadress="true"|Show start address of the tour. GPX-coords are taken from the the custom fields *lat* and *lon*. Field is translation ready if its value is 'start address'. Only shown if the custom field 'geoadress' of the post is set. The adresstext is linked to the google-map-service which opens in a separate tab of the browser. **Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work ! The plugin gives you a message if not, instead of the Start Address if you are logged in as Admin.**
+|adresstext|Start address|X|adresstext="Start address"|Text before the start address. Field is translation ready if its value is 'Start address'. Mind that translation may not show up if any cache is used! Even the browser cache will block the translation to show up.|
+|showmap|true / false|X|showmap="true"|Show the map, independent of other settings. There is no admin-setting for this option as this is no useful global option.|
+|mapheight|450|X|mapheight="450"|Height of the leaflet map in pixels (px). Note that this value maybe overwritten be the responsive function! Could happen that you won't see any change in the frontend if you change this value by the Admin settings.|
+|chartheight|200|X|chartheight="200"|Height of the leaflet elevation chart in pixels (px)|
+|eletheme|lime-theme|X|eletheme="lime-theme"|Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. And Martin-theme is my special theme.|
+|mapcenter|0.0,0.0|--|mapcenter="48.12,12.35"|Center of the map if NO tracks and images are used. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
+|zoom|8|--|zoom="8"|Zoom level for the map if NO tracks and images are used. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
+|markertext|Home Address|--|markertext="My Address"|Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
 |**Fotorama**||||
-|imgpath|Bilder|imgpath="Bilder"|Path the images relative to the WordPress upload folder e.g. "galleries/holiday2021". Do not use trailing slashes! So, complete path is e.g. "usr/www/html/wordpress/wp-content/uploads/galleries/holiday2021/"|
-|alttext|''|alttext="Image Slider with map from holiday"|Alt-text for the fotorama slider for SEO.|
-|ignoresort|false / true|ignoresort="false"|Ignore custom sort even if provided by WordPress. If checked (="true") sort by image-taken-date ascending. The custom sort is only provided if the images were added to a separate folder of WP Media library and the custom field "gallery_sort" was set! This setting may be done with the WP REST API, see also: https://github.com/MartinvonBerg/Ext_REST_Media_Lib|
-|requiregps|true / false|requiregps="true"|Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF. Or show images also if the do NOT provide GPS-data.|
-|maxwidth|600|maxwidth="600"|Maximum width of the whole container with slider and map. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
-|minrowwidth|480|minrowwidth="480"|Minimum width of one row of the CSS-Grid. If greater than the half of the above maxwidth the Fotorama slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
-|showcaption|true / false|showcaption="true"|Show the caption in the fotorama slider or not.|
-|shortcaption|false / true|shortcaption="true"|Show the first line ('title') of the caption only. Don't show other EXIF-Information taken from the image. The 'title' is taken from the EXIF-title tag, if available. There is no admin-setting for this option.|
-|useCDN|false / true|useCDN="false"|Use CDN for js- and css-Library-Files or not. Experimental.|
-| fit |contain , cover, scaledown, none |fit="contain"| Define the scaling of Fotos for the Fotorama Slider.|
-| ratio | 1.5 | ratio="1.0" | Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now.|
-| background | darkgrey | background="red" | Background color of the slider defined by a valid CSS name.|
-| navposition | bottom , top | navposition="top" | Position of the navigation bar.|
-| navwidth | 100% | navwidth="80%" | Width of the navigation bar in percent. Provide the '%' also!|
-| f_thumbwidth | 100 | f_thumbwidth="80" | Width of the single thumbnail in the navigation bar in pixels.|
-| f_thumbheight | 75 | f_thumbheight="80" | Height of the single thumbnail in the navigation bar in pixels.|
-| thumbmargin | 2 | thumbmargin="3" | Margin between thumbnails in pixels.|
-| thumbborderwidth | 2 | thumbborderwidth="3" | Width of the coloured thumbnail border in pixels.|
-| thumbbordercolor | #ea0000 | thumbbordercolor="blue" | Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken.| 
-| transition | crossfade , slide , dissolve | transition="slide" | Type of transition between images. |
-| transitionduration | 400 | transitionduration="200" | Duration of transition in ms |
-| loop | true , false | loop="false" | Loop through images (proceed with first once the reached the las) true or fals.|e
-| autoplay | 3000 | autoplay="false" | Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false".|
-| arrows | true , false , always | arrows="false" | Show arrows for the slider control. 'always' : Do not hide controls on hover or tap.|
+|imgpath|Bilder|X|imgpath="Bilder"|Path the images relative to the WordPress upload folder e.g. "galleries/holiday2021". Do not use trailing slashes! So, complete path is e.g. "usr/www/html/wordpress/wp-content/uploads/galleries/holiday2021/"|
+|alttext|''|X|alttext="Image Slider with map from holiday"|Alt-text for the fotorama slider for SEO.|
+|ignoresort|false / true|X|ignoresort="false"|Ignore custom sort even if provided by WordPress. If checked (="true") sort by image-taken-date ascending. The custom sort is only provided if the images were added to a separate folder of WP Media library and the custom field "gallery_sort" was set! This setting may be done with the WP REST API, see also: https://github.com/MartinvonBerg/Ext_REST_Media_Lib|
+|requiregps|true / false|X|requiregps="true"|Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF. Or show images also if the do NOT provide GPS-data.|
+|maxwidth|600|X|maxwidth="600"|Maximum width of the whole container with slider and map. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
+|minrowwidth|480|X|minrowwidth="480"|Minimum width of one row of the CSS-Grid. If greater than the half of the above maxwidth the Fotorama slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme.|
+|showcaption|true / false|X|showcaption="true"|Show the caption in the fotorama slider or not.|
+|shortcaption|false / true|X|shortcaption="true"|Show the first line ('title') of the caption only. Don't show other EXIF-Information taken from the image. The 'title' is taken from the EXIF-title tag, if available. There is no admin-setting for this option.|
+| fit |cover, contain, scaledown, none |X*|fit="contain"| Define the scaling of Fotos for the Fotorama Slider. Only contain and cover in Gutenberg.|
+| ratio | 1.5 |X|ratio="1.0" | Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now.|
+| background | darkgrey |X|background="red" | Background color of the slider defined by a valid CSS name.|
+| navposition | bottom , top |X| navposition="top" | Position of the navigation bar.|
+| navwidth | 100% |X| navwidth="80%" | Width of the navigation bar in percent. Provide the '%' also!|
+| f_thumbwidth | 100 |X| f_thumbwidth="80" | Width of the single thumbnail in the navigation bar in pixels.|
+| f_thumbheight | 75 |X| f_thumbheight="80" | Height of the single thumbnail in the navigation bar in pixels.|
+| thumbmargin | 2 |X| thumbmargin="3" | Margin between thumbnails in pixels.|
+| thumbborderwidth | 2 |X| thumbborderwidth="3" | Width of the coloured thumbnail border in pixels.|
+| thumbbordercolor | #ea0000 |X| thumbbordercolor="blue" | Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken.| 
+| transition | crossfade , slide , dissolve |X| transition="slide" | Type of transition between images. |
+| transitionduration | 400 |X| transitionduration="200" | Duration of transition in ms |
+| loop | true , false |X| loop="false" | Loop through images (proceed with first once the reached the las) true or fals.|e
+| autoplay | false |X| autoplay="false" | Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false".|
+| arrows | true , false , always |X| arrows="false" | Show arrows for the slider control. 'always' : Do not hide controls on hover or tap.|
 
 </br>
 
@@ -155,6 +156,8 @@ Due to the error corrections it is highly recommended to upgrade the Plugin to 0
 - Example complete Shortcode: `[gpxview imgpath="Alben_Website" gpxpath="gpx" gpxfile="test.gpx" showalltracks="false" mapheight="400" chartheight="200" dload="true" alttext="" ignoresort="false" useCDN="false" showadress="true" showmap="true" adresstext="Start address" requiregps="true" maxwidth="1500" minrowwidth="480" showcaption="true" eletheme="lime-theme" mapcenter="48.12,12.35" zoom="8" markertext="My Address"]`
 
 - **ATTENTION** There are Admin Settings without parameter in the shortcode:
+    - All Settings for GPX-File upload.
+    - Add Permalink: Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.
     - Set Custom Fields for post: Set Custom Fields (geoadress, lat, lon, postimg) in post. Geoadress is for the start address shown under the elevation chart. Lat.,Lon. are for the GPS-Coords used for the Overview-Map. The custom-fields *lat*, *Lon*, *postimg* and *geoadress* are only set ONCE at the status-transition from 'draft' to 'published' only. So, if you want to change do 'published' to 'draft' to 'published' again. The data is taken from the FIRST shortcode on the page or post, only. So the images have to provide GPS-data or a GPX-track has to be used for this FIRST shortcode.
     - Generate Entries in Yoast XML-Sitemap for Fotorama Images: Generate the Entries for the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Entries are stored in Custom field `postimg`. Tested with several fotorama sliders per post! The custom field is only written if `Set Custom Fields` is checked (="true") and if the admin user is logged in. The status change is no longer required. Only usefull if you use Yoast SEO plugin. 
     
@@ -379,6 +382,9 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.10.0 =
+11.04.2022: Simple Gutenberg block ready! Almost All shortcode settings are now available by a Gutenberg block! Exceptions: showalltracks, mapcenter, zoom, markertext which are and were somewhat experimental.
 
 = 0.9.0 =
 16.03.2022: PHPunit tests finalized. Only useful and meaningful tests where conducted.
