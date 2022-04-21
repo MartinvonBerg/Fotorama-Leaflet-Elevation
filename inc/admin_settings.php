@@ -887,8 +887,11 @@ class FotoramaElevation {
 				$sanitary_values [ 'shadows' ] = 'false';
 		}
 
-
-		$sanitary_values['gpx_file'] = $input['gpx_file'] ;
+		if ( isset( $input['gpx_file'] ) ) {
+			$sanitary_values['gpx_file'] = $input['gpx_file'] ;
+		}
+		else {}
+			$sanitary_values['gpx_file'] = '';
 
 		return $sanitary_values;
 	}

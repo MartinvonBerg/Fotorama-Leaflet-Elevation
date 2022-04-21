@@ -383,6 +383,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.10.1 =
+21.04.2022: Bugfix in admin_settings.php in sanitizer for input['gpx_file']
+
 = 0.10.0 =
 11.04.2022: Simple Gutenberg block ready! Almost All shortcode settings are now available by a Gutenberg block! Exceptions: showalltracks, mapcenter, zoom, markertext which are and were somewhat experimental.
 
