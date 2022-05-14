@@ -150,10 +150,19 @@
 
                 // initiate the leaflet map
                 maps[m] = new L.Map('map' + m, opts.map); 
+                               
                 if (numberOfMaps == 1 && showalltracks){
                     maps[m].addLayer(baseLayers[m].OpenStreetMap); // this one is preselected for multiple tracks
-                } else {
+                } else if (phpvars[m].mapselector === 'OpenStreetMap'){
+                    maps[m].addLayer(baseLayers[m].OpenStreetMap); // this one is preselected for one gpx-track
+                } else if (phpvars[m].mapselector === 'OpenTopoMap'){
                     maps[m].addLayer(baseLayers[m].OpenTopoMap); // this one is preselected for one gpx-track
+                } else if (phpvars[m].mapselector === 'CycleOSM'){
+                    maps[m].addLayer(baseLayers[m].CycleOSM); // this one is preselected for one gpx-track
+                } else if (phpvars[m].mapselector === 'Satellit'){
+                    maps[m].addLayer(baseLayers[m].Satellit); // this one is preselected for one gpx-track
+                } else {
+                    maps[m].addLayer(baseLayers[m].OpenStreetMap);
                 }
                 bounds[m] = maps[m].getBounds;  
             

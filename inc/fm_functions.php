@@ -325,9 +325,11 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		$data['camera'] = '---';
 
 		$additionaldata = getWebpMetadata( $file );
-		$data = \array_merge( $data, $additionaldata);
+		if ( ! empty($additionaldata) ) {
+			$data = \array_merge( $data, $additionaldata);
+		}
 
-		if ($data['exposure_time'] > 0) {
+		if ( isset( $data['exposure_time'] ) && $data['exposure_time'] > 0) {
 			$data['exposure_time'] = '1/' . strval( 1 / $data['exposure_time'] );
 		} else {
 			$data['exposure_time'] = '--';

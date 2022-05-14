@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.10.1
+ * Version:           0.10.2
  * Author:            Martin von Berg
  * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License:           GPL-2.0
@@ -124,12 +124,13 @@ function showmulti($attr, $content = null)
 		'thumbborderwidth' 	=> $fotorama_elevation_options['thumbborderwidth'] ?? '2', // in pixels
 		'thumbbordercolor' 	=> $fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
 		'transition' 		=> $fotorama_elevation_options['transition'] ?? 'crossfade', // 'slide' Default 'crossfade' 'dissolve'
-		'transitionduration' => $fotorama_elevation_options['transitionduration'] ?? '400', // in ms
+		'transitionduration'=> $fotorama_elevation_options['transitionduration'] ?? '400', // in ms
 		'loop' 				=> $fotorama_elevation_options['loop'] ?? 'true', // true or false
 		'autoplay' 			=> $fotorama_elevation_options['autoplay'] ?? 'false', // on with 'true' or any interval in milliseconds.
 		'arrows' 			=> $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
-		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true' , // true or false
-		'shortcaption'		=> 'false'
+		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true', // true or false
+		'shortcaption'		=> 'false',
+		'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap'
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
 
@@ -434,6 +435,7 @@ EOF;
 		'zoom' => $zoom,
 		'markertext' => $markertext,
 		'fit' => $fit,
+		'mapselector' => $mapselector,
  		) 
 	);
 

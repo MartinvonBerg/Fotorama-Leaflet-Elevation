@@ -122,13 +122,14 @@ function getJpgMetadata( string $filename ) : array
  * 		alt and description are not set.
  *
  * @param string $filename The complete path to the file in the directory.
- * @return array|false The exif data array similar to the JSON that is provided via the REST-API.
+ * @return array The exif data array similar to the JSON that is provided via the REST-API.
  */
 function getWebpMetadata( string $filename ) 
 {
 	$parsedWebPData = extractMetadata( $filename );
 	if ( ! $parsedWebPData ) {
-		return BROKEN_FILE;
+		//return BROKEN_FILE;
+		return [];
 	}
 
 	$parsedWebPData['meta_version'] = WEBP_VERSION;

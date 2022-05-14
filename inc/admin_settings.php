@@ -74,7 +74,7 @@ class FotoramaElevation {
 			
 			<hr>
             <h3>List of shortcode Parameters:</h3>
-			<p><b>Complete EXAMPLE shortcode with the above settings (No need to use it in Post!): </br></b> <?php
+			<p><b>(Almost) Complete EXAMPLE shortcode with the above settings (No need to use it in Post!): </br></b> <?php
 				$example = '[gpxview imgpath="' . 	$this->fotorama_elevation_options['path_to_images_for_fotorama_0'] . '" ';
 				$example.= 'gpxpath="' .            $this->fotorama_elevation_options['path_to_gpx_files_2'] . '" ';
 				$example.= 'gpxfile="test.gpx" ';
@@ -182,6 +182,12 @@ class FotoramaElevation {
 					<td class="tg-0pky">Show the map, independent of other settinges. Currently no Admin setting for that.</td>
 				</tr>
 				<tr>
+					<td class="tg-0pky">mapselector</td>
+					<td class="tg-0pky">OpenTopoMap</td>
+					<td class="tg-0pky">mapselector="OpenStreetMap"</td>
+					<td class="tg-0pky">Choose which map should be shown first. Possible values for Maps: OpenStreetMap, OpenTopoMap, CycleOSM, Satellit</td>
+				</tr>
+				<tr>
 					<td class="tg-0pky">mapheight</td>
 					<td class="tg-0pky">450</td>
 					<td class="tg-0pky">mapheight="450"</td>
@@ -264,15 +270,14 @@ class FotoramaElevation {
 					<td class="tg-0pky">showcaption="true"</td>
 					<td class="tg-0pky">Show the caption in the fotorama slider</td>
 				</tr>
+
 				<tr>
-					<td class="tg-0pky">useCDN</td>
+					<td class="tg-0pky">shortcaption</td>
 					<td class="tg-0pky">false / true</td>
-					<td class="tg-0pky">useCDN="false"</td>
-					<td class="tg-0pky">Use CDN for js- and css-Library-Files</td>
+					<td class="tg-0pky">shortcaption="true"</td>
+					<td class="tg-0pky">Show short caption only. (No image metadata)</td>
 				</tr>
-				<tr>
-				<td class="tg-0pky"><strong>Fotorama without admin settings</strong></td><td></td><td></td><td></td>
-				</tr>
+			
 				<tr><td class="tg-0pky">fit</td><td class="tg-0pky">contain , cover, scaledown, none</td><td class="tg-0pky">fit="contain"</td><td class="tg-0pky">Define the scaling of Fotos for the Fotorama Slider</td></tr>
 				<tr><td class="tg-0pky">ratio</td><td class="tg-0pky">1.5</td><td class="tg-0pky">ratio="1.0"</td><td class="tg-0pky">Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now</td></tr>
 				<tr><td class="tg-0pky">background</td><td class="tg-0pky">darkgrey</td><td class="tg-0pky">background="red"</td><td class="tg-0pky">Background color of the slider defined by a valid CSS name</td></tr>
@@ -288,7 +293,8 @@ class FotoramaElevation {
 				<tr><td class="tg-0pky">loop</td><td class="tg-0pky">true , false</td><td class="tg-0pky">loop="false"</td><td class="tg-0pky">Loop through images (proceed with first once the reached the las) true or false</td></tr>
 				<tr><td class="tg-0pky">autoplay</td><td class="tg-0pky">3000</td><td class="tg-0pky">autoplay="false"</td><td class="tg-0pky">Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false"</td></tr>
 				<tr><td class="tg-0pky">arrows</td><td class="tg-0pky">true , false , always</td><td class="tg-0pky">arrows="false"</td><td class="tg-0pky">Show arrows for the slider control. 'always' : Do not hide controls on hover or tap</td></tr>
-			
+				<tr><td class="tg-0pky">shadows</td><td class="tg-0pky">true , false</td><td class="tg-0pky">shadows="false"</td><td class="tg-0pky">Show shadows. Does not work as expected.</td></tr>
+				
 				</tbody>
 			</table>
 
@@ -296,7 +302,7 @@ class FotoramaElevation {
 		<?php 
 	}
 
-	public function fotorama_elevation_page_init() { // == demo_settings_page()
+	public function fotorama_elevation_page_init() { 
 		register_setting(
 			'fotorama_elevation_option_group', // option_group
 			'fotorama_elevation_option_name', // option_name
@@ -339,6 +345,14 @@ class FotoramaElevation {
 			'text_for_start_address_8', // id
 			__( 'Text for Start address', 'fotoramamulti' ), // title
 			array( $this, 'text_for_start_address_8_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'leaflet_elevation_setting_section' // section
+		);
+
+		add_settings_field(
+			'mapselector', // id
+			__( 'Select the Map', 'fotoramamulti' ), // title
+			array( $this, 'mapselector_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
@@ -634,6 +648,7 @@ class FotoramaElevation {
 		
 	}
 	
+	// --------------------- Calllbacks -------------------------------//
 	public function gpx_file_callback() {
 		?><input type="file" name="gpx-file" /><?php // create html button for file name
 		echo ('</br>Upload' .  get_option('gpx-file') );
@@ -733,6 +748,298 @@ class FotoramaElevation {
 		return $temp;
 	}
 
+	public function path_to_images_for_fotorama_0_callback() {
+		printf(
+			'<input class="regular-text" type="text" placeholder="Define path without leading and trailing slashes" name="fotorama_elevation_option_name[path_to_images_for_fotorama_0]" id="path_to_images_for_fotorama_0" value="%s"><p>%s</p>',
+			isset( $this->fotorama_elevation_options['path_to_images_for_fotorama_0'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_images_for_fotorama_0']) : '',
+			$this->up_dir . '/' . $this->fotorama_elevation_options['path_to_images_for_fotorama_0']
+		);
+	}
+
+	public function colour_theme_for_leaflet_elevation_1_callback() {
+		?> <select name="fotorama_elevation_option_name[colour_theme_for_leaflet_elevation_1]" id="colour_theme_for_leaflet_elevation_1">
+			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'martin-theme') ? 'selected' : '' ; ?>
+			<option value="martin-theme" <?php echo $selected; ?>>Martin</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'lime-theme') ? 'selected' : '' ; ?>
+			<option value="lime-theme" <?php echo $selected; ?>>Lime</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'steelblue-theme') ? 'selected' : '' ; ?>
+			<option value="steelblue-theme" <?php echo $selected; ?>>Steelblue </option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'purple-theme') ? 'selected' : '' ; ?>
+			<option value="purple-theme" <?php echo $selected; ?>>Purple</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'yellow-theme') ? 'selected' : '' ; ?>
+			<option value="yellow-theme" <?php echo $selected; ?>>Yellow</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'red-theme') ? 'selected' : '' ; ?>
+			<option value="red-theme" <?php echo $selected; ?>>Red</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'magenta-theme') ? 'selected' : '' ; ?>
+			<option value="magenta-theme" <?php echo $selected; ?>>Magenta </option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'lightblue-theme') ? 'selected' : '' ; ?>
+			<option value="lightblue-theme" <?php echo $selected; ?>>Lightblue</option>
+		</select> <?php
+	}
+
+	public function path_to_gpx_files_2_callback() {
+		printf(
+			'<input class="regular-text" type="text" placeholder="Define path without leading and trailing slashes" name="fotorama_elevation_option_name[path_to_gpx_files_2]" id="path_to_gpx_files_2" value="%s"><p>%s</p>',
+			isset( $this->fotorama_elevation_options['path_to_gpx_files_2'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_gpx_files_2']) : '', 
+			$this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2']
+		);
+	}
+
+	public function download_gpx_files_3_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[download_gpx_files_3]" id="download_gpx_files_3" value="download_gpx_files_3" %s> <label for="download_gpx_files_3">%s.</label>',
+			( isset( $this->fotorama_elevation_options['download_gpx_files_3'] ) && $this->fotorama_elevation_options['download_gpx_files_3'] === 'true' ) ? 'checked' : '',
+			__( 'Provide download link for GPX-Files', 'fotoramamulti' ) 
+		);
+	}
+
+	public function show_caption_4_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[show_caption_4]" id="show_caption_4" value="show_caption_4" %s>',
+			( isset( $this->fotorama_elevation_options['show_caption_4'] ) && $this->fotorama_elevation_options['show_caption_4'] === 'true' ) ? 'checked' : ''
+		);
+	}
+
+	public function images_with_gps_required_5_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[images_with_gps_required_5]" id="images_with_gps_required_5" value="images_with_gps_required_5" %s> <label for="images_with_gps_required_5">%s</label>',
+			( isset( $this->fotorama_elevation_options['images_with_gps_required_5'] ) && $this->fotorama_elevation_options['images_with_gps_required_5'] === 'true' ) ? 'checked' : '',
+			__( 'Show images only if they provide GPS-Data in EXIF. Remember to set showmap="false".' , 'fotoramamulti' )
+		);
+	}
+
+	public function ignore_custom_sort_6_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[ignore_custom_sort_6]" id="ignore_custom_sort_6" value="ignore_custom_sort_6" %s> <label for="ignore_custom_sort_6">%s</label>',
+			( isset( $this->fotorama_elevation_options['ignore_custom_sort_6'] ) && $this->fotorama_elevation_options['ignore_custom_sort_6'] === 'true' ) ? 'checked' : '',
+			__( 'Ignore custom sort even if provided by Wordpress. Sort ascending by date taken if checked.', 'fotoramamulti' )
+		);
+	}
+
+	public function show_address_of_start_7_callback() {
+		printf(
+		'<input type="checkbox" name="fotorama_elevation_option_name[show_address_of_start_7]" id="show_address_of_start_7" value="show_address_of_start_7" %s> <label for="show_address_of_start_7">%s</label>',
+		( isset ( $this->fotorama_elevation_options['show_address_of_start_7'] ) && $this->fotorama_elevation_options['show_address_of_start_7'] === 'true' ) ? 'checked' : '',
+		__( 'Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)', 'fotoramamulti' )
+		);
+	}
+
+	public function text_for_start_address_8_callback() {
+		printf(
+			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[text_for_start_address_8]" id="text_for_start_address_8" value="%s">',
+			isset( $this->fotorama_elevation_options['text_for_start_address_8'] ) ? esc_attr( $this->fotorama_elevation_options['text_for_start_address_8']) : ''
+		);
+	}
+
+	public function general_text_for_the_fotorama_alt_9_callback() {
+		printf(
+			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[general_text_for_the_fotorama_alt_9]" id="general_text_for_the_fotorama_alt_9" value="%s">',
+			isset( $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ) ? esc_attr( $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9']) : ''
+		);
+	}
+
+	public function mapselector_callback() {
+		?> <select name="fotorama_elevation_option_name[mapselector]" id="mapselector">
+			<?php $selected = (isset( $this->fotorama_elevation_options['mapselector'] ) && $this->fotorama_elevation_options['mapselector'] === 'OpenStreetMap') ? 'selected' : '' ; ?>
+			<option value="OpenStreetMap" <?php echo $selected; ?>>OpenStreetMap</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['mapselector'] ) && $this->fotorama_elevation_options['mapselector'] === 'OpenTopoMap') ? 'selected' : '' ; ?>
+			<option value="OpenTopoMap" <?php echo $selected; ?>>OpenTopoMap</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['mapselector'] ) && $this->fotorama_elevation_options['mapselector'] === 'CycleOSM') ? 'selected' : '' ; ?>
+			<option value="CycleOSM" <?php echo $selected; ?>>CycleOSM </option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['mapselector'] ) && $this->fotorama_elevation_options['mapselector'] === 'Satellit') ? 'selected' : '' ; ?>
+			<option value="Satellit" <?php echo $selected; ?>>Satellit</option>
+		</select> <?php
+	}
+
+	public function height_of_map_10_callback() {
+		printf(
+			'<input type="number" min="'. $this->min_height_map .'" max="'. $this->max_height_map .'" name="fotorama_elevation_option_name[height_of_map_10]" id="height_of_map_10" value="%s"><label>  Min: %s px, Max: %s px</label>',
+			isset( $this->fotorama_elevation_options['height_of_map_10'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_map_10']) : '',
+			$this->min_height_map, $this->max_height_map
+		);
+	}
+
+	public function height_of_chart_11_callback() {
+		printf(
+			'<input type="number" min="'. $this->min_height_chart .'" max="'. $this->max_height_chart .'" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s"><label>  Min: %s px, Max: %s px</label>',
+			isset( $this->fotorama_elevation_options['height_of_chart_11'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_chart_11']) : '',
+			$this->min_height_chart, $this->max_height_chart
+		);
+	}
+
+	public function max_width_of_container_12_callback() {
+		printf(
+			'<input type="number" min="'. $this->min_width .'" max="'. $this->max_width .'" name="fotorama_elevation_option_name[max_width_of_container_12]" id="max_width_of_container_12" value="%s"><label>  Min: %s px, Max: %s px</label>',
+			isset( $this->fotorama_elevation_options['max_width_of_container_12'] ) ? esc_attr( $this->fotorama_elevation_options['max_width_of_container_12']) : '',
+			$this->min_width, $this->max_width
+		);
+	}
+
+	public function useCDN_13_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[useCDN_13]" id="useCDN_13" value="useCDN_13" %s> <label for="useCDN_13">%s</label>',
+			( isset( $this->fotorama_elevation_options['useCDN_13'] ) && $this->fotorama_elevation_options['useCDN_13'] === 'true' ) ? 'checked' : '',
+			__( 'Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.', 'fotoramamulti' )
+		);
+	}
+
+	public function min_width_css_grid_row_14_callback() {
+		printf(
+			'<input type="number" min="'. $this->min_width/2 .'" max="'. $this->max_width .'" name="fotorama_elevation_option_name[min_width_css_grid_row_14]" id="min_width_css_grid_row_14" value="%s"><label>  Min: %s px, Max: %s px</label>',
+			isset( $this->fotorama_elevation_options['min_width_css_grid_row_14'] ) ? esc_attr( $this->fotorama_elevation_options['min_width_css_grid_row_14']) : '480',
+			$this->min_width/2, $this->max_width
+		);
+	}
+
+	public function fit_callback() {
+		?> <select name="fotorama_elevation_option_name[fit]" id="fit">
+			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'contain') ? 'selected' : '' ; ?>
+			<option value='contain' <?php echo $selected; ?>>Contain</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'cover') ? 'selected' : '' ; ?>
+			<option value="cover" <?php echo $selected; ?>>Cover</option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'scaledown') ? 'selected' : '' ; ?>
+			<option value="scaledown" <?php echo $selected; ?>>Scaledown </option>
+			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'none') ? 'selected' : '' ; ?>
+			<option value="none" <?php echo $selected; ?>>None</option>
+		</select> <?php
+	}
+
+	public function setCustomFields_15_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[setCustomFields_15]" id="setCustomFields_15" value="setCustomFields_15" %s> <label for="setCustomFields_15">%s</label>',
+			( isset( $this->fotorama_elevation_options['setCustomFields_15'] ) && $this->fotorama_elevation_options['setCustomFields_15'] === 'true' ) ? 'checked' : '',
+			__('Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.','fotoramamulti')
+		);
+	}
+
+	public function doYoastXmlSitemap_16_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[doYoastXmlSitemap_16]" id="doYoastXmlSitemap_16" value="doYoastXmlSitemap_16" %s> <label for="doYoastXmlSitemap_16">%s</label>',
+			( isset( $this->fotorama_elevation_options['doYoastXmlSitemap_16'] ) && $this->fotorama_elevation_options['doYoastXmlSitemap_16'] === 'true' ) ? 'checked' : '',
+			__('Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO.','fotoramamulti')
+		);
+	}
+
+	public function ratio_callback() {
+		printf(
+			'<input type="number" min="0.1" max="5.0" step="0.1" name="fotorama_elevation_option_name[ratio]" id="ratio" value="%s"><label> Min: 0.1 in ratio, Max: 5.0 in ratio</label>',
+			isset( $this->fotorama_elevation_options['ratio'] ) ? esc_attr( $this->fotorama_elevation_options['ratio'] ) : ''
+		);
+	}
+
+    public function background_callback() {
+		printf(
+			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[background]" id="background" value="%s">',
+			isset( $this->fotorama_elevation_options['background'] ) ? esc_attr( $this->fotorama_elevation_options['background'] ) : ''
+		);
+	}
+
+    public function navposition_callback() {
+		?> <select name="fotorama_elevation_option_name[navposition]" id="navposition">
+				<?php $selected = (isset( $this->fotorama_elevation_options['navposition'] ) && $this->fotorama_elevation_options['navposition'] === 'top') ? 'selected' : '' ; ?>
+               <option value='top' <?php echo $selected; ?>>Top</option>
+               <?php $selected = (isset( $this->fotorama_elevation_options['navposition'] ) && $this->fotorama_elevation_options['navposition'] === 'bottom') ? 'selected' : '' ; ?>
+               <option value='bottom' <?php echo $selected; ?>>Bottom</option>
+           </select> <?php 
+	}
+
+    public function navwidth_callback() {
+		printf(
+			'<input type="number" min="10" max="100"  name="fotorama_elevation_option_name[navwidth]" id="navwidth" value="%s"><label> Min: 10 in percent, Max: 100 in percent</label>',
+			isset( $this->fotorama_elevation_options['navwidth'] ) ? esc_attr( $this->fotorama_elevation_options['navwidth'] ) : ''
+		);
+	}
+
+    public function f_thumbwidth_callback() {
+		printf(
+			'<input type="number" min="10" max="200"  name="fotorama_elevation_option_name[f_thumbwidth]" id="f_thumbwidth" value="%s"><label> Min: 10 in pixels, Max: 200 in pixels</label>',
+			isset( $this->fotorama_elevation_options['f_thumbwidth'] ) ? esc_attr( $this->fotorama_elevation_options['f_thumbwidth'] ) : ''
+		);
+	}
+
+    public function f_thumbheight_callback() {
+		printf(
+			'<input type="number" min="10" max="200"  name="fotorama_elevation_option_name[f_thumbheight]" id="f_thumbheight" value="%s"><label> Min: 10 in pixels, Max: 200 in pixels</label>',
+			isset( $this->fotorama_elevation_options['f_thumbheight'] ) ? esc_attr( $this->fotorama_elevation_options['f_thumbheight'] ) : ''
+		);
+	}
+
+    public function thumbmargin_callback() {
+		printf(
+			'<input type="number" min="0" max="20"  name="fotorama_elevation_option_name[thumbmargin]" id="thumbmargin" value="%s"><label> Min: 0 in pixels, Max: 20 in pixels</label>',
+			isset( $this->fotorama_elevation_options['thumbmargin'] ) ? esc_attr( $this->fotorama_elevation_options['thumbmargin'] ) : ''
+		);
+	}
+
+    public function thumbborderwidth_callback() {
+		printf(
+			'<input type="number" min="0" max="20"  name="fotorama_elevation_option_name[thumbborderwidth]" id="thumbborderwidth" value="%s"><label> Min: 0 in pixels, Max: 20 in pixels</label>',
+			isset( $this->fotorama_elevation_options['thumbborderwidth'] ) ? esc_attr( $this->fotorama_elevation_options['thumbborderwidth'] ) : ''
+		);
+	}
+
+    public function thumbbordercolor_callback() {
+		printf(
+			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[thumbbordercolor]" id="thumbbordercolor" value="%s">',
+			isset( $this->fotorama_elevation_options['thumbbordercolor'] ) ? esc_attr( $this->fotorama_elevation_options['thumbbordercolor'] ) : ''
+		);
+	}
+
+    public function transition_callback() {
+		?> <select name="fotorama_elevation_option_name[transition]" id="transition">
+               <?php $selected = (isset( $this->fotorama_elevation_options['transition'] ) && $this->fotorama_elevation_options['transition'] === 'slide') ? 'selected' : '' ; ?>
+               <option value='slide' <?php echo $selected; ?>>Slide</option>
+               <?php $selected = (isset( $this->fotorama_elevation_options['transition'] ) && $this->fotorama_elevation_options['transition'] === 'crossfade') ? 'selected' : '' ; ?>
+               <option value='crossfade' <?php echo $selected; ?>>Crossfade</option>
+               <?php $selected = (isset( $this->fotorama_elevation_options['transition'] ) && $this->fotorama_elevation_options['transition'] === 'dissolve') ? 'selected' : '' ; ?>
+               <option value='dissolve' <?php echo $selected; ?>>Dissolve</option>
+           </select> <?php 
+	}
+
+    public function transitionduration_callback() {
+		printf(
+			'<input type="number" min="0" max="1000"  name="fotorama_elevation_option_name[transitionduration]" id="transitionduration" value="%s"><label> Min: 0 in ms, Max: 1000 in ms</label>',
+			isset( $this->fotorama_elevation_options['transitionduration'] ) ? esc_attr( $this->fotorama_elevation_options['transitionduration'] ) : ''
+		);
+	}
+
+    public function loop_callback() {
+		printf(
+		'<input type="checkbox" name="fotorama_elevation_option_name[loop]" id="loop" value="loop" %s> <label for="loop">%s</label>',
+		( isset ( $this->fotorama_elevation_options['loop'] ) && $this->fotorama_elevation_options['loop'] === 'true' ) ? 'checked' : '',
+        __( 'loop', 'fotoramamulti' )
+		);
+	}
+
+    public function autoplay_callback() {
+		printf(
+			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[autoplay]" id="autoplay" value="%s"><label> %s</label>',
+			( isset( $this->fotorama_elevation_options['autoplay'] ) ? esc_attr( $this->fotorama_elevation_options['autoplay'] ) : '' ),
+			__( 'Values: false, true, or integer value in milliseconds', 'fotoramamulti' ) 
+			//__( 'autoplay_explanation', 'fotoramamulti' )
+		);
+	}
+
+    public function arrows_callback() {
+		?> <select name="fotorama_elevation_option_name[arrows]" id="arrows">
+               <?php $selected = (isset( $this->fotorama_elevation_options['arrows'] ) && $this->fotorama_elevation_options['arrows'] === 'true') ? 'selected' : '' ; ?>
+               <option value='true' <?php echo $selected; ?>>True</option>
+               <?php $selected = (isset( $this->fotorama_elevation_options['arrows'] ) && $this->fotorama_elevation_options['arrows'] === 'false') ? 'selected' : '' ; ?>
+               <option value='false' <?php echo $selected; ?>>False</option>
+               <?php $selected = (isset( $this->fotorama_elevation_options['arrows'] ) && $this->fotorama_elevation_options['arrows'] === 'always') ? 'selected' : '' ; ?>
+               <option value='always' <?php echo $selected; ?>>Always</option>
+           </select> <?php 
+	}
+
+    public function shadows_callback() {
+		printf(
+		'<input type="checkbox" name="fotorama_elevation_option_name[shadows]" id="shadows" value="shadows" %s> <label for="shadows"> %s</label>',
+		( isset ( $this->fotorama_elevation_options['shadows'] ) && $this->fotorama_elevation_options['shadows'] === 'true' ) ? 'checked' : '',
+        __( 'shadows', 'fotoramamulti' )
+		);
+	}
+	
+	// --------------------- Sanitizers -------------------------------//
 	public function fotorama_elevation_sanitize($input) {
 		$sanitary_values = array();
 		if ( isset( $input['path_to_images_for_fotorama_0'] ) ) {
@@ -783,6 +1090,10 @@ class FotoramaElevation {
 
 		if ( isset( $input['general_text_for_the_fotorama_alt_9'] ) ) {
 			$sanitary_values['general_text_for_the_fotorama_alt_9'] = $this->my_sanitize_text( $input['general_text_for_the_fotorama_alt_9'] );
+		}
+
+		if ( isset( $input['mapselector'] ) ) {
+			$sanitary_values['mapselector'] = $input['mapselector'];
 		}
 
 		if ( isset( $input['height_of_map_10'] ) ) {
@@ -895,288 +1206,6 @@ class FotoramaElevation {
 
 		return $sanitary_values;
 	}
-
-	public function fotorama_elevation_section_info() {	
-		// html code here is shown after the heading of the section
-    }
-    
-    public function leaflet_elevation_section_info() {
-	}
-
-	public function path_to_images_for_fotorama_0_callback() {
-		printf(
-			'<input class="regular-text" type="text" placeholder="Define path without leading and trailing slashes" name="fotorama_elevation_option_name[path_to_images_for_fotorama_0]" id="path_to_images_for_fotorama_0" value="%s"><p>%s</p>',
-			isset( $this->fotorama_elevation_options['path_to_images_for_fotorama_0'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_images_for_fotorama_0']) : '',
-			$this->up_dir . '/' . $this->fotorama_elevation_options['path_to_images_for_fotorama_0']
-		);
-	}
-
-	public function colour_theme_for_leaflet_elevation_1_callback() {
-		?> <select name="fotorama_elevation_option_name[colour_theme_for_leaflet_elevation_1]" id="colour_theme_for_leaflet_elevation_1">
-			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'martin-theme') ? 'selected' : '' ; ?>
-			<option value="martin-theme" <?php echo $selected; ?>>Martin</option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'lime-theme') ? 'selected' : '' ; ?>
-			<option value="lime-theme" <?php echo $selected; ?>>Lime</option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'steelblue-theme') ? 'selected' : '' ; ?>
-			<option value="steelblue-theme" <?php echo $selected; ?>>Steelblue </option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'purple-theme') ? 'selected' : '' ; ?>
-			<option value="purple-theme" <?php echo $selected; ?>>Purple</option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'yellow-theme') ? 'selected' : '' ; ?>
-			<option value="yellow-theme" <?php echo $selected; ?>>Yellow</option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'red-theme') ? 'selected' : '' ; ?>
-			<option value="red-theme" <?php echo $selected; ?>>Red</option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'magenta-theme') ? 'selected' : '' ; ?>
-			<option value="magenta-theme" <?php echo $selected; ?>>Magenta </option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ) && $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] === 'lightblue-theme') ? 'selected' : '' ; ?>
-			<option value="lightblue-theme" <?php echo $selected; ?>>Lightblue</option>
-		</select> <?php
-	}
-
-	public function path_to_gpx_files_2_callback() {
-		printf(
-			'<input class="regular-text" type="text" placeholder="Define path without leading and trailing slashes" name="fotorama_elevation_option_name[path_to_gpx_files_2]" id="path_to_gpx_files_2" value="%s"><p>%s</p>',
-			isset( $this->fotorama_elevation_options['path_to_gpx_files_2'] ) ? esc_attr( $this->fotorama_elevation_options['path_to_gpx_files_2']) : '', 
-			$this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2']
-		);
-	}
-
-	public function download_gpx_files_3_callback() {
-		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[download_gpx_files_3]" id="download_gpx_files_3" value="download_gpx_files_3" %s> <label for="download_gpx_files_3">%s.</label>',
-			( isset( $this->fotorama_elevation_options['download_gpx_files_3'] ) && $this->fotorama_elevation_options['download_gpx_files_3'] === 'true' ) ? 'checked' : '',
-			__( 'Provide download link for GPX-Files', 'fotoramamulti' ) 
-		);
-	}
-
-	public function show_caption_4_callback() {
-		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[show_caption_4]" id="show_caption_4" value="show_caption_4" %s>',
-			( isset( $this->fotorama_elevation_options['show_caption_4'] ) && $this->fotorama_elevation_options['show_caption_4'] === 'true' ) ? 'checked' : ''
-		);
-	}
-
-	public function images_with_gps_required_5_callback() {
-		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[images_with_gps_required_5]" id="images_with_gps_required_5" value="images_with_gps_required_5" %s> <label for="images_with_gps_required_5">%s</label>',
-			( isset( $this->fotorama_elevation_options['images_with_gps_required_5'] ) && $this->fotorama_elevation_options['images_with_gps_required_5'] === 'true' ) ? 'checked' : '',
-			__( 'Show images only if they provide GPS-Data in EXIF. Remember to set showmap="false".' , 'fotoramamulti' )
-		);
-	}
-
-	public function ignore_custom_sort_6_callback() {
-		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[ignore_custom_sort_6]" id="ignore_custom_sort_6" value="ignore_custom_sort_6" %s> <label for="ignore_custom_sort_6">%s</label>',
-			( isset( $this->fotorama_elevation_options['ignore_custom_sort_6'] ) && $this->fotorama_elevation_options['ignore_custom_sort_6'] === 'true' ) ? 'checked' : '',
-			__( 'Ignore custom sort even if provided by Wordpress. Sort ascending by date taken if checked.', 'fotoramamulti' )
-		);
-	}
-
-	public function show_address_of_start_7_callback() {
-		printf(
-		'<input type="checkbox" name="fotorama_elevation_option_name[show_address_of_start_7]" id="show_address_of_start_7" value="show_address_of_start_7" %s> <label for="show_address_of_start_7">%s</label>',
-		( isset ( $this->fotorama_elevation_options['show_address_of_start_7'] ) && $this->fotorama_elevation_options['show_address_of_start_7'] === 'true' ) ? 'checked' : '',
-		__( 'Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)', 'fotoramamulti' )
-		);
-	}
-
-	public function text_for_start_address_8_callback() {
-		printf(
-			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[text_for_start_address_8]" id="text_for_start_address_8" value="%s">',
-			isset( $this->fotorama_elevation_options['text_for_start_address_8'] ) ? esc_attr( $this->fotorama_elevation_options['text_for_start_address_8']) : ''
-		);
-	}
-
-	public function general_text_for_the_fotorama_alt_9_callback() {
-		printf(
-			'<input class="regular-text" type="text" name="fotorama_elevation_option_name[general_text_for_the_fotorama_alt_9]" id="general_text_for_the_fotorama_alt_9" value="%s">',
-			isset( $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ) ? esc_attr( $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9']) : ''
-		);
-	}
-
-	public function height_of_map_10_callback() {
-		printf(
-			'<input type="number" min="'. $this->min_height_map .'" max="'. $this->max_height_map .'" name="fotorama_elevation_option_name[height_of_map_10]" id="height_of_map_10" value="%s"><label>  Min: %s px, Max: %s px</label>',
-			isset( $this->fotorama_elevation_options['height_of_map_10'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_map_10']) : '',
-			$this->min_height_map, $this->max_height_map
-		);
-	}
-
-	public function height_of_chart_11_callback() {
-		printf(
-			'<input type="number" min="'. $this->min_height_chart .'" max="'. $this->max_height_chart .'" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s"><label>  Min: %s px, Max: %s px</label>',
-			isset( $this->fotorama_elevation_options['height_of_chart_11'] ) ? esc_attr( $this->fotorama_elevation_options['height_of_chart_11']) : '',
-			$this->min_height_chart, $this->max_height_chart
-		);
-	}
-
-	public function max_width_of_container_12_callback() {
-		printf(
-			'<input type="number" min="'. $this->min_width .'" max="'. $this->max_width .'" name="fotorama_elevation_option_name[max_width_of_container_12]" id="max_width_of_container_12" value="%s"><label>  Min: %s px, Max: %s px</label>',
-			isset( $this->fotorama_elevation_options['max_width_of_container_12'] ) ? esc_attr( $this->fotorama_elevation_options['max_width_of_container_12']) : '',
-			$this->min_width, $this->max_width
-		);
-	}
-
-	public function useCDN_13_callback() {
-		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[useCDN_13]" id="useCDN_13" value="useCDN_13" %s> <label for="useCDN_13">%s</label>',
-			( isset( $this->fotorama_elevation_options['useCDN_13'] ) && $this->fotorama_elevation_options['useCDN_13'] === 'true' ) ? 'checked' : '',
-			__( 'Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.', 'fotoramamulti' )
-		);
-	}
-
-	public function min_width_css_grid_row_14_callback() {
-		printf(
-			'<input type="number" min="'. $this->min_width/2 .'" max="'. $this->max_width .'" name="fotorama_elevation_option_name[min_width_css_grid_row_14]" id="min_width_css_grid_row_14" value="%s"><label>  Min: %s px, Max: %s px</label>',
-			isset( $this->fotorama_elevation_options['min_width_css_grid_row_14'] ) ? esc_attr( $this->fotorama_elevation_options['min_width_css_grid_row_14']) : '480',
-			$this->min_width/2, $this->max_width
-		);
-	}
-
-	public function fit_callback() {
-		?> <select name="fotorama_elevation_option_name[fit]" id="fit">
-			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'contain') ? 'selected' : '' ; ?>
-			<option value='contain' <?php echo $selected; ?>>Contain</option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'cover') ? 'selected' : '' ; ?>
-			<option value="cover" <?php echo $selected; ?>>Cover</option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'scaledown') ? 'selected' : '' ; ?>
-			<option value="scaledown" <?php echo $selected; ?>>Scaledown </option>
-			<?php $selected = (isset( $this->fotorama_elevation_options['fit'] ) && $this->fotorama_elevation_options['fit'] === 'none') ? 'selected' : '' ; ?>
-			<option value="none" <?php echo $selected; ?>>None</option>
-		</select> <?php
-	}
-
-	public function setCustomFields_15_callback() {
-		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[setCustomFields_15]" id="setCustomFields_15" value="setCustomFields_15" %s> <label for="setCustomFields_15">%s</label>',
-			( isset( $this->fotorama_elevation_options['setCustomFields_15'] ) && $this->fotorama_elevation_options['setCustomFields_15'] === 'true' ) ? 'checked' : '',
-			__('Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.','fotoramamulti')
-		);
-	}
-
-	public function doYoastXmlSitemap_16_callback() {
-		printf(
-			'<input type="checkbox" name="fotorama_elevation_option_name[doYoastXmlSitemap_16]" id="doYoastXmlSitemap_16" value="doYoastXmlSitemap_16" %s> <label for="doYoastXmlSitemap_16">%s</label>',
-			( isset( $this->fotorama_elevation_options['doYoastXmlSitemap_16'] ) && $this->fotorama_elevation_options['doYoastXmlSitemap_16'] === 'true' ) ? 'checked' : '',
-			__('Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO.','fotoramamulti')
-		);
-	}
-
-	public function ratio_callback() {
-		printf(
-			'<input type="number" min="0.1" max="5.0" step="0.1" name="fotorama_elevation_option_name[ratio]" id="ratio" value="%s"><label> Min: 0.1 in ratio, Max: 5.0 in ratio</label>',
-			isset( $this->fotorama_elevation_options['ratio'] ) ? esc_attr( $this->fotorama_elevation_options['ratio'] ) : ''
-		);
-	    }
-
-    public function background_callback() {
-		printf(
-			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[background]" id="background" value="%s">',
-			isset( $this->fotorama_elevation_options['background'] ) ? esc_attr( $this->fotorama_elevation_options['background'] ) : ''
-		);
-	    }
-
-    public function navposition_callback() {
-		?> <select name="fotorama_elevation_option_name[navposition]" id="navposition">
-				<?php $selected = (isset( $this->fotorama_elevation_options['navposition'] ) && $this->fotorama_elevation_options['navposition'] === 'top') ? 'selected' : '' ; ?>
-               <option value='top' <?php echo $selected; ?>>Top</option>
-               <?php $selected = (isset( $this->fotorama_elevation_options['navposition'] ) && $this->fotorama_elevation_options['navposition'] === 'bottom') ? 'selected' : '' ; ?>
-               <option value='bottom' <?php echo $selected; ?>>Bottom</option>
-           </select> <?php }
-
-    public function navwidth_callback() {
-		printf(
-			'<input type="number" min="10" max="100"  name="fotorama_elevation_option_name[navwidth]" id="navwidth" value="%s"><label> Min: 10 in percent, Max: 100 in percent</label>',
-			isset( $this->fotorama_elevation_options['navwidth'] ) ? esc_attr( $this->fotorama_elevation_options['navwidth'] ) : ''
-		);
-	    }
-
-    public function f_thumbwidth_callback() {
-		printf(
-			'<input type="number" min="10" max="200"  name="fotorama_elevation_option_name[f_thumbwidth]" id="f_thumbwidth" value="%s"><label> Min: 10 in pixels, Max: 200 in pixels</label>',
-			isset( $this->fotorama_elevation_options['f_thumbwidth'] ) ? esc_attr( $this->fotorama_elevation_options['f_thumbwidth'] ) : ''
-		);
-	    }
-
-    public function f_thumbheight_callback() {
-		printf(
-			'<input type="number" min="10" max="200"  name="fotorama_elevation_option_name[f_thumbheight]" id="f_thumbheight" value="%s"><label> Min: 10 in pixels, Max: 200 in pixels</label>',
-			isset( $this->fotorama_elevation_options['f_thumbheight'] ) ? esc_attr( $this->fotorama_elevation_options['f_thumbheight'] ) : ''
-		);
-	    }
-
-    public function thumbmargin_callback() {
-		printf(
-			'<input type="number" min="0" max="20"  name="fotorama_elevation_option_name[thumbmargin]" id="thumbmargin" value="%s"><label> Min: 0 in pixels, Max: 20 in pixels</label>',
-			isset( $this->fotorama_elevation_options['thumbmargin'] ) ? esc_attr( $this->fotorama_elevation_options['thumbmargin'] ) : ''
-		);
-	    }
-
-    public function thumbborderwidth_callback() {
-		printf(
-			'<input type="number" min="0" max="20"  name="fotorama_elevation_option_name[thumbborderwidth]" id="thumbborderwidth" value="%s"><label> Min: 0 in pixels, Max: 20 in pixels</label>',
-			isset( $this->fotorama_elevation_options['thumbborderwidth'] ) ? esc_attr( $this->fotorama_elevation_options['thumbborderwidth'] ) : ''
-		);
-	    }
-
-    public function thumbbordercolor_callback() {
-		printf(
-			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[thumbbordercolor]" id="thumbbordercolor" value="%s">',
-			isset( $this->fotorama_elevation_options['thumbbordercolor'] ) ? esc_attr( $this->fotorama_elevation_options['thumbbordercolor'] ) : ''
-		);
-	    }
-
-    public function transition_callback() {
-		?> <select name="fotorama_elevation_option_name[transition]" id="transition">
-               <?php $selected = (isset( $this->fotorama_elevation_options['transition'] ) && $this->fotorama_elevation_options['transition'] === 'slide') ? 'selected' : '' ; ?>
-               <option value='slide' <?php echo $selected; ?>>Slide</option>
-               <?php $selected = (isset( $this->fotorama_elevation_options['transition'] ) && $this->fotorama_elevation_options['transition'] === 'crossfade') ? 'selected' : '' ; ?>
-               <option value='crossfade' <?php echo $selected; ?>>Crossfade</option>
-               <?php $selected = (isset( $this->fotorama_elevation_options['transition'] ) && $this->fotorama_elevation_options['transition'] === 'dissolve') ? 'selected' : '' ; ?>
-               <option value='dissolve' <?php echo $selected; ?>>Dissolve</option>
-           </select> <?php }
-
-    public function transitionduration_callback() {
-		printf(
-			'<input type="number" min="0" max="1000"  name="fotorama_elevation_option_name[transitionduration]" id="transitionduration" value="%s"><label> Min: 0 in ms, Max: 1000 in ms</label>',
-			isset( $this->fotorama_elevation_options['transitionduration'] ) ? esc_attr( $this->fotorama_elevation_options['transitionduration'] ) : ''
-		);
-	    }
-
-    public function loop_callback() {
-		printf(
-		'<input type="checkbox" name="fotorama_elevation_option_name[loop]" id="loop" value="loop" %s> <label for="loop">%s</label>',
-		( isset ( $this->fotorama_elevation_options['loop'] ) && $this->fotorama_elevation_options['loop'] === 'true' ) ? 'checked' : '',
-        __( 'loop', 'fotoramamulti' )
-		);
-	    }
-
-    public function autoplay_callback() {
-		printf(
-			'<input class="regular-text" type="text" required name="fotorama_elevation_option_name[autoplay]" id="autoplay" value="%s"><label> %s</label>',
-			( isset( $this->fotorama_elevation_options['autoplay'] ) ? esc_attr( $this->fotorama_elevation_options['autoplay'] ) : '' ),
-			__( 'Values: false, true, or integer value in milliseconds', 'fotoramamulti' ) 
-			//__( 'autoplay_explanation', 'fotoramamulti' )
-		);
-	}
-
-    public function arrows_callback() {
-		?> <select name="fotorama_elevation_option_name[arrows]" id="arrows">
-               <?php $selected = (isset( $this->fotorama_elevation_options['arrows'] ) && $this->fotorama_elevation_options['arrows'] === 'true') ? 'selected' : '' ; ?>
-               <option value='true' <?php echo $selected; ?>>True</option>
-               <?php $selected = (isset( $this->fotorama_elevation_options['arrows'] ) && $this->fotorama_elevation_options['arrows'] === 'false') ? 'selected' : '' ; ?>
-               <option value='false' <?php echo $selected; ?>>False</option>
-               <?php $selected = (isset( $this->fotorama_elevation_options['arrows'] ) && $this->fotorama_elevation_options['arrows'] === 'always') ? 'selected' : '' ; ?>
-               <option value='always' <?php echo $selected; ?>>Always</option>
-           </select> <?php }
-
-    public function shadows_callback() {
-		printf(
-		'<input type="checkbox" name="fotorama_elevation_option_name[shadows]" id="shadows" value="shadows" %s> <label for="shadows"> %s</label>',
-		( isset ( $this->fotorama_elevation_options['shadows'] ) && $this->fotorama_elevation_options['shadows'] === 'true' ) ? 'checked' : '',
-        __( 'shadows', 'fotoramamulti' )
-		);
-	    }
 	
 	/**
 	 * Clean user input to one single string containing only relevant characters with using 'sanitize_text_field'
@@ -1299,6 +1328,13 @@ class FotoramaElevation {
 		}
 		
 		return strval($val);
+	}
+
+	// -------------------- unused -------------------------------------//
+	public function fotorama_elevation_section_info() {	
+		// html code here is shown after the heading of the section
+    }
+    public function leaflet_elevation_section_info() {
 	}
 
 }

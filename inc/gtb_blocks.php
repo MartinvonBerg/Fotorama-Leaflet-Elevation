@@ -3,7 +3,7 @@
 /**
  *
  * Description:       Gutenberg Block for Fotorama Slider and Leaflet Elevation integration
- * Version:           0.10.1
+ * Version:           0.10.2
  * Author:            Martin von Berg
  * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License:           GPL-2.0
@@ -41,11 +41,7 @@ function shortcodewrapper ( $attr ) {
 		}
 	}
 
-	if ( $GLOBALS["editing"] ) {
-		// back end render		
-		return \mvbplugins\fotoramamulti\showmulti($attr);
-	} else {
-		// frontend render
-		return \mvbplugins\fotoramamulti\showmulti($attr);
-	}
+	
+	return \mvbplugins\fotoramamulti\showmulti($attr);
+	
 }

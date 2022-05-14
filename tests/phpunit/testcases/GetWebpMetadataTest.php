@@ -27,7 +27,7 @@ final class getWebpMetadataTest extends TestCase {
 
         $tested = new mvbplugins\fotoramamulti\WrapExtractMetadata();
         $result = $tested::getWebpMetaDataFromFile('test1.jpg');
-        $this->assertEquals( $result, false );
+        $this->assertEquals( $result, [] );
 	}
 
     public function test_getWebpMetaData_2() {
@@ -40,7 +40,7 @@ final class getWebpMetadataTest extends TestCase {
 
         $tested = new mvbplugins\fotoramamulti\WrapExtractMetadata();
         $result = $tested::getWebpMetaDataFromFile('test2.jpg');
-        $this->assertEquals( $result, false );
+        $this->assertEquals( $result, [] );
 	}
 
     public function test_getWebpMetaData_3() {
@@ -53,7 +53,7 @@ final class getWebpMetadataTest extends TestCase {
 
         $tested = new mvbplugins\fotoramamulti\WrapExtractMetadata();
         $result = $tested::getWebpMetaDataFromFile('test2.jpg');
-        $this->assertEquals( $result, false );
+        $this->assertEquals( $result, [] );
 	}
 
     public function test_getWebpMetaData_4() {
@@ -66,7 +66,7 @@ final class getWebpMetadataTest extends TestCase {
 
         $tested = new mvbplugins\fotoramamulti\WrapExtractMetadata();
         $result = $tested::getWebpMetaDataFromFile('test2.jpg');
-        $this->assertEquals( $result, false );
+        $this->assertEquals( $result, [] );
 	}
 
     public function test_getWebpMetaData_5() {

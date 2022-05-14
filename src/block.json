@@ -202,6 +202,20 @@
 			"label": "Show map",
 			"help": "show map"
 		},
+		"mapselector": {
+			"type": "string",
+			"default": "OpenTopoMap",
+			"section": "Map",
+			"label": "Select Map",
+			"help": "",
+			"options": [
+				{ "value": null, "label": "Select Map", "disabled": true },
+				{ "value": "OpenStreetMap", "label": "OpenStreetMap"},
+				{ "value": "OpenTopoMap", "label": "OpenTopoMap"},
+				{ "value": "CycleOSM", "label": "CycleOSM"},
+				{ "value": "Satellit", "label": "Satellit"}
+			]
+		},
 
 		"eletheme": {
 			"type": "string",

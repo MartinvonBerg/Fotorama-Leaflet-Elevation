@@ -383,6 +383,10 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.10.2 =
+14.05.2022: Test with WordPress 6.0-RC1. Minor PHP corrections.
+            Added an option in Admin, shortcode and Gutenberg Block to select the map.
+
 = 0.10.1 =
 21.04.2022: Bugfix in admin_settings.php in sanitizer for input['gpx_file']
 

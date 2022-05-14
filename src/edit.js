@@ -47,7 +47,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
 	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap, showadress, adresstext, 
 			requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio, gpxpath, alttext,
-			background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort,
+			background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort, mapselector,
 			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor} = attributes;
 	const aff =  require('./block.json')['attributes']; // aff: attributes from File loaded.
 	let entries = Object.entries(aff);
@@ -149,27 +149,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				<p><strong>Fotorama Settings on the right side.</strong></p>
 				{/*<TextList aff={aff} values={attributes} />*/}
 			</div>
-			{/*<Ssr attributes={attributes} />*/}
 		</>
 	)
-}
-
-function Ssr(attributes) {
-    let blockContent = <p>{ __( 'Serve Side Render failed!' ) }</p>;
-	
-	let attr = attributes.attributes;
-	blockContent = <ServerSideRender
-		block="fotoramamulti/fotorama-multi"
-		attributes = {attr}
-	/>;
-		
-	if (blockContent.props.children == null)
-		blockContent = <p>{ __( 'Serve Side Render failed!' ) }</p>;
-
-	return (
-		<Fragment>
-			{ blockContent }
-		</Fragment>);
 }
 
 function TextList(props) {
