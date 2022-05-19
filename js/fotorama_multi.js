@@ -20,6 +20,7 @@
         var fotoramaState = 'normal'; // for zooming
         var zoomeffect = 'mouseover'; // for: https://www.jacklmoore.com/zoom/
         var zpadding = [30,30];
+        var maxZoomValue = 19;
 
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
@@ -115,19 +116,19 @@
 
                 // define map layers 
                 layer1[m] = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
+                    maxZoom: maxZoomValue,
                     attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
                     });
                 layer2[m] = new L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/ {y}.png', {
-                    maxZoom: 19,
+                    maxZoom: maxZoomValue,
                     attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     });
                 layer3[m] = new L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
+                    maxZoom: maxZoomValue,
                     attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     });
                 layer4[m] = new L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    maxZoom: 19,
+                    maxZoom: maxZoomValue,
                     attribution: 'Tiles &copy; Esri &mdash; Source: Esri User Community'
                     });
 
@@ -449,7 +450,6 @@
                             
                             if ( ("srcset" in tour) && (Object.keys(tour["srcset"]).length) ) {  // "srcset" in tour
                                 var key = Object.keys(tour.srcset)[0];
-                                //marker[j].bindPopup( tour["title"] + '<div><img src="' + tour.srcset[key] + '"><br><br><br><br><br><br></div>' );
                                 marker[j].bindPopup('<div>' + tour["title"] + '<br><img class="leaf_pup_img" src="' + tour.srcset[key] + '"></div>', {
                                     maxWidth: "auto",
                                     //minWidth: "120px"
@@ -485,8 +485,7 @@
                         group1[m].addTo(maps[m]); 
                     
                         if(bounds[m].length == 0) {
-                            bounds[m] = testgroup.getBounds().pad(0.5);
-                            maps[m].fitBounds(bounds[m] );
+                            setBoundsToMarkers(m, testgroup);
                         }
                     } else {
                         bounds[m] = maps[m].getBounds();
@@ -641,7 +640,7 @@
         });  
         
         // function for resizing for responsive devices
-        $(window).on("resize", function() {
+        $(window).on("resize", "load", function() {
                     
             var fotowidth = $('[id^=mfotorama]').width();
             if (fotowidth<480) {
@@ -653,9 +652,6 @@
             for (var m = 0; m < numberOfboxes; m++) {      
                 var wbox = $('#boxmap' + m).width();
 
-                var hbox = $('#boxmap' + m).height();
-                //var hmap = $('#map' + m).height() ?? 0;
-
                 var hele = $('#elevation-div' + m).height(); // ?? 0;
                 hele = (typeof hele === 'undefined') ? 0 : hele;
 
@@ -665,26 +661,16 @@
                 var hdld = $('#boxmap' + m + ' .fm-dload').height(); // ?? 0;
                 hdld = (typeof hdld === 'undefined') ? 0 : hdld;
 
-                var hmapnew = hbox - hele - hsum - hdld; 
-
-                /* don't show leaflet attribution if screen is too small
-                if (wbox<480) {  
-                    $('.leaflet-control-attribution').hide();
-                } else {
-                    $('.leaflet-control-attribution').show();
-                }
-                */
                 var eleheight = wbox / 3;
-                eleheight = Math.min(Math.max(parseInt(eleheight), 100), chartheight[m]); 
+                eleheight = Math.min(Math.max(parseInt(eleheight), 140), chartheight[m]); 
                 $('#elevation-div'+m).css("height", eleheight);
-
-                if (hele < 5) {
-                    var mapheight = hmapnew; 
-                } else {
-                    var mapheight = wbox * 0.6; 
-                }
+              
+                var mapheight = wbox * 0.6;
                 mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight[m]);
                 $('#map'+m).css("height", mapheight);
+
+                let _group = new L.featureGroup(mrk[m]);
+                setBoundsToMarkers(m, _group);
             }
         
         }).trigger('resize');
@@ -774,6 +760,17 @@
 
                 q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';                                            
                 q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = trace.gpx.get_elevation_loss().toFixed(0) + " m";
+            }
+        }
+
+        // set Bounds of Map according to the shown Markers.
+        function setBoundsToMarkers( mapNumber, markergroup ) {
+            let bounds = markergroup.getBounds().pad(0.1);
+            maps[mapNumber].fitBounds(bounds);
+            // set the max zoom level for markers exactly on the same postion
+            let curzoom = maps[mapNumber].getZoom();
+            if ( curzoom == maxZoomValue ) {
+                maps[mapNumber].fitBounds(bounds, {maxZoom : 13});
             }
         }
 

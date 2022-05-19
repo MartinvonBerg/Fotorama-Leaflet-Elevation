@@ -383,9 +383,10 @@ This plugin uses the great work from:
 
 # Changelog
 
-= 0.10.2 =
-14.05.2022: Test with WordPress 6.0-RC1. Minor PHP corrections.
+= 0.11.0 =
+14.05.2022: Test with WordPress 6.0-RC2. Minor PHP corrections.
             Added an option in Admin, shortcode and Gutenberg Block to select the map.
+            Change the js recalculation of map and chart height and fitting to marker-bounds.
 
 = 0.10.1 =
 21.04.2022: Bugfix in admin_settings.php in sanitizer for input['gpx_file']
