@@ -360,10 +360,10 @@ EOF;
 		$text = t('Download', $lang);
 		
 		if ($i == 1) {
-			$htmlstring .= "<p>{$text} : <a download=\"{$gpxfile}\" href=\"{$gpx_url}{$gpxfile}\">{$gpxfile}</a></p>";
+			$htmlstring .= "<p>{$text}: <a download=\"{$gpxfile}\" href=\"{$gpx_url}{$gpxfile}\">{$gpxfile}</a></p>";
 		} else {
 			$gpxf = explode(',',$gpxfile);
-			$htmlstring .= "<p><strong>{$text} : "; // <a download=""</a>
+			$htmlstring .= "<p><strong>{$text}: "; // <a download=""</a>
 			foreach ($gpxf as $f){
 				$htmlstring .= "<a download=\"{$f}\" href=\"{$gpx_url}{$f}\">{$f} - </a>";
 			}

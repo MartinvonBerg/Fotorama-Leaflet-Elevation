@@ -165,8 +165,7 @@
                 } else {
                     maps[m].addLayer(baseLayers[m].OpenStreetMap);
                 }
-                bounds[m] = maps[m].getBounds;  
-            
+                            
                 // create scale control top left // for mobile: zoom deactivated. use fingers!
                 if ( ! mobile ) { 
                     controlZoom[m] = new L.Control.Zoom(opts.zoomControl); 
@@ -290,7 +289,6 @@
                         });
                    
                         routes.addTo(maps[m]);
-                        //bounds[m] = maps[m].getBounds().pad(0.5);
 
                         // workaround to show the first track with elevation chart
                         window.setTimeout( function(e) { 
@@ -377,7 +375,7 @@
                                         }
                                     }
                                  });
-                                 //console.log('Nr ' + activetrack + ' : ' + track + ' : ' + endstyle + ' is avtive');
+                                 
                             };
                             // Create an observer instance linked to the callback function
                             const observer = new MutationObserver(callback);
@@ -452,7 +450,6 @@
                                 var key = Object.keys(tour.srcset)[0];
                                 marker[j].bindPopup('<div>' + tour["title"] + '<br><img class="leaf_pup_img" src="' + tour.srcset[key] + '"></div>', {
                                     maxWidth: "auto",
-                                    //minWidth: "120px"
                                 });
                             } else {
                                 marker[j].bindPopup( tour["title"]  );
@@ -483,10 +480,7 @@
                         //LayerSupportGroup.checkIn([group1]); 
                         controlLayer[m].addOverlay(group1[m], L._('Images') + '(' + j + ')');    
                         group1[m].addTo(maps[m]); 
-                    
-                        if(bounds[m].length == 0) {
-                            setBoundsToMarkers(m, testgroup);
-                        }
+                        setBoundsToMarkers(m, testgroup);
                     } else {
                         bounds[m] = maps[m].getBounds();
                     }
@@ -520,7 +514,6 @@
                 
 
                 if ( hasMap && phpvars[m].imgdata[nr].coord[0] ) {
-                    //console.log('change in: ' + e.currentTarget.id + ' index: ' + nr + 'Koord: ' + phpvars[m].imgdata[nr].coord[0] + ':' + phpvars[m].imgdata[nr].coord[1] ); 
                     if (e.type === 'fotorama:load') {
                         storemarker[m] = mrk[m][nr];
                         newmarker[m] = mrk[m][nr];
@@ -640,7 +633,7 @@
         });  
         
         // function for resizing for responsive devices
-        $(window).on("resize", "load", function() {
+        $(window).on("resize load", function() {
                     
             var fotowidth = $('[id^=mfotorama]').width();
             if (fotowidth<480) {
@@ -649,9 +642,20 @@
                 $('.fotorama__caption__wrapm, .fotorama__caption').show();
             }
             
-            for (var m = 0; m < numberOfboxes; m++) {      
-                var wbox = $('#boxmap' + m).width();
+            for (var m = 0; m < numberOfboxes; m++) {    
+                // w: width, h: height as shortform.  
+                let wbox = $('#boxmap' + m).width();
+                let wmap = $('#map' + m).width();
 
+                let hbox = $('#boxmap' + m).height();
+                let hmap = $('#map' + m).height();
+
+                let ratioMap = wmap / hmap;
+                if ( ! ('ratioMap' in phpvars[m]) ) {
+                    phpvars[m]['ratioMap'] = ratioMap;
+                    $('#map' + m).css('aspect-ratio', ratioMap);
+                }
+                
                 var hele = $('#elevation-div' + m).height(); // ?? 0;
                 hele = (typeof hele === 'undefined') ? 0 : hele;
 
@@ -665,7 +669,7 @@
                 eleheight = Math.min(Math.max(parseInt(eleheight), 140), chartheight[m]); 
                 $('#elevation-div'+m).css("height", eleheight);
               
-                var mapheight = wbox * 0.6;
+                var mapheight = wbox / phpvars[m]['ratioMap'];
                 mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight[m]);
                 $('#map'+m).css("height", mapheight);
 
@@ -692,7 +696,6 @@
                     shadowUrl: null,
                 },
                 polyline_options: {
-                    //color: tracks[track].color,
                     color: "blue",
                 }
             });
@@ -737,8 +740,6 @@
                 opacity: 0.8,
             });
 
-            //controlElevation[m].summaryDiv.getElementsByClassName('totlen')[0].children[0].innerHTML = L._('Distance') + ': ';
-
             var info = trace.gpx._info.desc;
             if (info) {info = info.split(' ')} else {info='';};
             if (info[0]=='Dist:' && info[1] && info[4] && info[7]) { 
@@ -763,14 +764,26 @@
             }
         }
 
-        // set Bounds of Map according to the shown Markers.
+        /**
+         * set Bounds of Map according to the shown Markers and already predefined bounds.
+         * @param {number} mapNumber number of the current map
+         * @param {object} markergroup group of markery as leaflet markergroup
+         */
         function setBoundsToMarkers( mapNumber, markergroup ) {
-            let bounds = markergroup.getBounds().pad(0.1);
-            maps[mapNumber].fitBounds(bounds);
+            let _bounds = [];
+
+            if ( (typeof(bounds[0]) !== 'undefined') && ('_northEast' in bounds[mapNumber]) && ('_southWest' in bounds[mapNumber]) ) {
+                _bounds = bounds[mapNumber];
+            } else {
+                _bounds = markergroup.getBounds().pad(0.1);
+            }
+
+            maps[mapNumber].fitBounds(_bounds);
+
             // set the max zoom level for markers exactly on the same postion
             let curzoom = maps[mapNumber].getZoom();
             if ( curzoom == maxZoomValue ) {
-                maps[mapNumber].fitBounds(bounds, {maxZoom : 13});
+                maps[mapNumber].fitBounds(_bounds, {maxZoom : 13});
             }
         }
 
@@ -892,5 +905,4 @@
             return newdata;  
         }
     }
-
 })(document, jQuery);

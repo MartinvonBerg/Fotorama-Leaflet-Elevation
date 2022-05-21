@@ -384,8 +384,8 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.11.0 =
-14.05.2022: Test with WordPress 6.0-RC2. Minor PHP corrections.
-            Added an option in Admin, shortcode and Gutenberg Block to select the map.
+21.05.2022: Test with WordPress 6.0-RC2. Minor PHP corrections.
+            Added an option or parameter in Admin-Panel, shortcode and Gutenberg Block to select the leaflet map-layer that is shown first.
             Change the js recalculation of map and chart height and fitting to marker-bounds.
 
 = 0.10.1 =
