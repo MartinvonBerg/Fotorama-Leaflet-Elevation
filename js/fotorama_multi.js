@@ -74,7 +74,11 @@
         // do it for all shortcodes on the page or post
         for (var m = 0; m < numberOfboxes; m++) {
 
+            phpvars[m] = eval('wpfm_phpvars'+m);
+
+            //------------- fotorama part --------------------------------------
             var hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
+
             // define fotorama
             if ( hasFotorama ) {
                 // Initialize fotorama manually.
@@ -83,7 +87,6 @@
                 fotorama[m] = $fotoramaDiv.data('fotorama');
                 
                 // define the image data array for image replacement
-                phpvars[m] = eval('wpfm_phpvars'+m);
                 let newimages = phpvars[m].imgdata; 
                 let olddata = fotorama[m].data;
                
@@ -632,7 +635,7 @@
            return false;
         });  
         
-        // function for resizing for responsive devices
+        // function for map resizing for responsive devices
         $(window).on("resize load", function() {
                     
             var fotowidth = $('[id^=mfotorama]').width();
@@ -651,6 +654,9 @@
                 let hmap = $('#map' + m).height();
 
                 let ratioMap = wmap / hmap;
+                // stop this loop for as the box obviously doesn't have a map.
+                //if (isNaN( ratioMap)) continue;
+
                 if ( ! ('ratioMap' in phpvars[m]) ) {
                     phpvars[m]['ratioMap'] = ratioMap;
                     $('#map' + m).css('aspect-ratio', ratioMap);
@@ -674,10 +680,14 @@
                 $('#map'+m).css("height", mapheight);
 
                 let _group = new L.featureGroup(mrk[m]);
-                setBoundsToMarkers(m, _group);
+
+                // skip boundary setting for boxmap that doesn't have a map
+                if ( ! isNaN(ratioMap)) {
+                    setBoundsToMarkers(m, _group);
+                } 
             }
         
-        }).trigger('resize');
+        });
         
         // functions for track loading
         function loadTrace(m, track, i) {
@@ -772,18 +782,23 @@
         function setBoundsToMarkers( mapNumber, markergroup ) {
             let _bounds = [];
 
-            if ( (typeof(bounds[0]) !== 'undefined') && ('_northEast' in bounds[mapNumber]) && ('_southWest' in bounds[mapNumber]) ) {
+            if ( (typeof(bounds[mapNumber]) !== 'undefined') && ('_northEast' in bounds[mapNumber]) && ('_southWest' in bounds[mapNumber]) ) {
                 _bounds = bounds[mapNumber];
             } else {
-                _bounds = markergroup.getBounds().pad(0.1);
+                try {
+                    _bounds = markergroup.getBounds().pad(0.1);
+                } catch (e) {
+                    // nothing
+                }
             }
 
-            maps[mapNumber].fitBounds(_bounds);
-
-            // set the max zoom level for markers exactly on the same postion
-            let curzoom = maps[mapNumber].getZoom();
-            if ( curzoom == maxZoomValue ) {
-                maps[mapNumber].fitBounds(_bounds, {maxZoom : 13});
+            if ( _bounds.length !== 0) {
+                maps[mapNumber].fitBounds(_bounds);
+                // set the max zoom level for markers exactly on the same postion
+                let curzoom = maps[mapNumber].getZoom();
+                if ( curzoom == maxZoomValue ) {
+                    maps[mapNumber].fitBounds(_bounds, {maxZoom : 13});
+                }
             }
         }
 
