@@ -35,15 +35,15 @@ wp_register_style('leaflet_gesture_handling_css', $plugin_url . 'css/leaflet-ges
 wp_register_style('control_fullscreen_css', $plugin_url . 'css/Control.FullScreen.min.css', [], '2.0.0');
 
 // register local Scripts
-wp_register_script('d3_js',  $plugin_url . 'js/libs/d3.min.js', array('jquery'), '5.16.0'); // does not work with d3 > version 6.0 !
-wp_register_script('leaflet_js',  $plugin_url . 'js/libs/leaflet.min.js', array('jquery'), '1.7.1');
-wp_register_script('gpx_js',  $plugin_url . 'js/libs/gpx.min.js', array('jquery'), '1.5.1');
-wp_register_script('leaflet_gpxgroup_js', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '');
-wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/libs/leaflet-elevation.min.js', array('jquery'), '1.5.6');
-wp_register_script('leaflet_gesture_handling_js',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '1.2.1');
-wp_register_script('control_fullscreen_js', $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '2.0.0');
-wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21');
-wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.11.0');
+wp_register_script('d3_js',  $plugin_url . 'js/libs/d3.min.js', array('jquery'), '5.16.0', true); // does not work with d3 > version 6.0 !
+wp_register_script('leaflet_js',  $plugin_url . 'js/libs/leaflet.min.js', array('jquery'), '1.7.1', true);
+wp_register_script('gpx_js',  $plugin_url . 'js/libs/gpx.min.js', array('jquery'), '1.5.1', true);
+wp_register_script('leaflet_gpxgroup_js', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
+wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/libs/leaflet-elevation.min.js', array('jquery'), '1.5.6', true);
+wp_register_script('leaflet_gesture_handling_js',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '1.2.1', true);
+wp_register_script('control_fullscreen_js', $plugin_url . 'js/libs/Control.FullScreen.min.js', array('jquery'), '2.0.0', true);
+wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
+wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.min.js', array('jquery'), '0.11.0', true);
 
 // load styles
 wp_enqueue_style ('leaflet_css');

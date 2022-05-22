@@ -1,26 +1,30 @@
 /* d3 migration guide: https://observablehq.com/@d3/d3v6-migration-guide */
 
-(function (document, $, undefined) {
+(function (window, document, $, undefined) {
     "use strict";
     var numberOfboxes = document.querySelectorAll('[id^=multifotobox]').length;
 
     if (numberOfboxes > 0) {
 
-        var numberOfFotorama = document.querySelectorAll('[id^=mfotorama]').length;
-        var numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
-
+        // browser and page variables
         var mobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
-        var fotorama = new Array();
         var phpvars = new Array();
-        var storemarker = new Array();
-        var newmarker = new Array();
-        var mrk = new Array();   
-        var chartheight = new Array();
-        var phpmapheight = new Array();   
+
+        // fotorama variables
+        var numberOfFotorama = document.querySelectorAll('[id^=mfotorama]').length;
+        var fotorama = new Array();          
         var fotoramaState = 'normal'; // for zooming
         var zoomeffect = 'mouseover'; // for: https://www.jacklmoore.com/zoom/
-        var zpadding = [30,30];
+        
+        // map and chart var
+        var numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
+        var storemarker = new Array();
+        var newmarker = new Array();
+        var mrk = new Array();
+        var chartheight = new Array();
+        var phpmapheight = new Array();
         var maxZoomValue = 19;
+        var zpadding = [30,30];
 
         // Variable definitions for maps
         if ( numberOfMaps > 0) {
@@ -105,6 +109,7 @@
             //------------- leaflet - elevation part ---------------------------
             var hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
 
+            // define map and chart
             if ( hasMap) {
                 // get js-variables from php-output
                 let phptracks = eval('wpfm_phpvars'+m);
@@ -596,6 +601,7 @@
                 }
             });
             
+            // handle the zoom function in fullscreen mode
             $('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', function (e, fotorama, extra) {
                 let nr = fotorama.activeIndex;
                 let source = e.currentTarget.id;
@@ -628,12 +634,12 @@
                     }
                 }
             });
-        }
 
-        // disable right-click for fotorama, needed for the zoom function
-        $('[id^=mfotorama]').contextmenu(function() {
-           return false;
-        });  
+            // disable right-click for fotorama, needed for the zoom function
+            $('[id^=mfotorama]').contextmenu(function() {
+                return false;
+            }); 
+        }
         
         // function for map resizing for responsive devices
         $(window).on("resize load", function() {
@@ -919,5 +925,5 @@
             }
             return newdata;  
         }
-    }
-})(document, jQuery);
+    } 
+})(window, document, jQuery);
