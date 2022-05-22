@@ -204,7 +204,7 @@
 		},
 		"mapselector": {
 			"type": "string",
-			"default": "OpenTopoMap",
+			"default": "OpenStreetMap",
 			"section": "Map",
 			"label": "Select Map",
 			"help": "",

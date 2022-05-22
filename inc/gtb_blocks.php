@@ -38,10 +38,10 @@ function shortcodewrapper ( $attr ) {
 	foreach ( $attr as $key=>$val) {
 		if (gettype($val) != 'string') {
 			$attr[$key] = \var_export($val, true);
+		} elseif ($val == "") {
+			unset($attr[$key]);
 		}
 	}
 
-	
 	return \mvbplugins\fotoramamulti\showmulti($attr);
-	
 }
