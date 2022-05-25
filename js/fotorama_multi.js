@@ -207,8 +207,7 @@
                         img.id = m;
                         img.onclick = function (e) {
                             let m = parseInt(e.srcElement.id);
-                            maps[m].fitBounds(bounds[m], {padding: zpadding}); 
-                            //map.flyTo([40.737, -73.923]) // für fotorama nur Center, ohne Zoom-Änderung
+                            maps[m].fitBounds(bounds[m], {padding: zpadding, maxZoom:13});
                         };
                         return img;
                     },
@@ -488,7 +487,7 @@
                         //LayerSupportGroup.checkIn([group1]); 
                         controlLayer[m].addOverlay(group1[m], L._('Images') + '(' + j + ')');    
                         group1[m].addTo(maps[m]); 
-                        setBoundsToMarkers(m, testgroup);
+                        bounds[m] = setBoundsToMarkers(m, testgroup);
                     } else {
                         bounds[m] = maps[m].getBounds();
                     }
@@ -689,7 +688,7 @@
 
                 // skip boundary setting for boxmap that doesn't have a map
                 if ( ! isNaN(ratioMap)) {
-                    setBoundsToMarkers(m, _group);
+                    bounds[m] = setBoundsToMarkers(m, _group);
                 } 
             }
         
@@ -806,6 +805,7 @@
                     maps[mapNumber].fitBounds(_bounds, {maxZoom : 13});
                 }
             }
+            return _bounds;
         }
 
         // i18n translation
