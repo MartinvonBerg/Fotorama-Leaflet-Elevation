@@ -16,6 +16,7 @@
 		"start": "wp-scripts start"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^22.3.0"
+		"@wordpress/scripts": "^22.3.0",
+		"cypress": "^9.7.0"
 	}
 }
