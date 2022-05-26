@@ -140,3 +140,24 @@ Cypress.Commands.add(
     new MouseEvent('rightclick'));
 }
 );
+
+// Click on a marker in the leaflet marker pane to open the next image in fotorama
+// It works only for the first marker in the list of childNodes, which is updated on every click.
+Cypress.Commands.add( 'clickOnMarker', () => {
+  cy.get('.leaflet-pane.leaflet-marker-pane.leaflet-zoom-hide').each(($el) => {
+    let nodes = $el[0].childNodes;
+    let k = 0
+    
+    nodes.forEach( element => {
+      if (k === 0) {
+        cy.wait(100)
+        element.focus()
+        cy.wait(100)
+        element.click()
+        cy.wait(1000)
+      k += 1
+      }
+    }
+    );
+  })
+});
