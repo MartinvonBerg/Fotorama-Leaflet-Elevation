@@ -20,6 +20,7 @@
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 //}
+
 // add brave to the available browsers
 // sourve: https://github.com/cypress-io/cypress/issues/5848
 // cypress/plugins/index.js
@@ -56,3 +57,29 @@ module.exports = (on, config) => {
     }
   })
 }
+
+// Configure Lighthouse CLI
+// source: https://applitools.com/blog/using-cypress-google-lighthouse-performance-testing/
+// Because we want to run lighthouse inside the same browser as Cypress rather than opening a new one, the following code needs to be added in your plugins/index.js
+/*
+const { lighthouse, prepareAudit } = require('cypress-audit');
+
+module.exports = (on, config) => {
+  on('before:browser:launch', (browser = {}, launchOptions) => {
+    prepareAudit(launchOptions);
+  });
+
+  on('task', {
+    lighthouse: lighthouse(),
+  });
+};
+*/
+
+// Visual regression testing
+// source: https://medium.com/norwich-node-user-group/visual-regression-testing-with-cypress-io-and-cypress-image-snapshot-99c520ccc595
+const {
+  addMatchImageSnapshotPlugin,
+ } = require('cypress-image-snapshot/plugin');
+ module.exports = (on, config) => {
+   addMatchImageSnapshotPlugin(on, config);
+ };

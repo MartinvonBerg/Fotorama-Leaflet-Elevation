@@ -161,3 +161,23 @@ Cypress.Commands.add( 'clickOnMarker', () => {
     );
   })
 });
+
+// Inform Cypress of Lighthouse Command
+//mport 'cypress-audit/commands';
+
+// Visual regression testing
+// source: https://medium.com/norwich-node-user-group/visual-regression-testing-with-cypress-io-and-cypress-image-snapshot-99c520ccc595
+import { addMatchImageSnapshotCommand } from 'cypress-image-snapshot/command';
+addMatchImageSnapshotCommand({
+  failureThreshold: 0.1,
+  failureThresholdType: 'percent',
+  customDiffConfig: { threshold: 0.0 },
+  capture: 'viewport',
+});
+Cypress.Commands.add("setResolution", (size) => {
+  if (Cypress._.isArray(size)) {
+     cy.viewport(size[0], size[1]);
+   } else {
+    cy.viewport(size);
+  }
+ })

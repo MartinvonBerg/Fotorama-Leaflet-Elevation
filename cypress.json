@@ -1,5 +1,6 @@
 {
     "viewportWidth": 1200,
     "viewportHeight": 1200,
-    "scrollBehavior": false
+    "scrollBehavior": false,
+    "video": false
 }
