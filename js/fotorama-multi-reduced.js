@@ -4,13 +4,15 @@
     "use strict";
     var numberOfboxes = document.querySelectorAll('[id^=multifotobox]').length;
 
-    if (numberOfboxes > 0) {
+    if ((numberOfboxes > 0) && (typeof(Slider) === 'function')) {
 
         // browser and page variables
         var { phpvars, mobile } = defGenVar();
 
         // fotorama variables
+        // var fotorama: array with all fotorama objects 
         var { fotorama, numberOfFotorama, fotoramaState, zoomeffect } = defFotoramaVar(); 
+        let allSliders = new Array();
         
         // map and chart var
         var { numberOfMaps, chartheight, phpmapheight, maxZoomValue, zpadding, mrk, storemarker, newmarker } = defMapVar();
@@ -32,11 +34,22 @@
             // define fotorama
             if ( hasFotorama ) {
                 // Initialize fotorama manually.
-                var { width, olddata, newimages } = defFotorama();
+                //var { width, olddata, newimages } = defFotorama();
+                //replaceImageData( m, width, olddata, newimages);
 
-                var updatedImages = replaceImageData( width, olddata, newimages);
-                if (updatedImages) fotorama[m].load(updatedImages);
+                // use the new Slider class. This class has to be enqued before this function.
+                allSliders[m] = new Slider(m, 'mfotorama'+m );
+                allSliders[m].defSlider();
+
+                // handle the new slider event
+                document.querySelector('#mfotorama'+ m).addEventListener('sliderchange', function waschanged(e) {
+                    console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider)
+                });
+                document.querySelector('#mfotorama'+ m).addEventListener('sliderload', function wasloaded(e) {
+                    console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider)
+                });
             }
+            
         
             //------------- leaflet - elevation part ---------------------------
             var hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
@@ -87,7 +100,7 @@
                 // create markers and bounds according to markers or gpxtracks.
                 if ( hasFotorama ) 
                 {
-                    var { marker, j, testgroup } = createMarkers(phptracks, fotorama);
+                    var { marker, j, testgroup } = createMarkers(phptracks, allSliders);
 
                     if (marker.length > 0) 
                     {
@@ -137,6 +150,7 @@
             
             // update markers and zoomed image
             $('.fotorama').on('fotorama:showend fotorama:load',
+            //$('.fotorama').on('sliderload sliderchange',
             function (e, fotorama) 
             {
                 let nr = fotorama.activeIndex;
@@ -146,16 +160,17 @@
                 let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
 
                 // set the link to the attachment in the info button.
-                if ( phpvars[m].imgdata[nr].permalink != '') {
-                    $('.fm-attach-link a').attr("href",phpvars[m].imgdata[nr].permalink);
-                }
+                //if ( phpvars[m].imgdata[nr].permalink != '') {
+                //    $('.fm-attach-link a').attr("href",phpvars[m].imgdata[nr].permalink);
+                //}
                 // update the caption with linebreaks
+                /*
                 if ( phpvars[m].imgdata[nr].jscaption != '') {
                     let text = phpvars[m].imgdata[nr].jscaption ;
                     text = text.replaceAll('||', '<br>');
-                    $('.fotorama__caption__wrap').html(text);
+                    $('#mfotorama'+m+' .fotorama__caption__wrap').html(text);
                 }
-                
+                */
                 // update Fotorama and Map to the new marker
                 if ( hasMap && phpvars[m].imgdata[nr].coord[0] ) {
                     if (e.type === 'fotorama:load') {
@@ -168,18 +183,19 @@
 
                         // Set id in fotorama.data, all nav thumbs and active stage shaft
                         for (var fi = 0; fi < fotorama.data.length; fi++) {  
-                            fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
+                            //fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
                         }
-                        fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
+                        //fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
 
                     }
 
                     if (e.type === 'fotorama:showend') {
                         // set id in current active stage Frame
-                        fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
+                        //fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
                         
                         // zoom the active frame if full, only for desktop
                         // source: https://www.jacklmoore.com/zoom/
+                        /*
                         if (fotoramaState == 'full' && ! mobile) {
                             $('#sf' + m + '-' + nr).zoom(
                                 {url: fotorama.data[nr].full,
@@ -189,7 +205,7 @@
                         } else {
                             $('#sf' + m + '-' + nr).trigger('zoom.destroy');
                         }
-
+                        */
                         maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
                     }
 
@@ -212,16 +228,16 @@
                         // Set id in fotorama.data, all nav thumbs and active stage shaft
                         for (var fi = 0; fi < fotorama.data.length; fi++) {  
                             if ( fotorama.data[0].$navThumbFrame != undefined) {
-                                fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
+                                //fotorama.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
                             }
                         }
-                        fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
+                        //fotorama.data[nr].$stageFrame[0].id = 'sf' + m + '-' + nr;
                     }
 
                     if (e.type === 'fotorama:showend') {
                         // set id in current active stage Frame
-                        fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
-            
+                        //fotorama.activeFrame.$stageFrame[0].id = 's' + fotorama.activeFrame.$navThumbFrame[0].id;
+                        /*
                         if (fotoramaState == 'full' && ! mobile) {
                             // activate the zoom in fullscreen
                             $('#sf' + m + '-' + nr).zoom(
@@ -232,12 +248,14 @@
                         } else {
                             // destroy / deactivate zoom in normal-mode
                             $('#sf' + m + '-' + nr).trigger('zoom.destroy');
-                        }      
+                        }  
+                        */    
                     }
                 }
             });
             
             // handle the zoom function in fullscreen mode
+            /*
             $('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', 
             function (e, fotorama) 
             {
@@ -272,9 +290,7 @@
                     }
                 }
             });
-
-            // disable right-click for fotorama, needed for the zoom function
-            $('[id^=mfotorama]').contextmenu( function() {return false;} ); 
+            */
         }
 
         // function for map resizing for responsive devices
@@ -440,7 +456,7 @@
         tracks[m] = phptracks.tracks;
     }
 
-    function createMarkers(phptracks, fotorama) {
+    function createMarkers(phptracks, allSliders) {
         group1[m] = L.layerGroup();
         let testgroup = L.featureGroup();
         //LayerSupportGroup.addTo(maps[m]);
@@ -472,7 +488,8 @@
                     source = source.replace('map', '');
                     m = parseInt(source);
 
-                    fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
+                    //fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
+                    allSliders[m].setSliderIndex(this.options.id);
                 });
                 marker[j].on('mouseover', function (e) {
                     this.openPopup();
@@ -793,12 +810,12 @@
         return icon;
     }
     
-    function replaceImageData(viewerwidth, oldimages, newimages) {
+    function replaceImageData(sliderNumber, viewerwidth, oldimages, newimages) {
         let newdata = new Array();
 
         if (oldimages.length == newimages.length) {
 
-            for (let index=0; index<newimages.length; index++) {
+            for (let index = 0; index < newimages.length; index++) {
                 let item = oldimages[index];
                 newdata[index] = Array();
                 newdata[index].alt = newimages[index].title; // das setzt voraus, dass die arrays identisch sortiert sind!
@@ -829,10 +846,12 @@
                 } 
             }
 
-        } else {
-            return null;
-        }
-        return newdata;  
+        } 
+        //else {
+        //    return null;
+        //}
+        if (newdata) fotorama[sliderNumber].load(newdata);
+        //return newdata;  
     }
 
     function mapResize() {
@@ -977,4 +996,3 @@
         return { phpvars, mobile };
     }
 })(window, document, jQuery);
-

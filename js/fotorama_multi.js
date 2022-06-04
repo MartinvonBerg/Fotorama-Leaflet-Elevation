@@ -516,7 +516,7 @@
                 if ( phpvars[m].imgdata[nr].jscaption != '') {
                     let text = phpvars[m].imgdata[nr].jscaption ;
                     text = text.replaceAll('||', '<br>');
-                    $('.fotorama__caption__wrap').html(text);
+                    $('#mfotorama'+m+' .fotorama__caption__wrap').html(text);
                 }
                 
 

@@ -243,8 +243,8 @@ function showmulti($attr, $content = null)
 		$htmlstring .= <<<EOF
 
 <div class="fotorama_multi_images" style="display:none;"><figure><figcaption></figcaption></figure></div> 
-<div id="mfotorama{$shortcodecounter}" class="fotorama" 
-		data-autoplay="{$autoplay}" 
+<div id="mfotorama{$shortcodecounter}"
+		data-autoplay="{$autoplay}"
 		data-stopautoplayontouch="true"
 		data-width="100%" 
 		data-allowfullscreen="native" 
