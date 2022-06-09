@@ -85,6 +85,7 @@ function showmulti($attr, $content = null)
 	$tracks = [];
 	$thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
+	static $pageVarsForJs = [];
 	$currentTheme = \get_stylesheet(); // required for special caption for theme 2022 with WP 5.9
 	
  	// Get Values from Admin settings page
@@ -422,6 +423,23 @@ EOF;
 	$htmlstring  .= '</div><!--div id=multifotobox'.$shortcodecounter.'-->';
 	
 	// pass php variables to javascript-file for fotorama
+	$pageVarsForJs[ $shortcodecounter] = array(
+		'ngpxfiles'  => $i,
+		'imagepath' => $wp_fotomulti_path,
+		'imgdata' => $phpimgdata ?? [],
+		'tracks' => $tracks,
+		'eletheme' => $eletheme,
+		'mapheight' => $mapheight,
+		'chartheight' => $chartheight,
+		'showalltracks' => $showalltracks,
+		'mapcenter' => $mapcenter,
+		'zoom' => $zoom,
+		'markertext' => $markertext,
+		'fit' => $fit,
+		'mapselector' => $mapselector,
+ 	) ;
+	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
+	// TODO: replace all JS variables
 	wp_localize_script('fotorama_multi_js', 'wpfm_phpvars' . $shortcodecounter, array(
 		'ngpxfiles'  => $i,
 		'imagepath' => $wp_fotomulti_path,
@@ -438,7 +456,7 @@ EOF;
 		'mapselector' => $mapselector,
  		) 
 	);
-
+	
 	$shortcodecounter++;
 
 	return $htmlstring;

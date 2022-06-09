@@ -1,18 +1,27 @@
 // Class for the fotorama Slider
-// Fotorama depends on jQuery, so no need to replace jQuery with vanilla js.
+// Fotorama and the Zoom-function depend on jQuery, so no need to replace jQuery with vanilla js.
+// Note on fotorama options and input-image-data: the fotorama options are defined in the html. And the image data is given by html.
+// Notes on REACT: ----------------------------
+// TODO: before adopting to react this class should be transferred to Typescript.
+// TODO: the minifier does not work with private methods.
+// TODO: install and use eslint up to the latest coding standards
+// A React Component would receive the fotorama options as props and image-data as a js-array. 
+// Here the js-array would be received by a server side render to have a dynamic react component. The SSR would be the PHP 'readImageFolder'.
+// The React component would then generate the html including the given options which would be then parsed by fotorama afterwards.
+// Sounds easy but the event handling via the Class-API (setslider, trigger Events SliderLoad and sliderChange) should be transferred to react hooks e.g. state.
+// finally this Slider-Class should be exported with 'export default Slider' and import Slider from './fotoramaClass.js'
 
-class Slider {
+class SliderFotorama {
     // static attributes (fields)
     static count = 0; // counts the number of instances of this class.
     static pageVariables = null;
     // static numberOfSlidersOnPage = 0; // currently unused
     
     // private attributes (fields)
-    #fotoramaState = 'normal'; // for zooming
+    #fotoramaState = 'normal'; // internal state variable for zooming
     #zoomeffect = 'mouseover'; // for: https://www.jacklmoore.com/zoom/
     #isMobile = false;
-    #sliderClass = 'fotorama'; // the CSS-class that should be used
-    //#prevSlide = 0; // for event testing only
+    #normalZoom = ''
 
     // public attributes (fields). These can be set / get by dot-notation.
     width = 0;
@@ -27,59 +36,55 @@ class Slider {
      * @param {string} elementOnPage id of the div on the page that shall contain the slider
      */
     constructor(number, elementOnPage) {
-        Slider.count++; // update the number of instances on construct.
+        SliderFotorama.count++; // update the number of instances on construct.
         this.number = number; 
         this.elementOnPage = elementOnPage; 
-        if (this.pageVariables == null) {
-            this.pageVariables = new Array();
+        if (this.pageVariables === null) {
+            this.pageVariables = [];
         }
-        this.pageVariables[number] = eval('wpfm_phpvars'+ number);
+        this.pageVariables = pageVarsForJs[number];
         this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
-        
+        this.#normalZoom = this.pageVariables.fit;
+
         // object to handle event 'showend' and 'load'
         this.el = document.querySelector('#'+elementOnPage);
-        
-        //this.el.addEventListener('click', this); // calls handleEvent on click, for testing only
-        
     }
 
     /**
      * Initialisation of Slider in given elementOnPage
      */
     defSlider() {
-        //let $fotoramaDiv = $('#mfotorama' + m).fotorama();
         this.sliderDiv = jQuery('#'+this.elementOnPage).fotorama();
 
         // Get the API object.
-        //fotorama[m] = $fotoramaDiv.data('fotorama');
-        this.sliderData = this.sliderDiv.data(this.#sliderClass)
+        this.sliderData = this.sliderDiv.data('fotorama')
 
-        // define the image data array for image replacement
-        //let newimages = phpvars[m].imgdata;
-        this.newimages = this.pageVariables[this.number].imgdata;
+        // define the image data array for ima
+        this.newimages = this.pageVariables.imgdata;
 
         //let olddata = fotorama[m].data;
         this.olddata = this.sliderData.data;
 
         // Define width for responsive devices
-        //let width = $fotoramaDiv[0].parentElement.clientWidth;
         this.width = this.sliderDiv[0].parentElement.clientWidth;
-        //if (mobile) {
         if (this.#isMobile) {
             let h = window.screen.height;
             let w = window.screen.width;
-            //h > w ? width = h : width = w;
             h > w ? this.width = h : this.width = w;
         }
-        //return { width, olddata, newimages };
-        this.disableRightClick();
-        this.listenEventShowend();
-        this.listenEventSliderLoaded();
-        this.handleZoomInFullscreen();
+        
+        // do and define all handles
+        let newdata2 = this.#replaceImageData( this.width, this.olddata, this.newimages);
+        if (newdata2) {this.sliderData.load(newdata2)} 
+
+        this.disableRightClick(true);
+        this.#listenEventSliderShowend();
+        this.#listenEventSliderLoaded();
+        this.#handleZoomInFullscreen();
       
     }
    
-    // Class API definitions
+    // --------------- Class API method definitions -------------------------
     /**
      * Set Slider to index
      * @param {int} index 
@@ -92,7 +97,6 @@ class Slider {
      * disable right click for this Slider. Meant to be needed for the zoom function, what is not correct.
      * @param {boolean} status infact it is to enable or disable. True means disable.
      */
-    
     disableRightClick(status = true) {
         status = ! status
         jQuery('#'+this.elementOnPage).contextmenu( function() {return status;} );
@@ -105,9 +109,9 @@ class Slider {
      * @param {int} newslide 
      */
     updateCaption(sliderNumber, newslide) {
-        if ( this.pageVariables[sliderNumber].imgdata[newslide].jscaption != '') 
+        if ( this.pageVariables.imgdata[newslide].jscaption != '') 
         {
-            let text = this.pageVariables[sliderNumber].imgdata[newslide].jscaption ;
+            let text = this.pageVariables.imgdata[newslide].jscaption ;
             text = text.replaceAll('||', '<br>');
             jQuery('#mfotorama' + sliderNumber +' .fotorama__caption__wrap').html(text);
         }
@@ -120,19 +124,72 @@ class Slider {
      * @param {int} newslide 
      */
     setLinkForInfoButton(sliderNumber, newslide) {
-        if ( this.pageVariables[sliderNumber].imgdata[newslide].permalink != '') {
-            jQuery('#multifotobox' + sliderNumber + ' .fm-attach-link a').attr("href", this.pageVariables[sliderNumber].imgdata[newslide].permalink);
+        if ( this.pageVariables.imgdata[newslide].permalink != '') {
+            jQuery('#multifotobox' + sliderNumber + ' .fm-attach-link a').attr("href", this.pageVariables.imgdata[newslide].permalink);
         }
     }
 
-    // replace Image Data to srcset Data provided on page or in JS-variables
+    // --------------- Internal private methods --------------------------------
+
+    /**
+     * replace Image Data to srcset Data provided on page or in JS-variables.
+     * @param {int} viewerwidth 
+     * @param {array} oldimages 
+     * @param {array} newimages 
+     * @returns 
+     */
+    #replaceImageData(viewerwidth, oldimages, newimages) {
+        let newdata = [];
+        let newlength = newimages.length;
+    
+        if (oldimages.length === newlength) {
+    
+            for (let index = 0; index < newlength; index++) {
+                let item = oldimages[index];
+                newdata[index] = [];
+                newdata[index].alt = newimages[index].title; // das setzt voraus, dass die arrays identisch sortiert sind!
+                newdata[index].caption = item.caption;
+                newdata[index].thumb = item.thumb;
+                newdata[index].img = item.img;
+                newdata[index].i   = item.i;
+    
+                if ('srcset' in newimages[index] && Object.keys(newimages[index].srcset).length > 0) {
+                    let srcindex = 0;
+                    let srcarray = newimages[index].srcset; 
+                    
+                    for (const [key, value] of Object.entries(srcarray)) {
+                        //console.log(`${key}: ${value}`);
+                        if (key > viewerwidth) {
+                            srcindex = key;
+                            break;
+                            }
+                    }
+                            
+                    if ( this.#isMobile) {
+                        newdata[index].img = newimages[index].srcset[srcindex];
+                    }
+                    else {
+                        newdata[index].img =  newimages[index].srcset[ srcindex ];
+                        newdata[index].full = newimages[index].srcset['2560']; // TODO: replace 2560 with big_image_size !
+                    }
+                } 
+            }
+    
+        } 
+        else 
+        {
+            return null;
+        }
+        return newdata; 
+    }
 
     /**
      * handle the zoom function in fullscreen mode. zoom current image. on fullscreen only.
      * Trigger fullscreen Event entry and exit is currently not implemented as it is not required.
      */
-    handleZoomInFullscreen() {
+    #handleZoomInFullscreen() {
         let classThis = this;
+
         jQuery('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', 
         function (e) 
         {
@@ -143,13 +200,13 @@ class Slider {
 
             if (e.type === 'fotorama:fullscreenenter') {
                 classThis.#fotoramaState = 'full';
-                // Options for the fullscreen
+                // Options for the fullscreen zoom
                 classThis.sliderData.setOptions({
                     fit: 'contain' 
                 });
                 // handle the zoom, see: https://www.jacklmoore.com/zoom/
                 jQuery('#sf' + m + '-' + nr).zoom(
-                    {//url: classThis.sliderData.data[nr].full,
+                    {//url: classThis.sliderData.data[nr].full, // if not defined uses the src in img tag. 
                      on: classThis.#zoomeffect, //  Choose from mouseover, grab, click, or toggle. But only works with 'mouseover'.
                      touch: false
                      // magnify: 1 // This value is multiplied against the full size of the zoomed image. The default value is 1, meaning the zoomed image should be at 100% of its natural width and height
@@ -164,25 +221,27 @@ class Slider {
             } else {
                 // Back to normal settings
                 classThis.sliderData.setOptions({
-                    fit: classThis.pageVariables[m].fit
+                    fit: classThis.#normalZoom
                 }); 
                 classThis.#fotoramaState = 'normal';
                 jQuery(window).trigger('resize');
+                let sliderDatalength = classThis.sliderData.data.length
               
-                for (var fi = 0; fi < classThis.sliderData.data.length; fi++) {
+                for (let fi = 0; fi < sliderDatalength; fi++) {
                     jQuery('#sf' + m + '-' + fi).trigger('zoom.destroy');
                 }
             }
         });
     }
 
-    // --------------- Class Events ------------------------------------
+    // --------------- Generate Class Events -----------------------------------
     
     /**
      * Trigger Event that a new Image was finally loaded. Pass image index Number and Slider ID to event handler.
      * Call other functions that have to be run with that event.
+     * Mind: the slider number counts from one, where counting from '0' would be correct.
      */
-    listenEventShowend() {
+    #listenEventSliderShowend() {
         // create Event on fotorama showend
         let classThis = this;
         
@@ -193,7 +252,7 @@ class Slider {
                 let source = e.currentTarget.id;
                 source = source.replace('mfotorama','');
                 let m = parseInt(source);
-
+                // define the CustomEvent to be fired
                 const changed = new CustomEvent('sliderchange', {
                     detail: {
                     name: 'sliderChange',
@@ -201,15 +260,13 @@ class Slider {
                     slider: m
                     }
                 });
-                if (e.type === 'fotorama:showend' && classThis.number == m) {
+                if (e.type === 'fotorama:showend' && classThis.number === m) {
                     // set id in current active stage Frame
                     classThis.sliderData.activeFrame.$stageFrame[0].id = 's' + classThis.sliderData.activeFrame.$navThumbFrame[0].id;
-                    //console.log('showend: ',m, ' to:', classThis.activeIndex)
                     classThis.el.dispatchEvent(changed);
                     classThis.updateCaption(m, classThis.sliderData.activeFrame.i-1);
                     classThis.setLinkForInfoButton(m, classThis.sliderData.activeFrame.i-1);
-                    // handle the zoom if (fotoramaState == 'full' && ! mobile) {
-                    // activate the zoom in fullscreen
+                    // handle the zoom activate the zoom in fullscreen only
                     if (classThis.#fotoramaState === 'full' && ! classThis.#isMobile) {
                         jQuery('#sf' + m + '-' + nr).zoom(
                             {//url: classThis.sliderData.data[nr].full,
@@ -230,8 +287,9 @@ class Slider {
     /**
      * Trigger Event that first Image was finally loaded. Do this only once. Pass image index Number and Slider ID to event handler.
      * Call other functions that have to be run with that event.
+     * Mind: the slider number counts from one, where counting from '0' would be correct.
      */
-    listenEventSliderLoaded() {
+    #listenEventSliderLoaded() {
         // create Event on fotorama load, only one
         let classThis = this;
 
@@ -239,11 +297,10 @@ class Slider {
         jQuery('#'+this.elementOnPage).on('fotorama:load',
             function (e) 
             {   
-                let nr = classThis.sliderData.activeFrame.i-1;
                 let source = e.currentTarget.id;
                 source = source.replace('mfotorama','');
                 let m = parseInt(source);
-
+                // define the CustomEvent to be fired
                 const loaded = new CustomEvent('sliderload', {
                     detail: {
                     name: 'sliderLoad',
@@ -252,17 +309,18 @@ class Slider {
                     }
                 });
 
-                if (e.type === 'fotorama:load' && classThis.number == m) {
-                    //console.log('showend: ',m, ' to:', classThis.activeIndex)
+                if (e.type === 'fotorama:load' && classThis.number === m) {
                     // trigger the event only once, so if ts was not set before.
-                    if (ts == 0) {
+                    if (ts === 0) {
                         classThis.el.dispatchEvent(loaded);
                         classThis.updateCaption(m, classThis.sliderData.activeFrame.i-1);
                         classThis.setLinkForInfoButton(m, classThis.sliderData.activeFrame.i-1);
                         // set the id for the fullscreen-zoom 
-                        for (var fi = 0; fi < classThis.sliderData.data.length; fi++) {
+                        let sliderDatalength = classThis.sliderData.data.length
+
+                        for (let fi = 0; fi < sliderDatalength; fi++) {
                             classThis.sliderData.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
-                            if (classThis.sliderData.data[fi].$stageFrame != undefined) {
+                            if (typeof(classThis.sliderData.data[fi].$stageFrame) !== 'undefined') {
                                 classThis.sliderData.data[fi].$stageFrame[0].id = 'sf' + m + '-' + fi
                             }
                         }
