@@ -45,6 +45,7 @@ wp_register_script('control_fullscreen_js', $plugin_url . 'js/libs/Control.FullS
 wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
 //wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama_multi.js', array('jquery'), '0.11.0', true);
 wp_register_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.11.0', true);
+wp_register_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery'), '0.11.0', true);
 wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduced.js', array('jquery'), '0.11.0', true);
 
 // load styles
@@ -62,4 +63,5 @@ wp_enqueue_script('leaflet_gesture_handling_js');
 wp_enqueue_script('control_fullscreen_js');
 wp_enqueue_script('zoom_master_js');
 wp_enqueue_script('fotoramaClass_js');
+wp_enqueue_script('leafletClass_js');
 wp_enqueue_script('fotorama_multi_js');	

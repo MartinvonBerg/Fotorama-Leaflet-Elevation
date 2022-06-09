@@ -11,9 +11,10 @@
 
         // fotorama variables
         let numberOfFotorama = document.querySelectorAll('[id^=mfotorama]').length;
-        let allSliders = new Array();
+        let allSliders = [];
         
         // map and chart var
+        let allMaps = [];
         var { numberOfMaps, chartheight, phpmapheight, maxZoomValue, zpadding, mrk, storemarker, newmarker } = defMapVar();
 
         // Variable definitions for maps. Defs not te be repeated in the loop.
@@ -61,16 +62,17 @@
                 var mylocale = setlang();
 
                 // initiate the leaflet map
-                maps[m] = new L.Map('map' + m, opts.map); 
+                allMaps[m] = new LeafletMap(m, 'boxmap' + m );
+                //maps[m] = new L.Map('map' + m, opts.map); 
                 
                 // show the selected map
-                showSelectedMap(numberOfMaps, phpvars);
-                            
+                //showSelectedMap(numberOfMaps, phpvars);          
                 //------- Magnifying glass, fullscreen, Image-Marker und Base-Layer-Change handling --------------------------------
                 // create scale control top left // for mobile: zoom deactivated. use fingers!
-                setMapControls(mobile, phptracks, zpadding);
+                //setMapControls(mobile, phptracks, zpadding);
 
                 // create tracks or marker
+                /*
                 if (parseInt(phptracks.ngpxfiles) > 0) {
                     // create elevation chart(s) -----------------------
                     createElevChart(phptracks);
@@ -141,10 +143,12 @@
                         }
                     }
                 });
+                */
             }
         } // end for m maps
         
         // jQuery fotorama functions for fullscreen, map interaction e.q marker settings. 
+        /*
         if ( numberOfFotorama > 0) {
 
             // update markers
@@ -185,9 +189,9 @@
                 }
             });
         }
-
+        */
         // function for map resizing for responsive devices
-        $(window).on("resize load", mapResize() );
+        //$(window).on("resize load", mapResize() );
     }
 
     function showMultipleTracks(zpadding) {

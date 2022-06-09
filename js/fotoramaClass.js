@@ -57,7 +57,7 @@ class SliderFotorama {
         this.sliderDiv = jQuery('#'+this.elementOnPage).fotorama();
 
         // Get the API object.
-        this.sliderData = this.sliderDiv.data('fotorama')
+        this.sliderData = this.sliderDiv.data('fotorama');
 
         // define the image data array for ima
         this.newimages = this.pageVariables.imgdata;
@@ -75,7 +75,7 @@ class SliderFotorama {
         
         // do and define all handles
         let newdata2 = this.#replaceImageData( this.width, this.olddata, this.newimages);
-        if (newdata2) {this.sliderData.load(newdata2)} 
+        if (newdata2) {this.sliderData.load(newdata2);}
 
         this.disableRightClick(true);
         this.#listenEventSliderShowend();
@@ -98,7 +98,7 @@ class SliderFotorama {
      * @param {boolean} status infact it is to enable or disable. True means disable.
      */
     disableRightClick(status = true) {
-        status = ! status
+        status = ! status;
         jQuery('#'+this.elementOnPage).contextmenu( function() {return status;} );
     }
 
@@ -109,7 +109,7 @@ class SliderFotorama {
      * @param {int} newslide 
      */
     updateCaption(sliderNumber, newslide) {
-        if ( this.pageVariables.imgdata[newslide].jscaption != '') 
+        if ( this.pageVariables.imgdata[newslide].jscaption !== '') 
         {
             let text = this.pageVariables.imgdata[newslide].jscaption ;
             text = text.replaceAll('||', '<br>');
@@ -124,7 +124,7 @@ class SliderFotorama {
      * @param {int} newslide 
      */
     setLinkForInfoButton(sliderNumber, newslide) {
-        if ( this.pageVariables.imgdata[newslide].permalink != '') {
+        if ( this.pageVariables.imgdata[newslide].permalink !== '') {
             jQuery('#multifotobox' + sliderNumber + ' .fm-attach-link a').attr("href", this.pageVariables.imgdata[newslide].permalink);
         }
     }
@@ -157,7 +157,7 @@ class SliderFotorama {
                     let srcindex = 0;
                     let srcarray = newimages[index].srcset; 
                     
-                    for (const [key, value] of Object.entries(srcarray)) {
+                    for (const [key] of Object.entries(srcarray)) {
                         //console.log(`${key}: ${value}`);
                         if (key > viewerwidth) {
                             srcindex = key;
