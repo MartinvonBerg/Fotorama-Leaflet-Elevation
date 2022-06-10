@@ -2,216 +2,111 @@
 
 (function (window, document, $, undefined) {
     "use strict";
-    var numberOfboxes = document.querySelectorAll('[id^=multifotobox]').length;
+    let numberOfboxes = document.querySelectorAll('[id^=multifotobox]').length;
 
-    if ((numberOfboxes > 0) && (typeof(SliderFotorama) === 'function')) {
-
-        // browser and page variables
-        var { phpvars, mobile } = defGenVar();
+    if ( numberOfboxes > 0 ) {
 
         // fotorama variables
-        let numberOfFotorama = document.querySelectorAll('[id^=mfotorama]').length;
         let allSliders = [];
         
-        // map and chart var
-        let allMaps = [];
-        var { numberOfMaps, chartheight, phpmapheight, maxZoomValue, zpadding, mrk, storemarker, newmarker } = defMapVar();
-
-        // Variable definitions for maps. Defs not te be repeated in the loop.
-        if ( numberOfMaps > 0) {
-            var { opts, layer1, layer2, layer3, layer4, baseLayers, maps, showalltracks, controlZoom, bounds, scale, controlLayer, baseLayers2, eleopts, 
-                controlLayer2, controlElevation, traces, tracks, grouptracks, myIcon2, group1, myIcon1, myIcon3 } = defMapAndChartVar( numberOfMaps, setIcon);
-        }
+        // map and chart var. The var is intentional here.
+        var allMaps = [];
         
         // do it for all shortcodes on the page or post
         for (var m = 0; m < numberOfboxes; m++) {
 
-            phpvars[m] = pageVarsForJs[m];
-
             //------------- fotorama part --------------------------------------
-            var hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
+            let hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
 
             //------------- leaflet - elevation part ---------------------------
-            var hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
+            let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
 
             // define fotorama
             if ( hasFotorama ) {
-                
                 // define the Slider class. This class has to be enqued (loaded) before this function.
                 allSliders[m] = new SliderFotorama(m, 'mfotorama' + m );
                 // Initialize fotorama manually.
                 allSliders[m].defSlider();
-
-                // handle the new slider event
-                /*
-                document.querySelector('#mfotorama'+ m).addEventListener('sliderchange', function waschanged(e) {
-                    console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider)
-                });
-                document.querySelector('#mfotorama'+ m).addEventListener('sliderload', function wasloaded(e) {
-                    console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider)
-                });
-                */
-            } 
+            } else {
+                  // get and set options for maps without gpx-tracks. only one marker to show.
+                  if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
+                    let center = pageVarsForJs[m].mapcenter;
+                    let zoom = pageVarsForJs[m].zoom;
+                    let text = pageVarsForJs[m].markertext;
+                    allMaps[m] = new LeafletMap(m, 'boxmap' + m, center, zoom );
+                    allMaps[m].createSingleMarker(text);
+                } else {
+                    // only leaflet elevation chart to show. This is true if there is a gpx-track provided.
+                    // TODO: But this is the code for the child class. How to do this?
+                }
+            }
             
             // define map and chart
             if ( hasMap & hasFotorama ) {
-                // get js-variables from php-output
-                //var phptracks = defMapAndChart(chartheight, phpmapheight, hasFotorama, maxZoomValue, mobile);  
-                // set the language strings for the map
-                //var mylocale = setlang();
-
+                
                 // initiate the leaflet map
                 allMaps[m] = new LeafletMap(m, 'boxmap' + m );
-                //maps[m] = new L.Map('map' + m, opts.map); 
-                let fotoramaMakers = phpvars[m].imgdata;
-                allMaps[m].createFotoramaMarkers(fotoramaMakers);
-                
-                // show the selected map
-                //showSelectedMap(numberOfMaps, phpvars);          
-                //------- Magnifying glass, fullscreen, Image-Marker und Base-Layer-Change handling --------------------------------
-                // create scale control top left // for mobile: zoom deactivated. use fingers!
-                //setMapControls(mobile, phptracks, zpadding);
 
-                // create tracks or marker
-                /*
-                if (parseInt(phptracks.ngpxfiles) > 0) {
-                    // create elevation chart(s) -----------------------
-                    createElevChart(phptracks);
+                // create the markers on the map
+                allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
 
-                    // part to show multiple tracks in one map, a bit experimental and not perfect
-                    if ( parseInt(phptracks.ngpxfiles) > 1 && showalltracks === true) {
-                        var i;
-                        var track;
-                        ({ i, track, zpadding } = showMultipleTracks(zpadding)); 
+                // update markers on the map if the active image changes
+                document.querySelector('#mfotorama'+ m).addEventListener('sliderchange', function waschanged(e) {
+                    //console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider);
 
-                    } 
-                    // part to show one track at time
-                    else {
-                        var i = 0;
-                        for (var track in tracks[m]) {
-                            loadTrace(m, track, i++)
-                        } 
-                    }
-                } 
-                else if ( ! hasFotorama ) {
-                    // No gpx-track to show: Create simple marker
-                    L.marker(opts.map.center, { title: phptracks.markertext, icon: myIcon2 } ).addTo(maps[m]);
-                }
+                    allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide-1]['coord'] ); // change only
 
-                // create markers and bounds according to markers or gpxtracks.
-                if ( hasFotorama ) 
-                {
-                    var { marker, j, testgroup } = createMarkers(phptracks, allSliders);
+                    // mark the new image with red icon and remove the red icon from others
+                    // first get the right numbers
+                    let m = e.detail.slider;
+                    let nr = e.detail.newslide-1;
 
-                    if (marker.length > 0) 
-                    {
-                        mrk[m] = marker;
-                        controlLayer[m].addOverlay(group1[m], L._('Images') + '(' + j + ')');    
-                        group1[m].addTo(maps[m]); 
-                        bounds[m] = setBoundsToMarkers(m, testgroup);
-                    } 
-                    else 
-                    {
-                        bounds[m] = maps[m].getBounds();
-                    }
-                } 
-                else if (parseInt(phptracks.ngpxfiles) == 0) 
-                {
-                    bounds[m] = maps[m].getBounds();
-                }
+                    // remove old markers - on change only.
+                    allMaps[m].map.removeLayer(allMaps[m].newmarker);
+                    allMaps[m].storemarker.setIcon(allMaps[m].myIcon1);
+                    allMaps[m].newmarker.setZIndexOffset(-500);
+                    allMaps[m].storemarker.addTo(allMaps[m].map);
 
-                // change elevation chart on change of gpx-track
-                maps[m].on('baselayerchange', function(e) {
-                    let ename = e.name;
-                    let mapchange = false;
-                    let source = e.sourceTarget._container.id;
-                    source = source.replace('map','');
-                    m = parseInt( source);
+                    // mark now the marker for the active image
+                    allMaps[m].storemarker = allMaps[m].mrk[nr];
+                    allMaps[m].newmarker = allMaps[m].mrk[nr];
+                    allMaps[m].map.removeLayer( allMaps[m].mrk[nr]);
+                    allMaps[m].newmarker.setIcon(allMaps[m].myIcon3);
+                    allMaps[m].newmarker.setZIndexOffset(500);
+                    allMaps[m].newmarker.addTo(allMaps[m].map);
 
-                    for (const [key, value] of Object.entries(baseLayers[m])) {
-                        if (ename == key) {
-                            mapchange = true;
-                        }
-                    }
-        
-                    if ( ! mapchange) { // case sensitive ???
-                        for (var i in traces[m]) {
-                            if (traces[m][i].gpx._leaflet_id == e.layer._leaflet_id) {
-                                setElevationTrace(m, e.layer.options.index);
-                                break;
-                            }
-                        }
-                    }
                 });
-                */
-            }
+                document.querySelector('#mfotorama'+ m).addEventListener('sliderload', function wasloaded(e) {
+                    //console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider);
 
-            if ( hasMap & ! hasFotorama ) {
-                // only leaflet elevation chart to show. This is true if there is a gpx-track provided
-                //get options for maps without gpx-tracks. only one marker to show.
-                if ( parseInt(phpvars[m].ngpxfiles) === 0 ) {
-                    let center = phpvars[m].mapcenter;
-                    let zoom = phpvars[m].zoom;
-                    let text = phpvars[m].markertext;
-                    allMaps[m] = new LeafletMap(m, 'boxmap' + m, center, zoom );
-                    allMaps[m].createSingleMarker(text);
-                    $('.wp-block-column').css({"min-width":"100"});
-                } else {
-                    // only leaflet elevation chart to show. This is true if there is a gpx-track provided.
-                    // But this is the code for the child class. How to do this?
-                }
+                    // mark the first image marker to red with myIcon3.
+                    // first get the right numbers
+                    let m = e.detail.slider;
+                    let nr = e.detail.newslide-1;
 
+                    // mark now the marker for the active image
+                    allMaps[m].storemarker = allMaps[m].mrk[nr];
+                    allMaps[m].newmarker = allMaps[m].mrk[nr];
+                    allMaps[m].map.removeLayer( allMaps[m].mrk[nr]);
+                    allMaps[m].newmarker.setIcon(allMaps[m].myIcon3);
+                    allMaps[m].newmarker.setZIndexOffset(500);
+                    allMaps[m].newmarker.addTo(allMaps[m].map);
+                });
+
+                // update the slider if the marker on the map was clicked
+                document.querySelector('#boxmap'+ m).addEventListener('mapmarkerclick', function markerclicked(e) {
+                    //console.log('event:', e.detail.name, 'new slide:', e.detail.marker, 'in slider:',e.detail.map);
+                    allSliders[e.detail.map].setSliderIndex(e.detail.marker);
+                });
             }
             
         } // end for m maps
         
-        // jQuery fotorama functions for fullscreen, map interaction e.q marker settings. 
-        /*
-        if ( numberOfFotorama > 0) {
-
-            // update markers
-            $('.fotorama').on('sliderload sliderchange',
-            function (e) 
-            {
-                let nr = e.originalEvent.detail.newslide-1;
-                let m = e.originalEvent.detail.slider;
-                let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
-             
-                // update Map to the new marker
-                if ( hasMap && phpvars[m].imgdata[nr].coord[0] ) {
-                    if (e.type === 'sliderload') {
-                        storemarker[m] = mrk[m][nr];
-                        newmarker[m] = mrk[m][nr];
-                        maps[m].removeLayer(mrk[m][nr]);
-                        newmarker[m].setIcon(myIcon3);
-                        newmarker[m].setZIndexOffset(500);
-                        newmarker[m].addTo(maps[m]);
-                    }
-
-                    if (e.type === 'sliderchange') {
-                        maps[m].flyTo([phpvars[m].imgdata[nr].coord[0] , phpvars[m].imgdata[nr].coord[1] ]);
-                    }
-
-                    if (storemarker[m].options.id != mrk[m][nr].options.id) {
-                        maps[m].removeLayer(newmarker[m]);
-                        storemarker[m].setIcon(myIcon1);
-                        newmarker[m].setZIndexOffset(-500);
-                        storemarker[m].addTo(maps[m]);
-                        storemarker[m] = mrk[m][nr]
-                        newmarker[m] = mrk[m][nr];
-                        maps[m].removeLayer(mrk[m][nr]);
-                        newmarker[m].setIcon(myIcon3);
-                        newmarker[m].setZIndexOffset(500);
-                        newmarker[m].addTo(maps[m]);
-                    }
-                }
-            });
-        }
-        */
         // function for map resizing for responsive devices
-        //$(window).on("resize load", mapResize() );
+        // TODO: funktioniert nicht
+        $(window).on("resize load", mapResize() );
     }
-
+    /*
     function showMultipleTracks(zpadding) {
         m = 0;
         grouptracks[m] = [];
@@ -371,126 +266,8 @@
         tracks[m] = phptracks.tracks;
     }
 
-    function createMarkers(phptracks, allSliders) {
-        group1[m] = L.layerGroup();
-        let testgroup = L.featureGroup();
-        //LayerSupportGroup.addTo(maps[m]);
-        // Creating markers -----------------------
-        let marker = new Array();
-        let j = 0;
-
-        // define image markers for map
-        phptracks.imgdata.forEach(tour => {
-            if ((tour["coord"][0] == null) || (tour["coord"][1] == null)) {
-                // do nothing
-            }
-            else {
-                marker.push(new L.Marker(tour["coord"], { title: tour["title"], icon: myIcon1, id: j, riseOnHover: true, }));
-
-                if (("srcset" in tour) && (Object.keys(tour["srcset"]).length)) { // "srcset" in tour
-                    var key = Object.keys(tour.srcset)[0];
-                    marker[j].bindPopup('<div>' + tour["title"] + '<br><img class="leaf_pup_img" src="' + tour.srcset[key] + '"></div>', {
-                        maxWidth: "auto",
-                    });
-                } else {
-                    marker[j].bindPopup(tour["title"]);
-                }
-
-                marker[j].addTo(group1[m]);
-                marker[j].on('click', function (a) {
-                    //var title = this.options.title;
-                    var source = a.originalEvent.currentTarget.id;
-                    source = source.replace('map', '');
-                    m = parseInt(source);
-
-                    //fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
-                    allSliders[m].setSliderIndex(this.options.id);
-                });
-                marker[j].on('mouseover', function (e) {
-                    this.openPopup();
-                });
-                marker[j].on('mouseout', function (e) {
-                    this.closePopup();
-                });
-                marker[j].addTo(testgroup);
-                j++;
-            }
-        });
-        return { marker, j, testgroup };
-    }
-
-    function setMapControls(mobile, phptracks, zpadding) {
-        if (!mobile) {
-            controlZoom[m] = new L.Control.Zoom(opts.zoomControl);
-            controlZoom[m].addTo(maps[m]);
-        }
-
-        // create a fullscreen button and add it to the map
-        L.control.fullscreen({
-            position: 'topleft',
-            title: L._('Show fullscreen'),
-            titleCancel: L._('Exit fullscreen'),
-            content: null,
-            forceSeparateButton: true,
-            forcePseudoFullscreen: true,
-            fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
-        }).addTo(maps[m]);
-
-        // Functions and Overlays for Show-all (Magnifying glass) in the top left corner
-        L.Control.Watermark = L.Control.extend({
-            onAdd: function () {
-                let img = L.DomUtil.create('img');
-                //img.src = g_wp_postmap_path + 'lupe_p_32.png';
-                img.src = phptracks.imagepath + "/lupe_p_32.png";
-                img.style.background = 'white';
-                img.style.width = '32px';
-                img.style.height = '32px';
-                img.style.cursor = 'pointer';
-                img.title = L._('Show all');
-                img.id = m;
-                img.onclick = function (e) {
-                    let m = parseInt(e.srcElement.id);
-                    maps[m].fitBounds(bounds[m], { padding: zpadding, maxZoom: 13 });
-                };
-                return img;
-            },
-        });
-        L.control.watermark = function (opts) {
-            return new L.Control.Watermark(opts);
-        };
-        L.control.watermark({ position: 'topleft' }).addTo(maps[m]);
-
-        // Creating scale control bottom left
-        scale[m] = L.control.scale();
-        // Adding scale control to the map
-        scale[m].addTo(maps[m]);
-
-        // create Map selector top right 
-        controlLayer[m] = L.control.layers(baseLayers[m], null, opts.layersControl.options);
-        controlLayer[m].addTo(maps[m]);
-
-        // create Track selector bottom right
-        baseLayers2[m] = {};
-    }
-
-    function showSelectedMap(numberOfMaps, phpvars) {
-        if (numberOfMaps == 1 && showalltracks) {
-            maps[m].addLayer(baseLayers[m].OpenStreetMap); // this one is preselected for multiple tracks
-        } else if (phpvars[m].mapselector === 'OpenStreetMap') {
-            maps[m].addLayer(baseLayers[m].OpenStreetMap); // this one is preselected for one gpx-track
-        } else if (phpvars[m].mapselector === 'OpenTopoMap') {
-            maps[m].addLayer(baseLayers[m].OpenTopoMap); // this one is preselected for one gpx-track
-        } else if (phpvars[m].mapselector === 'CycleOSM') {
-            maps[m].addLayer(baseLayers[m].CycleOSM); // this one is preselected for one gpx-track
-        } else if (phpvars[m].mapselector === 'Satellit') {
-            maps[m].addLayer(baseLayers[m].Satellit); // this one is preselected for one gpx-track
-        } else {
-            maps[m].addLayer(baseLayers[m].OpenStreetMap);
-        }
-    }
-
     function defMapAndChart(chartheight, phpmapheight, hasFotorama, maxZoomValue, mobile) {
-        let phptracks = eval('wpfm_phpvars' + m);
+        let phptracks = eval('wpfm_pageVarsForJs' + m);
         chartheight[m] = phptracks.chartheight;
         phpmapheight[m] = phptracks.mapheight;
 
@@ -545,7 +322,7 @@
             index: i,
             marker_options: {
                 wptIconUrls: {
-                    '': wpfm_phpvars0.imagepath + 'pin-icon-wpt.png', // see: https://github.com/mpetazzoni/leaflet-gpx#about-waypoints
+                    '': wpfm_pageVarsForJs0.imagepath + 'pin-icon-wpt.png', // see: https://github.com/mpetazzoni/leaflet-gpx#about-waypoints
                 },
                 startIconUrl: null,
                 endIconUrl: null,
@@ -619,111 +396,7 @@
             q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = trace.gpx.get_elevation_loss().toFixed(0) + " m";
         }
     }
-
-    /**
-     * set Bounds of Map according to the shown Markers and already predefined bounds.
-     * @param {number} mapNumber number of the current map
-     * @param {object} markergroup group of markery as leaflet markergroup
-     */
-    function setBoundsToMarkers( mapNumber, markergroup ) {
-        let _bounds = [];
-
-        if ( (typeof(bounds[mapNumber]) !== 'undefined') && ('_northEast' in bounds[mapNumber]) && ('_southWest' in bounds[mapNumber]) ) {
-            _bounds = bounds[mapNumber];
-        } else {
-            try {
-                _bounds = markergroup.getBounds().pad(0.1);
-            } catch (e) {
-                // nothing
-            }
-        }
-
-        if ( _bounds.length !== 0) {
-            maps[mapNumber].fitBounds(_bounds);
-            // set the max zoom level for markers exactly on the same postion
-            let curzoom = maps[mapNumber].getZoom();
-            if ( curzoom == maxZoomValue ) {
-                maps[mapNumber].fitBounds(_bounds, {maxZoom : 13});
-            }
-        }
-        return _bounds;
-    }
-
-    // i18n translation
-    function setlang() {
-        let de = {
-            'Show all' : "Alles anzeigen",
-            'Distance' : "Strecke",
-            "Ascent"   : "Anstieg",
-            "Descent"  : "Abstieg",
-            "Altitude" : "Höhe", // is in file /src/altitude.js
-            "Images"   : "Fotos",
-            'Show fullscreen' : 'Zeige Vollbild',
-            'Exit fullscreen' : 'Vollbild beenden',
-        };
-
-        let it = {
-            'Show all' : "Mostra Tutti",
-            'Distance' : "Distanza",
-            "Ascent"   : "Salita",
-            "Descent"  : "Discesa",
-            "Altitude" : "Altitudine", // is in file /src/altitude.js
-            "Images"   : "Foto",
-            'Show fullscreen' : 'Mappa a schermo intero',
-            'Exit fullscreen' : 'Esci schermo intero',
-        };
-
-        let fr = {
-            'Show all' : "Afficher Tout",
-            'Distance' : "Distance",
-            "Ascent"   : "Ascente",
-            "Descent"  : "Descente",
-            "Altitude" : "Altitude", // is in file /src/altitude.js
-            "Images"   : "Images",
-            'Show fullscreen' : 'Afficher carte en plein écran',
-            'Exit fullscreen' : 'Quitter le mode plein écran',
-        };
-
-        let es = {
-            'Show all' : "Mostrar Todo",
-            'Distance' : "Distancia",
-            "Ascent"   : "Ascenso",
-            "Descent"  : "Descenso",
-            "Altitude" : "Altura", // is in file /src/altitude.js
-            "Images"   : "Fotos",
-            'Show fullscreen' : 'Mostrar pantalla completa',
-            'Exit fullscreen' : 'Salir de pantalla completa',
-        };
-
-        var lang = navigator.language;
-        lang = lang.split('-')[0];
-
-        if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
-            L.registerLocale(lang, eval(lang) );
-            L.setLocale(lang);
-            return mylocale;
-        } else {return;}
-    }; 
-
-    /**
-     * Define Icons for the leaflet map.
-     * @param {string} path 
-     * @param {string} iconpng 
-     * @param {string} shadowpng 
-     * @returns {object} icon leaflet.icon-object-type
-     */
-    function setIcon(path, iconpng, shadowpng) {
-        let icon = L.icon({ 
-            iconUrl: path + iconpng,
-            iconSize: [32, 32],
-            iconAnchor: [16, 32],
-            popupAnchor: [0, -16],
-            shadowUrl: path + shadowpng,
-            shadowSize: [48, 32],
-            shadowAnchor: [16, 32],
-        });
-        return icon;
-    }
+    */
 
     function mapResize() {
                     
@@ -741,8 +414,8 @@
             let hmap = $('#map' + m).height();
             let ratioMap = wmap / hmap;
             
-            if ( ! ('ratioMap' in phpvars[m]) ) {
-                phpvars[m]['ratioMap'] = ratioMap;
+            if ( ! ('ratioMap' in pageVarsForJs[m]) ) {
+                pageVarsForJs[m]['ratioMap'] = ratioMap;
                 $('#map' + m).css('aspect-ratio', ratioMap);
             }
             
@@ -756,87 +429,21 @@
             hdld = (typeof hdld === 'undefined') ? 0 : hdld;
 
             let eleheight = wbox / 3;
-            eleheight = Math.min(Math.max(parseInt(eleheight), 140), chartheight[m]); 
+            eleheight = Math.min(Math.max(parseInt(eleheight), 140), pageVarsForJs[m].chartheight); 
             $('#elevation-div'+m).css("height", eleheight);
           
-            let mapheight = wbox / phpvars[m]['ratioMap'];
-            mapheight = Math.min(Math.max(parseInt(mapheight), 280), phpmapheight[m]);
+            let mapheight = wbox / pageVarsForJs[m]['ratioMap'];
+            mapheight = Math.min(Math.max(parseInt(mapheight), 280), pageVarsForJs[m].phpmapheight);
             $('#map'+m).css("height", mapheight);
 
-            let _group = new L.featureGroup(mrk[m]);
+            let _group = new L.featureGroup( allMaps[m].mrk );
 
             // skip boundary setting for boxmap that doesn't have a map
             if ( ! isNaN(ratioMap)) {
-                bounds[m] = setBoundsToMarkers(m, _group);
+                allMaps[m].bounds = allMaps[m].setBoundsToMarkers(m, _group);
             } 
         }
     
     }
 
-    function defMapAndChartVar(numberOfMaps, setIcon) {
-        var showalltracks = (wpfm_phpvars0.showalltracks === 'true'); // info: wpfm_phpvars0 is defined on the page by wp_localize_script in PHP
-        if (numberOfMaps > 1 && showalltracks) { showalltracks = false; }
-
-        // Icons definieren
-        var myIcon1 = setIcon(wpfm_phpvars0.imagepath, 'photo.png', 'shadow.png');
-        var myIcon2 = setIcon(wpfm_phpvars0.imagepath, 'pin-icon-wpt.png', 'shadow.png');
-        var myIcon3 = setIcon(wpfm_phpvars0.imagepath, 'active.png', 'shadow.png');
-
-        // Kartenoptionen definieren
-        var opts = {
-            map: {
-                center: [41.4583, 12.7059],
-                zoom: 5,
-                markerZoomAnimation: false,
-                zoomControl: false,
-                gestureHandling: true,
-            },
-            zoomControl: {
-                position: 'topleft',
-            },
-            layersControl: {
-                options: {
-                    collapsed: true,
-                },
-            },
-        };
-
-        var maps = new Array();
-        var baseLayers = new Array();
-        var layer1 = new Array();
-        var layer2 = new Array();
-        var layer3 = new Array();
-        var layer4 = new Array();
-        var bounds = new Array();
-        var controlZoom = new Array();
-        var scale = new Array();
-        var controlLayer = new Array();
-        var baseLayers2 = new Array();
-        var controlLayer2 = new Array();
-        var controlElevation = new Array();
-        var eleopts = new Array();
-        var traces = new Array();
-        var tracks = new Array();
-        var grouptracks = [];
-        var group1 = new Array();
-        return { opts, layer1, layer2, layer3, layer4, baseLayers, maps, showalltracks, controlZoom, bounds, scale, controlLayer, baseLayers2, eleopts, controlLayer2, controlElevation, traces, tracks, grouptracks, myIcon2, group1, myIcon1, myIcon3 };
-    }
-
-    function defMapVar() {
-        var numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
-        var storemarker = new Array();
-        var newmarker = new Array();
-        var mrk = new Array();
-        var chartheight = new Array();
-        var phpmapheight = new Array();
-        var maxZoomValue = 19;
-        var zpadding = [30, 30];
-        return { numberOfMaps, chartheight, phpmapheight, maxZoomValue, zpadding, mrk, storemarker, newmarker };
-    }
-
-    function defGenVar() {
-        var mobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
-        var phpvars = new Array();
-        return { phpvars, mobile };
-    }
 })(window, document, jQuery);

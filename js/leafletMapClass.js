@@ -1,6 +1,7 @@
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // start this class without leaflet elevation and inherit with leaflet from this class!
 // only work with markers and controls in the first step.
+// TODO: update and add leaflet elevation functions
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 class LeafletMap {
@@ -14,7 +15,7 @@ class LeafletMap {
     // public attributes (fields). These can be set / get by dot-notation.
     width = 0;
     pageVariables = [];
-    hasFotorama = false; // TODO: inconsisent to know about fotorama here
+    //hasFotorama = false; // TODO: inconsisent to know about fotorama here
 
     // from defMapVar
     static numberOfMaps = null;
@@ -72,12 +73,15 @@ class LeafletMap {
         this.elementOnPage = elementOnPage;
         this.pageVariables = pageVarsForJs[number];
         this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+
+        // object to handle event 'showend' and 'load'
+        this.el = document.querySelector('#'+elementOnPage);
        
         // define the variables for one map
         if (LeafletMap.numberOfMaps === null) {
             LeafletMap.numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
         }
-        this.hasFotorama = document.querySelectorAll('[id^=mfotorama'+ number +']').length == 1; // TODO: inconsisent to know about fotorama here
+        //this.hasFotorama = document.querySelectorAll('[id^=mfotorama'+ number +']').length == 1; // TODO: inconsisent to know about fotorama here
 
         // Icons definieren
         this.myIcon1 = this.setIcon(this.pageVariables.imagepath, 'photo.png', 'shadow.png');
@@ -94,7 +98,9 @@ class LeafletMap {
         this.defMapLayers();
 
         // static set the language strings. same for all instances.
-        if (LeafletMap.myLocale === null) {
+        if (typeof(L.registerLocale) !== 'function') {
+            // nothing
+        } else if (LeafletMap.myLocale === null) {
             LeafletMap.myLocale = this.setLanguage();
         }
 
@@ -170,7 +176,14 @@ class LeafletMap {
         };
        
     }
-
+    
+    i18n(text) {
+        if (typeof(L.registerLocale) !== 'function') {
+            return text;
+        } else  {
+            return L._(text);
+        }
+    }
     /**
      * set the i18n values for the leaflet map.
      * @returns {string|null} the string value for the locale or null, if none available.
@@ -224,9 +237,14 @@ class LeafletMap {
         lang = lang.split('-')[0];
 
         if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
-            L.registerLocale(lang, eval(lang) );
-            L.setLocale(lang);
-            return lang;
+            try {
+                L.registerLocale(lang, eval(lang) );
+                L.setLocale(lang);
+                return lang;
+            } catch (e) {
+                return null;
+            }
+
         } else {
             return null;
         }
@@ -260,8 +278,8 @@ class LeafletMap {
         // create a fullscreen button and add it to the map
         L.control.fullscreen({
             position: 'topleft',
-            title: L._('Show fullscreen'),
-            titleCancel: L._('Exit fullscreen'),
+            title: this.i18n('Show fullscreen'),
+            titleCancel: this.i18n('Exit fullscreen'),
             content: null,
             forceSeparateButton: true,
             forcePseudoFullscreen: true,
@@ -277,7 +295,7 @@ class LeafletMap {
                 img.style.width = '32px';
                 img.style.height = '32px';
                 img.style.cursor = 'pointer';
-                img.title = L._('Show all');
+                img.title = classThis.i18n('Show all');
                 img.id = this.number;
                 img.onclick = function () {
                     classThis.map.fitBounds(classThis.bounds, { padding: classThis.zpadding, maxZoom: 13 });
@@ -314,7 +332,7 @@ class LeafletMap {
     createFotoramaMarkers(markers) {
         let { marker, j, testgroup } = this.createMarkers(markers);
         this.mrk = marker;
-        this.controlLayer.addOverlay(this.group1, L._('Images') + '(' + j + ')');    
+        this.controlLayer.addOverlay(this.group1, this.i18n('Images') + '(' + j + ')');    
         this.group1.addTo(this.map); 
         this.bounds = undefined;
         this.bounds = this.setBoundsToMarkers(testgroup);
@@ -327,6 +345,7 @@ class LeafletMap {
      * @returns {array} bounds
      */
     createMarkers(imgdata) {
+        let classThis = this;
         this.group1 = L.layerGroup();
         let testgroup = L.featureGroup();
         //LayerSupportGroup.addTo(maps[m]);
@@ -352,13 +371,22 @@ class LeafletMap {
                 }
 
                 marker[j].addTo(this.group1);
+
+                // trigger click on marker: marker.on('click', ....)
                 marker[j].on('click', function (a) {
-                    var source = a.originalEvent.currentTarget.id;
-                    source = source.replace('map', '');
-                    let m = parseInt(source);
-                    //fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
-                    // TODO: fire event that marker was clicked
-                    //allSliders[m].setSliderIndex(this.options.id);
+                    // get the index number of the map on the page
+                    let source = parseInt( a.originalEvent.currentTarget.id.replace('map', '') );
+                                       
+                    const changed = new CustomEvent('mapmarkerclick', {
+                        detail: {
+                        name: 'mapmarkerclick',
+                        marker: this.options.id,
+                        map: source
+                        }
+                    });
+
+                    classThis.el.dispatchEvent(changed);
+                    
                 });
                 marker[j].on('mouseover', function (e) {
                     this.openPopup();
@@ -403,14 +431,10 @@ class LeafletMap {
     }
 
     // update marker on click
+    mapFlyTo(coordinates=[0,0]) {
+        this.map.flyTo( coordinates );
+    }
 
     // function for map resizing for responsive devices
-
-    // --------------------------- Class API method definitions
-    // TODO: what is the interface? Marker number or geo-data?
-    // map.flyto is with coordinates. zoom is unchanged
-    // set map to marker
-
-    // trigger click on marker: marker.on('click', ....)
 
 }

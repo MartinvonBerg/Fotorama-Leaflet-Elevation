@@ -29,14 +29,14 @@ wp_enqueue_style('fotorama3_css', $plugin_url . 'css/fotorama3.min.css');
 wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '3.1.0');
 	
 // register local Styles
-wp_register_style('leaflet_css', $plugin_url . 'css/leaflet.min.css', [], '1.7.1');
+wp_register_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.7.1');
 wp_register_style('leaflet_elevation_css', $plugin_url . 'css/leaflet-elevation.min.css', [], '1.5.6');
 wp_register_style('leaflet_gesture_handling_css', $plugin_url . 'css/leaflet-gesture-handling.min.css', [], '1.2.1');
 wp_register_style('control_fullscreen_css', $plugin_url . 'css/Control.FullScreen.min.css', [], '2.0.0');
 
 // register local Scripts
 wp_register_script('d3_js',  $plugin_url . 'js/libs/d3.min.js', array('jquery'), '5.16.0', true); // does not work with d3 > version 6.0 !
-wp_register_script('leaflet_js',  $plugin_url . 'js/libs/leaflet.min.js', array('jquery'), '1.7.1', true);
+wp_register_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
 wp_register_script('gpx_js',  $plugin_url . 'js/libs/gpx.min.js', array('jquery'), '1.5.1', true);
 wp_register_script('leaflet_gpxgroup_js', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
 wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/libs/leaflet-elevation.min.js', array('jquery'), '1.5.6', true);
@@ -50,15 +50,15 @@ wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduce
 
 // load styles
 wp_enqueue_style ('leaflet_css');
-wp_enqueue_style ('leaflet_elevation_css');
+//wp_enqueue_style ('leaflet_elevation_css');
 wp_enqueue_style ('leaflet_gesture_handling_css');
 wp_enqueue_style ('control_fullscreen_css');
 // load scripts
-wp_enqueue_script('d3_js');
+//wp_enqueue_script('d3_js');
 wp_enqueue_script('leaflet_js');
-wp_enqueue_script('gpx_js');
-wp_enqueue_script('leaflet_gpxgroup_js');
-wp_enqueue_script('leaflet_elevation_js');
+//wp_enqueue_script('gpx_js');
+//wp_enqueue_script('leaflet_gpxgroup_js');
+//wp_enqueue_script('leaflet_elevation_js');
 wp_enqueue_script('leaflet_gesture_handling_js');
 wp_enqueue_script('control_fullscreen_js');
 wp_enqueue_script('zoom_master_js');

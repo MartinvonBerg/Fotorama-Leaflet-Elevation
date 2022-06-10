@@ -5,6 +5,7 @@
 // TODO: before adopting to react this class should be transferred to Typescript.
 // TODO: the minifier does not work with private methods.
 // TODO: install and use eslint up to the latest coding standards
+// TODO: create tests with Jest testing framework
 // A React Component would receive the fotorama options as props and image-data as a js-array. 
 // Here the js-array would be received by a server side render to have a dynamic react component. The SSR would be the PHP 'readImageFolder'.
 // The React component would then generate the html including the given options which would be then parsed by fotorama afterwards.
