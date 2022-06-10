@@ -14,14 +14,13 @@ class LeafletMap {
     // public attributes (fields). These can be set / get by dot-notation.
     width = 0;
     pageVariables = [];
-    hasFotorama = false;
+    hasFotorama = false; // TODO: inconsisent to know about fotorama here
 
     // from defMapVar
     static numberOfMaps = null;
     storemarker = [];
     newmarker = [];
     mrk = [];
-    //chartheight = 0; // for elevation
     phpmapheight = 0;
     maxZoomValue = 19; // static ?
     zpadding = [30, 30]; // static ?
@@ -58,56 +57,37 @@ class LeafletMap {
     controlZoom = [];
     scale = [];
     controlLayer = [];
-    baseLayers2 = [];
-    controlLayer2 = [];
-    //controlElevation = []; // for elevation
-    //eleopts = []; // for elevation
-    //traces = []; // for elevation
-    //tracks = []; // for elevation
-    //grouptracks = []; // for elevation
-    //group1 = []; // for elevation
-
+    //baseLayers2 = []; // for elevation
+    //controlLayer2 = []; // for elevation
+    group1 = [];
+   
     /**
      * Constructor Function
      * @param {int} number current number
      * @param {string} elementOnPage id of the div on the page that shall contain the map
      */
-    constructor(number, elementOnPage) {
+    constructor(number, elementOnPage, center=null, zoom=null) {
         LeafletMap.count++; // update the number of instances on construct.
-        this.number = number; 
-        this.elementOnPage = elementOnPage; 
+        this.number = number;
+        this.elementOnPage = elementOnPage;
         this.pageVariables = pageVarsForJs[number];
         this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
        
-        // object to handle event 'showend' and 'load'
-        this.el = document.querySelector('#'+elementOnPage);
-
         // define the variables for one map
-        // from defMapVar
         if (LeafletMap.numberOfMaps === null) {
             LeafletMap.numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
         }
-        this.hasFotorama = document.querySelectorAll('[id^=mfotorama'+ number +']').length == 1;
-
-        // from defMapAndChartVar // for elevation
-        /*
-        this.showalltracks = (this.pageVariables.showalltracks === 'true'); // info: wpfm_phpvars0 is defined on the page by wp_localize_script in PHP
-        if (LeafletMap.numberOfMaps > 1 && this.showalltracks) {
-            this.showalltracks = false; 
-        }
-        */
+        this.hasFotorama = document.querySelectorAll('[id^=mfotorama'+ number +']').length == 1; // TODO: inconsisent to know about fotorama here
 
         // Icons definieren
         this.myIcon1 = this.setIcon(this.pageVariables.imagepath, 'photo.png', 'shadow.png');
         this.myIcon2 = this.setIcon(this.pageVariables.imagepath, 'pin-icon-wpt.png', 'shadow.png');
         this.myIcon3 = this.setIcon(this.pageVariables.imagepath, 'active.png', 'shadow.png');
 
-        // Kartenoptionen definieren --> in den constructor verlagert.
-      
         //change options for maps without gpx-tracks so without elevation.
-        if ((parseInt(this.pageVariables.ngpxfiles) === 0) && ( ! this.hasFotorama)) {
-            this.opts.map.center = this.pageVariables.mapcenter;
-            this.opts.map.zoom = this.pageVariables.zoom;
+        if ( center !== null & zoom !== null) { 
+            this.opts.map.center = center;
+            this.opts.map.zoom = zoom;
         }
 
         // define Map Base Layers
@@ -124,12 +104,11 @@ class LeafletMap {
         // show the selected map
         this.showSelectedMap();
         this.bounds = this.map.getBounds();
-        this.zpadding = [0,0];
+        this.zpadding = [0,0]; // TODO: how to reset this to correct values?
 
         //------- Magnifying glass, fullscreen, Image-Marker und Base-Layer-Change handling --------------------------------
         // create scale control top left // for mobile: zoom deactivated. use fingers!
         this.setMapControls();
-
     }
 
     /**
@@ -320,23 +299,110 @@ class LeafletMap {
         this.controlLayer.addTo(this.map);
     }
 
-    // show the selected map
+    /**
+     * Create a single marker on the map with myIcon2.
+     * @param {string} markertext text to show on hover over marker.
+     */
+    createSingleMarker(markertext) {
+        L.marker(this.opts.map.center, { title: markertext, icon: this.myIcon2 } ).addTo(this.map);
+    }
 
-    // set map controls
-
-    // create tracks and elecation chart
-
-    // update track and elecation chart
-
-    // change elevation chart on change of gpx-track
+    /**
+     * TODO
+     * @param {array} markers
+     */
+    createFotoramaMarkers(markers) {
+        let { marker, j, testgroup } = this.createMarkers(markers);
+        this.mrk = marker;
+        this.controlLayer.addOverlay(this.group1, L._('Images') + '(' + j + ')');    
+        this.group1.addTo(this.map); 
+        this.bounds = undefined;
+        this.bounds = this.setBoundsToMarkers(testgroup);
+    }
 
     // create markers
+    /**
+     * TODO
+     * @param {array} imgdata 
+     * @returns {array} bounds
+     */
+    createMarkers(imgdata) {
+        this.group1 = L.layerGroup();
+        let testgroup = L.featureGroup();
+        //LayerSupportGroup.addTo(maps[m]);
+        // Creating markers -----------------------
+        let marker = [];
+        let j = 0;
 
-    // update marker
+        // define image markers for map
+        imgdata.forEach(tour => {
+            if ((tour["coord"][0] == null) || (tour["coord"][1] == null)) {
+                // do nothing. skip this image if no gpx-data provided.
+            }
+            else {
+                marker.push(new L.Marker(tour["coord"], { title: tour["title"], icon: this.myIcon1, id: j, riseOnHover: true, }));
 
-    // set bounds
+                if (("srcset" in tour) && (Object.keys(tour["srcset"]).length)) { // "srcset" in tour
+                    var key = Object.keys(tour.srcset)[0];
+                    marker[j].bindPopup('<div>' + tour["title"] + '<br><img class="leaf_pup_img" src="' + tour.srcset[key] + '"></div>', {
+                        maxWidth: "auto",
+                    });
+                } else {
+                    marker[j].bindPopup(tour["title"]);
+                }
 
-    // update bounds
+                marker[j].addTo(this.group1);
+                marker[j].on('click', function (a) {
+                    var source = a.originalEvent.currentTarget.id;
+                    source = source.replace('map', '');
+                    let m = parseInt(source);
+                    //fotorama[m].show(this.options.id); // Fotorama und Karte müssen denselben Index haben!
+                    // TODO: fire event that marker was clicked
+                    //allSliders[m].setSliderIndex(this.options.id);
+                });
+                marker[j].on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                marker[j].on('mouseout', function (e) {
+                    this.closePopup();
+                });
+                marker[j].addTo(testgroup);
+                j++;
+            }
+        });
+        return { marker, j, testgroup };
+    }
+
+    /**
+     * set new Bounds of Map according to the shown Markers and already predefined bounds.
+     * @param {number} mapNumber number of the current map
+     * @param {object} markergroup group of markery as leaflet markergroup
+     */
+    setBoundsToMarkers( markergroup ) {
+        let _bounds = [];
+
+        if ( (typeof(this.bounds) !== 'undefined') && ('_northEast' in this.bounds) && ('_southWest' in this.bounds) ) {
+            _bounds = this.bounds; // bounds bereits definiert
+        } else {
+            try {
+                _bounds = markergroup.getBounds().pad(0.1);
+            } catch (e) {
+                // nothing
+            }
+        }
+
+        if ( _bounds.length !== 0) {
+            this.map.fitBounds(_bounds);
+            // set the max zoom level for markers exactly on the same postion
+            let curzoom = this.map.getZoom();
+            if ( curzoom == this.maxZoomValue ) {
+                this.map.fitBounds(_bounds, {maxZoom : 13});
+            }
+        }
+        return _bounds;
+    }
+
+    // update marker on click
 
     // function for map resizing for responsive devices
 

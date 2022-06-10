@@ -26,10 +26,13 @@
         // do it for all shortcodes on the page or post
         for (var m = 0; m < numberOfboxes; m++) {
 
-            phpvars[m] = eval('wpfm_phpvars'+ m);
+            phpvars[m] = pageVarsForJs[m];
 
             //------------- fotorama part --------------------------------------
             var hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
+
+            //------------- leaflet - elevation part ---------------------------
+            var hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
 
             // define fotorama
             if ( hasFotorama ) {
@@ -48,22 +51,20 @@
                     console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider)
                 });
                 */
-            }
+            } 
             
-        
-            //------------- leaflet - elevation part ---------------------------
-            var hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
-
             // define map and chart
-            if ( hasMap) {
+            if ( hasMap & hasFotorama ) {
                 // get js-variables from php-output
-                var phptracks = defMapAndChart(chartheight, phpmapheight, hasFotorama, maxZoomValue, mobile);  
+                //var phptracks = defMapAndChart(chartheight, phpmapheight, hasFotorama, maxZoomValue, mobile);  
                 // set the language strings for the map
-                var mylocale = setlang();
+                //var mylocale = setlang();
 
                 // initiate the leaflet map
                 allMaps[m] = new LeafletMap(m, 'boxmap' + m );
                 //maps[m] = new L.Map('map' + m, opts.map); 
+                let fotoramaMakers = phpvars[m].imgdata;
+                allMaps[m].createFotoramaMarkers(fotoramaMakers);
                 
                 // show the selected map
                 //showSelectedMap(numberOfMaps, phpvars);          
@@ -92,8 +93,7 @@
                         } 
                     }
                 } 
-                else if ( ! hasFotorama ) 
-                {
+                else if ( ! hasFotorama ) {
                     // No gpx-track to show: Create simple marker
                     L.marker(opts.map.center, { title: phptracks.markertext, icon: myIcon2 } ).addTo(maps[m]);
                 }
@@ -145,6 +145,24 @@
                 });
                 */
             }
+
+            if ( hasMap & ! hasFotorama ) {
+                // only leaflet elevation chart to show. This is true if there is a gpx-track provided
+                //get options for maps without gpx-tracks. only one marker to show.
+                if ( parseInt(phpvars[m].ngpxfiles) === 0 ) {
+                    let center = phpvars[m].mapcenter;
+                    let zoom = phpvars[m].zoom;
+                    let text = phpvars[m].markertext;
+                    allMaps[m] = new LeafletMap(m, 'boxmap' + m, center, zoom );
+                    allMaps[m].createSingleMarker(text);
+                    $('.wp-block-column').css({"min-width":"100"});
+                } else {
+                    // only leaflet elevation chart to show. This is true if there is a gpx-track provided.
+                    // But this is the code for the child class. How to do this?
+                }
+
+            }
+            
         } // end for m maps
         
         // jQuery fotorama functions for fullscreen, map interaction e.q marker settings. 
