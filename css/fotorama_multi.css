@@ -73,6 +73,12 @@
  overflow: hidden;
 }
 
+#map0 {
+  width: 100;
+  aspect-ratio: 1.5;
+  height: auto;
+}
+
 .fm-dload {
   margin-bottom: 15px;
 }
