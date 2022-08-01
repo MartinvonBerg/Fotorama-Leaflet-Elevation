@@ -26,7 +26,7 @@ $plugin_url = plugins_url('/', __FILE__);
 wp_enqueue_style('fotorama_css', $plugin_url . 'css/fotorama_multi.min.css');
 wp_enqueue_style('fotorama3_css', $plugin_url . 'css/fotorama3.min.css');
 // Load Scripts
-wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '3.1.0');
+wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '4.6.4');
 	
 // register local Styles
 wp_register_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.7.1');

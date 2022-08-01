@@ -332,7 +332,7 @@ EOF;
 	if ($showmap  == 'true') {
 		$mapid = 'map' . strval($shortcodecounter); 
 		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
-		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"height:{$mapheight}px;\"></div>";
+		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;\"></div>";
 		// Custom Summary
 		if ($i > 0) { // number of gpxtracks at least 1 !
 			$htmlstring .= <<<EOF

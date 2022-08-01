@@ -127,6 +127,7 @@ class SliderFotorama {
     setLinkForInfoButton(sliderNumber, newslide) {
         if ( this.pageVariables.imgdata[newslide].permalink !== '') {
             jQuery('#multifotobox' + sliderNumber + ' .fm-attach-link a').attr("href", this.pageVariables.imgdata[newslide].permalink);
+            // TODO: infoel generieren und hierher verschieben
         }
     }
 

@@ -66,6 +66,8 @@ class LeafletMap {
      * Constructor Function
      * @param {int} number current number
      * @param {string} elementOnPage id of the div on the page that shall contain the map
+     * @param {array} center the map center as lat, lon coord value
+     * @param {int} zoom the zoom factor to use for a map with center coords.
      */
     constructor(number, elementOnPage, center=null, zoom=null) {
         LeafletMap.count++; // update the number of instances on construct.

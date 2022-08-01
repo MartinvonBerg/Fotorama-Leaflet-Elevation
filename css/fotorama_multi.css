@@ -73,9 +73,9 @@
  overflow: hidden;
 }
 
-#map0 {
-  width: 100;
-  aspect-ratio: 1.5;
+[id^="map"] {
+  width: 100%;
+  aspect-ratio: 1.5; /* TODO: connect to a setting or find a better solution */
   height: auto;
 }
 
