@@ -284,9 +284,16 @@ class LeafletMap {
             titleCancel: this.i18n('Exit fullscreen'),
             content: null,
             forceSeparateButton: true,
-            forcePseudoFullscreen: true,
+            forcePseudoFullscreen: false,
             fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
         }).addTo(this.map);
+        // TODO: - enq scripts old / new - update this and other map scripts
+        this.map.on('exitFullscreen', function(event){
+            //console.log('exitFullscreen');
+            //classThis.map.fitBounds(classThis.bounds, { padding: [30, 30], maxZoom: 13 });
+        })
+        
+        
         
         // Functions and Overlays for Show-all (Magnifying glass) in the top left corner
         L.Control.Watermark = L.Control.extend({

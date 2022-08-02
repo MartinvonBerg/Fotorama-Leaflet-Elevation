@@ -1,17 +1,17 @@
 (function (window, document, undefined) {
     "use strict";
-    let numberOfboxes = document.querySelectorAll('[id^=multifotobox]').length;
+    let numberOfBoxes = document.querySelectorAll('[id^=multifotobox]').length;
 
-    if ( numberOfboxes > 0 ) {
+    if ( numberOfBoxes > 0 ) {
 
         // fotorama variables
-        let allSliders = [ numberOfboxes-1 ];
+        let allSliders = [ numberOfBoxes-1 ];
         
         // map and chart var. The var is intentional here.
-        let allMaps = [ numberOfboxes-1 ];
+        let allMaps = [ numberOfBoxes-1 ];
         
         // do it for all shortcodes on the page or post
-        for (let m = 0; m < numberOfboxes; m++) {
+        for (let m = 0; m < numberOfBoxes; m++) {
 
             //------------- fotorama part --------------------------------------
             let hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
@@ -59,13 +59,13 @@
                     let m = e.detail.slider;
                     let nr = e.detail.newslide-1;
 
-                    // remove old markers - on change only.
+                    // remove old markers - on change only. --> removeMarkers
                     allMaps[m].map.removeLayer(allMaps[m].newmarker);
                     allMaps[m].storemarker.setIcon(allMaps[m].myIcon1);
                     allMaps[m].newmarker.setZIndexOffset(-500);
                     allMaps[m].storemarker.addTo(allMaps[m].map);
 
-                    // mark now the marker for the active image
+                    // mark now the marker for the active image --> setActiveMarker
                     allMaps[m].storemarker = allMaps[m].mrk[nr];
                     allMaps[m].newmarker = allMaps[m].mrk[nr];
                     allMaps[m].map.removeLayer( allMaps[m].mrk[nr]);
@@ -83,7 +83,7 @@
                     let m = e.detail.slider;
                     let nr = e.detail.newslide-1;
 
-                    // mark now the marker for the active image
+                    // mark now the marker for the active image --> setActiveMarker
                     allMaps[m].storemarker = allMaps[m].mrk[nr];
                     allMaps[m].newmarker = allMaps[m].mrk[nr];
                     allMaps[m].map.removeLayer( allMaps[m].mrk[nr]);
@@ -119,7 +119,7 @@
                 document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='';
             }
             
-            for (let m = 0; m < numberOfboxes; m++) {    
+            for (let m = 0; m < numberOfBoxes; m++) {    
                 // w: width, h: height as shortform.  
                 let wmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).width.replace("px", ""));
                 let hmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).height.replace("px", ""));
