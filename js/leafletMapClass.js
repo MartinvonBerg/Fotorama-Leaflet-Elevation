@@ -411,6 +411,30 @@ class LeafletMap {
     }
 
     /**
+     * remove old markers - on change only
+     */
+    unSetActiveMarker () {
+         // remove old markers - on change only. --> removeMarkers
+         this.map.removeLayer(this.newmarker);
+         this.storemarker.setIcon(this.myIcon1);
+         this.newmarker.setZIndexOffset(-500);
+         this.storemarker.addTo(this.map);
+    }
+
+    /**
+     * update or change the marker for the active image.
+     * @param {int} markerNumber 
+     */
+    setActiveMarker ( markerNumber ) {
+        this.storemarker = this.mrk[markerNumber];
+        this.newmarker = this.mrk[markerNumber];
+        this.map.removeLayer( this.mrk[markerNumber]);
+        this.newmarker.setIcon(this.myIcon3);
+        this.newmarker.setZIndexOffset(500);
+        this.newmarker.addTo(this.map);
+    }
+
+    /**
      * set new Bounds of Map according to the shown Markers and already predefined bounds.
      * @param {number} mapNumber number of the current map
      * @param {object} markergroup group of markery as leaflet markergroup

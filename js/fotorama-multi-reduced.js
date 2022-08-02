@@ -49,47 +49,22 @@
                 allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
 
                 // update markers on the map if the active image changes
-                // TODO: move parts of this to the map class? Similar to 'mapmarkerclick'?
                 document.querySelector('#mfotorama'+ m).addEventListener('sliderchange', function waschanged(e) {
-                    //console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider);
+                    // move map
                     allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide-1]['coord'] ); // change only
 
-                    // mark the new image with red icon and remove the red icon from others
-                    // first get the right numbers
-                    let m = e.detail.slider;
-                    let nr = e.detail.newslide-1;
+                    // remove old markers - on change only. 
+                    allMaps[ e.detail.slider ].unSetActiveMarker();
 
-                    // remove old markers - on change only. --> removeMarkers
-                    allMaps[m].map.removeLayer(allMaps[m].newmarker);
-                    allMaps[m].storemarker.setIcon(allMaps[m].myIcon1);
-                    allMaps[m].newmarker.setZIndexOffset(-500);
-                    allMaps[m].storemarker.addTo(allMaps[m].map);
-
-                    // mark now the marker for the active image --> setActiveMarker
-                    allMaps[m].storemarker = allMaps[m].mrk[nr];
-                    allMaps[m].newmarker = allMaps[m].mrk[nr];
-                    allMaps[m].map.removeLayer( allMaps[m].mrk[nr]);
-                    allMaps[m].newmarker.setIcon(allMaps[m].myIcon3);
-                    allMaps[m].newmarker.setZIndexOffset(500);
-                    allMaps[m].newmarker.addTo(allMaps[m].map);
-
+                    // mark now the marker for the active image --> 
+                    allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide-1 );
+                   
                 });
-                // TODO: move parts of this to the map class? Similar to 'mapmarkerclick'?
+
+                // update markers on the map if the active image changes
                 document.querySelector('#mfotorama'+ m).addEventListener('sliderload', function wasloaded(e) {
-                    //console.log('event:', e.detail.name, 'new slide:', e.detail.newslide, 'in slider:',e.detail.slider);
-
-                    // mark the first image marker to red with myIcon3.
-                    // first get the right numbers
-                    let m = e.detail.slider;
-                    let nr = e.detail.newslide-1;
-
                     // mark now the marker for the active image --> setActiveMarker
-                    allMaps[m].storemarker = allMaps[m].mrk[nr];
-                    allMaps[m].newmarker = allMaps[m].mrk[nr];
-                    allMaps[m].map.removeLayer( allMaps[m].mrk[nr]);
-                    allMaps[m].newmarker.setIcon(allMaps[m].myIcon3);
-                    allMaps[m].newmarker.setZIndexOffset(500);
-                    allMaps[m].newmarker.addTo(allMaps[m].map);
+                    allMaps[e.detail.slider ].setActiveMarker( e.detail.newslide-1 );
                 });
 
                 // update the slider if the marker on the map was clicked
