@@ -15,21 +15,24 @@
 class SliderFotorama {
     // static attributes (fields)
     static count = 0; // counts the number of instances of this class.
-    static pageVariables = null;
-    // static numberOfSlidersOnPage = 0; // currently unused
     
     // private attributes (fields)
+    #pageVariables = []; // values passed form php via html
     #fotoramaState = 'normal'; // internal state variable for zooming
-    #zoomeffect = 'mouseover'; // for: https://www.jacklmoore.com/zoom/
-    #isMobile = false;
-    #normalZoom = ''
+    #zoomEffect = 'mouseover'; // for: https://www.jacklmoore.com/zoom/
+    #isMobile = false; 
+    #normalZoom = '';
 
     // public attributes (fields). These can be set / get by dot-notation.
+    number = 0;
+    elementOnPage = '';
+    el = {};
     width = 0;
     newimages = null;
     olddata = null;
     sliderData = null;
     sliderDiv = null;
+    infoel = null;
 
     /**
      * Constructor Function
@@ -40,14 +43,11 @@ class SliderFotorama {
         SliderFotorama.count++; // update the number of instances on construct.
         this.number = number; 
         this.elementOnPage = elementOnPage; 
-        if (this.pageVariables === null) {
-            this.pageVariables = [];
-        }
-        this.pageVariables = pageVarsForJs[number];
+        this.#pageVariables = pageVarsForJs[number];
         this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
-        this.#normalZoom = this.pageVariables.fit;
+        this.#normalZoom = this.#pageVariables.fit;
 
-        // object to handle event 'showend' and 'load'
+        // object to handle events 'showend' and 'load'
         this.el = document.querySelector('#'+elementOnPage);
     }
 
@@ -61,7 +61,7 @@ class SliderFotorama {
         this.sliderData = this.sliderDiv.data('fotorama');
 
         // define the image data array for ima
-        this.newimages = this.pageVariables.imgdata;
+        this.newimages = this.#pageVariables.imgdata;
 
         //let olddata = fotorama[m].data;
         this.olddata = this.sliderData.data;
@@ -110,9 +110,9 @@ class SliderFotorama {
      * @param {int} newslide 
      */
     updateCaption(sliderNumber, newslide) {
-        if ( this.pageVariables.imgdata[newslide].jscaption !== '') 
+        if ( this.#pageVariables.imgdata[newslide].jscaption !== '') 
         {
-            let text = this.pageVariables.imgdata[newslide].jscaption ;
+            let text = this.#pageVariables.imgdata[newslide].jscaption ;
             text = text.replaceAll('||', '<br>');
             jQuery('#mfotorama' + sliderNumber +' .fotorama__caption__wrap').html(text);
         }
@@ -125,9 +125,17 @@ class SliderFotorama {
      * @param {int} newslide 
      */
     setLinkForInfoButton(sliderNumber, newslide) {
-        if ( this.pageVariables.imgdata[newslide].permalink !== '') {
-            jQuery('#multifotobox' + sliderNumber + ' .fm-attach-link a').attr("href", this.pageVariables.imgdata[newslide].permalink);
+        if ( this.#pageVariables.imgdata[newslide].permalink !== '') {
+            jQuery('#multifotobox' + sliderNumber + ' .fm-attach-link a').attr("href", this.#pageVariables.imgdata[newslide].permalink);
             // TODO: infoel generieren und hierher verschieben
+            if (this.infoel === null) { // hier die 3-fach Abfrage 
+                // catch the element from the page
+
+            } else {
+                // place the element in the active frame of fotorama
+
+                // set the new link for the element
+            }
         }
     }
 
@@ -145,7 +153,7 @@ class SliderFotorama {
         let newlength = newimages.length;
     
         if (oldimages.length === newlength) {
-    
+            // use for-loop: according to TODO-links this gives the best performance.
             for (let index = 0; index < newlength; index++) {
                 let item = oldimages[index];
                 newdata[index] = [];
@@ -209,7 +217,7 @@ class SliderFotorama {
                 // handle the zoom, see: https://www.jacklmoore.com/zoom/
                 jQuery('#sf' + m + '-' + nr).zoom(
                     {//url: classThis.sliderData.data[nr].full, // if not defined uses the src in img tag. 
-                     on: classThis.#zoomeffect, //  Choose from mouseover, grab, click, or toggle. But only works with 'mouseover'.
+                     on: classThis.#zoomEffect, //  Choose from mouseover, grab, click, or toggle. But only works with 'mouseover'.
                      touch: false
                      // magnify: 1 // This value is multiplied against the full size of the zoomed image. The default value is 1, meaning the zoomed image should be at 100% of its natural width and height
                      // duration: 120, // The fadeIn/fadeOut speed of the large image. Only fade-out is working.
@@ -272,15 +280,13 @@ class SliderFotorama {
                     if (classThis.#fotoramaState === 'full' && ! classThis.#isMobile) {
                         jQuery('#sf' + m + '-' + nr).zoom(
                             {//url: classThis.sliderData.data[nr].full,
-                            on: classThis.#zoomeffect,
+                            on: classThis.#zoomEffect,
                             touch: false,
                         });
                     } else {
                         // destroy / deactivate zoom in normal-mode
                         jQuery('#sf' + m + '-' + nr).trigger('zoom.destroy');
-                    }  
-                
-                    
+                    } 
                 }
             }
         );
