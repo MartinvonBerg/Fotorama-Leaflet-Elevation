@@ -69,22 +69,47 @@
 
                 // update the slider if the marker on the map was clicked
                 document.querySelector('#boxmap'+ m).addEventListener('mapmarkerclick', function markerclicked(e) {
-                    //console.log('event:', e.detail.name, 'new slide:', e.detail.marker, 'in slider:',e.detail.map);
                     allSliders[e.detail.map].setSliderIndex(e.detail.marker);
+                });
+
+                document.addEventListener('pointerdown', function(event) {
+                    
+                    if (event.srcElement.className === 'leaflet-control-zoom-fullscreen fullscreen-icon') {
+                        
+                        for (let m = 0; m < event.path.length; m++) {
+                            if (event.path[m].id.includes('boxmap') ) {
+                                // get the index of the map that triggered the event
+                                let mapNumber = parseFloat( event.path[m].id.replace('boxmap','') )
+                                
+                                // filter the event, as it is triggerd more than once.
+                                if (event.timeStamp > allMaps[mapNumber].timeStamp) {
+                                    allMaps[mapNumber].fullScreen = ! allMaps[mapNumber].fullScreen; 
+                                    allMaps[mapNumber].timeStamp = event.timeStamp;
+
+                                    if ( allMaps[mapNumber].timeStamp > 0 && allMaps[mapNumber].fullScreen === false) {
+                                        let elem = document.querySelector('#boxmap'+mapNumber+' > #map'+mapNumber+' > .leaflet-control-container > .leaflet-top > #undefined');
+                                        const eventClick = new Event('click');
+                                        setTimeout(function(){ elem.dispatchEvent(eventClick); }, 200);
+                                    }
+                                }
+                                break;
+                            }
+                        };
+                    }
                 });
             }
             
         } // end for m maps
         
         // function for map resizing for responsive devices
-        window.addEventListener('load', () => resizer() );
-        window.addEventListener('resize', () => resizer() );
-
+        window.addEventListener('load', resizer, false );
+        //window.addEventListener('resize', resizer, false );
+        
         /**
          * Resize the map div on load or resize of the browser window.
          * Show / hide the caption depending on window size.
          */
-        function resizer() {
+        function resizer(event) {
             // hide the fotorama caption on small screens
             let fotowidth = parseFloat( getComputedStyle( document.querySelector('[id^=mfotorama]'), null).width.replace("px", ""));
 

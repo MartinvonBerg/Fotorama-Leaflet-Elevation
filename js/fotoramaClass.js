@@ -1,6 +1,7 @@
 // Class for the fotorama Slider
 // Fotorama and the Zoom-function depend on jQuery, so no need to replace jQuery with vanilla js.
 // Note on fotorama options and input-image-data: the fotorama options are defined in the html. And the image data is given by html.
+// TODO: handle the resize event better.
 // Notes on REACT: ----------------------------
 // TODO: before adopting to react this class should be transferred to Typescript.
 // TODO: the minifier does not work with private methods.
@@ -11,6 +12,9 @@
 // The React component would then generate the html including the given options which would be then parsed by fotorama afterwards.
 // Sounds easy but the event handling via the Class-API (setslider, trigger Events SliderLoad and sliderChange) should be transferred to react hooks e.g. state.
 // finally this Slider-Class should be exported with 'export default Slider' and import Slider from './fotoramaClass.js'
+// Note on using for-loops: according to 
+//      https://hackernoon.com/performance-tests-on-common-javascript-array-methods
+// this gives the best performance.
 
 class SliderFotorama {
     // static attributes (fields)
@@ -32,7 +36,7 @@ class SliderFotorama {
     olddata = null;
     sliderData = null;
     sliderDiv = null;
-    infoel = null;
+    infoel = {};
 
     /**
      * Constructor Function
@@ -126,15 +130,18 @@ class SliderFotorama {
      */
     setLinkForInfoButton(sliderNumber, newslide) {
         if ( this.#pageVariables.imgdata[newslide].permalink !== '') {
+            // set the new link for the existing link-element
             jQuery('#multifotobox' + sliderNumber + ' .fm-attach-link a').attr("href", this.#pageVariables.imgdata[newslide].permalink);
-            // TODO: infoel generieren und hierher verschieben
-            if (this.infoel === null) { // hier die 3-fach Abfrage 
+            
+            // get the modified element
+            if (JSON.stringify(this.infoel) === '{}' && Object.keys(this.infoel).length === 0 && this.infoel.constructor === Object) { // hier die 3-fach Abfrage 
                 // catch the element from the page
-
-            } else {
-                // place the element in the active frame of fotorama
-
-                // set the new link for the element
+                this.infoel = document.querySelector("#multifotobox" + sliderNumber + " > div.fm-attach-link");
+            } 
+            // place the element in the active frame of fotorama
+            if ( this.infoel ){  
+                let parentElement = document.querySelector('.fotorama__active');
+                parentElement.appendChild(this.infoel);
             }
         }
     }
@@ -153,7 +160,7 @@ class SliderFotorama {
         let newlength = newimages.length;
     
         if (oldimages.length === newlength) {
-            // use for-loop: according to TODO-links this gives the best performance.
+            
             for (let index = 0; index < newlength; index++) {
                 let item = oldimages[index];
                 newdata[index] = [];
@@ -200,14 +207,10 @@ class SliderFotorama {
     #handleZoomInFullscreen() {
         let classThis = this;
 
-        jQuery('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', 
-        function (e) 
-        {
+        jQuery('.fotorama').on('fotorama:fullscreenenter fotorama:fullscreenexit', function (e) {
             let nr = classThis.sliderData.activeFrame.i-1;
-            let source = e.currentTarget.id;
-            source = source.replace('mfotorama','');
-            let m = parseInt(source);
-
+            let m = parseInt( e.currentTarget.id.replace('mfotorama','') );
+           
             if (e.type === 'fotorama:fullscreenenter') {
                 classThis.#fotoramaState = 'full';
                 // Options for the fullscreen zoom
@@ -255,41 +258,39 @@ class SliderFotorama {
         // create Event on fotorama showend
         let classThis = this;
         
-        jQuery('#'+this.elementOnPage).on('fotorama:showend',
-            function (e) 
-            {   
-                let nr = classThis.sliderData.activeFrame.i-1;
-                let source = e.currentTarget.id;
-                source = source.replace('mfotorama','');
-                let m = parseInt(source);
-                // define the CustomEvent to be fired
-                const changed = new CustomEvent('sliderchange', {
-                    detail: {
+        jQuery('#'+this.elementOnPage).on('fotorama:showend', function (e) {
+            let nr = classThis.sliderData.activeFrame.i-1;
+            let m = parseInt( e.currentTarget.id.replace('mfotorama','') );
+            
+            // define the CustomEvent to be fired
+            const changed = new CustomEvent('sliderchange', {
+                detail: {
                     name: 'sliderChange',
                     newslide: classThis.sliderData.activeFrame.i,
                     slider: m
-                    }
-                });
-                if (e.type === 'fotorama:showend' && classThis.number === m) {
-                    // set id in current active stage Frame
-                    classThis.sliderData.activeFrame.$stageFrame[0].id = 's' + classThis.sliderData.activeFrame.$navThumbFrame[0].id;
-                    classThis.el.dispatchEvent(changed);
-                    classThis.updateCaption(m, classThis.sliderData.activeFrame.i-1);
-                    classThis.setLinkForInfoButton(m, classThis.sliderData.activeFrame.i-1);
-                    // handle the zoom activate the zoom in fullscreen only
-                    if (classThis.#fotoramaState === 'full' && ! classThis.#isMobile) {
-                        jQuery('#sf' + m + '-' + nr).zoom(
-                            {//url: classThis.sliderData.data[nr].full,
-                            on: classThis.#zoomEffect,
-                            touch: false,
-                        });
-                    } else {
-                        // destroy / deactivate zoom in normal-mode
-                        jQuery('#sf' + m + '-' + nr).trigger('zoom.destroy');
-                    } 
                 }
+            });
+
+            if (e.type === 'fotorama:showend' && classThis.number === m) {
+                // set id in current active stage Frame
+                classThis.sliderData.activeFrame.$stageFrame[0].id = 's' + classThis.sliderData.activeFrame.$navThumbFrame[0].id;
+                classThis.el.dispatchEvent(changed);
+                classThis.updateCaption(m, classThis.sliderData.activeFrame.i-1);
+                classThis.setLinkForInfoButton(m, classThis.sliderData.activeFrame.i-1);
+
+                // handle the zoom activate the zoom in fullscreen only
+                if (classThis.#fotoramaState === 'full' && ! classThis.#isMobile) {
+                    jQuery('#sf' + m + '-' + nr).zoom(
+                        {//url: classThis.sliderData.data[nr].full,
+                        on: classThis.#zoomEffect,
+                        touch: false,
+                    });
+                } else {
+                    // destroy / deactivate zoom in normal-mode
+                    jQuery('#sf' + m + '-' + nr).trigger('zoom.destroy');
+                } 
             }
-        );
+        });
     }  
 
     /**
@@ -300,42 +301,39 @@ class SliderFotorama {
     #listenEventSliderLoaded() {
         // create Event on fotorama load, only one
         let classThis = this;
+        let ts = 0; // define a timestamp to detect wether event was already triggered.
 
-        let ts =0; // define a timestamp to detect wether event was already triggered.
-        jQuery('#'+this.elementOnPage).on('fotorama:load',
-            function (e) 
-            {   
-                let source = e.currentTarget.id;
-                source = source.replace('mfotorama','');
-                let m = parseInt(source);
-                // define the CustomEvent to be fired
-                const loaded = new CustomEvent('sliderload', {
-                    detail: {
+        jQuery('#'+this.elementOnPage).on('fotorama:load', function (e) {
+            let m = parseInt( e.currentTarget.id.replace('mfotorama','') );
+
+            // define the CustomEvent to be fired
+            const loaded = new CustomEvent('sliderload', {
+                detail: {
                     name: 'sliderLoad',
                     newslide: classThis.sliderData.activeFrame.i,
                     slider: m
-                    }
-                });
+                }
+            });
 
-                if (e.type === 'fotorama:load' && classThis.number === m) {
-                    // trigger the event only once, so if ts was not set before.
-                    if (ts === 0) {
-                        classThis.el.dispatchEvent(loaded);
-                        classThis.updateCaption(m, classThis.sliderData.activeFrame.i-1);
-                        classThis.setLinkForInfoButton(m, classThis.sliderData.activeFrame.i-1);
-                        // set the id for the fullscreen-zoom 
-                        let sliderDatalength = classThis.sliderData.data.length
+            if (e.type === 'fotorama:load' && classThis.number === m) {
+                // trigger the event only once, so if ts was not set before.
+                if (ts === 0) {
+                    classThis.el.dispatchEvent(loaded);
+                    classThis.updateCaption(m, classThis.sliderData.activeFrame.i-1);
+                    classThis.setLinkForInfoButton(m, classThis.sliderData.activeFrame.i-1);
+                    // set the id for the fullscreen-zoom 
+                    let sliderDatalength = classThis.sliderData.data.length
 
-                        for (let fi = 0; fi < sliderDatalength; fi++) {
-                            classThis.sliderData.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
-                            if (typeof(classThis.sliderData.data[fi].$stageFrame) !== 'undefined') {
-                                classThis.sliderData.data[fi].$stageFrame[0].id = 'sf' + m + '-' + fi
-                            }
+                    // add the html-ids in the dedicated divs for later handling.
+                    for (let fi = 0; fi < sliderDatalength; fi++) {
+                        classThis.sliderData.data[fi].$navThumbFrame[0].id = 'f' + m + '-' + fi;
+                        if (typeof(classThis.sliderData.data[fi].$stageFrame) !== 'undefined') {
+                            classThis.sliderData.data[fi].$stageFrame[0].id = 'sf' + m + '-' + fi
                         }
                     }
-                    ts = e.timeStamp;
                 }
+                ts = e.timeStamp;
             }
-        );
+        });
     }
 }

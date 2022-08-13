@@ -2,6 +2,7 @@
 // start this class without leaflet elevation and inherit with leaflet from this class!
 // only work with markers and controls in the first step.
 // TODO: update and add leaflet elevation functions
+// todo: update old / new scripts
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 class LeafletMap {
@@ -15,8 +16,7 @@ class LeafletMap {
     // public attributes (fields). These can be set / get by dot-notation.
     width = 0;
     pageVariables = [];
-    //hasFotorama = false; // TODO: inconsisent to know about fotorama here
-
+    
     // from defMapVar
     static numberOfMaps = null;
     storemarker = [];
@@ -61,6 +61,10 @@ class LeafletMap {
     //baseLayers2 = []; // for elevation
     //controlLayer2 = []; // for elevation
     group1 = [];
+
+    //for document event handling
+    fullScreen = false;
+    timeStamp = 0;
    
     /**
      * Constructor Function
@@ -83,8 +87,7 @@ class LeafletMap {
         if (LeafletMap.numberOfMaps === null) {
             LeafletMap.numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
         }
-        //this.hasFotorama = document.querySelectorAll('[id^=mfotorama'+ number +']').length == 1; // TODO: inconsisent to know about fotorama here
-
+        
         // Icons definieren
         this.myIcon1 = this.setIcon(this.pageVariables.imagepath, 'photo.png', 'shadow.png');
         this.myIcon2 = this.setIcon(this.pageVariables.imagepath, 'pin-icon-wpt.png', 'shadow.png');
@@ -112,7 +115,7 @@ class LeafletMap {
         // show the selected map
         this.showSelectedMap();
         this.bounds = this.map.getBounds();
-        this.zpadding = [0,0]; // TODO: how to reset this to correct values?
+        //this.zpadding = [0,0]; // TODO: how to reset this to correct values?
 
         //------- Magnifying glass, fullscreen, Image-Marker und Base-Layer-Change handling --------------------------------
         // create scale control top left // for mobile: zoom deactivated. use fingers!
@@ -144,11 +147,24 @@ class LeafletMap {
      */
     defMapLayers() {
        
-        // define map layers 
-        this.layer1 = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            maxZoom: this.maxZoomValue,
-            attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-        });
+        let useLocalTiles = true;
+
+        // define map layers
+        if ( useLocalTiles ) {
+            //this.layer1 = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            this.layer1 = new L.tileLayer('http://localhost/wordpress/wp-content/leaflet_map_tiles/tileserver.php?url={s}.tile.opentopomap.org&z={z}&x={x}&y={y}', {
+                maxZoom: this.maxZoomValue,
+                attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">Proxy-OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            });
+        } 
+        else 
+        {
+            this.layer1 = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                maxZoom: this.maxZoomValue,
+                attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            });
+        }
+         
         this.layer2 = new L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/ {y}.png', {
             maxZoom: this.maxZoomValue,
             attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -287,14 +303,7 @@ class LeafletMap {
             forcePseudoFullscreen: false,
             fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
         }).addTo(this.map);
-        // TODO: - enq scripts old / new - update this and other map scripts
-        this.map.on('exitFullscreen', function(event){
-            //console.log('exitFullscreen');
-            //classThis.map.fitBounds(classThis.bounds, { padding: [30, 30], maxZoom: 13 });
-        })
-        
-        
-        
+                        
         // Functions and Overlays for Show-all (Magnifying glass) in the top left corner
         L.Control.Watermark = L.Control.extend({
             onAdd: function () {
