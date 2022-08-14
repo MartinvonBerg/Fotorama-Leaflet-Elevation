@@ -65,6 +65,9 @@ class LeafletMap {
     //for document event handling
     fullScreen = false;
     timeStamp = 0;
+
+    // tileserver
+    tileserver = ''
    
     /**
      * Constructor Function
@@ -100,6 +103,7 @@ class LeafletMap {
         }
 
         // define Map Base Layers
+        this.getTileServerPath();
         this.defMapLayers();
 
         // static set the language strings. same for all instances.
@@ -142,6 +146,13 @@ class LeafletMap {
         return icon;
     }
 
+    getTileServerPath() {
+        if (this.tileserver ==='') {
+            this.tileserver = this.pageVariables.imagepath;
+            this.tileserver = this.tileserver.replace('images/','leaflet_map_tiles/tileserver.php');
+        }
+    }
+
     /**
      * Define the map layers that should be used for the Leaflet Map.
      */
@@ -152,9 +163,26 @@ class LeafletMap {
         // define map layers
         if ( useLocalTiles ) {
             //this.layer1 = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            this.layer1 = new L.tileLayer('http://localhost/wordpress/wp-content/leaflet_map_tiles/tileserver.php?url={s}.tile.opentopomap.org&z={z}&x={x}&y={y}', {
+            //this.layer1 = new L.tileLayer(this.tileserver + '?url={s}.tile.opentopomap.org&z={z}&x={x}&y={y}', {
+            this.layer1 = new L.tileLayer('http://localhost/wordpress/wp-content/plugins/fotorama_multi/leaflet_map_tiles/otm/{z}/{x}/{y}.webp', {
                 maxZoom: this.maxZoomValue,
                 attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">Proxy-OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            });
+
+            //this.layer2 = new L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
+            this.layer2 = new L.tileLayer(this.tileserver + '?url={s}.tile.openstreetmap.de/tiles/osmde&z={z}&x={x}&y={y}', {
+                maxZoom: this.maxZoomValue,
+                attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            });
+            //this.layer3 = new L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+            this.layer3 = new L.tileLayer(this.tileserver + '?url={s}.tile-cyclosm.openstreetmap.fr/cyclosm&z={z}&x={x}&y={y}', {
+                maxZoom: this.maxZoomValue,
+                attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            });
+            //this.layer4 = new L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.jpeg', {
+            this.layer4 = new L.tileLayer(this.tileserver + '?url=server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile&z={z}&x={x}&y={y}', {
+                maxZoom: this.maxZoomValue,
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri User Community'
             });
         } 
         else 
@@ -163,20 +191,20 @@ class LeafletMap {
                 maxZoom: this.maxZoomValue,
                 attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
             });
-        }
          
-        this.layer2 = new L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/ {y}.png', {
-            maxZoom: this.maxZoomValue,
-            attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        });
-        this.layer3 = new L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
-            maxZoom: this.maxZoomValue,
-            attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        });
-        this.layer4 = new L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: this.maxZoomValue,
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri User Community'
-        });
+            this.layer2 = new L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
+                maxZoom: this.maxZoomValue,
+                attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            });
+            this.layer3 = new L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+                maxZoom: this.maxZoomValue,
+                attribution: 'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            });
+            this.layer4 = new L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.jpeg', {
+                maxZoom: this.maxZoomValue,
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri User Community'
+            });
+        }
 
         // set map attribution for mobile devices to a short string
         if (this.#isMobile) {
