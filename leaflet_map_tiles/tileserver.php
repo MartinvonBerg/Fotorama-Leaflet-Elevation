@@ -1,17 +1,6 @@
 <?php 
 namespace mvbplugins\fotoramamulti;
 
-// TODO: security: only allow requests from js file on same Browser, use wp nonces with ajax.
-// TODO: check the passed variables. Run only if in range. and check urls.
-
-// get the directory ot this file which is the cachedir 
-$cacheDir = __DIR__;
-$cacheHeaderTime = 60*60*24*365; // Browser Header (sec)
-$cacheFileTime = 60*60*24*365 / 4; // max File Age (sec)
-$preUrl = 'https://';
-$ds = \DIRECTORY_SEPARATOR;
-$allowed = \ini_get('allow_url_fopen') === '1';
-
 $tileServers = array(
 	"osm" => array(
 		"searchfor" => "osmde",
@@ -47,16 +36,34 @@ $tileServers = array(
 	),
 );
 
-$tile ='';
+// partition the request code
+$req = preg_split('/(\/|\.)/', $_GET["tile"]);
 
-// get the requested tiletype 
+// check if localdir is in request and get the requested tiletype.
+$hasLocaldir !== false;
+$tile ='';
 foreach ($tileServers as $key => $entry) {
-	$found = \strpos( $_GET['url'], $entry['searchfor']);
-	if ( $found !== false) {
+	if ( $req[0] === $key ) {
+		$hasLocaldir = true;
 		$tile = $key;
 		break;
 	}
 }
+
+if ( ! $hasLocaldir || ! \is_numeric( $req[1]) || ! \is_numeric( $req[2]) || ! \is_numeric( $req[3])) {
+	http_response_code(404);
+	return;
+}
+
+// get the directory ot this file which is the cachedir 
+$cacheDir = __DIR__;
+$cacheHeaderTime = 60*60*24*365; // Browser Header (sec)
+$cacheFileTime = 60*60*24*365 / 4; // max File Age (sec)
+$preUrl = 'https://';
+$ds = \DIRECTORY_SEPARATOR;
+$allowed = \ini_get('allow_url_fopen') === '1';
+
+
 
 // create the directory name.
 $localDir = $cacheDir . $ds . $tileServers[$tile]["localdir"]; 

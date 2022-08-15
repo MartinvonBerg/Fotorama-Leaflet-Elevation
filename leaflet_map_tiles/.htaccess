@@ -1,2 +1,12 @@
-RewriteEngine on
-RewriteRule .* test.html [L]
+<LimitExcept GET HEAD>
+    Order Allow,Deny
+    Deny from all
+</LimitExcept>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /wordpress/wp-content/plugins/fotorama_multi/leaflet_map_tiles/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.+)$ tileserver.php/?tile=$1 [L]
+</IfModule>
