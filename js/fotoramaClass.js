@@ -1,7 +1,6 @@
 // Class for the fotorama Slider
 // Fotorama and the Zoom-function depend on jQuery, so no need to replace jQuery with vanilla js.
 // Note on fotorama options and input-image-data: the fotorama options are defined in the html. And the image data is given by html.
-// TODO: handle the resize event better.
 // Notes on REACT: ----------------------------
 // TODO: before adopting to react this class should be transferred to Typescript.
 // TODO: the minifier does not work with private methods.

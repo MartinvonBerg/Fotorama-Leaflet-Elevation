@@ -2,7 +2,6 @@
 // start this class without leaflet elevation and inherit with leaflet from this class!
 // only work with markers and controls in the first step.
 // TODO: update and add leaflet elevation functions
-// todo: update old / new scripts
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 class LeafletMap {
@@ -48,7 +47,7 @@ class LeafletMap {
             },
         }
     };
-    maps = [];
+    map = {};
     baseLayers = [];
     layer1 = [];
     layer2 = [];
@@ -58,8 +57,6 @@ class LeafletMap {
     controlZoom = [];
     scale = [];
     controlLayer = [];
-    //baseLayers2 = []; // for elevation
-    //controlLayer2 = []; // for elevation
     group1 = [];
 
     //for document event handling
@@ -68,8 +65,8 @@ class LeafletMap {
 
     // tileserver
     tileserver = ''
-    useLocalTiles = true; // TODO: provide admin setting for this one.
-    useWebpTiles = true;  // TODO: provide admin setting for this one.
+    useLocalTiles = false; // TODO: provide admin setting for this one.
+    useWebpTiles = false;  // TODO: provide admin setting for this one.
     static isHtaccessOK = false;
    
     /**
@@ -537,7 +534,5 @@ class LeafletMap {
     mapFlyTo(coordinates=[0,0]) {
         this.map.flyTo( coordinates );
     }
-
-    // function for map resizing for responsive devices
 
 }

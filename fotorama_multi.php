@@ -439,23 +439,6 @@ EOF;
 		'mapselector' => $mapselector,
  	) ;
 	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
-	// TODO: replace all JS variables
-	wp_localize_script('fotorama_multi_js', 'wpfm_phpvars' . $shortcodecounter, array(
-		'ngpxfiles'  => $i,
-		'imagepath' => $wp_fotomulti_path,
-		'imgdata' => $phpimgdata ?? [],
-		'tracks' => $tracks,
-		'eletheme' => $eletheme,
-		'mapheight' => $mapheight,
-		'chartheight' => $chartheight,
-		'showalltracks' => $showalltracks,
-		'mapcenter' => $mapcenter,
-		'zoom' => $zoom,
-		'markertext' => $markertext,
-		'fit' => $fit,
-		'mapselector' => $mapselector,
- 		) 
-	);
 	
 	$shortcodecounter++;
 

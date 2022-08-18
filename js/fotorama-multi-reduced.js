@@ -43,7 +43,7 @@
             if ( hasMap & hasFotorama ) {
                 
                 // initiate the leaflet map
-                allMaps[m] = new LeafletMap(m, 'boxmap' + m );
+                allMaps[m] = new LeafletElevation(m, 'boxmap' + m );
 
                 // create the markers on the map
                 allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
@@ -72,6 +72,7 @@
                     allSliders[e.detail.map].setSliderIndex(e.detail.marker);
                 });
 
+                // catch the event if the fullscreen button was clicked. 
                 document.addEventListener('pointerdown', function(event) {
                     
                     if (event.srcElement.className === 'leaflet-control-zoom-fullscreen fullscreen-icon') {
@@ -137,7 +138,5 @@
                 } 
             }
         }
-
     }
-
 })(window, document);
