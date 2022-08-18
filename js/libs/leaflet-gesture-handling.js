@@ -1,3 +1,4 @@
+// version 1.2.2 from https://unpkg.com/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.js
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define('leafletGestureHandling', ['exports'], factory) :
@@ -501,6 +502,7 @@
                 L.DomUtil.addClass(this._map._container, "leaflet-gesture-handling-touch-warning");
                 this._disableInteractions();
             } else {
+                e.preventDefault();
                 this._enableInteractions();
                 L.DomUtil.removeClass(this._map._container, "leaflet-gesture-handling-touch-warning");
             }

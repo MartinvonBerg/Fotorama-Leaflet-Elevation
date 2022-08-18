@@ -70,6 +70,7 @@ class LeafletMap {
     tileserver = ''
     useLocalTiles = true; // TODO: provide admin setting for this one.
     useWebpTiles = true;  // TODO: provide admin setting for this one.
+    static isHtaccessOK = false;
    
     /**
      * Constructor Function
@@ -148,25 +149,31 @@ class LeafletMap {
         return icon;
     }
 
+    /**
+     * set the path to the tileserver and check the availability of htacces on server
+     */
     getTileServerPath() {
         if (this.tileserver ==='' && this.useLocalTiles === true) {
             this.tileserver = this.pageVariables.imagepath;
             this.tileserver = this.tileserver.replace('images/','leaflet_map_tiles/');
             
             // check for htacces here and set the path respectively
-            let request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-                        
-            request.open("HEAD", this.tileserver + 'testfile.webp', false);
-            request.send()
-                                    
-            if (request.status === 302) {
-                // local htaccess is working. do nothing
-                console.log('htaccess on server is working');
-            } else {
-                // local htaccess is working. Change url for tileserver requests
-                console.warn('htaccess on server is not working');
-                this.tileserver = this.tileserver + 'tileserver.php/?tile=';
+            if ( LeafletMap.count === 1) {
+                let request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+                request.open("HEAD", this.tileserver + 'testfile.webp', false);
+                request.send()
+                if (request.status === 302) {
+                    LeafletMap.isHtaccessOK = true;
+                    console.log('htaccess on server is working');
+                } else {
+                    console.log('htaccess on server is not working');
+                }
             }
+                                    
+            if ( ! LeafletMap.isHtaccessOK ) {
+                // local htaccess is not working. Change url for tileserver requests.
+                this.tileserver = this.tileserver + 'tileserver.php/?tile=';
+            } 
         }
     }
 
@@ -369,7 +376,8 @@ class LeafletMap {
                 img.title = classThis.i18n('Show all');
                 img.id = this.number;
                 img.onclick = function () {
-                    classThis.map.fitBounds(classThis.bounds, { padding: classThis.zpadding, maxZoom: 13 });
+                    //classThis.map.fitBounds(classThis.bounds, { padding: classThis.zpadding, maxZoom: 13 });
+                    classThis.map.fitBounds(classThis.bounds);
                 };
                 return img;
             },
