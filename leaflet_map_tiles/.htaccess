@@ -8,5 +8,6 @@
     RewriteBase /wordpress/wp-content/plugins/fotorama_multi/leaflet_map_tiles/
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} \.(jpeg|jpg|png|webp)$
     RewriteRule ^(.+)$ tileserver.php/?tile=$1 [L]
 </IfModule>

@@ -1,6 +1,5 @@
 <?php 
 namespace mvbplugins\fotoramamulti;
-// TODO: file extension directive in .htaccess
 // TODO: cache fileage solution. What to do if files are too old?
 
 
@@ -77,7 +76,7 @@ if ( $tile==='' || ! \is_numeric( $req[1]) || ! \is_numeric( $req[2]) || ! \is_n
 // create the directory name.
 $localDir = $cacheDir . $ds . $tileServers[$tile]["localdir"];
 
-if ( ! $useWebp && $req[4] === 'webp') $useWebp = true;
+if ( $req[4] !== 'webp') $useWebp = false;
 
 // create the file name 
 $localFile = $localDir . $ds . $tileServers[$tile]["file"];
@@ -90,11 +89,19 @@ if ( $useWebp ) {
 }
 
 // check if file is available on server.
-if ( $allowed && ! \file_exists($localFile) ) 
-{ // fallback if the file is still not available then get the new file
+if ( \file_exists($localFile)) {
+	$httpResCode = 200;
+} 
+elseif ( $allowed ) 
+{ // fallback if the file is still not available
+
 	// check if dir exists if not create it
 	if (! \is_dir($localDir)) mkdir($localDir, 0777, true);
+	// set original Filename 
+	// note: file operations are not checked for errors. The assumption is that this operations work as expected.
+	$tileFile = $localDir . $ds . $tileServers[$tile]["file"] . '.' . $tileServers[$tile]['ext'];
 
+	// fetch the new file
 	$url = $preUrl . $tileServers[$tile]['server'] . $tileServers[$tile]['tile'] . '.' . $tileServers[$tile]['ext'];
 	$opts = array(
 		'http'=>array(
@@ -102,35 +109,35 @@ if ( $allowed && ! \file_exists($localFile) )
 			'header'=>'User-Agent: ' . $_SERVER["HTTP_USER_AGENT"] // just use the user agent from the request what is absolutely correct acc. to file usage policy.
 		)
 	);
-
 	$context = stream_context_create($opts);
 	$imgData = file_get_contents( $url , false, $context );
-	// original Filename 
-	$tileFile = $localDir . $ds . $tileServers[$tile]["file"] . '.' . $tileServers[$tile]['ext'];
 
 	if ( $imgData === false) {
 		$error = true;
-		$result = false;
 	} else {
 		// save the original file
 		$result = file_put_contents($tileFile, $imgData); 
+
+		// convert the original and save it
+		if ( $useWebp ) { 
+			$result = webpImage($tileFile, 75, true);
+		} elseif ( $req[4] !== $tileServers[$tile]['ext']) {
+			$headerMime = 'image/' . $tileServers[$tile]['ext'];
+			$localFile = $tileFile;
+		}
+
+		if ( $result === false) {
+			$error = true;
+		} else {
+			$httpResCode = 201;
+		}
 	}
-
-	if ( $result === false ) $error = true;
-	
-	// convert the original and save it
-	if ( $useWebp ) $result = webpImage($tileFile, 75, true);
-	$imgData = file_get_contents($localFile);
-
-	if ( $imgData === false || $result === false) $error = true;
 }
 
 if ( $error || ! $allowed) {
 	$localFile = $cacheDir . $ds . 'tile-error.webp';
 	$headerMime = 'image/webp';	
 	$httpResCode = 404;
-} else {
-	$httpResCode = 201;
 }
 
 // pass the image content to client
@@ -139,7 +146,7 @@ http_response_code( $httpResCode );
 header("Cache-Control: public, max-age=".$cacheHeaderTime.", s-maxage=".$cacheHeaderTime."");
 header('Content-type: ' . $headerMime); 
 echo $imgData;
-exit(0);
+
 
 // ----------------------------------------------------------------
 /**
