@@ -94,16 +94,16 @@ if ( $useOldScripts) {
     // load styles
     wp_enqueue_style ('leaflet_css');
     wp_enqueue_style ('leaflet_elevation_css');
-    wp_enqueue_style ('leaflet_gesture_handling_css');
+    //wp_enqueue_style ('leaflet_gesture_handling_css');
     wp_enqueue_style ('control_fullscreen_css');
 
     // load scripts
     //wp_enqueue_script('d3_js');
     wp_enqueue_script('leaflet_js');
-    //wp_enqueue_script('gpx_js');
+    wp_enqueue_script('gpx_js');
     //wp_enqueue_script('leaflet_gpxgroup_js');
     wp_enqueue_script('leaflet_elevation_js');
-    wp_enqueue_script('leaflet_gesture_handling_js');
+    //wp_enqueue_script('leaflet_gesture_handling_js');
     wp_enqueue_script('control_fullscreen_js');
     wp_enqueue_script('zoom_master_js');
     wp_enqueue_script('fotoramaClass_js');

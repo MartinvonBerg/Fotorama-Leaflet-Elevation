@@ -334,10 +334,10 @@ EOF;
 		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
 		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;\"></div>";
 		// Custom Summary
-		if ($i > 0) { // number of gpxtracks at least 1 !
+		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
 			$htmlstring .= <<<EOF
 
-		<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
+		<div id="elevation-div{$shortcodecounter}"></div>
 		<div id="data-summary{$shortcodecounter}" class="data-summary">
 		<span class="totlen">
 		<span class="summarylabel"> </span>

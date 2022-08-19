@@ -47,7 +47,7 @@
 
                 // create the markers on the map
                 allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
-
+                
                 // update markers on the map if the active image changes
                 document.querySelector('#mfotorama'+ m).addEventListener('sliderchange', function waschanged(e) {
                     // move map
@@ -73,8 +73,8 @@
                 });
 
                 // catch the event if the fullscreen button was clicked. 
+                /*
                 document.addEventListener('pointerdown', function(event) {
-                    
                     if (event.srcElement.className === 'leaflet-control-zoom-fullscreen fullscreen-icon') {
                         
                         for (let m = 0; m < event.path.length; m++) {
@@ -98,6 +98,7 @@
                         };
                     }
                 });
+                */
             }
             
         } // end for m maps

@@ -36,7 +36,7 @@ class LeafletMap {
             zoom: 5,
             markerZoomAnimation: false,
             zoomControl: false,
-            gestureHandling: true,
+            gestureHandling: false, // TODO: if true the shifting of the map does not work anymore
         },
         zoomControl: {
             position: 'topleft',
@@ -65,8 +65,8 @@ class LeafletMap {
 
     // tileserver
     tileserver = ''
-    useLocalTiles = false; // TODO: provide admin setting for this one.
-    useWebpTiles = false;  // TODO: provide admin setting for this one.
+    useLocalTiles = true; // TODO: provide admin setting for this one.
+    useWebpTiles = true;  // TODO: provide admin setting for this one.
     static isHtaccessOK = false;
    
     /**
@@ -408,7 +408,7 @@ class LeafletMap {
     createFotoramaMarkers(markers) {
         let { marker, j, testgroup } = this.createMarkers(markers);
         this.mrk = marker;
-        this.controlLayer.addOverlay(this.group1, this.i18n('Images') + '(' + j + ')');    
+        this.controlLayer.addOverlay(this.group1, this.i18n('Images') + ' (' + j + ')');
         this.group1.addTo(this.map); 
         this.bounds = undefined;
         this.bounds = this.setBoundsToMarkers(testgroup);
