@@ -83,6 +83,7 @@ if ( $useOldScripts) {
         wp_register_script('leaflet_gpxgroup_js', $plugin_url . 'js/libs/leaflet-gpxgroup.min.js', array('jquery'), '', true);
     wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/elevation/dist/leaflet-elevation.min.js', array('jquery'), '2.2.6', true);
     wp_register_script('leaflet_gesture_handling_js',  $plugin_url . 'js/libs/leaflet-gesture-handling.min.js', array('jquery'), '1.2.2', true);
+    wp_register_script('leaflet_ui', $plugin_url . 'js/leaflet-ui/leaflet-ui-short.js', array('jquery'), '0.5.9', true);
     wp_register_script('control_fullscreen_js', $plugin_url . 'js/fullscreen/Control.FullScreen.min.js', array('jquery'), '2.4.0', true);
     wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
     
@@ -104,6 +105,7 @@ if ( $useOldScripts) {
     //wp_enqueue_script('leaflet_gpxgroup_js');
     wp_enqueue_script('leaflet_elevation_js');
     //wp_enqueue_script('leaflet_gesture_handling_js');
+    wp_enqueue_script('leaflet_ui');
     wp_enqueue_script('control_fullscreen_js');
     wp_enqueue_script('zoom_master_js');
     wp_enqueue_script('fotoramaClass_js');

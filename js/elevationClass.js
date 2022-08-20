@@ -1,4 +1,3 @@
-// TODO: translation i18n
 // TODO: load scripts only locally
 
 class LeafletElevation extends LeafletMap {

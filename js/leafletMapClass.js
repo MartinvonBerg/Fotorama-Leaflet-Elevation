@@ -1,7 +1,6 @@
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // start this class without leaflet elevation and inherit with leaflet from this class!
 // only work with markers and controls in the first step.
-// TODO: update and add leaflet elevation functions
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 class LeafletMap {
@@ -36,7 +35,7 @@ class LeafletMap {
             zoom: 5,
             markerZoomAnimation: false,
             zoomControl: false,
-            gestureHandling: false, // TODO: if true the shifting of the map does not work anymore
+            //gestureHandling: false, // This feature was removed due to imcompatibility of the Leaflet plugin
         },
         zoomControl: {
             position: 'topleft',
@@ -158,7 +157,7 @@ class LeafletMap {
             if ( LeafletMap.count === 1) {
                 let request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
                 request.open("HEAD", this.tileserver + 'testfile.webp', false);
-                request.send()
+                request.send();
                 if (request.status === 302) {
                     LeafletMap.isHtaccessOK = true;
                     console.log('htaccess on server is working');
