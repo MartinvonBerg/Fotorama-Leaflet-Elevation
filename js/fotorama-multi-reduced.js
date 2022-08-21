@@ -35,7 +35,7 @@
                     allMaps[m].createSingleMarker(text);
                 } else {
                     // no fotorama, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
-                    // TODO: But this is the code for the child class. How to do this?
+                    // TODO: Add LeafletElevation Class here. It works without fotorama!
                 }
             }
             

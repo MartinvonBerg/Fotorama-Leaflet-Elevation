@@ -258,7 +258,8 @@ class LeafletMap {
             return L._(text);
         }
     }
-    /**
+    
+    /** 
      * set the i18n values for the leaflet map.
      * @returns {string|null} the string value for the locale or null, if none available.
      */
@@ -272,6 +273,8 @@ class LeafletMap {
             "Images"   : "Fotos",
             'Show fullscreen' : 'Zeige Vollbild',
             'Exit fullscreen' : 'Vollbild beenden',
+            "y: "				: "Höhe: ",
+			"x: "				: "Strecke: ",
         };
 
         let it = {
@@ -283,6 +286,8 @@ class LeafletMap {
             "Images"   : "Foto",
             'Show fullscreen' : 'Mappa a schermo intero',
             'Exit fullscreen' : 'Esci schermo intero',
+            "y: "				: "Altitudine: ",
+			"x: "				: "Distanza: ",
         };
 
         let fr = {
@@ -294,6 +299,8 @@ class LeafletMap {
             "Images"   : "Images",
             'Show fullscreen' : 'Afficher carte en plein écran',
             'Exit fullscreen' : 'Quitter le mode plein écran',
+            "y: "				: "Altitude: ",
+			"x: "				: "Distance: ",
         };
 
         let es = {
@@ -305,6 +312,8 @@ class LeafletMap {
             "Images"   : "Fotos",
             'Show fullscreen' : 'Mostrar pantalla completa',
             'Exit fullscreen' : 'Salir de pantalla completa',
+            "y: "				: "Altura: ",
+			"x: "				: "Distancia: ",
         };
 
         var lang = navigator.language;
@@ -401,7 +410,7 @@ class LeafletMap {
     }
 
     /**
-     * TODO
+     * TODO : description
      * @param {array} markers
      */
     createFotoramaMarkers(markers) {
@@ -415,7 +424,7 @@ class LeafletMap {
 
     // create markers
     /**
-     * TODO
+     * TODO : description
      * @param {array} imgdata 
      * @returns {array} bounds
      */

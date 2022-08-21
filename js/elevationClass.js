@@ -1,4 +1,4 @@
-// TODO: load scripts only locally
+// TODO: TBD: provide the multitrack feature or leave it?
 
 class LeafletElevation extends LeafletMap {
 

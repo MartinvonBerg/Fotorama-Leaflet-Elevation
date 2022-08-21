@@ -137,7 +137,7 @@ L.DistanceMarkers = L.LayerGroup.extend({
 
 		// You should use "leaflet-rotate" to show rotated arrow markers (preferCanvas: false)
 		if (!preferCanvas && !map.options.rotate) {
-			console.warn('Missing dependency: "leaflet-rotate"');
+			console.info('Missing dependency: "leaflet-rotate"');
 		}
 
 		// Get line coords as an array
