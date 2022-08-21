@@ -94,6 +94,7 @@ if ( $useOldScripts) {
     // register local Scripts - load dependencies first
     wp_register_script('d3_js',  $plugin_url . 'js/elevation/dist/d3.min.js', array('jquery'), '7.6.1', true); 
     wp_register_script('gpx_js',  $plugin_url . 'js/libs/gpx.min.js', array('jquery'), '1.5.1', true);
+    wp_register_script('gpxgroups_js',  $plugin_url . 'js/elevation/libs/leaflet-gpxgroup.min.js', array('jquery'), '1.5.1', true);
     wp_register_script('togeojson_js',  $plugin_url . 'js/elevation/dist/togeojson.umd.js', array('jquery'), '5.2.2', true); 
     wp_register_script('geom_util_js',  $plugin_url . 'js/elevation/dist/leaflet.geometryutil.min.js', array('jquery'), '0.10.1', true); 
     wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/elevation/dist/leaflet-elevation.min.js', array('jquery'), '2.2.6', true);
@@ -113,6 +114,7 @@ if ( $useOldScripts) {
     wp_enqueue_script('d3_js');
     wp_enqueue_script('leaflet_js');
     wp_enqueue_script('gpx_js');
+    wp_enqueue_script('gpxgroups_js');
     wp_enqueue_script('togeojson_js');
     wp_enqueue_script('geom_util_js');
     wp_enqueue_script('leaflet_elevation_js');

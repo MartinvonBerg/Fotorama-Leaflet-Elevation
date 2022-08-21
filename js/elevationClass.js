@@ -10,7 +10,7 @@ class LeafletElevation extends LeafletMap {
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
 
-        this.showalltracks = this.pageVariables.showalltracks;
+        //this.showalltracks = this.pageVariables.showalltracks;
         // TODO: if (numberOfMaps>1 && showalltracks) {showalltracks = false;} nicht übernommen
 
         // set options for elevation chart
@@ -19,9 +19,40 @@ class LeafletElevation extends LeafletMap {
         // create tracks
         if (parseInt( this.pageVariables.ngpxfiles) === 1) {
             this.createOneTrack();
-        } else {
-            // TODO: do this for more than on track
-        }      
+        } else if ( parseInt( this.pageVariables.ngpxfiles) > 1 && this.pageVariables.showalltracks === 'true') {
+            // // part to show multiple tracks in one map.
+            // put all tracks in one js array and set local variable for the window closure.
+            // TODO set bounds, set summary
+            let tracks = [];
+            
+            for (let key in this.pageVariables.tracks) {
+                tracks.push(this.pageVariables.tracks[key].url)
+            }
+
+            let routes = {};
+
+		    let opts = this.eleopts.elevationControl.options;
+            let map = this.map;
+            
+            //nur mit m=0, da zu Anfang geladen, kein Event gefunden map.on('load') geht nicht
+            window.setTimeout( function(e) {
+                
+                routes = L.gpxGroup(tracks, {
+                    elevation: true,
+                    elevation_options: opts, //
+                    legend: true,
+                    legend_options: {
+                        position: "bottomright",
+                        collapsed: true,
+                    },
+                    distanceMarkers: false,
+                });
+                  
+                routes.addTo(map);
+            }, 500 );
+
+            
+        } // no else here: This would be the part for no tracks at all. What is not useful here.
     }
 
     /**

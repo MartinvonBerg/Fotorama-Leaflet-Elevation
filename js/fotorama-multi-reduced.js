@@ -27,6 +27,7 @@
                 allSliders[m].defSlider();
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
+                  // TODO: check the outer div dimension for gutenberg here
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
@@ -35,7 +36,8 @@
                     allMaps[m].createSingleMarker(text);
                 } else {
                     // no fotorama, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
-                    // TODO: Add LeafletElevation Class here. It works without fotorama!
+                    // initiate the leaflet map
+                    allMaps[m] = new LeafletElevation(m, 'boxmap' + m );
                 }
             }
             
@@ -113,13 +115,15 @@
          */
         function resizer(event) {
             // hide the fotorama caption on small screens
-            let fotowidth = parseFloat( getComputedStyle( document.querySelector('[id^=mfotorama]'), null).width.replace("px", ""));
+            try {
+                let fotowidth = parseFloat( getComputedStyle( document.querySelector('[id^=mfotorama]'), null).width.replace("px", ""));
 
-            if (fotowidth<480) {
-                document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='none';
-            } else {
-                document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='';
-            }
+                if (fotowidth<480) {
+                    document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='none';
+                } else {
+                    document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='';
+                }
+            } catch {}
             
             for (let m = 0; m < numberOfBoxes; m++) {    
                 // w: width, h: height as shortform.  
