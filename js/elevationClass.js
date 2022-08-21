@@ -95,8 +95,7 @@ class LeafletElevation extends LeafletMap {
        
         this.bounds = trace.getBounds();
 
-        let info = '';
-        info = trace._info.desc;
+        let info = trace._info.desc;
         if (info) {info = info.split(' ')} else {info='';};
 
         let q = document.querySelector.bind(document);
@@ -104,23 +103,23 @@ class LeafletElevation extends LeafletMap {
 
         if (info[0]=='Dist:' && info[1] && info[4] && info[7]) { 
             q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
-            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = info[1] + " km"; 
+            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = parseFloat(info[1].replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
     
             q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
-            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = info[4] + " m";
+            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = parseFloat(info[4].replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
     
             q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';
-            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = info[7] + " m";
+            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = parseFloat(info[7].replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
           
         } else {
             q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
-            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = event.track_info.distance.toFixed(1) + " km";
+            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = event.track_info.distance.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
     
             q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
-            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = event.track_info.elevation_avg.toFixed(1) + " m";
+            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
     
             q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';                                            
-            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toFixed(1) + " m";
+            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
         }
 
         this.controlLayer.addOverlay(event.layer, event.name );
