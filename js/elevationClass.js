@@ -1,9 +1,9 @@
-// TODO: TBD: provide the multitrack feature or leave it?
-
 class LeafletElevation extends LeafletMap {
 
     controlElevation = {};
     eleopts = [];
+    timesMoveendCalled = 0;
+    tracks = [];
    
     static showalltracks = false;
 
@@ -11,7 +11,7 @@ class LeafletElevation extends LeafletMap {
         super(number, elementOnPage, center=null, zoom=null);
 
         //this.showalltracks = this.pageVariables.showalltracks;
-        // TODO: if (numberOfMaps>1 && showalltracks) {showalltracks = false;} nicht übernommen
+        // if (numberOfMaps>1 && showalltracks) {showalltracks = false;} nicht übernommen
 
         // set options for elevation chart
         this.setChartOptions(number);
@@ -19,27 +19,30 @@ class LeafletElevation extends LeafletMap {
         // create tracks
         if (parseInt( this.pageVariables.ngpxfiles) === 1) {
             this.createOneTrack();
-        } else if ( parseInt( this.pageVariables.ngpxfiles) > 1 && this.pageVariables.showalltracks === 'true') {
+        } else if ( parseInt( this.pageVariables.ngpxfiles) > 1 ) {
             // // part to show multiple tracks in one map.
             // put all tracks in one js array and set local variable for the window closure.
-            // TODO set bounds, set summary
-            let tracks = [];
-            
-            for (let key in this.pageVariables.tracks) {
-                tracks.push(this.pageVariables.tracks[key].url)
-            }
-
+            //let tracks = [];
             let routes = {};
 
-		    let opts = this.eleopts.elevationControl.options;
-            let map = this.map;
+            //let opts = this.eleopts.elevationControl.options;
+            //let map = this.map;
             
-            //nur mit m=0, da zu Anfang geladen, kein Event gefunden map.on('load') geht nicht
+            
+            for (let key in this.pageVariables.tracks) {
+                this.tracks.push(this.pageVariables.tracks[key].url)
+            }
+
+            //this.tracks = tracks;
+            let classThis = this;
+                        
+            //load the tracks on the map: kein Event gefunden map.on('load') geht nicht.
+            // find a better solution for that
             window.setTimeout( function(e) {
                 
-                routes = L.gpxGroup(tracks, {
+                routes = L.gpxGroup(classThis.tracks, {
                     elevation: true,
-                    elevation_options: opts, //
+                    elevation_options: classThis.eleopts.elevationControl.options, //
                     legend: true,
                     legend_options: {
                         position: "bottomright",
@@ -48,9 +51,25 @@ class LeafletElevation extends LeafletMap {
                     distanceMarkers: false,
                 });
                   
-                routes.addTo(map);
+                routes.addTo(classThis.map);
             }, 500 );
 
+            // set the bounds only after the second move. The first move is fired after the movement to the given center.
+            this.map.on('moveend', function(e) {
+                classThis.timesMoveendCalled++;
+                if (classThis.timesMoveendCalled === 2) {   
+                    let b = classThis.map.getBounds();
+                    classThis.setBounds(b);
+
+                    classThis.map.on('legend_selected', function(e){
+                       classThis.setTrackStatistics(e);
+                    })
+                }
+            });
+
+            
+
+        
             
         } // no else here: This would be the part for no tracks at all. What is not useful here.
     }
@@ -103,11 +122,22 @@ class LeafletElevation extends LeafletMap {
      * @param {Event} event the leaflet control elevation event
      */
     setTrackStatistics(event) {
-        // TODO: write the data from php-skript to avoid loading of L.GPX.
+        // TODO: write the data to php-skript and load it from there to avoid loading of L.GPX.
         // get the trace info from the gpx-file
         let trace = {};
+        let track = '';
+
+        if (event.type === 'legend_selected') {
+            track = this.tracks.find(element => {
+                if (element.includes(event.layer.options.name)) {
+                  return true;
+                }
+            });
+        } else {
+            track = this.pageVariables.tracks.track_0.url
+        }
         
-        trace = new L.GPX(this.pageVariables.tracks.track_0.url, {
+        trace = new L.GPX(track, {
             async: false,
             index: 1,
             marker_options: {
@@ -123,8 +153,10 @@ class LeafletElevation extends LeafletMap {
         
         trace.on('error', function(e) {
             console.log('Error loading file: ' + e.err);});
-       
-        this.bounds = trace.getBounds();
+
+        if (event.type !== 'legend_selected') {
+            this.bounds = trace.getBounds();
+        }
 
         let info = trace._info.desc;
         if (info) {info = info.split(' ')} else {info='';};
@@ -153,7 +185,7 @@ class LeafletElevation extends LeafletMap {
             q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
         }
 
-        this.controlLayer.addOverlay(event.layer, event.name );
+        if (event.type !== 'legend_selected') this.controlLayer.addOverlay(event.layer, event.name );
     }
     
 }

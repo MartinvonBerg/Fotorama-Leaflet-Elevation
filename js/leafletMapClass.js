@@ -125,6 +125,10 @@ class LeafletMap {
         this.setMapControls();
     }
 
+    setBounds(bds) {
+        this.bounds = bds;
+    }
+
     /**
      * Define Icons for the leaflet map.
      * @param {string} path 
