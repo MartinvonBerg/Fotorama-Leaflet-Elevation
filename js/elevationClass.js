@@ -20,55 +20,58 @@ class LeafletElevation extends LeafletMap {
         if (parseInt( this.pageVariables.ngpxfiles) === 1) {
             this.createOneTrack();
         } else if ( parseInt( this.pageVariables.ngpxfiles) > 1 ) {
-            // // part to show multiple tracks in one map.
-            // put all tracks in one js array and set local variable for the window closure.
-            //let tracks = [];
+            // part to show multiple tracks in one map.            
             let routes = {};
-
-            //let opts = this.eleopts.elevationControl.options;
-            //let map = this.map;
-            
-            
+                        
+            // put all tracks in one js array and set local variable for the window closure.
             for (let key in this.pageVariables.tracks) {
                 this.tracks.push(this.pageVariables.tracks[key].url)
             }
 
-            //this.tracks = tracks;
-            let classThis = this;
-                        
-            //load the tracks on the map: kein Event gefunden map.on('load') geht nicht.
-            // find a better solution for that
-            window.setTimeout( function(e) {
-                
-                routes = L.gpxGroup(classThis.tracks, {
-                    elevation: true,
-                    elevation_options: classThis.eleopts.elevationControl.options, //
-                    legend: true,
-                    legend_options: {
-                        position: "bottomright",
-                        collapsed: true,
-                    },
-                    distanceMarkers: false,
-                });
-                  
-                routes.addTo(classThis.map);
-            }, 500 );
-
             // set the bounds only after the second move. The first move is fired after the movement to the given center.
+            let classThis = this;
+
             this.map.on('moveend', function(e) {
                 classThis.timesMoveendCalled++;
-                if (classThis.timesMoveendCalled === 2) {   
-                    let b = classThis.map.getBounds();
-                    classThis.setBounds(b);
+                let m = e.sourceTarget._container.id;
+                
+                //load the tracks on the map: kein Event gefunden map.on('load') geht nicht.
+                if (classThis.timesMoveendCalled === 1) {
+                    routes = L.gpxGroup(classThis.tracks, {
+                        elevation: true,
+                        elevation_options: classThis.eleopts.elevationControl.options, //
+                        legend: true,
+                        legend_options: {
+                            position: "bottomright",
+                            collapsed: true,
+                        },
+                        distanceMarkers: false,
+                    });
+                      
+                    routes.addTo(classThis.map);
+                }
 
+                if (classThis.timesMoveendCalled === 2) {   
+                    // write track statistics values to the summmary.
                     classThis.map.on('legend_selected', function(e){
                        classThis.setTrackStatistics(e);
-                    })
+                    });
+                    // activate the first track.
+                    let q = document.querySelector('#'+m+' > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div.leaflet-control-layers.leaflet-control > section > div.leaflet-control-layers-base > label:nth-child(1)');
+                    if (q !== null) {
+                        q.click();
+                    }
+                } 
+
+                // change the bounds to all tracks
+                if (classThis.timesMoveendCalled === 3) {
+                    classThis.setBounds(routes.getBounds() );
+                    classThis.map.fitBounds(classThis.bounds);
                 }
+
             });
 
             
-
         
             
         } // no else here: This would be the part for no tracks at all. What is not useful here.

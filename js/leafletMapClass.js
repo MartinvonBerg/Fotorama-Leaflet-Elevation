@@ -118,8 +118,7 @@ class LeafletMap {
         // show the selected map
         this.showSelectedMap();
         this.bounds = this.map.getBounds();
-        //this.zpadding = [0,0]; // TODO: how to reset this to correct values?
-
+        
         //------- Magnifying glass, fullscreen, Image-Marker und Base-Layer-Change handling --------------------------------
         // create scale control top left // for mobile: zoom deactivated. use fingers!
         this.setMapControls();

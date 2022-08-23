@@ -3,7 +3,7 @@
     let numberOfBoxes = document.querySelectorAll('[id^=multifotobox]').length;
 
     if ( numberOfBoxes > 0 ) {
-
+        //TODO: load script files here like raruto does!
         // fotorama variables
         let allSliders = [ numberOfBoxes-1 ];
         
@@ -19,6 +19,13 @@
             //------------- leaflet - elevation part ---------------------------
             let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
 
+            // remove grid class is parent is a column
+            let el = document.getElementById('multifotobox'+m);
+            let parentClass = el.parentElement.className;
+            if (parentClass.includes('column')) {
+                el.classList.remove('mfoto_grid');
+            }
+
             // define fotorama
             if ( hasFotorama ) {
                 // define the Slider class. This class has to be enqued (loaded) before this function.
@@ -27,7 +34,6 @@
                 allSliders[m].defSlider();
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
-                  // TODO: check the outer div dimension for gutenberg here
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
