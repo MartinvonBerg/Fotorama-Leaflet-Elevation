@@ -24,6 +24,9 @@
             let parentClass = el.parentElement.className;
             if (parentClass.includes('column')) {
                 el.classList.remove('mfoto_grid');
+                el = document.getElementById('boxmap'+m);
+                el.style.padding = "0px 0px 0px 0px";
+                // missing: the class fm-dload margin-bottom is set in CSS. This could be set manually.
             }
 
             // define fotorama
