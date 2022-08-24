@@ -64,7 +64,9 @@ function fotoramamulti_activate() {
 				'loop' 				=>  'true', // true or false
 				'autoplay' 			=>  '3000', // on with 'true' or any interval in milliseconds.
 				'arrows' 			=>  'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
-				'shadows' 			=>  'true' , // true or false
+				'shadows' 			=>  'true', // true or false
+				'use_tile_server'	=>  'false',
+				'convert_tiles_to_webp' => 'false'
 				);
 		update_option($option_name, $opts);
 	}
