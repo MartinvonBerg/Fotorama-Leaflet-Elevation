@@ -64,8 +64,8 @@ class LeafletMap {
 
     // tileserver
     tileserver = ''
-    useLocalTiles = true; // TODO: provide admin setting for this one.
-    useWebpTiles = true;  // TODO: provide admin setting for this one.
+    useLocalTiles = true;
+    useWebpTiles = true;
     static isHtaccessOK = false;
    
     /**
@@ -81,6 +81,8 @@ class LeafletMap {
         this.elementOnPage = elementOnPage;
         this.pageVariables = pageVarsForJs[number];
         this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+        this.useLocalTiles = this.pageVariables.useTileServer === 'true';
+        this.useWebpTiles = this.pageVariables.convertTilesToWebp === 'true';
 
         // object to handle event 'showend' and 'load'
         this.el = document.querySelector('#'+elementOnPage);

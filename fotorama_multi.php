@@ -86,8 +86,7 @@ function showmulti($attr, $content = null)
 	$thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
 	static $pageVarsForJs = [];
-	$currentTheme = \get_stylesheet(); // required for special caption for theme 2022 with WP 5.9
-	
+		
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
  	
@@ -437,6 +436,8 @@ EOF;
 		'markertext' => $markertext,
 		'fit' => $fit,
 		'mapselector' => $mapselector,
+		'useTileServer' => get_option( 'fotorama_elevation_option_name' )['use_tile_server'],
+		'convertTilesToWebp' => get_option( 'fotorama_elevation_option_name' )['convert_tiles_to_webp']
  	) ;
 	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
 	

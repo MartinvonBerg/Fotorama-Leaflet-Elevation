@@ -357,6 +357,24 @@ class FotoramaElevation {
 			'leaflet_elevation_setting_section' // section
 		);
 
+		// --------- TileServer added 2022-08-24 ----------------
+		add_settings_field(
+			'use_tile_server', // id : boolean
+			__( 'Use local Tileserver', 'fotoramamulti' ), // title
+			array( $this, 'usetileserver_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'leaflet_elevation_setting_section' // section
+		);
+
+		add_settings_field(
+			'convert_tiles_to_webp', // id : boolean
+			__( 'Convert and serve local Tiles as webp', 'fotoramamulti' ), // title
+			array( $this, 'tiles_as_webp_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'leaflet_elevation_setting_section' // section
+		);
+		// --------- TileServer ---------------------------------
+
 		add_settings_field(
 			'height_of_map_10', // id
 			__( 'Height of Map in px', 'fotoramamulti' ), // title
@@ -823,6 +841,23 @@ class FotoramaElevation {
 		__( 'Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)', 'fotoramamulti' )
 		);
 	}
+	// --------- TileServer added 2022-08-24 ----------------
+	public function usetileserver_callback() {
+		printf(
+		'<input type="checkbox" name="fotorama_elevation_option_name[use_tile_server]" id="use_tile_server" value="use_tile_server" %s> <label for="use_tile_server">%s</label>',
+		( isset ( $this->fotorama_elevation_options['use_tile_server'] ) && $this->fotorama_elevation_options['use_tile_server'] === 'true' ) ? 'checked' : '',
+		__( 'Use a local Tile-Server to provide Map-Tiles', 'fotoramamulti' )
+		);
+	}
+
+	public function tiles_as_webp_callback() {
+		printf(
+		'<input type="checkbox" name="fotorama_elevation_option_name[convert_tiles_to_webp]" id="convert_tiles_to_webp" value="convert_tiles_to_webp" %s> <label for="convert_tiles_to_webp">%s</label>',
+		( isset ( $this->fotorama_elevation_options['convert_tiles_to_webp'] ) && $this->fotorama_elevation_options['convert_tiles_to_webp'] === 'true' ) ? 'checked' : '',
+		__( 'Convert Tile-Files to webp (conversion settings in PHP only)', 'fotoramamulti' )
+		);
+	}
+	// --------- TileServer ----------------
 
 	public function text_for_start_address_8_callback() {
 		printf(
@@ -1077,6 +1112,19 @@ class FotoramaElevation {
 		} else {
 			$sanitary_values['ignore_custom_sort_6'] = 'false';
 		}
+		// --------- TileServer added 2022-08-24 ----------------
+		if ( isset( $input['use_tile_server'] ) ) {
+			$sanitary_values['use_tile_server'] = 'true';
+		} else {
+			$sanitary_values['use_tile_server'] = 'false';
+		}
+
+		if ( isset( $input['convert_tiles_to_webp'] ) ) {
+			$sanitary_values['convert_tiles_to_webp'] = 'true';
+		} else {
+			$sanitary_values['convert_tiles_to_webp'] = 'false';
+		}
+		// --------- TileServer ----------------
 
 		if ( isset( $input['show_address_of_start_7'] ) ) {
 			$sanitary_values['show_address_of_start_7'] = 'true';

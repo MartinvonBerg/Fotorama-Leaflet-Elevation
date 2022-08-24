@@ -5,7 +5,9 @@
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    # Change only the next according to your server 
     RewriteBase /wordpress/wp-content/plugins/fotorama_multi/leaflet_map_tiles/
+    # Do not change after this line
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} \.(jpeg|jpg|png|webp)$
