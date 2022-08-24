@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
 	"name": "fotoramamulti/fotorama-multi",
-	"version": "0.10.0",
+	"version": "0.11.0",
 	"title": "Fotorama Elevation",
 	"category": "media",
 	"icon": "embed-photo",
@@ -67,14 +67,14 @@
 			"help": "Shorten Caption to first line only"
 		},
 		"maxwidth": {
-			"type": "number",
+			"type": "string",
 			"default": 800,
 			"section": "Slider",
 			"label": "Max Width of Container",
 			"help": "Maximum width of the whole container with slider and map in px"
 		},
 		"minrowwidth": {
-			"type": "number",
+			"type": "string",
 			"default": 480,
 			"section": "Slider",
 			"label": "Minimum row width",
@@ -139,7 +139,7 @@
 			]
 		},
 		"transitionduration": {
-			"type": "number",
+			"type": "string",
 			"default": 400,
 			"section": "Slider",
 			"label": "Transition Duration",
@@ -189,7 +189,7 @@
 			"help": "Provide download link for the GPX-Track(s)"
 		},
 		"mapheight": {
-			"type": "number",
+			"type": "string",
 			"default": 450,
 			"section": "Map",
 			"label": "Height of Map",
@@ -236,7 +236,7 @@
 			]
 		},
 		"chartheight": {
-			"type": "number",
+			"type": "string",
 			"default": 200,
 			"section": "Chart",
 			"label": "Height of Chart",
@@ -257,35 +257,35 @@
 		},
 	
 		"navwidth": {
-			"type": "number",
+			"type": "string",
 			"default": 100,
 			"section": "Thumbs",
 			"label": "Thumbnails bar width",
 			"help": "Width of Thumbnails bar in Percent of Slider width."
 		},
 		"f_thumbwidth": {
-			"type": "number",
+			"type": "string",
 			"default": 100,
 			"section": "Thumbs",
 			"label": "Thumbs Width",
 			"help": "Width of single Thumbnail in px"
 		},
 		"f_thumbheight": {
-			"type": "number",
+			"type": "string",
 			"default": 75,
 			"section": "Thumbs",
 			"label": "Thumbs Height",
 			"help": "Height of Thumbnails in px"
 		},
 		"thumbmargin": {
-			"type": "number",
+			"type": "string",
 			"default": 2,
 			"section": "Thumbs",
 			"label": "Thumbs Margin",
 			"help": "Margin of Thumbnails in px"
 		},
 		"thumbborderwidth": {
-			"type": "number",
+			"type": "string",
 			"default": 2,
 			"section": "Thumbs",
 			"label": "Thumbs Border",
