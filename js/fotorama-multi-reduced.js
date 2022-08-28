@@ -1,3 +1,6 @@
+// webpack import information for bundling. localhost won't work with that.
+//import SliderFotorama from './fotoramaClass.js'
+
 (function (window, document, undefined) {
     "use strict";
     let numberOfBoxes = document.querySelectorAll('[id^=multifotobox]').length;

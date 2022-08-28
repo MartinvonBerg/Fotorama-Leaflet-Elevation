@@ -3,6 +3,16 @@
 // only work with markers and controls in the first step.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+// webpack import information for bundling. localhost won't work with that.
+// local Styles
+/*
+import './leaflet/leaflet.css';
+import './fullscreen/Control.FullScreen.css';
+// local Scripts
+import './leaflet/leaflet.js';
+import './leaflet-ui/leaflet-ui-short.js';
+import './fullscreen/Control.FullScreen.js';
+*/
 class LeafletMap {
     // static attributes (fields)
     static count = 0; // counts the number of instances of this class.

@@ -1,3 +1,25 @@
+/*
+import LeafletMap from './leafletMapClass';
+
+// webpack import information for bundling. localhost won't work with that.
+// local Styles from leafletMapClass
+import './leaflet/leaflet.css';
+import './fullscreen/Control.FullScreen.css';
+// local Scripts from leafletMapClass
+import './leaflet/leaflet.js';
+import './leaflet-ui/leaflet-ui-short.js';
+import './fullscreen/Control.FullScreen.js';
+
+// local Styles for LEAFLET-ELEVATION 
+import './elevation/dist/leaflet-elevation.css';
+// register local Scripts - load dependencies first
+import './elevation/dist/d3.min.js';
+import './libs/gpx.js';
+import './elevation/libs/leaflet-gpxgroup.min.js';
+import './elevation/dist/togeojson.umd.js';
+import './elevation/dist/leaflet.geometryutil.min.js'
+import './elevation/dist/leaflet-elevation.min.js';
+*/
 class LeafletElevation extends LeafletMap {
 
     controlElevation = {};
