@@ -3,7 +3,6 @@
 // Note on fotorama options and input-image-data: the fotorama options are defined in the html. And the image data is given by html.
 // Notes on REACT: ----------------------------
 // TODO: before adopting to react this class should be transferred to Typescript.
-// TODO: the minifier does not work with private methods.
 // TODO: install and use eslint up to the latest coding standards
 // TODO: create tests with Jest testing framework
 // A React Component would receive the fotorama options as props and image-data as a js-array. 
