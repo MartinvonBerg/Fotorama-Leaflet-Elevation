@@ -384,6 +384,13 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.11.0 =
+28.08.2022: Bugfix for Gutenberg Block after WP6.0 update (changed 'number' to 'string' in block.json)
+            update of all Javascript libraries
+            Complete rework of Javascript code. (Module system for webpack still missing). All functionality is (almost) the same. 
+                'Martin-Theme' for elevation changed. CSS-heights for map and chart changed. Aspect ratio for fotorama is currently fixed to 1.5.
+            Tile-Server for leaflet map tiles added. Tiles could be stored locally to be conformant to EC privacy directive. Setting could be done in Admin Panel. (It is missing a solution for regular updates of the tile-files. they are currently stored forever.)
+
+= 0.11.0 =
 21.05.2022: Test with WordPress 6.0-RC2. Minor PHP corrections.
             Added an option or parameter in Admin-Panel, shortcode and Gutenberg Block to select the leaflet map-layer that is shown first.
             Change the js recalculation of map and chart height and fitting to marker-bounds.
