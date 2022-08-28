@@ -1,4 +1,5 @@
 const path = require('path');
+const TerserPlugin = require("terser-webpack-plugin");
 let _mode = 'production';
 
 // create bundle for fotorama
@@ -22,6 +23,15 @@ module.exports = [
       },
     ],
   },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+        },
+      }),
+    ],
+  },
 },
 // create bundle for Leaflet
 {
@@ -41,6 +51,16 @@ module.exports = [
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
       },
+    ],
+  },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+          keep_fnames: true,
+        },
+      }),
     ],
   },
 },
@@ -64,10 +84,19 @@ module.exports = [
       },
     ],
   },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+        },
+      }),
+    ],
+  },
 },
 // main js script
 {
-  entry: './js/fotorama-multi-reduced.js',
+  entry: ['./js/fotorama-multi-reduced.js', './js/fotoramaClass.js'],
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'release/js'),
@@ -83,6 +112,15 @@ module.exports = [
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
       },
+    ],
+  },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+        },
+      }),
     ],
   },
 },
