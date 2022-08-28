@@ -389,6 +389,7 @@ This plugin uses the great work from:
             Complete rework of Javascript code. (Module system for webpack still missing). All functionality is (almost) the same. 
                 'Martin-Theme' for elevation changed. CSS-heights for map and chart changed. Aspect ratio for fotorama is currently fixed to 1.5.
             Tile-Server for leaflet map tiles added. Tiles could be stored locally to be conformant to EC privacy directive. Setting could be done in Admin Panel. (It is missing a solution for regular updates of the tile-files. they are currently stored forever.)
+            Powershell script generated to build a release (bundling with webpack did not work.)
 
 = 0.11.0 =
 21.05.2022: Test with WordPress 6.0-RC2. Minor PHP corrections.
