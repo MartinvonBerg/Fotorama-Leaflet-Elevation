@@ -1,17 +1,18 @@
 const path = require('path');
 const TerserPlugin = require("terser-webpack-plugin");
-let _mode = 'production';
+let _mode = 'development';
 
 // create bundle for fotorama
 module.exports = [
 {
-  entry: './js/fotoramaClass.js',
+  entry: ['./js/aggregator.js', './js/fotoramaClass.js'],
   output: {
     filename: 'fotorama_bundle.js',
     path: path.resolve(__dirname, 'release/js/fotorama'),
   },
   mode: _mode, 
   module: {
+    
     rules: [
       {
         test: /\.css$/i,
@@ -19,21 +20,29 @@ module.exports = [
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
+        //type: 'asset/resource',
+        loader: 'file-loader',
+        options: {
+              name: '[path][name].[ext]',
+            },
       },
     ],
+    
   },
   optimization: {
     minimizer: [
       new TerserPlugin({
         terserOptions: {
-          keep_classnames: true,
+          keep_classnames: false,
+          keep_fnames: false,
+          compress: true,
+          mangle: true,
         },
       }),
     ],
   },
 },
-// create bundle for Leaflet
+/* create bundle for Leaflet
 {
   entry: './js/leafletMapClass.js',
   output: {
@@ -124,4 +133,5 @@ module.exports = [
     ],
   },
 },
+*/
 ];
