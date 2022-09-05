@@ -139,20 +139,22 @@
             
             for (let m = 0; m < numberOfBoxes; m++) {    
                 // w: width, h: height as shortform.  
-                let wmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).width.replace("px", ""));
-                let hmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).height.replace("px", ""));
-                let ratioMap = wmap / hmap;
-                
-                if ( ! ('ratioMap' in pageVarsForJs[m]) ) {
-                    pageVarsForJs[m]['ratioMap'] = ratioMap;
-                }
-    
-                let _group = new L.featureGroup( allMaps[m].mrk );
-    
-                // skip boundary setting for boxmap that doesn't have a map
-                if ( ! isNaN(ratioMap)) {
-                    allMaps[m].bounds = allMaps[m].setBoundsToMarkers(m, _group);
-                } 
+                try {
+                    let wmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).width.replace("px", ""));
+                    let hmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).height.replace("px", ""));
+                    let ratioMap = wmap / hmap;
+                    
+                    if ( ! ('ratioMap' in pageVarsForJs[m]) ) {
+                        pageVarsForJs[m]['ratioMap'] = ratioMap;
+                    }
+                    
+                    let _group = new L.featureGroup( allMaps[m].mrk );
+        
+                    // skip boundary setting for boxmap that doesn't have a map
+                    if ( ! isNaN(ratioMap)) {
+                        allMaps[m].bounds = allMaps[m].setBoundsToMarkers(m, _group);
+                    } 
+                } catch {}
             }
         }
     }

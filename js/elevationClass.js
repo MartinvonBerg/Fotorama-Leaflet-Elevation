@@ -201,13 +201,17 @@ class LeafletElevation extends LeafletMap {
           
         } else {
             q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
-            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = event.track_info.distance.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
-    
             q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
-            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
-    
-            q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';                                            
-            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+            q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';
+            try {
+                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = event.track_info.distance.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
+                q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+                q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+            } catch {
+                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = '0.0';
+                q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = '0.0';
+                q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = '0.0';
+            }
         }
 
         if (event.type !== 'legend_selected') this.controlLayer.addOverlay(event.layer, event.name );
