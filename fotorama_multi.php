@@ -239,10 +239,18 @@ function showmulti($attr, $content = null)
 	
 	// Generate html for Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
+
+		require_once __DIR__ . '/inc/FotoramaClass.php';
+		$fClass = new FotoramaClass( $shortcodecounter, $data2);
+		$htmlstring .= $fClass->getSliderHtml( $attr);
+		$phpimgdata = $fClass->getImageDataForJS();
+		$fClass = null;
+
+		// ---------- the old code from here
+		/*
 		$imgnr = 1;
 		// die erste Zeile sieht unnötig aus, aber es geht nur so
 		$htmlstring .= <<<EOF
-
 <div class="fotorama_multi_images" style="display:none;"><figure><figcaption></figcaption></figure></div> 
 <div id="mfotorama{$shortcodecounter}"
 		data-autoplay="{$autoplay}"
@@ -326,6 +334,7 @@ EOF;
 			$imgnr++;
 		}
 		$htmlstring  .= "</div><!--div id=end-of-slider -->";
+		*/
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
