@@ -373,12 +373,20 @@ class FotoramaElevation {
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
-		// --------- TileServer ---------------------------------
+		// --------- TileServer End ------------------------------
 
 		add_settings_field(
 			'height_of_map_10', // id
-			__( 'Height of Map in px', 'fotoramamulti' ), // title
+			__( 'Maximum Height of Map in px', 'fotoramamulti' ), // title
 			array( $this, 'height_of_map_10_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'leaflet_elevation_setting_section' // section
+		);
+
+		add_settings_field(
+			'aspect_ratio_of_map', // id
+			__( 'Aspect Ratio of Map', 'fotoramamulti' ), // title
+			array( $this, 'aspect_ratio_of_map_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
@@ -474,7 +482,7 @@ class FotoramaElevation {
 
 		add_settings_field (
 			'ratio', // id
-			__( 'Width / Height Ratio', 'fotoramamulti' ), // title
+			__( 'Width / Height (Aspect) Ratio', 'fotoramamulti' ), // title
 			array( $this, 'ratio_callback' ), // callback
 			'fotorama-elevation-admin', // page
 			'fotorama_elevation_setting_section' // section
@@ -894,6 +902,13 @@ class FotoramaElevation {
 		);
 	}
 
+	public function aspect_ratio_of_map_callback() {
+		printf(
+			'<input type="number" min="0.1" max="5.0" step="0.01" name="fotorama_elevation_option_name[aspect_ratio_of_map]" id="aspect_ratio_of_map" value="%s"><label> Min: 0.1 in ratio, Max: 5.0 in ratio</label>',
+			isset( $this->fotorama_elevation_options['aspect_ratio_of_map'] ) ? esc_attr( $this->fotorama_elevation_options['aspect_ratio_of_map'] ) : ''
+		);
+	}
+
 	public function height_of_chart_11_callback() {
 		printf(
 			'<input type="number" min="'. $this->min_height_chart .'" max="'. $this->max_height_chart .'" name="fotorama_elevation_option_name[height_of_chart_11]" id="height_of_chart_11" value="%s"><label>  Min: %s px, Max: %s px</label>',
@@ -1146,6 +1161,10 @@ class FotoramaElevation {
 
 		if ( isset( $input['height_of_map_10'] ) ) {
 			$sanitary_values['height_of_map_10'] = $this->my_sanitize_int_with_limits($input['height_of_map_10'], $this->min_height_map, $this->max_height_map );
+		}
+
+		if ( isset ( $input[ 'aspect_ratio_of_map' ] ) ) {
+			$sanitary_values['aspect_ratio_of_map'] = $this->my_sanitize_int_with_limits ( $input['aspect_ratio_of_map'], 0.1, 5.0 );
 		}
 
 		if ( isset( $input['height_of_chart_11'] ) ) {

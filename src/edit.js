@@ -48,7 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap, showadress, adresstext, 
 			requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio, gpxpath, alttext,
 			background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort, mapselector,
-			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor} = attributes;
+			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor, mapaspect} = attributes;
 	const aff =  require('./block.json')['attributes']; // aff: attributes from File loaded.
 	let entries = Object.entries(aff);
 	const ns = 'fotoramamulti'; // the namespace for i18n

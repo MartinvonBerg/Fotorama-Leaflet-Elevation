@@ -96,7 +96,7 @@
 			"type": "string",
 			"default": 1.5,
 			"section": "Slider",
-			"label": "Width / Height Ratio",
+			"label": "Width / Height (Aspect) Ratio",
 			"help": "Define the width / height ratio of the slider"
 		},
 		"background": {
@@ -190,10 +190,17 @@
 		},
 		"mapheight": {
 			"type": "string",
-			"default": 450,
+			"default": 1000,
 			"section": "Map",
-			"label": "Height of Map",
-			"help": "Height of the leaflet elevation map in px (is recalculated in Browser. Might show no effect if too big.)"
+			"label": "Maximum Height of Map",
+			"help": "Max. Height of the leaflet elevation map in px. Mind the relation to Aspect Ratio of Map."
+		},
+		"mapaspect": {
+			"type": "string",
+			"default": 1.5,
+			"section": "Map",
+			"label": "Width / Height (Aspect) Ratio",
+			"help": "Define the width / height ratio of the Map"
 		},
 		"showmap": {
 			"type": "boolean",

@@ -11,6 +11,7 @@
 - [Usage](#usage)
 - [Image Preparation and Usage of the Fotorama-Slider](#image-preparation-and-usage-of-the-fotorama-slider)
 - [Usage of Leaflet Elevation](#usage-of-leaflet-elevation)
+- [Tile Server for Leaflet Map Tiles](#tile-server-for-leaflet-map-tiles)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Translation, i18n](#translation--i18n)
   * [Frontend](#frontend)
@@ -119,7 +120,8 @@ Due to the error corrections it is highly recommended to upgrade the Plugin to 0
 |showadress|true / false|X|showadress="true"|Show start address of the tour. GPX-coords are taken from the the custom fields *lat* and *lon*. Field is translation ready if its value is 'start address'. Only shown if the custom field 'geoadress' of the post is set. The adresstext is linked to the google-map-service which opens in a separate tab of the browser. **Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work ! The plugin gives you a message if not, instead of the Start Address if you are logged in as Admin.**
 |adresstext|Start address|X|adresstext="Start address"|Text before the start address. Field is translation ready if its value is 'Start address'. Mind that translation may not show up if any cache is used! Even the browser cache will block the translation to show up.|
 |showmap|true / false|X|showmap="true"|Show the map, independent of other settings. There is no admin-setting for this option as this is no useful global option.|
-|mapheight|450|X|mapheight="450"|Height of the leaflet map in pixels (px). Note that this value maybe overwritten be the responsive function! Could happen that you won't see any change in the frontend if you change this value by the Admin settings.|
+|mapheight|1000|X|mapheight="1000"|Maximum Height of the leaflet map in pixels (px).|
+|mapaspect|1.5|X|mapheight="1.5"|Aspect Ratio of the leaflet map. Responsice increase of the map height up to maximum height (see above).|
 |chartheight|200|X|chartheight="200"|Height of the leaflet elevation chart in pixels (px)|
 |eletheme|lime-theme|X|eletheme="lime-theme"|Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. And Martin-theme is my special theme.|
 |mapcenter|0.0,0.0|--|mapcenter="48.12,12.35"|Center of the map if NO tracks and images are used. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option. This is for a simple map with a marker showing some text on hover.|
@@ -239,7 +241,7 @@ Process and save the file with the Button at the bottom.
     - mixture of images with and without GPS-data and the option showmap="true" and requiregps="false" causes JS-errors. No standard use case. User should set showmap="false" for that case.
     - for images without thumbnail the hover on the map is wrong, pointing to a non existing image. 
 
-# Usage of Leaflet Elevation    
+# Usage of Leaflet Elevation
 1. Preparation  (optional)
 
     Resize the GPX-Tracks with GPSBabel in a Batch-File (Windows-code):
@@ -270,6 +272,10 @@ Process and save the file with the Button at the bottom.
       - Update leaflet elevation to the current version using current d3.js. 
       - parameter 'showalltracks' : Check why the file has to be uploaded with GPX-Uploader and metadata has to be written to the GPX-file.    
 
+# Tile Server for Leaflet Map Tiles
+Since version 0.11.0, it is also possible to cache the leaflet tiles locally on your own server. This procedure conforms to the guidelines of the osmfoundation (https://operations.osmfoundation.org/policies/tiles/). There is no bulk download and the maps are stored locally. The Http referer of the current request is used as the Http referer. 
+In addition the visitor's IP is NOT forwarded to the map server. This ensures that the use of maps from OpenStreeMap complies with the General Data Protection Regulation EC 2016/679. Therefore, no notice is required in the privacy policy of the website. This option can be set via the admin panel. Furthermore, the conversion of the tiles into webp file format can be selected in order to meet Google Pagespeed requirements.
+Drawback: No fileage clean-up implemented. So, once stored, the tiles are used forever. Currently, only a manual deletion works which forces a new download of the tiles.
 
 # Frequently Asked Questions
 
@@ -350,7 +356,7 @@ This plugin uses the great work from:
         - All PHP code runs in separate namespaces
         - JS is wrapped in a self invoking function call and only executed if the dedicated div-id is found on the page.
         - CSS might be a problem, as I did not us SCSS, CASS or less to generate really separated CSS-classes.
-        - I'm using the following plugins in my site: (output of the REST-API to list all plugins)
+        - I'm using the following plugins on my site: (output of the REST-API to list all plugins)
         ```JSON
         [
             {"name":"Admin Columns"}, 
@@ -385,10 +391,10 @@ This plugin uses the great work from:
 
 = 0.11.0 =
 28.08.2022: Bugfix for Gutenberg Block after WP6.0 update (changed 'number' to 'string' in block.json)
-            update of all Javascript libraries
+            update of all Javascript libraries (where updates were available)
             Complete rework of Javascript code. (Module system for webpack still missing). All functionality is (almost) the same. 
-                'Martin-Theme' for elevation changed. CSS-heights for map and chart changed. Aspect ratio for fotorama is currently fixed to 1.5.
-            Tile-Server for leaflet map tiles added. Tiles could be stored locally to be conformant to EC privacy directive. Setting could be done in Admin Panel. (It is missing a solution for regular updates of the tile-files. they are currently stored forever.)
+                'Martin-Theme' for elevation changed. CSS-heights for map and chart changed. The elevation chart is by design not responsive, so its height is fixed (now).
+            Tile-Server for leaflet map tiles added. Tiles could be stored locally to be conformant to EC privacy directive. Setting could be done in Admin Panel. (It is missing a solution for regular updates of the tile-files. they are currently stored forever. Manual deletion of files works fine.)
             Powershell script generated to build a release (bundling with webpack did not work.)
 
 = 0.11.0 =

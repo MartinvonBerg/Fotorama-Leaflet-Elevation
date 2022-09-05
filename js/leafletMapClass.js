@@ -425,7 +425,7 @@ class LeafletMap {
     }
 
     /**
-     * TODO : description
+     * Create the Leaflet Map Markers for the images of fotorama slider.
      * @param {array} markers
      */
     createFotoramaMarkers(markers) {
@@ -437,9 +437,8 @@ class LeafletMap {
         this.bounds = this.setBoundsToMarkers(testgroup);
     }
 
-    // create markers
     /**
-     * TODO : description
+     * Sub of Create the Leaflet Map Markers for the images of fotorama slider.
      * @param {array} imgdata 
      * @returns {array} bounds
      */

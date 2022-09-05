@@ -94,7 +94,8 @@ function showmulti($attr, $content = null)
 	extract ( shortcode_atts ( array (
 		'gpxpath' 			=> $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx', 
 		'gpxfile' 			=> 'test.gpx',
-		'mapheight' 		=> $fotorama_elevation_options['height_of_map_10'] ?? '450',
+		'mapheight' 		=> $fotorama_elevation_options['height_of_map_10'] ?? '1000',
+		'mapaspect'			=> $fotorama_elevation_options['aspect_ratio_of_map'] ?? '1.50',
 		'chartheight' 		=> $fotorama_elevation_options['height_of_chart_11'] ?? '200',
 		'imgpath' 			=> $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
 		'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'true', 
@@ -331,7 +332,7 @@ EOF;
 	if ($showmap  == 'true') {
 		$mapid = 'map' . strval($shortcodecounter); 
 		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
-		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;\"></div>";
+		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;aspect-ratio:{$mapaspect}\"></div>";
 		// Custom Summary
 		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
 			$htmlstring .= <<<EOF
@@ -429,6 +430,7 @@ EOF;
 		'tracks' => $tracks,
 		'eletheme' => $eletheme,
 		'mapheight' => $mapheight,
+		'mapaspect' => $mapaspect,
 		'chartheight' => $chartheight,
 		'showalltracks' => $showalltracks,
 		'mapcenter' => $mapcenter,

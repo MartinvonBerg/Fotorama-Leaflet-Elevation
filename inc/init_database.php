@@ -65,7 +65,8 @@ function fotoramamulti_activate() {
 		'arrows' 			=>  'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
 		'shadows' 			=>  'true', // true or false
 		'use_tile_server'	=>  'false',
-		'convert_tiles_to_webp' => 'false'
+		'convert_tiles_to_webp' => 'false',
+		'aspect_ratio_of_map'  => '1.5'  // CSS aspect ratio for the leaflet map.
 		);
 	
 	$opt = array_merge($newOptions, $existingOptions);
