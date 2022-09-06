@@ -131,7 +131,8 @@ function showmulti($attr, $content = null)
 		'arrows' 			=> $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
 		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true', // true or false
 		'shortcaption'		=> 'false',
-		'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap'
+		'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap',
+		'slider'			=> 'swiper' // 'fotorama' or 'swiper' : secret shortcode
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
 
@@ -230,7 +231,7 @@ function showmulti($attr, $content = null)
 	}
 
 		
-	// --------------- HTML -------------------
+	// --------------- HTML CODE GENERATION--------------------------------------------
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
 		
@@ -240,101 +241,20 @@ function showmulti($attr, $content = null)
 	// Generate html for Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 
-		require_once __DIR__ . '/inc/FotoramaClass.php';
-		$fClass = new FotoramaClass( $shortcodecounter, $data2);
+		if ( $slider === 'fotorama') {
+			// TODO: load the scripts for fotorama here
+			require_once __DIR__ . '/inc/fotoramaClass.php';
+			$fClass = new FotoramaClass( $shortcodecounter, $data2);
+			
+		} elseif ( $slider === 'swiper') {
+			// TODO: load the scripts for swiper here
+			require_once __DIR__ . '/inc/swiperClass.php';
+			$fClass = new SwiperClass( $shortcodecounter, $data2);
+			
+		} 
 		$htmlstring .= $fClass->getSliderHtml( $attr);
 		$phpimgdata = $fClass->getImageDataForJS();
 		$fClass = null;
-
-		// ---------- the old code from here
-		/*
-		$imgnr = 1;
-		// die erste Zeile sieht unnötig aus, aber es geht nur so
-		$htmlstring .= <<<EOF
-<div class="fotorama_multi_images" style="display:none;"><figure><figcaption></figcaption></figure></div> 
-<div id="mfotorama{$shortcodecounter}"
-		data-autoplay="{$autoplay}"
-		data-stopautoplayontouch="true"
-		data-width="100%" 
-		data-allowfullscreen="native" 
-		data-keyboard="false" 
-		data-hash="false"
-		data-captions="{$showcaption}"
-		data-fit="{$fit}" 
-		data-ratio="{$ratio}" 
-		data-nav="thumbs" 
-		data-navposition="{$navposition}"
-		data-navwidth="{$navwidth}%"
-		data-thumbwidth="{$f_thumbwidth}" 
-		data-thumbheight="{$f_thumbheight}" 
-		data-thumbmargin="{$thumbmargin}"
-		data-thumbborderwidth="{$thumbborderwidth}"
-		data-transition="{$transition}"
-		data-transitionduration="{$transitionduration}"
-		data-loop="{$loop}"
-		data-arrows="{$arrows}"
-		data-shadows="{$shadows}">
-
-EOF;
-
-		// loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
-		foreach ($data2 as $data) {
-
-			// set the alt-tag and the title for SEO
-			if ( 'notitle' == $data['title'] ) {
-				$data['title'] = __('Galeriebild') . ' '. \strval( $imgnr );
-			}
-			$alttext = $data['alt'] != '' ? $data['alt'] : $data['title'];
-
-			// generate the caption for html and javascript
-			if ( $shortcaption === 'false') {
-				$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' || ' . $data['camera'] . ' || ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
-				$jscaption = $imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . ' || ' . $data['camera'] . ' || ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'];	
-			} else {
-				$caption = 'data-caption="' .$imgnr. ' / ' .$imageNumber . ': ' . $data["title"] . '"';
-				$jscaption = $imgnr. ' / ' .$imageNumber . ': ' . $data["title"];
-			};
-			if ( $showcaption === 'false') {
-				$caption = '';
-				$jscaption = '';
-			}
-
-			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
-			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
-			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $imgpath, $thumbsdir );
-			$phpimgdata[$imgnr-1]['id'] = $imgnr;
-			$phpimgdata[$imgnr-1]['title'] = $alttext; 
-			$phpimgdata[$imgnr-1]['coord'][0] = round( $data['lat'], 6 );
-			$phpimgdata[$imgnr-1]['coord'][1] = round( $data['lon'], 6 );
-			$phpimgdata[$imgnr-1]['permalink'] = $data['permalink'] ?? '';
-			$phpimgdata[$imgnr-1]['jscaption'] = $jscaption;
-
-			// --------------- Proceed with HTML -------------------
-			if ( $data['thumbinsubdir'] ) {
-				$htmlstring .= <<<EOF
-		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"
-		 {$caption}
-		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$thumbsdir}/{$data['file']}{$data['thumbs']}"></a>
-EOF;
-			
-			} elseif ( $data['thumbavail'] ) {
-					
-				$htmlstring .= <<<EOF
-		<a href="{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}" 
-		 {$caption}
-		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}"></a>
-EOF;
-
-			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
-				$htmlstring .= <<<EOF
-		<img loading="lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"
-		 {$caption}>
-EOF;
-			};
-			$imgnr++;
-		}
-		$htmlstring  .= "</div><!--div id=end-of-slider -->";
-		*/
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
@@ -359,7 +279,6 @@ EOF;
 		<span class="summaryvalue">0</span></span></div>
 EOF;
 		}
-		//$htmlstring  .= '</div>'; // uncommented to include fm-dload in grid of the boxmap, showing directly under the map
 	}
 	
 	// ----------------------------------------------------
@@ -421,8 +340,8 @@ EOF;
         $htmlstring  .= '</div>'; 
 	}
 	
-	if ($addPermalink && $allImgInWPLibrary && ($i < 2) && ( $imageNumber > 0)){
-		$htmlstring  .= '<div class="fm-attach-link">';
+	if ($addPermalink && $allImgInWPLibrary && ($i < 2) && ( $imageNumber > 0) && ($slider === 'fotorama')){
+		$htmlstring .= '<div class="fm-attach-link">';
 		$htmlstring .= '<a href="" target="_blank">';
 		$htmlstring .= '<div class="fm-itemsButtons" type="info"><svg height="20px" style="fill: rgb(255, 255, 255);" version="1.1" viewBox="0 0 46 100" width="46px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M35.162,0c6.696,0,10.043,4.567,10.043,9.789c0,6.522-5.814,12.555-13.391,12.555c-6.344,0-10.045-3.752-9.869-9.947   C21.945,7.176,26.35,0,35.162,0z M14.543,100c-5.287,0-9.164-3.262-5.463-17.615l6.07-25.457c1.057-4.077,1.23-5.707,0-5.707   c-1.588,0-8.451,2.816-12.51,5.59L0,52.406C12.863,41.48,27.662,35.072,34.004,35.072c5.285,0,6.168,6.361,3.525,16.148   L30.58,77.98c-1.234,4.729-0.703,6.359,0.527,6.359c1.586,0,6.787-1.963,11.896-6.041L46,82.377C33.488,95.1,19.83,100,14.543,100z   "></path></g><g></svg></div>';
 		$htmlstring .= '</a></div>';
@@ -449,7 +368,7 @@ EOF;
 		'mapselector' => $mapselector,
 		'useTileServer' => get_option( 'fotorama_elevation_option_name' )['use_tile_server'],
 		'convertTilesToWebp' => get_option( 'fotorama_elevation_option_name' )['convert_tiles_to_webp']
- 	) ;
+ 	);
 	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
