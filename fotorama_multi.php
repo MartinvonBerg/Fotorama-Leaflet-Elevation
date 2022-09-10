@@ -132,7 +132,7 @@ function showmulti($attr, $content = null)
 		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true', // true or false
 		'shortcaption'		=> 'false',
 		'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap',
-		'slider'			=> 'swiper' // 'fotorama' or 'swiper' : secret shortcode
+		'slider'			=> 'fotorama' // 'fotorama' or 'swiper' : secret shortcode
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
 
@@ -241,11 +241,11 @@ function showmulti($attr, $content = null)
 	// Generate html for Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 
-		if ( $slider === 'fotorama') {
-			// TODO: load the scripts for fotorama here
-			require_once __DIR__ . '/inc/fotoramaClass.php';
-			$fClass = new FotoramaClass( $shortcodecounter, $data2, $allImgInWPLibrary);
-		} 		
+		
+		// TODO: load the scripts for fotorama here
+		require_once __DIR__ . '/inc/fotoramaClass.php';
+		$fClass = new FotoramaClass( $shortcodecounter, $data2, $allImgInWPLibrary);
+				
 		$htmlstring .= $fClass->getSliderHtml( $attr);
 		$phpimgdata = $fClass->getImageDataForJS();
 		$fClass = null;
