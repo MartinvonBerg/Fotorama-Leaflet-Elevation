@@ -16,9 +16,8 @@
         // do it for all shortcodes on the page or post
         for (let m = 0; m < numberOfBoxes; m++) {
 
-            //------------- slider part --------------------------------------
+            //------------- fotorama part --------------------------------------
             let hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
-            let hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length == 1
 
             //------------- leaflet - elevation part ---------------------------
             let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
@@ -39,12 +38,7 @@
                 allSliders[m] = new SliderFotorama(m, 'mfotorama' + m );
                 // Initialize fotorama manually.
                 allSliders[m].defSlider();
-            } else if ( hasSwiper ) {
-                // define the Slider class. This class has to be enqued (loaded) before this function.
-                allSliders[m] = new SliderSwiper(m, 'swiper' + m );
-                allSliders[m].defSlider();
-            } 
-            else {
+            } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
                     let center = pageVarsForJs[m].mapcenter;
