@@ -29,6 +29,11 @@ final class SwiperClass
     protected $imageData = [];
     protected $imageNumber = 0;
     protected $imageDataToPassToJavascript = [];
+    protected $showpagination = true; // TODO: swiper options and pass to js
+    protected $fslightbox = false;
+    protected $zoom = true;
+    protected $effect = 'slide';
+    protected $showInfoButton = false;
 
     // PHP 7.4 version
     /*
@@ -37,6 +42,10 @@ final class SwiperClass
     protected int $shortcodecounter = 0;
     protected array $imageData = [];
     protected array $imageDataToPassToJavascript = [];
+    protected boolean $showpagination = true;
+    protected boolean $fslightbox = false;
+    protected boolean $zoom = true;
+    protected string $effect = 'slide';
     */
 
     /**
@@ -44,12 +53,15 @@ final class SwiperClass
      *
      * TODO
      */
-    public function __construct($shortcodecounter=0, $imageData=[])
+    public function __construct($shortcodecounter=0, $imageData=[], $allImgInWPLibrary)
     {
         $this->shortcodecounter = $shortcodecounter;
         $this->imgnr = 1;
         $this->imageData = $imageData;
         $this->imageNumber = count($this->imageData);
+
+        $addPermalink = get_option( 'fotorama_elevation_option_name')['useCDN_13'] == 'true'; // re-used for addPermalink now!
+        $this->showInfoButton = $addPermalink && $allImgInWPLibrary;
     }
 
     public function getSliderHtml( $attributes)
@@ -75,6 +87,7 @@ final class SwiperClass
 
         // Get Values from Admin settings page
  	    $fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
+        
         
         // Extract shortcode-Parameters and set Default-Values
         extract ( shortcode_atts ( array (
@@ -119,7 +132,10 @@ final class SwiperClass
             'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap'
         ), $attr));
 
-        $htmlstring = '<div class="swiper myswiper"><div class="swiper-wrapper" id="mfotorama'.$this->shortcodecounter.'">';
+        // change swiper settings for certain cases
+        if ( $this->effect === 'cube') $this->zoom = false;
+
+        $htmlstring = '<div id="swiper'.$this->shortcodecounter.'" class="swiper myswiper"><div class="swiper-wrapper">';
 
         // loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($this->imageData as $data) {
@@ -133,7 +149,7 @@ final class SwiperClass
 			// generate the caption for html and javascript
 			if ( $shortcaption === 'false') {
 				//$caption = 'data-caption="' .$this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"] . ' </br> ' . $data['camera'] . ' </br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
-				$jscaption = $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"] . ' </br> ' . $data['camera'] . ' </br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'];	
+				$jscaption = $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"] . ' || ' . $data['camera'] . ' || ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'];	
 			} else {
 				//$caption = 'data-caption="' .$this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"] . '"';
 				$jscaption = $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"];
@@ -142,7 +158,8 @@ final class SwiperClass
 
 			// --------------- Proceed with HTML -------------------
             $htmlstring .= '<div class="swiper-slide">';
-            $htmlstring .= '<div class="swiper-zoom-container">';
+            $this->zoom === true ? $htmlstring .= '<div class="swiper-zoom-container">' : null;
+
             // img and a href
 			if ( $data['thumbinsubdir'] ) {
 			} elseif ( $data['thumbavail'] ) {
@@ -152,19 +169,23 @@ final class SwiperClass
                 EOF;
 			};
             
-            $htmlstring .= '</div>'; // End div swiper-zoom-container
+            $this->zoom === true ? $htmlstring .= '</div>' : null; // End div swiper-zoom-container
 
             // todo: verwende ein Icon mit Lupe rechts oben über dem Bild wie bei fotorama
-            $htmlstring .= '<a data-fslightbox="1" data-type="image" data-caption="'. $alttext .'" ';
-            $htmlstring .= <<<EOF
-            href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"></a>
-            EOF;
+            if ( $this->fslightbox === true) {
+                $htmlstring .= '<a data-fslightbox="1" data-type="image" data-caption="'. $alttext .'" ';
+                $htmlstring .= <<<EOF
+                href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"></a>
+                EOF;
+            }
 
             // Ergänze den info button links oben. Position und styling mit Css
-            $htmlstring .= '<div class="fm-attach-link">';
-            $htmlstring .= '<a href="" target="_blank">';
-            $htmlstring .= '<div class="fm-itemsButtons" type="info"><svg height="20px" style="fill: rgb(255, 255, 255);" version="1.1" viewBox="0 0 46 100" width="46px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M35.162,0c6.696,0,10.043,4.567,10.043,9.789c0,6.522-5.814,12.555-13.391,12.555c-6.344,0-10.045-3.752-9.869-9.947   C21.945,7.176,26.35,0,35.162,0z M14.543,100c-5.287,0-9.164-3.262-5.463-17.615l6.07-25.457c1.057-4.077,1.23-5.707,0-5.707   c-1.588,0-8.451,2.816-12.51,5.59L0,52.406C12.863,41.48,27.662,35.072,34.004,35.072c5.285,0,6.168,6.361,3.525,16.148   L30.58,77.98c-1.234,4.729-0.703,6.359,0.527,6.359c1.586,0,6.787-1.963,11.896-6.041L46,82.377C33.488,95.1,19.83,100,14.543,100z   "></path></g><g></svg></div>';
-            $htmlstring .= '</a></div>';
+            if ( $this->showInfoButton ){ 
+                $htmlstring .= '<div class="swiper-attach-link">';
+                $htmlstring .= '<a href="" target="_blank">';
+                $htmlstring .= '<div class="fm-itemsButtons" type="info"><svg height="20px" style="fill: rgb(255, 255, 255);" version="1.1" viewBox="0 0 46 100" width="46px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M35.162,0c6.696,0,10.043,4.567,10.043,9.789c0,6.522-5.814,12.555-13.391,12.555c-6.344,0-10.045-3.752-9.869-9.947   C21.945,7.176,26.35,0,35.162,0z M14.543,100c-5.287,0-9.164-3.262-5.463-17.615l6.07-25.457c1.057-4.077,1.23-5.707,0-5.707   c-1.588,0-8.451,2.816-12.51,5.59L0,52.406C12.863,41.48,27.662,35.072,34.004,35.072c5.285,0,6.168,6.361,3.525,16.148   L30.58,77.98c-1.234,4.729-0.703,6.359,0.527,6.359c1.586,0,6.787-1.963,11.896-6.041L46,82.377C33.488,95.1,19.83,100,14.543,100z   "></path></g><g></svg></div>';
+                $htmlstring .= '</a></div>';
+            }
             
             // Ergänze die Caption
             if ( $showcaption === 'false') {
@@ -190,10 +211,14 @@ final class SwiperClass
 		} // end for loop for image data
 
 		$htmlstring  .= "</div>"; // end of swiper wrapper
+        // buttons
         $htmlstring .= '<div class="swiper-button-prev"></div>';
         $htmlstring .= '<div class="swiper-button-next"></div>';
-        $htmlstring .= '<div class="swiper-pagination"></div>';
+
+        // pagination
         $htmlstring  .= "</div><!--div id=end-of-slider -->";
+        $this->showpagination === true ? $htmlstring .= '<div class="swiper-pagination"></div>' : null;
+        
 
         $this->imageDataToPassToJavascript = $phpimgdata;
         $this->sliderHtml = $htmlstring;
