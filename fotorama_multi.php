@@ -244,14 +244,13 @@ function showmulti($attr, $content = null)
 		if ( $slider === 'fotorama') {
 			// TODO: load the scripts for fotorama here
 			require_once __DIR__ . '/inc/fotoramaClass.php';
-			$fClass = new FotoramaClass( $shortcodecounter, $data2);
-			
+			$fClass = new FotoramaClass( $shortcodecounter, $data2, $allImgInWPLibrary);
 		} elseif ( $slider === 'swiper') {
 			// TODO: load the scripts for swiper here
 			require_once __DIR__ . '/inc/swiperClass.php';
-			$fClass = new SwiperClass( $shortcodecounter, $data2);
-			
+			$fClass = new SwiperClass( $shortcodecounter, $data2, $allImgInWPLibrary);
 		} 
+		
 		$htmlstring .= $fClass->getSliderHtml( $attr);
 		$phpimgdata = $fClass->getImageDataForJS();
 		$fClass = null;

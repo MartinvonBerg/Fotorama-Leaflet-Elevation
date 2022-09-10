@@ -24,6 +24,8 @@ class SliderSwiper {
     // swiper
     swiper = {};
     swiperTransitionDuration = 1000; // number: Transition duration (in ms). Default 300ms.
+    effect = 'slide'; // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or 'creative' //TODO: replace string with this.#pageVariables.effect and provide an admin setting for that.
+    zoom = true;
 
     /**
      * Constructor Function
@@ -31,56 +33,48 @@ class SliderSwiper {
      * @param {string} elementOnPage id of the div on the page that shall contain the slider
      */
      constructor(number, elementOnPage) {
-        SliderFotorama.count++; // update the number of instances on construct.
+        SliderSwiper.count++; // update the number of instances on construct.
         this.number = number; 
         this.elementOnPage = elementOnPage; 
         this.#pageVariables = pageVarsForJs[number];
         this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+        // change swiper settings for certain cases 
+        if (this.effect === 'cube') this.zoom = false;
     }
 
     /**
      * Initialisation of Slider in given elementOnPage
      */
     defSlider() {
-        this.#sliderDiv = this.#replaceImageData();
-
+        this.updateCaption();
+        
         // generate the swiper slider on the new html 
-        this.swiper = new Swiper('.myswiper', {
+        this.swiper = new Swiper('#swiper'+this.number, {
             // Default parameters
-            lazy: true,
             slidesPerView: 1,
             spaceBetween: 10,
-            // Responsive breakpoints
-            
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
-            effect: 'coverflow', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or 'creative'
-            // TODO: replace string with this.#pageVariables.effect and provide an admin setting for that.
-            loop: false,
-            rewind: true, // Should not be used together with loop mode : true
-            //modules: [], // Array with Swiper modules
-            preloadImages: true,
-            /*
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: false,
-                renderBullet: function (index, className) {
-                  return '<span class="' + className + '">' + (index + 1) + "</span>";
-                },
-            },
-            zoom: true,
             
+            effect: this.effect,
+            zoom: //this.zoom,
             {
-                maxRatio: 2,
+                enabled: this.zoom,
+                maxRatio: 3,
                 minRatio: 1,
                 zoomedSlideClass: 'swiper-zoom-container'
             },
-            on: {
-                doubleClick: function () {
-                  console.log('clicked!')
-                  this.zoom.in();
-                }
-              },
-            */
+            // 
+            loop: true,
+                        
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            // Navigation arrows
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
         });
     }
 
@@ -92,13 +86,14 @@ class SliderSwiper {
      * @param {int} sliderNumber 
      * @param {int} newslide 
      */
-    updateCaption(sliderNumber, newslide) {
-        if ( this.#pageVariables.imgdata[newslide].jscaption !== '') {
-            let text = this.#pageVariables.imgdata[newslide].jscaption ;
-            text = text.replaceAll('||', '<br>');
-            return text;
+    updateCaption() {
+        for (let m = 0; m <  this.#pageVariables.imgdata.length; m++) {
+            if ( this.#pageVariables.imgdata[m].jscaption !== '') {
+                let text = this.#pageVariables.imgdata[m].jscaption ;
+                text = text.replaceAll('||', '<br>');
+                let aaa = 0;
+            }
         }
-        return '';
     }
 
     /**
