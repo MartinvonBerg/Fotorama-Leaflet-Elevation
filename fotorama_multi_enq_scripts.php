@@ -41,9 +41,9 @@ if ( $mode === 'production') {
     wp_enqueue_style('fotorama_css', $plugin_url . 'css/fotorama_multi.min.css', [], '4.6.4');
     wp_enqueue_style('fotorama3_css', $plugin_url . 'css/fotorama3.min.css', [], '4.6.4');
     // Load Scripts
-    wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '4.6.4');
-    wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-    wp_register_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.11.0', true);
+    //wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '4.6.4');
+    //wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
+    //wp_register_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.11.0', true);
     // --- FOTORAMA -------------
     // or
     // --- Swiper.js
