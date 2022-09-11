@@ -852,10 +852,21 @@ class FotoramaElevation {
 	}
 	// --------- TileServer added 2022-08-24 ----------------
 	public function usetileserver_callback() {
+		// check .htaccess and change info text accordingly
+		$pidp = plugin_dir_path(__FILE__);
+		$path = \str_replace('inc/','', \plugin_dir_path(__FILE__) ) . 'leaflet_map_tiles' . \DIRECTORY_SEPARATOR;
+		$hasWorkingHtaccess = $this->checkHtaccess( $path );
+
+		$infoText = '';
+		if ( $hasWorkingHtaccess) {
+			$infoText = __( 'Use a local Tile-Server to provide Map-Tiles (.htaccess checked and OK)', 'fotoramamulti' );
+		} else {
+			$infoText = 'ATTENTION: File .htaccess in '. $path .' is not OK.';
+		}
+
 		printf(
-		'<input type="checkbox" name="fotorama_elevation_option_name[use_tile_server]" id="use_tile_server" value="use_tile_server" %s> <label for="use_tile_server">%s</label>',
-		( isset ( $this->fotorama_elevation_options['use_tile_server'] ) && $this->fotorama_elevation_options['use_tile_server'] === 'true' ) ? 'checked' : '',
-		__( 'Use a local Tile-Server to provide Map-Tiles', 'fotoramamulti' )
+			'<input type="checkbox" name="fotorama_elevation_option_name[use_tile_server]" id="use_tile_server" value="use_tile_server" %s> <label for="use_tile_server">%s</label>',
+			( isset ( $this->fotorama_elevation_options['use_tile_server'] ) && $this->fotorama_elevation_options['use_tile_server'] === 'true' ) ? 'checked' : '', $infoText
 		);
 	}
 
@@ -1398,7 +1409,85 @@ class FotoramaElevation {
 		return strval($val);
 	}
 
-	// -------------------- unused -------------------------------------//
+	private function compare($a, $b) {
+		return true;
+	}
+
+	// ---- htaccess helper -----------------
+	private function checkHtaccess ( $path) {
+
+		
+
+		if (\ini_get('allow_url_fopen') !== '1') return 'Cannot open file';
+
+		$expect = "
+		<LimitExcept GET HEAD>
+			Order Allow,Deny
+			Deny from all
+		</LimitExcept>
+	
+		<IfModule mod_rewrite.c>
+			RewriteEngine On
+			# Change only the next according to your server 
+			# Do not change after this line
+			RewriteCond %{REQUEST_FILENAME} !-f
+			RewriteCond %{REQUEST_FILENAME} !-d
+			RewriteCond %{REQUEST_URI} \.(jpeg|jpg|png|webp)$
+			RewriteRule ^(.+)$ tileserver.php/?tile=$1 [L]
+		</IfModule>";
+
+		$path = $path . '.htaccess';
+
+		$file = fopen( $path, 'r' );
+		if ( $file ) {
+			$content = \fread( $file , \filesize($path));
+			//$diff = xdiff_string_diff($content, $expect, 5);
+			$expect = $this->cleanString( $expect); 
+			$content = $this->cleanString( $content); 
+			//$a1 = explode(" " , $expect);
+			//$a2 = explode(" ", $content);
+			$diff = $this->get_decorated_diff($expect, $content);
+			$a1 = explode(" " , $diff);
+			$key = \array_search('RewriteBase', $a1, true);
+			$base = $a1[$key +1];
+			// define string for expextation : wp-content/plugins/fotorama_multi/leaflet_map_tiles
+			// must be identical to $base
+			// if so return true
+			// if not return message
+			
+			$aa = $key; 
+		}
+		fclose($file);
+		return false;
+	}
+
+	private function cleanString ( $string) {
+		$string = preg_replace('/\n\r+/', ' ', $string);
+		$string = preg_replace('/\s+/', ' ', $string);
+		$string = preg_replace('/\t+/', ' ', $string);
+		$string = \trim( $string);
+		
+		return $string;
+	}
+
+	private function get_decorated_diff($old, $new){
+		$from_start = strspn($old ^ $new, "\0");        
+		$from_end = strspn(strrev($old) ^ strrev($new), "\0");
+	
+		$old_end = strlen($old) - $from_end;
+		$new_end = strlen($new) - $from_end;
+	
+		$start = substr($new, 0, $from_start);
+		$end = substr($new, $new_end);
+		$new_diff = substr($new, $from_start, $new_end - $from_start);  
+		$old_diff = substr($old, $from_start, $old_end - $from_start);
+	
+		$new = "$start<ins style='background-color:#ccffcc'>$new_diff</ins>$end";
+		$old = "$start<del style='background-color:#ffcccc'>$old_diff</del>$end";
+		return $new_diff;
+	}
+
+	// -------------------- functions called but unused -------------------------------------//
 	public function fotorama_elevation_section_info() {	
 		// html code here is shown after the heading of the section
     }
