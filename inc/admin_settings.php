@@ -853,15 +853,13 @@ class FotoramaElevation {
 	// --------- TileServer added 2022-08-24 ----------------
 	public function usetileserver_callback() {
 		// check .htaccess and change info text accordingly
-		$pidp = plugin_dir_path(__FILE__);
-		$path = \str_replace('inc/','', \plugin_dir_path(__FILE__) ) . 'leaflet_map_tiles' . \DIRECTORY_SEPARATOR;
-		$hasWorkingHtaccess = $this->checkHtaccess( $path );
+		$hasWorkingHtaccess = $this->checkHtaccess();
 
 		$infoText = '';
 		if ( $hasWorkingHtaccess) {
 			$infoText = __( 'Use a local Tile-Server to provide Map-Tiles (.htaccess checked and OK)', 'fotoramamulti' );
 		} else {
-			$infoText = 'ATTENTION: File .htaccess in '. $path .' is not OK.';
+			$infoText = 'ATTENTION: File .htaccess is not OK.';
 		}
 
 		printf(
@@ -1409,82 +1407,59 @@ class FotoramaElevation {
 		return strval($val);
 	}
 
-	private function compare($a, $b) {
-		return true;
-	}
-
 	// ---- htaccess helper -----------------
-	private function checkHtaccess ( $path) {
+	private function checkHtaccess () {
+		// try to access testfile.webp which will be redirected to testfile.php if .htaccess is working
+		$path = \str_replace('inc/','', plugins_url('/', __FILE__) ) . 'leaflet_map_tiles/';
 
-		
+		if (\ini_get('allow_url_fopen') === '1') {
+			$url = $path . 'testfile.webp';
 
-		if (\ini_get('allow_url_fopen') !== '1') return 'Cannot open file';
+			$ere = \error_reporting();
+			\error_reporting(0);
+			$test = fopen( $url, 'r' );
+			\error_reporting($ere);
 
-		$expect = "
-		<LimitExcept GET HEAD>
-			Order Allow,Deny
-			Deny from all
-		</LimitExcept>
-	
-		<IfModule mod_rewrite.c>
-			RewriteEngine On
-			# Change only the next according to your server 
-			# Do not change after this line
-			RewriteCond %{REQUEST_FILENAME} !-f
-			RewriteCond %{REQUEST_FILENAME} !-d
-			RewriteCond %{REQUEST_URI} \.(jpeg|jpg|png|webp)$
-			RewriteRule ^(.+)$ tileserver.php/?tile=$1 [L]
-		</IfModule>";
+			if ( $test !== false ) {
+				$code = $http_response_header[0];
+				$found = \strpos($code, '302');
+				if ( $found  > 0) return true;
+				fclose( $test );
+			} else {
+				return false;
+			}	
+		} else {
+			// TODO: This is not ready yet. 
+			$url = \plugins_url();
+			$siteurl = \get_site_url();
 
-		$path = $path . '.htaccess';
+			$path = \str_replace('inc/','', \plugin_dir_path(__FILE__) ) . 'leaflet_map_tiles' . \DIRECTORY_SEPARATOR;
+			$path = $path . '.htaccess';
+			$file = file( $path, FILE_IGNORE_NEW_LINES );
 
-		$file = fopen( $path, 'r' );
-		if ( $file ) {
-			$content = \fread( $file , \filesize($path));
-			//$diff = xdiff_string_diff($content, $expect, 5);
-			$expect = $this->cleanString( $expect); 
-			$content = $this->cleanString( $content); 
-			//$a1 = explode(" " , $expect);
-			//$a2 = explode(" ", $content);
-			$diff = $this->get_decorated_diff($expect, $content);
-			$a1 = explode(" " , $diff);
-			$key = \array_search('RewriteBase', $a1, true);
-			$base = $a1[$key +1];
-			// define string for expextation : wp-content/plugins/fotorama_multi/leaflet_map_tiles
-			// must be identical to $base
-			// if so return true
-			// if not return message
+			if ( $file ) {
+				$keys = [];
+				
+				foreach( $file as $key=>$line) {
+					$line = \ltrim($line);
+					$found = \strpos($line, 'RewriteBase');
+					if ( $found  === 0) \array_push($keys, $key);
+				}
+
+				if (count($keys) !== 1) {
+					return false;
+				} else {
+					$base = $file[$keys[0]];
+				// define string for expextation : wp-content/plugins/fotorama_multi/leaflet_map_tiles
+				// must be identical to $base
+				// if so return true
+				// if not return message
+				}
+				
+			}
 			
-			$aa = $key; 
+			return false;
 		}
-		fclose($file);
-		return false;
-	}
-
-	private function cleanString ( $string) {
-		$string = preg_replace('/\n\r+/', ' ', $string);
-		$string = preg_replace('/\s+/', ' ', $string);
-		$string = preg_replace('/\t+/', ' ', $string);
-		$string = \trim( $string);
-		
-		return $string;
-	}
-
-	private function get_decorated_diff($old, $new){
-		$from_start = strspn($old ^ $new, "\0");        
-		$from_end = strspn(strrev($old) ^ strrev($new), "\0");
-	
-		$old_end = strlen($old) - $from_end;
-		$new_end = strlen($new) - $from_end;
-	
-		$start = substr($new, 0, $from_start);
-		$end = substr($new, $new_end);
-		$new_diff = substr($new, $from_start, $new_end - $from_start);  
-		$old_diff = substr($old, $from_start, $old_end - $from_start);
-	
-		$new = "$start<ins style='background-color:#ccffcc'>$new_diff</ins>$end";
-		$old = "$start<del style='background-color:#ffcccc'>$old_diff</del>$end";
-		return $new_diff;
 	}
 
 	// -------------------- functions called but unused -------------------------------------//
@@ -1493,5 +1468,4 @@ class FotoramaElevation {
     }
     public function leaflet_elevation_section_info() {
 	}
-
 }
