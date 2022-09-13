@@ -66,7 +66,8 @@ function fotoramamulti_activate() {
 		'shadows' 			=>  'true', // true or false
 		'use_tile_server'	=>  'false',
 		'convert_tiles_to_webp' => 'false',
-		'aspect_ratio_of_map'  => '1.5'  // CSS aspect ratio for the leaflet map.
+		'aspect_ratio_of_map'  => '1.5',  // CSS aspect ratio for the leaflet map.
+		'htaccess_Tile_Server_Is_OK' => 'false'
 		);
 	
 	$opt = array_merge($newOptions, $existingOptions);

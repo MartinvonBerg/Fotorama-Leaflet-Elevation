@@ -170,16 +170,9 @@ class LeafletMap {
             
             // check for htacces here and set the path respectively
             if ( LeafletMap.count === 1) {
-                let request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-                request.open("HEAD", this.tileserver + 'testfile.webp', false);
-                request.send();
-                if (request.status === 302) {
-                    LeafletMap.isHtaccessOK = true;
-                    console.log('htaccess on server is working');
-                } else {
-                    console.log('htaccess on server is not working');
-                }
+                LeafletMap.isHtaccessOK = this.pageVariables.htaccessTileServerIsOK === 'true';
             }
+
                                     
             if ( ! LeafletMap.isHtaccessOK ) {
                 // local htaccess is not working. Change url for tileserver requests.

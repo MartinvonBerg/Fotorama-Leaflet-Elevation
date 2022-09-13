@@ -67,6 +67,13 @@ final class FotoramaClass
         return $this->imageDataToPassToJavascript;
     }
 
+    public function addLinkToHead($img) {
+        // <link rel="preload" as="image" href="wolf.jpg" imagesrcset="wolf_400px.jpg 400w, wolf_800px.jpg 800w, wolf_1600px.jpg 1600w" imagesizes="50vw">
+        ?>
+            <link rel="preload" as="image" href="<?php echo $img ?>">
+        <?php
+    }
+
     private function generateSliderHtml( $attr ) {
         // Define path and url variables
 	    $up_url = gpxview_get_upload_dir('baseurl');  // upload_url
@@ -147,11 +154,20 @@ final class FotoramaClass
                 data-loop="{$loop}"
                 data-arrows="{$arrows}"
                 data-shadows="{$shadows}">
-        
+
 EOF;
 
         // loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($this->imageData as $data) {
+
+            if ( $this->imgnr===1 && $this->shortcodecounter === 0) {
+                $hrefsrc = "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}";
+                $srcset = wp_get_attachment_image_srcset($data['wpid']);
+                $args = $hrefsrc . '" imagesrcset="' . $srcset . '" imagesizes="100vw';
+	            add_action('wp_head', function() use ( $args ) { $this->addLinkToHead( $args ); });
+                //add_action('wp_head', [$this, 'addLinkToHead'] );
+                //if (\current_user_can('edit_posts')) $htmlstring .= "<p>imagenr === 1 was added</p>";
+            }
 
 			// set the alt-tag and the title for SEO
 			if ( 'notitle' == $data['title'] ) {

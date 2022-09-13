@@ -44,6 +44,9 @@ require_once __DIR__ . '/inc/gtb_blocks.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin_settings.php';
 	$fotorama_elevation = new FotoramaElevation();
+	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
+	$fotorama_elevation->checkHtaccess() ? $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'true' : $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'false';
+	update_option( 'fotorama_elevation_option_name', $fotorama_elevation_options );
 	
 	// do the check for activated plugins that may conflict with leaflet.js
 	$wp_act_pis = get_option('active_plugins');
@@ -240,12 +243,9 @@ function showmulti($attr, $content = null)
 	
 	// Generate html for Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
-
-		
 		// TODO: load the scripts for fotorama here
 		require_once __DIR__ . '/inc/fotoramaClass.php';
 		$fClass = new FotoramaClass( $shortcodecounter, $data2, $allImgInWPLibrary);
-				
 		$htmlstring .= $fClass->getSliderHtml( $attr);
 		$phpimgdata = $fClass->getImageDataForJS();
 		$fClass = null;
@@ -360,8 +360,9 @@ EOF;
 		'markertext' => $markertext,
 		'fit' => $fit,
 		'mapselector' => $mapselector,
-		'useTileServer' => get_option( 'fotorama_elevation_option_name' )['use_tile_server'],
-		'convertTilesToWebp' => get_option( 'fotorama_elevation_option_name' )['convert_tiles_to_webp']
+		'useTileServer' => $fotorama_elevation_options['use_tile_server'],
+		'convertTilesToWebp' => $fotorama_elevation_options['convert_tiles_to_webp'],
+		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK']
  	);
 	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
 	

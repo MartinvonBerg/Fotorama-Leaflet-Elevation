@@ -176,6 +176,12 @@ final class ReadImageFolder
                 // And get the WPid if the image is in the WP-Media-Library
                 $wpimgurl = $this->imageurl . '/' . $jpgfile . $ext;
                 $wpid = attachment_url_to_postid($wpimgurl);
+                // try again if not found
+                if ($wpid == 0) {
+                    $wpimgurl = $this->imageurl . '/' . $jpgfile . '-scaled' . $ext;
+                    $wpid = attachment_url_to_postid($wpimgurl);
+                }
+
                 $permalink = \get_the_permalink( $wpid );
                 if ($wpid == 0) {
                     $permalink = '';

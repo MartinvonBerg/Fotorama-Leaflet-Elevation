@@ -727,8 +727,7 @@ class FotoramaElevation {
 
 		$overwrite = $option["gpx_overwrite"] == 'gpx_overwrite';
 		$overwrite ? $this->fotorama_option2['gpx_overwrite'] = 'true' : $this->fotorama_option2['gpx_overwrite'] = 'false';
-		//$success = update_option( 'fotorama_elevation_option_name', $this->fotorama_elevation_options );
-
+		
 		$this->fotorama_option2['gpx_smooth'] = intval($option["gpx_smooth"]);	
 		$smooth = $this->fotorama_option2['gpx_smooth'];
 
@@ -855,7 +854,6 @@ class FotoramaElevation {
 		// check .htaccess and change info text accordingly
 		$hasWorkingHtaccess = $this->checkHtaccess();
 
-		$infoText = '';
 		if ( $hasWorkingHtaccess) {
 			$infoText = __( 'Use a local Tile-Server to provide Map-Tiles (.htaccess checked and OK)', 'fotoramamulti' );
 		} else {
@@ -1408,28 +1406,35 @@ class FotoramaElevation {
 	}
 
 	// ---- htaccess helper -----------------
-	private function checkHtaccess () {
+	/**
+	 * Check if file .htaccess is available in the sub-folder 'leaflet_map_tiles' and try to fetch the 
+	 * testfile, which will be responded with status code 302 file by the script 'tileserver.php'.
+	 *
+	 * @return boolean the result of the htaccess check
+	 */
+	public function checkHtaccess () {
 		// try to access testfile.webp which will be redirected to testfile.php if .htaccess is working
 		$path = \str_replace('inc/','', plugins_url('/', __FILE__) ) . 'leaflet_map_tiles/';
 
 		if (\ini_get('allow_url_fopen') === '1') {
 			$url = $path . 'testfile.webp';
 
+			// switch off PHP error reporting and get the url.
 			$ere = \error_reporting();
 			\error_reporting(0);
 			$test = fopen( $url, 'r' );
 			\error_reporting($ere);
 
+			// check if header contains status code 302
 			if ( $test !== false ) {
 				$code = $http_response_header[0];
 				$found = \strpos($code, '302');
-				if ( $found  > 0) return true;
 				fclose( $test );
-			} else {
-				return false;
-			}	
+				if ( $found  > 0 ) return true; 	
+			} 	
 		} else {
-			// TODO: This is not ready yet. 
+			// TODO: This is not ready yet. Not so important because allow_url_fopen is also reqired for gpx data and start address.
+			/*
 			$url = \plugins_url();
 			$siteurl = \get_site_url();
 
@@ -1454,12 +1459,11 @@ class FotoramaElevation {
 				// must be identical to $base
 				// if so return true
 				// if not return message
-				}
-				
+				}	
 			}
-			
-			return false;
+			*/
 		}
+		return false;
 	}
 
 	// -------------------- functions called but unused -------------------------------------//
