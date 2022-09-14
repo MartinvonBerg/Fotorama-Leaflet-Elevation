@@ -18,6 +18,27 @@ function fotorama_multi_styles( ) {
 	echo $stylestring;
 }
 
+// hook the function addLinkToHead the wp_head hook
+add_action('wp_head', '\mvbplugins\fotoramamulti\addLinkToHead', 2);
+/**
+ * add the link-tag to the header of the page
+ *
+ * @return void
+ */
+function addLinkToHead() {
+	// <link rel="preload" as="image" href="wolf.jpg" imagesrcset="wolf_400px.jpg 400w, wolf_800px.jpg 800w, wolf_1600px.jpg 1600w" imagesizes="50vw">
+	$link = '';
+	// get $postid
+	$postid = get_the_ID();
+	// get custom field for the link
+	$link = get_post_meta( $postid,'fm_header_link', true);
+	// echo the string from custom field
+	if (($link === '') || ($link === false)) {}
+	else {
+		echo $link;
+	}
+}
+
 /**
  * define the shutdown callback
  *

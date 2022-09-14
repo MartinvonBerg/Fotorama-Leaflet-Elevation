@@ -245,7 +245,7 @@ function showmulti($attr, $content = null)
 	if ($imageNumber > 0) {
 		// TODO: load the scripts for fotorama here
 		require_once __DIR__ . '/inc/fotoramaClass.php';
-		$fClass = new FotoramaClass( $shortcodecounter, $data2, $allImgInWPLibrary);
+		$fClass = new FotoramaClass( $shortcodecounter, $data2, $postid);
 		$htmlstring .= $fClass->getSliderHtml( $attr);
 		$phpimgdata = $fClass->getImageDataForJS();
 		$fClass = null;
