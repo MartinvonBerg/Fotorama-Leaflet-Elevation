@@ -77,12 +77,16 @@ class SliderFotorama {
 
         // Define width for responsive devices
         this.width = this.sliderDiv[0].parentElement.clientWidth;
+        let height = this.sliderDiv[0].parentElement.clientHeight;
+        let ratio = this.width / height;
+        if (ratio > 1.0) this.width = this.width / 2;
+        /*
         if (this.#isMobile) {
             let h = window.screen.height;
             let w = window.screen.width;
             h > w ? this.width = h : this.width = w;
         }
-        
+        */
         // do and define all handles
         let newdata2 = this.#replaceImageData( this.width, this.olddata, this.newimages);
         if (newdata2) {this.sliderData.load(newdata2);}
