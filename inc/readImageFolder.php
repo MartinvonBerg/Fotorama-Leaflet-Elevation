@@ -24,7 +24,7 @@ final class ReadImageFolder
 {
     // PHP 7.3 version :: damit ist PHPstan und PHPInsights nicht erfolgreich, bzw. zu viele Fehlermeldungen
     protected $imageNumber; // int Hint: type declaration only since PHP 7.4.0 allowed
-    protected $result = array(); // array
+    protected $result = []; // array
     protected $allImageFiles; // array
     protected $imagepath; // string
     protected $thumbheight; // string
@@ -36,6 +36,9 @@ final class ReadImageFolder
     protected $hasThumbsDir = false; // bool
     protected $allThumbFiles; // array
     protected $allImgInWPLibrary = true; // bool
+    public    $CssThumbHeight = 0;
+    public    $CssThumbWidth = 0;
+    public    $sizes = [];
 
     // PHP 7.4 version
     /*
@@ -51,7 +54,10 @@ final class ReadImageFolder
     protected string $ignoresort = ''; // string
     protected bool $hasThumbsDir = false;
     protected array $allThumbFiles; // array
-    protected bppl $allImgInWPLibrary = true; // bool
+    protected bool $allImgInWPLibrary = true; // boo
+    public    int $CssThumbHeight = 0;
+    public    int $CssThumbWidth = 0;
+    public    array $sizes = [];
     */
 
     /**
@@ -83,7 +89,33 @@ final class ReadImageFolder
         $this->requiregps = $gps;
         $this->ignoresort = $ignoresort;
 
+        // settings for the slider thumbnail
+        $this->CssThumbHeight = get_option( 'fotorama_elevation_option_name')['f_thumbheight'];
+        $this->CssThumbWidth =  get_option( 'fotorama_elevation_option_name')['f_thumbwidth'];
+        $this->sizes = $this->get_best_image_subsize();
+
         $this->readFolder();
+    }
+
+    /**
+     * get all currently registered image subsizes and sort them by squared weight w.r.t the desired size for the thumbnail bar in slider.
+     *
+     * @return array the sorted array of available subsizes
+     */
+    public function get_best_image_subsize() {
+        $sizes = [];
+        $sizes = \wp_get_registered_image_subsizes();
+        foreach ($sizes as $key => $size) {
+            $weight = \pow( ($size['width']  - $this->CssThumbWidth) /  $this->CssThumbWidth, 2) +
+                      \pow( ($size['height'] - $this->CssThumbHeight) / $this->CssThumbHeight,2) +
+                      \pow( ($size['height']/$size['width'] - $this->CssThumbHeight/$this->CssThumbWidth) ,2);
+            $sizes[$key]['weight'] = $weight;
+        }
+        // TODO: sort array by weight
+        $csort = array_column($sizes, 'weight');
+        array_multisort($csort, SORT_ASC, $sizes);
+
+        return $sizes;
     }
 
     /**
@@ -228,12 +260,26 @@ final class ReadImageFolder
      */
     private function checkThumbs(string $thumbs, string $pathtocheck, string $thumbcheck, string $ext)
     {
-        $thumbInPath = true;
+        $thumbInPath = true; 
 
         if ($this->hasThumbsDir)
             $searcharray = $this->allThumbFiles;
-        else 
+        else {
+            // this is the case for images in wp media lib with subsizes
             $searcharray = $this->allImageFiles;
+            $fi = pathinfo($pathtocheck)['filename']; 
+
+            foreach ($this->sizes as $size) {
+                $search = '/' . $fi . '-'. $size['width'].'x[0-9]*.'. $ext .'/';
+                $found = array_values( preg_grep ($search, $this->allImageFiles) );
+                if ($found !== false && count( $found) === 1) {
+                    preg_match('/'. $size['width'].'x([0-9]*)' . $ext .'/',$found[0], $matches);
+                    $thumbcheck = '-' . $matches[0] ;
+                    break;
+                }
+
+            }
+        }
       
         if (\in_array($pathtocheck . $thumbcheck, $searcharray)) {
             $thumbs = $thumbcheck;

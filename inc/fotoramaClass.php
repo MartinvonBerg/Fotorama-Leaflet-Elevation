@@ -161,7 +161,7 @@ EOF;
                 // <link rel="preload" as="image" href="wolf.jpg" imagesrcset="wolf_400px.jpg 400w, wolf_800px.jpg 800w, wolf_1600px.jpg 1600w" imagesizes="50vw">
                 $hrefsrc = "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}";
                 $srcset = wp_get_attachment_image_srcset($data['wpid']);
-                $args = '<link rel="preload" as="image" href="' . $hrefsrc . '" imagesrcset="' . $srcset . '" imagesizes="50vw">';
+                $args = '<link rel="preload" as="image" href="' . $hrefsrc . '" imagesrcset="' . $srcset . '" ';
                 //
                 update_post_meta( $this->postid,'fm_header_link', $args);
             }

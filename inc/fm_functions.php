@@ -21,17 +21,25 @@ function fotorama_multi_styles( ) {
 // hook the function addLinkToHead the wp_head hook
 add_action('wp_head', '\mvbplugins\fotoramamulti\addLinkToHead', 2);
 /**
- * add the link-tag to the header of the page
+ * add the link-tag to the header of the page depending on mobile or desktop request
  *
  * @return void
  */
 function addLinkToHead() {
+	// detect request from mobile device. 
+	$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);
+	$isMobile = is_numeric(strpos($ua, "mobile"));
 	// <link rel="preload" as="image" href="wolf.jpg" imagesrcset="wolf_400px.jpg 400w, wolf_800px.jpg 800w, wolf_1600px.jpg 1600w" imagesizes="50vw">
 	$link = '';
 	// get $postid
 	$postid = get_the_ID();
 	// get custom field for the link
 	$link = get_post_meta( $postid,'fm_header_link', true);
+	if ( $isMobile) {
+		$link = $link . 'imagesizes="100vw">';
+	} else {
+		$link = $link . 'imagesizes="50vw">';
+	}
 	// echo the string from custom field
 	if (($link === '') || ($link === false)) {}
 	else {
