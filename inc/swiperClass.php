@@ -10,7 +10,7 @@
  * @copyright  Martin von Berg, 2022
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
- * @since      File available since Plugin-Release 0.11.0
+ * @since      File available since Plugin-Release 0.12.0
  * @version    0.0.1
  * TODO
  */

@@ -22,7 +22,7 @@
 //wp_reset_query();
 $plugin_url = plugins_url('/', __FILE__);
 $mode = 'production';
-$version = '0.11.0';
+$version = '0.12.0';
 	
 if ( $mode === 'production') {
     wp_enqueue_style('fotorama_css', $plugin_url . 'js/fotorama/fotorama.min.css', [], $version	);
@@ -43,14 +43,14 @@ if ( $mode === 'production') {
     // Load Scripts
     wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '4.6.4');
     wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-    wp_register_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.11.0', true);
+    wp_register_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.12.0', true);
     // --- FOTORAMA -------------
     // or
     // --- Swiper.js
     //wp_enqueue_style('swiper_css', "https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css", [], '8.3.2');
     //wp_enqueue_script('swiper_js', "https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js", [], '8.3.2');
-    //wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], '0.11.0');
-    //wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], '0.11.0', true);
+    //wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], '0.12.0');
+    //wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], '0.12.0', true);
     // --- Swiper.js
 
     // --- LEAFLET -------------
@@ -61,7 +61,7 @@ if ( $mode === 'production') {
     wp_register_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
     wp_register_script('leaflet_ui', $plugin_url . 'js/leaflet-ui/leaflet-ui-short.min.js', array('jquery'), '0.5.9', true);
     wp_register_script('control_fullscreen_js', $plugin_url . 'js/fullscreen/Control.FullScreen.min.js', array('jquery'), '2.4.0', true);
-    wp_register_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery'), '0.11.0', true);
+    wp_register_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery'), '0.12.0', true);
     // --- LEAFLET -------------
 
     // --- LEAFLET-ELEVATION -------------
@@ -74,11 +74,11 @@ if ( $mode === 'production') {
     wp_register_script('togeojson_js',  $plugin_url . 'js/elevation/dist/togeojson.umd.js', array('jquery'), '5.2.2', true); 
     wp_register_script('geom_util_js',  $plugin_url . 'js/elevation/dist/leaflet.geometryutil.min.js', array('jquery'), '0.10.1', true); 
     wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/elevation/dist/leaflet-elevation.min.js', array('jquery'), '2.2.6', true);
-    wp_register_script('elevationClass_js',  $plugin_url . 'js/elevationClass.js', array('jquery'), '0.11.0', true);
+    wp_register_script('elevationClass_js',  $plugin_url . 'js/elevationClass.js', array('jquery'), '0.12.0', true);
     // --- LEAFLET-ELEVATION -------------
 
     // --- MAIN-JS-SCRIPT -------------
-    wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduced.js', array('jquery'), '0.11.0', true);
+    wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduced.js', array('jquery'), '0.12.0', true);
     // --- MAIN-JS-SCRIPT -------------
 
     // load styles

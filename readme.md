@@ -277,7 +277,7 @@ Process and save the file with the Button at the bottom.
       - parameter 'showalltracks' : Check why the file has to be uploaded with GPX-Uploader and metadata has to be written to the GPX-file.    
 
 # Tile Server for Leaflet Map Tiles
-Since version 0.11.0, it is also possible to cache the leaflet tiles locally on your own server. This procedure conforms to the guidelines of the osmfoundation (https://operations.osmfoundation.org/policies/tiles/). There is no bulk download and the maps are stored locally. The Http referer of the current request is used as the Http referer. 
+Since version 0.12.0, it is also possible to cache the leaflet tiles locally on your own server. This procedure conforms to the guidelines of the osmfoundation (https://operations.osmfoundation.org/policies/tiles/). There is no bulk download and the maps are stored locally. The Http referer of the current request is used as the Http referer. 
 In addition the visitor's IP is NOT forwarded to the map server. This ensures that the use of maps from OpenStreeMap complies with the General Data Protection Regulation EC 2016/679. Therefore, no notice is required in the privacy policy of the website. This option can be set via the admin panel. Furthermore, the conversion of the tiles into webp file format can be selected in order to meet Google Pagespeed requirements.
 Note: The file .htacces has to be changed for the correct path and the admin panel will show if the Redirection by the .htaccess is successful:
 ```PHP
@@ -400,7 +400,7 @@ This plugin uses the great work from:
 
 # Changelog
 
-= 0.11.0 =
+= 0.12.0 =
 17.09.2022: Update for lighthouse performance tests. Finally reached 100!
 
 = 0.11.0 =
