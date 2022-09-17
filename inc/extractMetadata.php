@@ -194,7 +194,7 @@ function extractMetadataFromChunks( array $chunks, string $filename ) :array
 			case 'EXIF':
 				$exif2 = file_get_contents( $filename, false, null, $chunk['start'], $chunk['start']+$chunk['size'] );
 				$meta = get_exif_meta( $exif2 );
-				$meta['credit'] = $meta['copyright'];
+				if ( isset( $meta['copyright'] ) ) $meta['credit'] = $meta['copyright'];
 				$meta['camera'] = $meta['camera'] . ' + ' . $meta['lens'];
 				break;
 			case 'XMP ':

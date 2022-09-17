@@ -90,13 +90,13 @@ New-Item "$($path)" -Force -itemType Directory
 # css
 minify .\js\elevation\dist\leaflet-elevation.css > .\release\js\leaflet_elevation\leaflet_elevation.min.css
 # js
-minify .\js\elevation\dist\d3.min.js > .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
-minify .\js\libs\gpx.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
-minify .\js\elevation\libs\leaflet-gpxgroup.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
-minify .\js\elevation\dist\togeojson.umd.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
-minify .\js\elevation\dist\leaflet.geometryutil.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
-minify .\js\elevation\dist\leaflet-elevation.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
-minify .\js\elevationClass.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
+#minify .\js\elevation\dist\d3.min.js > .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
+#minify .\js\libs\gpx.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
+#minify .\js\elevation\libs\leaflet-gpxgroup.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
+#minify .\js\elevation\dist\togeojson.umd.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
+#minify .\js\elevation\dist\leaflet.geometryutil.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
+#minify .\js\elevation\dist\leaflet-elevation.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
+#minify .\js\elevationClass.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
 terser --keep-classnames --comment --keep-fnames --mangle --ecma 5 .\js\elevation\dist\d3.min.js .\js\libs\gpx.min.js .\js\elevation\libs\leaflet-gpxgroup.min.js .\js\elevation\dist\togeojson.umd.js .\js\elevation\dist\leaflet.geometryutil.min.js .\js\elevation\dist\leaflet-elevation.min.js .\js\elevationClass.js -o .\release\js\leaflet_elevation\leaflet_elevation_bundle.js 
 
 # copy leaflet-elevation dependencies

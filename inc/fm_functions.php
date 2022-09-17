@@ -35,15 +35,17 @@ function addLinkToHead() {
 	$postid = get_the_ID();
 	// get custom field for the link
 	$link = get_post_meta( $postid,'fm_header_link', true);
-	if ( $isMobile) {
-		$link = $link . 'imagesizes="100vw">';
-	} else {
-		$link = $link . 'imagesizes="50vw">';
-	}
+
 	// echo the string from custom field
-	if (($link === '') || ($link === false)) {}
-	else {
-		echo $link;
+	if (($link === '') || ($link === false)) {
+		// echo nothing
+	}
+	elseif ( $isMobile ) {
+		$link2 = $link . 'imagesizes="100vw">';
+		echo $link2;
+	} else {
+		$link2 = $link . 'imagesizes="50vw">';
+		echo $link2;
 	}
 }
 

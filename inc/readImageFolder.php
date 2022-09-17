@@ -107,7 +107,7 @@ final class ReadImageFolder
      */
     public function get_best_image_subsize() {
         $sizes = \wp_get_registered_image_subsizes();
-        do_action( 'qm/debug', 'sizes: ' . serialize($sizes) );
+        //do_action( 'qm/debug', 'sizes: ' . serialize($sizes) );
       
         foreach ($sizes as $key => $size) {
             $weight = \pow( ($size['width']  - $this->CssThumbWidth) /  $this->CssThumbWidth, 2) * ( \intval( $size['crop'] +1) );      
@@ -117,7 +117,7 @@ final class ReadImageFolder
         // sort array by weight
         $csort = array_column($sizes, 'weight');
         array_multisort($csort, SORT_ASC, $sizes);
-        do_action( 'qm/debug', 'sizes: ' . serialize($sizes) );
+        //do_action( 'qm/debug', 'sizes: ' . serialize($sizes) );
         
         return $sizes;
     }
@@ -275,17 +275,17 @@ final class ReadImageFolder
             
             foreach ($this->sizes as $size) {
                 $search = '/' . $fi . '-'. $size['width'].'x[0-9]*'. $ext .'/';
-                do_action( 'qm/debug', 'search: ' . $search );
+                //do_action( 'qm/debug', 'search: ' . $search );
                 $found = array_values( preg_grep ($search, $this->allImageFiles) );
 
                 if ($found !== false && count( $found) === 1) {
                     preg_match('/'. $size['width'].'x([0-9]*)' . $ext .'/',$found[0], $matches);
                     $thumbcheck = '-' . $matches[0] ;
                     $thumbs = $thumbcheck;
-                    do_action( 'qm/debug', 'thumbs: ' . $thumbs );
+                    //do_action( 'qm/debug', 'thumbs: ' . $thumbs );
                     return [$thumbInPath, $thumbs];
                     break;
-                    
+
                 } elseif ($found !== false && count( $found) > 1) {
                     // get the image ratio
                     $diffs = [];
@@ -301,6 +301,7 @@ final class ReadImageFolder
                     array_multisort($csort, SORT_ASC, $diffs);
                     $thumbcheck = '-' . $size['width'].'x' . $diffs[0][2] . $ext ;
                     $thumbs = $thumbcheck;
+                    //do_action( 'qm/debug', 'thumbs: ' . $thumbs );
                     return [$thumbInPath, $thumbs];
                 }
             }
