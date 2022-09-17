@@ -517,6 +517,8 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 		$f = trim($file);
 		if (is_file($gpx_dir . $f)) {
 			$tracks['track_' . $i]['url'] = $gpx_url . $f;
+			$gpxdata = simplexml_load_file( $gpx_dir . $f );
+			$tracks['track_' . $i]['info'] = (string) $gpxdata->metadata->desc[0];
 
 			if ($i == 0) {
 				$gpxfile .= $f;
@@ -525,8 +527,7 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 				if ( \current_user_can('edit_posts') && $setCustomFields && (0 == $shortcodecounter) ) {	
 					// Set Custom-Field 'lat' and 'lon' in the Post with first trackpoint of the GPX-track
 					// This is done only once to reduce load on nominatim. If requests are too frequent it will block the response!
-					$gpxdata = simplexml_load_file( $gpx_dir . $f );
-
+					
 					if ( 'object' == gettype( $gpxdata) ) {
 						if (isset( $gpxdata->trk->trkseg->trkpt[0]['lat'] ) ) {
 							$lat = \strval( $gpxdata->trk->trkseg->trkpt[0]['lat'] ); 

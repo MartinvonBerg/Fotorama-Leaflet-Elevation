@@ -292,7 +292,7 @@ final class ReadImageFolder
 
                     foreach ( $found as $file) {
                         preg_match('/'. $size['width'].'x([0-9]+)' . $ext .'/', $file, $matches);
-                        $diffRatio = $this->CssThumbRatio - $size['width'] / $matches[1];
+                        $diffRatio = abs( $this->CssThumbRatio - $size['width'] / $matches[1] );
                         \array_push( $diffs, [$diffRatio, $file, $matches[1]] );
                     }
                     

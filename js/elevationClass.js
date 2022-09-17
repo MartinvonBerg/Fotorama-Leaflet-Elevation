@@ -147,9 +147,7 @@ class LeafletElevation extends LeafletMap {
      * @param {Event} event the leaflet control elevation event
      */
     setTrackStatistics(event) {
-        // TODO: write the data to php-skript and load it from there to avoid loading of L.GPX.
         // get the trace info from the gpx-file
-        let trace = {};
         let track = '';
 
         if (event.type === 'legend_selected') {
@@ -162,28 +160,12 @@ class LeafletElevation extends LeafletMap {
             track = this.pageVariables.tracks.track_0.url
         }
         
-        trace = new L.GPX(track, {
-            async: false,
-            index: 1,
-            marker_options: {
-                wptIconUrls: null,
-                startIconUrl: null,
-                endIconUrl: null,
-                shadowUrl: null,
-            },
-            polyline_options: {
-                color: "blue",
-            }
-        });
-        
-        trace.on('error', function(e) {
-            console.log('Error loading file: ' + e.err);});
-
         if (event.type !== 'legend_selected') {
-            this.bounds = trace.getBounds();
+            let key = Object.keys(event.layer._layers)[0];
+            this.bounds = event.layer._layers[key]._bounds;
         }
 
-        let info = trace._info.desc;
+        let info = this.pageVariables.tracks.track_0.info;
         if (info) {info = info.split(' ')} else {info='';};
 
         let q = document.querySelector.bind(document);

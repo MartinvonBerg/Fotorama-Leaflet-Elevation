@@ -21,7 +21,7 @@
 
 //wp_reset_query();
 $plugin_url = plugins_url('/', __FILE__);
-$mode = 'development';
+$mode = 'production';
 $version = '0.11.0';
 	
 if ( $mode === 'production') {
