@@ -38,6 +38,7 @@ final class ReadImageFolder
     protected $allImgInWPLibrary = true; // bool
     public    $CssThumbHeight = 0;
     public    $CssThumbWidth = 0;
+    public    $CssThumbRatio = 0;
     public    $sizes = [];
 
     // PHP 7.4 version
@@ -57,6 +58,7 @@ final class ReadImageFolder
     protected bool $allImgInWPLibrary = true; // boo
     public    int $CssThumbHeight = 0;
     public    int $CssThumbWidth = 0;
+    public    int $CssThumbRatio = 0;
     public    array $sizes = [];
     */
 
@@ -92,6 +94,7 @@ final class ReadImageFolder
         // settings for the slider thumbnail
         $this->CssThumbHeight = get_option( 'fotorama_elevation_option_name')['f_thumbheight'];
         $this->CssThumbWidth =  get_option( 'fotorama_elevation_option_name')['f_thumbwidth'];
+        $this->CssThumbRatio = $this->CssThumbWidth / $this->CssThumbHeight;
         $this->sizes = $this->get_best_image_subsize();
 
         $this->readFolder();
@@ -103,18 +106,19 @@ final class ReadImageFolder
      * @return array the sorted array of available subsizes
      */
     public function get_best_image_subsize() {
-        $sizes = [];
         $sizes = \wp_get_registered_image_subsizes();
+        do_action( 'qm/debug', 'sizes: ' . serialize($sizes) );
+      
         foreach ($sizes as $key => $size) {
-            $weight = \pow( ($size['width']  - $this->CssThumbWidth) /  $this->CssThumbWidth, 2) +
-                      \pow( ($size['height'] - $this->CssThumbHeight) / $this->CssThumbHeight,2) +
-                      \pow( ($size['height']/$size['width'] - $this->CssThumbHeight/$this->CssThumbWidth) ,2);
+            $weight = \pow( ($size['width']  - $this->CssThumbWidth) /  $this->CssThumbWidth, 2) * ( \intval( $size['crop'] +1) );      
             $sizes[$key]['weight'] = $weight;
         }
-        // TODO: sort array by weight
+
+        // sort array by weight
         $csort = array_column($sizes, 'weight');
         array_multisort($csort, SORT_ASC, $sizes);
-
+        do_action( 'qm/debug', 'sizes: ' . serialize($sizes) );
+        
         return $sizes;
     }
 
@@ -268,16 +272,37 @@ final class ReadImageFolder
             // this is the case for images in wp media lib with subsizes
             $searcharray = $this->allImageFiles;
             $fi = pathinfo($pathtocheck)['filename']; 
-
+            
             foreach ($this->sizes as $size) {
-                $search = '/' . $fi . '-'. $size['width'].'x[0-9]*.'. $ext .'/';
+                $search = '/' . $fi . '-'. $size['width'].'x[0-9]*'. $ext .'/';
+                do_action( 'qm/debug', 'search: ' . $search );
                 $found = array_values( preg_grep ($search, $this->allImageFiles) );
+
                 if ($found !== false && count( $found) === 1) {
                     preg_match('/'. $size['width'].'x([0-9]*)' . $ext .'/',$found[0], $matches);
                     $thumbcheck = '-' . $matches[0] ;
+                    $thumbs = $thumbcheck;
+                    do_action( 'qm/debug', 'thumbs: ' . $thumbs );
+                    return [$thumbInPath, $thumbs];
                     break;
-                }
+                    
+                } elseif ($found !== false && count( $found) > 1) {
+                    // get the image ratio
+                    $diffs = [];
 
+                    foreach ( $found as $file) {
+                        preg_match('/'. $size['width'].'x([0-9]+)' . $ext .'/', $file, $matches);
+                        $diffRatio = $this->CssThumbRatio - $size['width'] / $matches[1];
+                        \array_push( $diffs, [$diffRatio, $file, $matches[1]] );
+                    }
+                    
+                    // sort the array of found files ascending the $diffRatio.
+                    $csort = array_column($diffs, 0);
+                    array_multisort($csort, SORT_ASC, $diffs);
+                    $thumbcheck = '-' . $size['width'].'x' . $diffs[0][2] . $ext ;
+                    $thumbs = $thumbcheck;
+                    return [$thumbInPath, $thumbs];
+                }
             }
         }
       
