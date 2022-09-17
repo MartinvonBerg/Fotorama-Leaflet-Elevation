@@ -61,6 +61,10 @@ See under https://www.berg-reise-foto.de/tourenbericht-skitour/skitour-auf-den-s
 
 ![screenshot_live_site](./fotorama1.png)
 
+# Performance
+It is possible to reach a Google lighthouse Performance and SEO result of 100! It depends on the selected WordPress theme whether you reach 100 for the other values. It is still pending to add ARIA descriptions to the active elements of Fotorama. I'm working on that.
+
+![screenshot_lighthouse](./fotorama_multi_performance.jpg)
 
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
@@ -275,7 +279,14 @@ Process and save the file with the Button at the bottom.
 # Tile Server for Leaflet Map Tiles
 Since version 0.11.0, it is also possible to cache the leaflet tiles locally on your own server. This procedure conforms to the guidelines of the osmfoundation (https://operations.osmfoundation.org/policies/tiles/). There is no bulk download and the maps are stored locally. The Http referer of the current request is used as the Http referer. 
 In addition the visitor's IP is NOT forwarded to the map server. This ensures that the use of maps from OpenStreeMap complies with the General Data Protection Regulation EC 2016/679. Therefore, no notice is required in the privacy policy of the website. This option can be set via the admin panel. Furthermore, the conversion of the tiles into webp file format can be selected in order to meet Google Pagespeed requirements.
-Drawback: No fileage clean-up implemented. So, once stored, the tiles are used forever. Currently, only a manual deletion works which forces a new download of the tiles.
+Note: The file .htacces has to be changed for the correct path and the admin panel will show if the Redirection by the .htaccess is successful:
+```PHP
+    ... content of .htaccess in ../fotorama_multi/leaflet_map_tiles
+    # Change only the next according to your server 
+    RewriteBase /wordpress/wp-content/plugins/fotorama_multi/leaflet_map_tiles/
+    # Do not change after this line
+```
+Drawback: No fileage clean-up implemented. So, once stored, the tiles are used forever. Currently, only a manual deletion works which forces a new download of the tiles. 
 
 # Frequently Asked Questions
 
@@ -388,6 +399,9 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.11.0 =
+17.09.2022: Update for lighthouse performance tests. Finally reached 100!
 
 = 0.11.0 =
 28.08.2022: Bugfix for Gutenberg Block after WP6.0 update (changed 'number' to 'string' in block.json)
