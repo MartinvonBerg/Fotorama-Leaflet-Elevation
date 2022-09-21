@@ -1,3 +1,8 @@
+/*!
+	ElevationClass 0.12.0
+	license: GPL 2.0
+	Martin von Berg
+*/
 /*
 import LeafletMap from './leafletMapClass';
 

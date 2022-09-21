@@ -1,4 +1,8 @@
-// Version 0.10.1 from: https://unpkg.com/leaflet-geometryutil@0.10.1/src/leaflet.geometryutil.js 
+/*!
+	Leaflet Geometry Util
+    Version 0.10.1
+*/
+// from: https://unpkg.com/leaflet-geometryutil@0.10.1/src/leaflet.geometryutil.js 
 //current as of 20.08.2022
 
 // Packaging/modules magic dance.

@@ -46,7 +46,6 @@ robocopy .\inc $path *.* /s /xf shortCodeTester.php /NFL /NDL /NJH /NJS
 $path = ".\release"
 $path = "$($path)\js"
 New-Item "$($path)" -Force -itemType Directory
-#minify .\js\fotorama-multi-reduced.js > .\release\js\fotorama_main.js   
 terser --keep-classnames --keep-fnames --mangle --ecma 5 .\js\fotorama-multi-reduced.js -o .\release\js\fotorama_main.js
 #
 ### fotorama-bundle
@@ -54,9 +53,6 @@ $path = ".\release"
 $path = "$($path)\js\fotorama"
 New-Item "$($path)" -Force -itemType Directory
 # js for fotorama
-#minify .\js\fotorama3.js > .\release\js\fotorama\fotorama_bundle.js
-#minify .\js\zoom-master/jquery.zoom.js >> .\release\js\fotorama\fotorama_bundle.js
-#minify .\js\fotoramaClass.js >> .\release\js\fotorama\fotorama_bundle.js 
 terser --keep-classnames --comment --keep-fnames --mangle --ecma 5 .\js\fotorama3.js .\js\zoom-master/jquery.zoom.js .\js\fotoramaClass.js -o .\release\js\fotorama\fotorama_bundle.js
 # css for fotorama 
 minify .\css\fotorama_multi.css > .\release\js\fotorama\fotorama.min.css

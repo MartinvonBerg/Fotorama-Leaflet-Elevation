@@ -1,3 +1,8 @@
+/*!
+	FotoramaClass 0.12.0
+	license: GPL 2.0
+	Martin von Berg
+*/
 // Class for the fotorama Slider
 // Fotorama and the Zoom-function depend on jQuery, so no need to replace jQuery with vanilla js.
 // Note on fotorama options and input-image-data: the fotorama options are defined in the html. And the image data is given by html.

@@ -1,3 +1,8 @@
+/*!
+	extract of leaflet-ui-src.js v 0.12.0
+	license: GPL 2.0
+	Martin von Berg
+*/
 // This is an extract of leaflet-ui-src.js and uses only the i18n functions.
 (function (factory) {
     typeof define === 'function' && define.amd ? define(factory) :

@@ -1,3 +1,8 @@
+/*!
+	LeafletMapClass v 0.12.0
+	license: GPL 2.0
+	Martin von Berg
+*/
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // start this class without leaflet elevation and inherit with leaflet from this class!
 // only work with markers and controls in the first step.
