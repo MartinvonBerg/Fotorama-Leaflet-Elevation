@@ -2,6 +2,7 @@
 //import Swiper from 'swiper';
 // import Swiper styles
 //import 'swiper/css';
+// TODO: thumbnails, srcset, responsive, lazy-load
 
 class SliderSwiper {
     // static attributes (fields)
@@ -13,18 +14,10 @@ class SliderSwiper {
 
     // public attributes (fields). These can be set / get by dot-notation.
     number = 0;
-    #elementOnPage = '';
-    #width = 0;
-    #newimages = null;
-    #olddata = null;
-    #sliderData = null;
-    #sliderDiv = null;
-    #infoel = {};
-
+   
     // swiper
     swiper = {};
     swiperTransitionDuration = 1000; // number: Transition duration (in ms). Default 300ms.
-    effect = 'slide'; // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or 'creative' //TODO: replace string with this.#pageVariables.effect and provide an admin setting for that.
     zoom = true;
 
     /**
@@ -38,24 +31,40 @@ class SliderSwiper {
         this.elementOnPage = elementOnPage; 
         this.#pageVariables = pageVarsForJs[number];
         this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+        this.zoom = this.#pageVariables.sw_options.sw_zoom === 'true';
         // change swiper settings for certain cases 
-        if (this.effect === 'cube') this.zoom = false;
+        if (this.#pageVariables.sw_options.sw_effect === 'cube') {
+            this.zoom = false;
+        }
     }
 
     /**
      * Initialisation of Slider in given elementOnPage
      */
     defSlider() {
-        this.updateCaption();
-        
+                
         // generate the swiper slider on the new html 
         this.swiper = new Swiper('#swiper'+this.number, {
             // Default parameters
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
-            
-            effect: this.effect,
+            keyboard: {
+                enabled: true,
+                onlyInViewport: true,
+            },
+            mousewheel:true,
+            /*
+            autoplay: {
+                delay: 2500,
+                disableOnInteraction: true,
+              },
+            */  
+            hashNavigation: {
+                watchState: true,
+            },  
+            grabCursor: true,
+            effect: this.#pageVariables.sw_options.sw_effect, // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
             zoom: //this.zoom,
             {
                 enabled: this.zoom,

@@ -135,7 +135,11 @@ function showmulti($attr, $content = null)
 		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true', // true or false
 		'shortcaption'		=> 'false',
 		'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap',
-		'slider'			=> 'fotorama' // 'fotorama' or 'swiper' : secret shortcode
+		'slider'			=> 'fotorama', // 'fotorama' or 'swiper' : secret shortcode
+		'sw_effect'			=> 'cube',
+		'sw_zoom'			=> 'true',
+		'sw_fslightbox'		=> 'true',
+		'sw_pagination'		=> 'false',
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
 
@@ -255,7 +259,13 @@ function showmulti($attr, $content = null)
 		} elseif ( $slider === 'swiper') {
 			// TODO: load the scripts for swiper here
 			require_once __DIR__ . '/inc/swiperClass.php';
-			$fClass = new SwiperClass( $shortcodecounter, $data2, $allImgInWPLibrary);
+			$sw_options = ['addPermalink' => $addPermalink, 
+						   'allImgInWPLibrary' => $allImgInWPLibrary,
+						   'sw_effect'			=> $sw_effect,
+						   'sw_zoom'			=> $sw_zoom,
+						   'sw_fslightbox'		=> $sw_fslightbox,
+						   'sw_pagination'		=> $sw_pagination];
+			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options);
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
@@ -373,7 +383,8 @@ EOF;
 		'mapselector' => $mapselector,
 		'useTileServer' => $fotorama_elevation_options['use_tile_server'],
 		'convertTilesToWebp' => $fotorama_elevation_options['convert_tiles_to_webp'],
-		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK']
+		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'],
+		'sw_options'	=> $sw_options
  	);
 	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
 	

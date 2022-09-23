@@ -69,6 +69,7 @@ final class SwiperClass
     protected boolean $fslightbox = false;
     protected boolean $zoom = true;
     protected string $effect = 'slide';
+    protected booleand $showInfoButton = true;
     */
 
     /**
@@ -76,21 +77,30 @@ final class SwiperClass
      *
      * TODO
      */
-    public function __construct($shortcodecounter=0, $imageData=[], $allImgInWPLibrary)
+    public function __construct($shortcodecounter=0, $imageData=[], $options)
     {
         $this->shortcodecounter = $shortcodecounter;
         $this->imgnr = 1;
         $this->imageData = $imageData;
         $this->imageNumber = count($this->imageData);
+        // set the options from shortcode or admin setting
+        $this->showpagination = $options['sw_pagination'] === 'true';
+        $this->fslightbox = $options['sw_fslightbox'] === 'true';
+        $this->zoom = $options['sw_zoom'] === 'true';
+        $this->effect = $options['sw_effect'];
+        $this->showInfoButton = $this->showInfoButton && $options['addPermalink'] && $options['allImgInWPLibrary'];
 
-        $addPermalink = get_option( 'fotorama_elevation_option_name')['useCDN_13'] == 'true'; // re-used for addPermalink now!
-        $this->showInfoButton = $this->showInfoButton && $addPermalink && $allImgInWPLibrary;
-        $this->showInfoButton = true;
+        // change swiper settings for certain cases TODO: might change again if added to shortcode array
+        if ( $this->effect === 'cube') {
+            $this->zoom = false;
+            $this->showInfoButton = false;
+            $this->showpagination = false;
+            $this->fslightbox = false;
+        }
     }
 
     public function getSliderHtml( $attributes)
     {
-        //$this->generateSliderHtml( $attributes );
         $this->generateDomHtml( $attributes );
         return $this->sliderHtml;
     }
@@ -120,9 +130,9 @@ final class SwiperClass
             'mapheight' 		=> $fotorama_elevation_options['height_of_map_10'] ?? '1000',
             'mapaspect'			=> $fotorama_elevation_options['aspect_ratio_of_map'] ?? '1.50',
             'chartheight' 		=> $fotorama_elevation_options['height_of_chart_11'] ?? '200',
-            'imgpath' 			=> $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
+            'imgpath' 	=> $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
             'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'true', 
-            'alttext' 			=> $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '', 
+            'alttext' 	=> $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '', 
             'ignoresort' 		=> $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', 
             'showadress' 		=> $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
             'showmap' 			=> 'true',
@@ -130,34 +140,31 @@ final class SwiperClass
             'requiregps' 		=> $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
             'maxwidth' 			=> $fotorama_elevation_options['max_width_of_container_12'] ?? '600', 
             'minrowwidth' 		=> $fotorama_elevation_options['min_width_css_grid_row_14'] ?? '480',
-            'showcaption' 		=> $fotorama_elevation_options['show_caption_4'] ?? 'true',
+            'showcaption' 	=> $fotorama_elevation_options['show_caption_4'] ?? 'true',
             'eletheme' 			=> $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ?? 'martin-theme', 
             'showalltracks' 	=> $fotorama_elevation_options['showalltracks'] ?? 'false', // not in gtb block
             'mapcenter' 		=> $fotorama_elevation_options['mapcenter'] ?? '0.0, 0.0', // not in gtb block
             'zoom' 				=> $fotorama_elevation_options['zoom'] ?? 8,		// not in gtb block			
             'markertext' 		=> $fotorama_elevation_options['markertext'] ?? 'Home address', // not in gtb block
-            'fit' 				=> $fotorama_elevation_options['fit'] ?? 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
+            'fit' 			=> $fotorama_elevation_options['fit'] ?? 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
             'ratio' 			=> $fotorama_elevation_options['ratio'] ?? '1.5',
             'background' 		=> $fotorama_elevation_options['background'] ?? 'darkgrey', // background color in CSS name
-            'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
-            'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
-            'f_thumbwidth' 		=> $fotorama_elevation_options['f_thumbwidth'] ?? '100', // in pixels
-            'f_thumbheight' 	=> $fotorama_elevation_options['f_thumbheight'] ?? '75', // in pixels
-            'thumbmargin' 		=> $fotorama_elevation_options['thumbmargin'] ?? '2', // in pixels
-            'thumbborderwidth' 	=> $fotorama_elevation_options['thumbborderwidth'] ?? '2', // in pixels
-            'thumbbordercolor' 	=> $fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
+            'navposition' 	=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
+            'navwidth' 		=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
+            'f_thumbwidth' 	=> $fotorama_elevation_options['f_thumbwidth'] ?? '100', // in pixels
+            'f_thumbheight' => $fotorama_elevation_options['f_thumbheight'] ?? '75', // in pixels
+            'thumbmargin' 	=> $fotorama_elevation_options['thumbmargin'] ?? '2', // in pixels
+            'thumbborderwidth'  	=> $fotorama_elevation_options['thumbborderwidth'] ?? '2', // in pixels
+            'thumbbordercolor' 	    => $fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
             'transition' 		=> $fotorama_elevation_options['transition'] ?? 'crossfade', // 'slide' Default 'crossfade' 'dissolve'
-            'transitionduration'=> $fotorama_elevation_options['transitionduration'] ?? '400', // in ms
-            'loop' 				=> $fotorama_elevation_options['loop'] ?? 'true', // true or false
-            'autoplay' 			=> $fotorama_elevation_options['autoplay'] ?? 'false', // on with 'true' or any interval in milliseconds.
-            'arrows' 			=> $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
-            'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true', // true or false
-            'shortcaption'		=> 'false',
+            'transitionduration'    => $fotorama_elevation_options['transitionduration'] ?? '400', // in ms
+            'loop' 				    => $fotorama_elevation_options['loop'] ?? 'true', // true or false
+            'autoplay' 			    => $fotorama_elevation_options['autoplay'] ?? 'false', // on with 'true' or any interval in milliseconds.
+            'arrows' 			    => $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
+            'shadows' 			    => $fotorama_elevation_options['shadows'] ?? 'true', // true or false
+            'shortcaption'	=> 'false',
             'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap'
         ), $attr));
-
-        // change swiper settings for certain cases
-        if ( $this->effect === 'cube') $this->zoom = false;
 
         // generate the html string to show on page
         $doc = new myDocument();
@@ -192,7 +199,7 @@ final class SwiperClass
 			};
 			
 			// --------------- Proceed with HTML -------------------
-            $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide']]);
+            $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide'],['data-hash', $data['file']]]);
             $this->zoom === true ? $zoom=$slide->appendElWithAttsDIV([['class', 'swiper-zoom-container']]) : $zoom=$slide;
 
             // img and a href
@@ -255,7 +262,7 @@ final class SwiperClass
 
         $root->appendElWithAttsDIV([['class', 'swiper-button-prev']]);
         $root->appendElWithAttsDIV([['class', 'swiper-button-next']]);
-        $root->appendElWithAttsDIV([['class', 'swiper-pagination']]);
+        $this->showpagination === true ? $root->appendElWithAttsDIV([['class', 'swiper-pagination']]) : null;
 
         $comment = $doc->createComment('------- end of swiper ---------');
         $root->appendChild($comment);
