@@ -77,14 +77,41 @@ object-fit: cover;
     position: inherit;
 }
 
+.swiper-button-prev, .swiper-button-next {
+  color: white; 
+}
+
+.button-fslightbox {
+  content: url('../css/icon-fullscreen-white.png') !important;
+  z-index: 20;
+  position: absolute;
+  height: auto;
+  width: auto;
+  top: 1%;
+  right: 1%;
+  padding-left: 5px;
+  padding-right: 5px; 
+  background: #22222280;
+}
+
+.button-fslightbox:hover, .swiper-attach-link:hover {
+  -webkit-box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68); 
+  box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68);
+  background: #22222285;
+}
+/*
+.button-fslightbox:hover {
+  cursor: sw-resize;
+}
+*/
 .swiper-slide-title {
   color: white;
   z-index: 20;
   position: absolute;
   height: auto;
   width: auto;
-  bottom: 2%;
-  left: 0%;
+  bottom: 1%;
+  left: 1%;
   padding-left: 5px;
   padding-right: 5px;
   -webkit-box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68); 
@@ -93,17 +120,25 @@ object-fit: cover;
   text-align: left;
 }
 
+.swiper-slide-title p {
+  margin: 0px;
+}
+
+.fm-itemsButtons {
+  content: url('../css/info-button.png') !important;
+}
+
 .swiper-attach-link {
     /* margin-bottom: 10px; */
     position: absolute;
     /* margin-top: 10px; */
     /* margin-left: 10px; */
     padding-top: 6px;
-    padding-bottom: 3px;
+    padding-bottom: 6px;
     color: #fff;
     box-shadow: 1px 3px 14px 0rgb(0 0 0 / 68%);
-    background: #22222285;
+    background: #22222280;
     border-radius: 4px;
-    top: 2%;
-    left: 2%;
+    top: 1%;
+    left: 1%;
 }
