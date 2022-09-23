@@ -16,6 +16,8 @@ if ( ! defined( 'PLUGIN_ABSPATH' ) ) {
 	define( 'PLUGIN_ABSPATH', sys_get_temp_dir() . '/wp-content/plugins/fotorama_multi/' );
 }
 
+define( 'THUMBSDIR', 'thumbs' );
+
 $comp_path = "C:/Users/Martin von Berg/AppData/Roaming/Composer"; // TODO: get the global path
 
 require_once $comp_path . '/vendor/autoload.php';

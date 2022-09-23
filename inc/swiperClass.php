@@ -17,6 +17,29 @@
 
 namespace mvbplugins\fotoramamulti;
 
+use DOMDocument;
+
+class myElement extends \DOMElement {
+    function appendElement($name) { 
+       return $this->appendChild(new myElement($name));
+    }
+
+    function appendElWithAttsDIV( $attributes) {
+        $el = $this->appendElement('div');
+        
+        foreach ( $attributes as $att){
+            $el->setAttribute($att[0], $att[1]);
+        }
+        return $el;
+    }
+ }
+ 
+ class myDocument extends \DOMDocument {
+    function setRoot($name) { 
+       return $this->appendChild(new myElement($name));
+    }
+ }
+
 /**
  * Class FotoramaClass to generate the html for the fotorama slider.
  */
@@ -31,9 +54,9 @@ final class SwiperClass
     protected $imageDataToPassToJavascript = [];
     protected $showpagination = true; // TODO: swiper options and pass to js
     protected $fslightbox = false;
-    protected $zoom = true;
+    protected $zoom = false;
     protected $effect = 'slide';
-    protected $showInfoButton = false;
+    protected $showInfoButton = true;
 
     // PHP 7.4 version
     /*
@@ -61,12 +84,13 @@ final class SwiperClass
         $this->imageNumber = count($this->imageData);
 
         $addPermalink = get_option( 'fotorama_elevation_option_name')['useCDN_13'] == 'true'; // re-used for addPermalink now!
-        $this->showInfoButton = $addPermalink && $allImgInWPLibrary;
+        $this->showInfoButton = $this->showInfoButton && $addPermalink && $allImgInWPLibrary;
     }
 
     public function getSliderHtml( $attributes)
     {
-        $this->generateSliderHtml( $attributes );
+        //$this->generateSliderHtml( $attributes );
+        $this->generateDomHtml( $attributes );
         return $this->sliderHtml;
     }
 
@@ -79,7 +103,7 @@ final class SwiperClass
         return $this->imageDataToPassToJavascript;
     }
 
-    private function generateSliderHtml( $attr ) {
+    private function generateDomHtml( $attr) {
         // Define path and url variables
 	    $up_url = gpxview_get_upload_dir('baseurl');  // upload_url
 	    $up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
@@ -87,7 +111,6 @@ final class SwiperClass
 
         // Get Values from Admin settings page
  	    $fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
-        
         
         // Extract shortcode-Parameters and set Default-Values
         extract ( shortcode_atts ( array (
@@ -107,7 +130,7 @@ final class SwiperClass
             'maxwidth' 			=> $fotorama_elevation_options['max_width_of_container_12'] ?? '600', 
             'minrowwidth' 		=> $fotorama_elevation_options['min_width_css_grid_row_14'] ?? '480',
             'showcaption' 		=> $fotorama_elevation_options['show_caption_4'] ?? 'true',
-            'eletheme' 			=> $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'], 
+            'eletheme' 			=> $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ?? 'martin-theme', 
             'showalltracks' 	=> $fotorama_elevation_options['showalltracks'] ?? 'false', // not in gtb block
             'mapcenter' 		=> $fotorama_elevation_options['mapcenter'] ?? '0.0, 0.0', // not in gtb block
             'zoom' 				=> $fotorama_elevation_options['zoom'] ?? 8,		// not in gtb block			
@@ -135,10 +158,24 @@ final class SwiperClass
         // change swiper settings for certain cases
         if ( $this->effect === 'cube') $this->zoom = false;
 
-        $htmlstring = '<div id="swiper'.$this->shortcodecounter.'" class="swiper myswiper"><div class="swiper-wrapper">';
+        // generate the html string to show on page
+        $doc = new myDocument();
+        $doc->registerNodeClass('DOMElement', 'mvbplugins\fotoramamulti\myElement');
 
-        // loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
-		foreach ($this->imageData as $data) {
+        // load svg html for info button
+        $svg = $doc->createDocumentFragment();
+        $xml=('<svg height="20px" style="fill: rgb(255, 255, 255);" version="1.1" viewBox="0 0 46 100" width="46px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M35.162,0c6.696,0,10.043,4.567,10.043,9.789c0,6.522-5.814,12.555-13.391,12.555c-6.344,0-10.045-3.752-9.869-9.947 C21.945,7.176,26.35,0,35.162,0z M14.543,100c-5.287,0-9.164-3.262-5.463-17.615l6.07-25.457c1.057-4.077,1.23-5.707,0-5.707 c-1.588,0-8.451,2.816-12.51,5.59L0,52.406C12.863,41.48,27.662,35.072,34.004,35.072c5.285,0,6.168,6.361,3.525,16.148 L30.58,77.98c-1.234,4.729-0.703,6.359,0.527,6.359c1.586,0,6.787-1.963,11.896-6.041L46,82.377C33.488,95.1,19.83,100,14.543,100z"></path></g></svg>');
+        $svg->appendXML($xml);
+
+        // create root div
+        $root = $doc->setRoot('div');
+        $root->setAttribute('id', 'swiper0');
+        $root->setAttribute('class', 'swiper myswiper');
+        
+        // create first level child divs with classes
+        $wrapper = $root->appendElWithAttsDIV([['class', 'swiper-wrapper']]);
+
+        foreach ($this->imageData as $data) {
 
 			// set the alt-tag and the title for SEO
 			if ( 'notitle' === $data['title'] ) {
@@ -155,47 +192,50 @@ final class SwiperClass
 				$jscaption = $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"];
 			};
 			
-
 			// --------------- Proceed with HTML -------------------
-            $htmlstring .= '<div class="swiper-slide">';
-            $this->zoom === true ? $htmlstring .= '<div class="swiper-zoom-container">' : null;
+            $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide']]);
+            $this->zoom === true ? $zoom=$slide->appendElWithAttsDIV([['class', 'swiper-zoom-container']]) : $zoom=$slide;
 
             // img and a href
 			if ( $data['thumbinsubdir'] ) {
+
 			} elseif ( $data['thumbavail'] ) {
-			} else { // do not add srcset here, because this is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
-				$htmlstring .= <<<EOF
-                <img loading="lazy" class="swiper-lazy" alt="{$alttext}" src="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"/>
-                EOF;
+
+			} else { // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
+                $img=$zoom->appendElement('img');
+                $img->setAttribute('loading', 'lazy');
+                $img->setAttribute('class', 'swiper-lazy');
+                $img->setAttribute('alt', $alttext);
+                $img->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
 			};
-            
-            $this->zoom === true ? $htmlstring .= '</div>' : null; // End div swiper-zoom-container
 
             // todo: verwende ein Icon mit Lupe rechts oben über dem Bild wie bei fotorama
             if ( $this->fslightbox === true) {
-                $htmlstring .= '<a data-fslightbox="1" data-type="image" data-caption="'. $alttext .'" ';
-                $htmlstring .= <<<EOF
-                href="{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}"></a>
-                EOF;
+                $lightbox=$slide->appendElement('a');
+                $lightbox->setAttribute('data-fslightbox','1');
+                $lightbox->setAttribute('data-type','image'); // TODO: correct for video
+                $lightbox->setAttribute('data-caption', $alttext);
+                $lightbox->setAttribute('href',"{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
             }
-
+            
             // Ergänze den info button links oben. Position und styling mit Css
             if ( $this->showInfoButton ){ 
-                $htmlstring .= '<div class="swiper-attach-link">';
-                $htmlstring .= '<a href="" target="_blank">';
-                $htmlstring .= '<div class="fm-itemsButtons" type="info"><svg height="20px" style="fill: rgb(255, 255, 255);" version="1.1" viewBox="0 0 46 100" width="46px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M35.162,0c6.696,0,10.043,4.567,10.043,9.789c0,6.522-5.814,12.555-13.391,12.555c-6.344,0-10.045-3.752-9.869-9.947   C21.945,7.176,26.35,0,35.162,0z M14.543,100c-5.287,0-9.164-3.262-5.463-17.615l6.07-25.457c1.057-4.077,1.23-5.707,0-5.707   c-1.588,0-8.451,2.816-12.51,5.59L0,52.406C12.863,41.48,27.662,35.072,34.004,35.072c5.285,0,6.168,6.361,3.525,16.148   L30.58,77.98c-1.234,4.729-0.703,6.359,0.527,6.359c1.586,0,6.787-1.963,11.896-6.041L46,82.377C33.488,95.1,19.83,100,14.543,100z   "></path></g><g></svg></div>';
-                $htmlstring .= '</a></div>';
+                $info=$slide->appendElWithAttsDIV([['class', 'swiper-attach-link']]);
+                $infoChildA = $info->appendElement('a');
+                $infoChildA->setAttribute('href', "");
+                $infoChildA->setAttribute('target', "_blank");
+                $button=$infoChildA->appendElWithAttsDIV([['class', 'fm-itemsButtons'],['type', 'info']]);
+                $button->appendChild( $svg );
             }
             
             // Ergänze die Caption
             if ( $showcaption === 'false') {
 				$jscaption = '';
 			} else {
-                $htmlstring .= '<div class="swiper-slide-title">' . $jscaption . '</div>';
+                $title=$slide->appendElWithAttsDIV([['class', 'swiper-slide-title']]);
+                $title->textContent= $jscaption;
             }
              
-            $htmlstring .= '</div>'; // End div <swiper-slide>
-
             // get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
             // $up_url, $up_dir, $thumbsdir
@@ -210,18 +250,16 @@ final class SwiperClass
 			$this->imgnr++;
 		} // end for loop for image data
 
-		$htmlstring  .= "</div>"; // end of swiper wrapper
-        // buttons
-        $htmlstring .= '<div class="swiper-button-prev"></div>';
-        $htmlstring .= '<div class="swiper-button-next"></div>';
+        $root->appendElWithAttsDIV([['class', 'swiper-button-prev']]);
+        $root->appendElWithAttsDIV([['class', 'swiper-button-next']]);
+        $root->appendElWithAttsDIV([['class', 'swiper-pagination']]);
 
-        // pagination
-        $htmlstring  .= "</div><!--div id=end-of-slider -->";
-        $this->showpagination === true ? $htmlstring .= '<div class="swiper-pagination"></div>' : null;
-        
+        $comment = $doc->createComment('------- end of swiper ---------');
+        $root->appendChild($comment);
 
+        isset($phpimgdata) ? null : $phpimgdata = []; 
         $this->imageDataToPassToJavascript = $phpimgdata;
-        $this->sliderHtml = $htmlstring;
+        $this->sliderHtml = rtrim( $doc->saveHTML() );
     }
 
 }
