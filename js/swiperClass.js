@@ -20,7 +20,7 @@ class SliderSwiper {
     imageCounts = 6;
     thumbs = {};
     sw_options = {};
-    swiperTransitionDuration = 1000; // number: Transition duration (in ms). Default 300ms.
+    swiperTransitionDuration = 100; // number: Transition duration (in ms). Default 300ms.
     zoom = true;
 
     /**
@@ -100,15 +100,21 @@ class SliderSwiper {
             thumbs: {
                 swiper: this.thumbs,
             },
+            on: {
+                init: (event) => this.#listenEventSliderLoaded(event)
+            },
         };
                 
         // generate the swiper slider on the new html 
         this.swiper = new Swiper('#'+this.elementOnPage, this.sw_options);
-        this.scollToHash();
+        this.scrollToHash();
+
+        this.#listenEventSliderShowend();
+        //this.#listenEventSliderLoaded();
     }
 
     // --------------- Internal private methods --------------------------------
-    scollToHash() {
+    scrollToHash() {
         const options = {
             capture: false,
             once: false,
@@ -141,7 +147,7 @@ class SliderSwiper {
      */
     setSliderIndex(index) {
         // mind swiper starts with index = 0
-        this.swiper.slideTo(index, this.swiperTransitionDuration, true);
+        this.swiper.slideTo(index+1, this.swiperTransitionDuration, true);
     }
 
     // --------------- Generate Class Events -----------------------------------
@@ -152,11 +158,26 @@ class SliderSwiper {
      * Mind: the slider number counts from one, where counting from '0' would be correct.
      */
      #listenEventSliderShowend() {
-        // create Event on fotorama showend
-        let classThis = this;
+        // create Event on swiper change
+        
         this.swiper.on('slideChange', function (event) {
-            console.log('slide changed');
             // mind swiper starts with index = 0
+            let nr = event.activeIndex;
+            //if (nr = 0) nr = 1;
+            //if (nr > classThis.#pageVariables.imgdata.length) nr = 0;
+            console.log('active: ',event.activeIndex);
+            console.log('previs: ',event.previousIndex);
+            let m = parseInt(event.el.id.replace('swiper',''));
+
+            // define the CustomEvent to be fired
+            const changed = new CustomEvent('sliderchange', {
+                detail: {
+                    name: 'sliderChange',
+                    newslide: nr,
+                    slider: m
+                }
+            });
+            event.el.dispatchEvent(changed);
         });
      };
 
@@ -165,12 +186,22 @@ class SliderSwiper {
      * Call other functions that have to be run with that event.
      * Mind: the slider number counts from one, where counting from '0' would be correct.
      */
-    #listenEventSliderLoaded() {
-        // create Event on fotorama load, only once 
-        let classThis = this;
-        this.swiper.on('init', function (event) {
-            console.log('swiper loaded');
-            // mind swiper starts with index = 0
+    #listenEventSliderLoaded(event) {
+        // create Event on swiper init, only once 
+        let nr = event.activeIndex;
+        let m = parseInt(event.el.id.replace('swiper',''));
+        let h = window.location.hash;
+
+        // define the CustomEvent to be fired
+        const changed = new CustomEvent('sliderload', {
+            detail: {
+                name: 'sliderload',
+                newslide: nr,
+                slider: m
+            }
         });
+        setTimeout( function () {
+            event.el.dispatchEvent(changed)},500);
+       
     }
 }

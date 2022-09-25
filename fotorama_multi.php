@@ -258,7 +258,7 @@ function showmulti($attr, $content = null)
 
 		} elseif ( $slider === 'swiper') {
 			// Generate the html-code start with the surrounding Div
-			$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" style=\"max-width:{$maxwidth}px;\">";
+			$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
 
 			// TODO: load the scripts for swiper here
 			require_once __DIR__ . '/inc/swiperClass.php';

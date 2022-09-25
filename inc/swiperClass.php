@@ -293,6 +293,6 @@ final class SwiperClass
 
         isset($phpimgdata) ? null : $phpimgdata = []; 
         $this->imageDataToPassToJavascript = $phpimgdata;
-        $this->sliderHtml = '<div>' . rtrim( $doc->saveHTML() ) . '</div>';
+        $this->sliderHtml = '<div class="fotorama_multi_images">' . rtrim( $doc->saveHTML() ) . '</div>';
     }
 }

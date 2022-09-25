@@ -19,6 +19,7 @@
             //------------- fotorama part --------------------------------------
             let hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
             let hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length == 1
+            let sliderSel = '';
 
             //------------- leaflet - elevation part ---------------------------
             let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
@@ -36,13 +37,15 @@
             // define fotorama
             if ( hasFotorama ) {
                 // define the Slider class. This class has to be enqued (loaded) before this function.
-                allSliders[m] = new SliderFotorama(m, 'mfotorama' + m );
+                sliderSel = 'mfotorama';
+                allSliders[m] = new SliderFotorama(m, sliderSel + m );
                 // Initialize fotorama manually.
                 allSliders[m].defSlider();
             } else if ( hasSwiper ) {
-                    // define the Slider class. This class has to be enqued (loaded) before this function.
-                    allSliders[m] = new SliderSwiper(m, 'swiper' + m );
-                    allSliders[m].defSlider();
+                sliderSel = 'swiper';
+                // define the Slider class. This class has to be enqued (loaded) before this function.
+                allSliders[m] = new SliderSwiper(m, sliderSel + m );
+                allSliders[m].defSlider();
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
@@ -59,7 +62,7 @@
             }
             
             // define map and chart
-            if ( hasMap & hasFotorama ) {
+            if ( hasMap ) {
                 
                 // initiate the leaflet map
                 allMaps[m] = new LeafletElevation(m, 'boxmap' + m );
@@ -68,7 +71,7 @@
                 allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
                 
                 // update markers on the map if the active image changes
-                document.querySelector('#mfotorama'+ m).addEventListener('sliderchange', function waschanged(e) {
+                document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
                     // move map
                     allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide-1]['coord'] ); // change only
 
@@ -81,7 +84,7 @@
                 });
 
                 // update markers on the map if the active image changes
-                document.querySelector('#mfotorama'+ m).addEventListener('sliderload', function wasloaded(e) {
+                document.querySelector('#'+sliderSel+ m).addEventListener('sliderload', function wasloaded(e) {
                     // mark now the marker for the active image --> setActiveMarker
                     allMaps[e.detail.slider ].setActiveMarker( e.detail.newslide-1 );
                 });
