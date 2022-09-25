@@ -17,6 +17,9 @@ class SliderSwiper {
    
     // swiper
     swiper = {};
+    imageCounts = 6;
+    thumbs = {};
+    sw_options = {};
     swiperTransitionDuration = 1000; // number: Transition duration (in ms). Default 300ms.
     zoom = true;
 
@@ -42,18 +45,28 @@ class SliderSwiper {
      * Initialisation of Slider in given elementOnPage
      */
     defSlider() {
-                
-        // generate the swiper slider on the new html 
-        this.swiper = new Swiper('#swiper'+this.number, {
+        if (this.#pageVariables.imgdata.length < this.imageCounts) {
+            this.imageCounts = this.#pageVariables.imgdata.length;
+        }
+        
+        this.thumbs = new Swiper('#thumbsSwiper'+this.number, {
+            loop: true,
+            spaceBetween: 2,
+            slidesPerView: this.imageCounts,
+            freeMode: true,
+            watchSlidesProgress: true, 
+        });
+
+        this.sw_options = {
             // Default parameters
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
             keyboard: {
-                enabled: true,
+                enabled: false,
                 onlyInViewport: true,
             },
-            mousewheel:true,
+            mousewheel: false,
             /*
             autoplay: {
                 delay: 2500,
@@ -84,118 +97,43 @@ class SliderSwiper {
                 nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
             },
-        });
+            thumbs: {
+                swiper: this.thumbs,
+            },
+        };
+                
+        // generate the swiper slider on the new html 
+        this.swiper = new Swiper('#'+this.elementOnPage, this.sw_options);
+        this.scollToHash();
     }
 
     // --------------- Internal private methods --------------------------------
+    scollToHash() {
+        const options = {
+            capture: false,
+            once: false,
+            passive: true,
+        };
+        window.addEventListener('DOMContentLoaded', function () {
 
-    /**
-     * Update the caption in fotorama to convert '||' to html linebreaks <br>. What is required because
-     * WordPress doesn't allow to write <br> in the string and Fotorama doesn't allow html in the caption.
-     * @param {int} sliderNumber 
-     * @param {int} newslide 
-     */
-    updateCaption() {
-        for (let m = 0; m <  this.#pageVariables.imgdata.length; m++) {
-            if ( this.#pageVariables.imgdata[m].jscaption !== '') {
-                let text = this.#pageVariables.imgdata[m].jscaption ;
-                text = text.replaceAll('||', '<br>');
-                let aaa = 0;
+            if (window.location.hash === '') {
+                return false;
             }
-        }
+            let h = window.location.hash.split('/')[0];
+            if ( ! h.includes('swiper') ) {
+                return false;
+            };
+        
+            let el = document.querySelector(h);
+        
+            if (el !== null) {
+                this.setTimeout( function () {
+                    el.scrollIntoView({ behavior: 'smooth' })}, 500);
+            }
+        
+        }, options);
     }
-
-    /**
-     * replace Image Data to srcset Data provided on page or in JS-variables.
-     * @returns {object} the new generated div as object.
-     */
-     #replaceImageData() {
-        
-        // get the old data from html and pageVarsForJs
-        let el = document.getElementById('mfotorama'+ this.number); //.getElementsByTagName('img');
-        let parent = document.getElementById('multifotobox'+ this.number);
-                
-        // remove fotorama data
-        let elements = document.getElementsByClassName("fotorama_multi_images");
-        while(elements.length > 0){
-            elements[0].parentNode.removeChild(elements[0]);
-        }
-        elements = null;
-        let element = document.getElementById('mfotorama'+ this.number);
-        element.parentNode.removeChild(element);
-        element = null;
-        
-        this.newimages = this.#pageVariables.imgdata;
-
-        // transform and prepare data
-        for (let m = 0; m <  el.children.length; m++) {
-            console.log(el.children[m].src);
-            console.log(el.children[m].alt);
-            this.newimages[m]['src'] = el.children[m].src;
-        }
-
-        // write the new html
-        let newData = document.createElement("div");
-        newData.classList.add('swiper');
-        newData.classList.add('myswiper');
-        let newChild1 =  document.createElement("div");
-        newChild1.classList.add('swiper-wrapper')
-
-        // append the slides here
-        for (let m = 0; m <  el.children.length; m++) {
-            let slide =  document.createElement("div");
-            slide.classList.add('swiper-slide');
-
-            let zoom = document.createElement("div");
-            zoom.classList.add('swiper-zoom-container');
-            
-                let img =  document.createElement("img");
-                img.classList.add('swiper-lazy')
-                img.setAttribute('data-src', el.children[m].src)
-                img.setAttribute('alt', el.children[m].alt)
-                img.setAttribute('data-fslightbox', '1');
-                img.setAttribute('data-type', 'image');
-                img.setAttribute('data-caption', el.children[m].alt)
-                zoom.appendChild(img)
-
-                img =  document.createElement("div");
-                img.classList.add('title')
-                img.setAttribute('alt', el.children[m].alt);
-                img.innerHTML = this.updateCaption(this.number, m)
-                slide.appendChild(img)
-
-                // set attributes for fslightbox which are: data-fslightbox="1" data-type="image" data-caption="<Title>"
-                /*
-                let fsl = document.createElement("a");
-                fsl.setAttribute('data-fslightbox', '1');
-                fsl.setAttribute('data-type', 'image');
-                fsl.setAttribute('data-caption', el.children[m].alt)
-                fsl.setAttribute('href', el.children[m].src)
-                slide.appendChild(fsl)
-                */
-                slide.appendChild(zoom);
-                newChild1.appendChild(slide)
-        }
-
-        newData.appendChild(newChild1);
-        
-        let newChild2 =  document.createElement("div");
-        newChild2.classList.add('swiper-button-prev');
-        newData.appendChild(newChild2);
-        
-        let newChild3 =  document.createElement("div");
-        newChild3.classList.add('swiper-button-next');
-        newData.appendChild(newChild3);
-        /*
-        let newChild4 =  document.createElement("div");
-        newChild4.classList.add('swiper-pagination');
-        newData.appendChild(newChild4);
-        */
-        parent.prepend(newData);
-        return newData;
-     }
-
-
+    
     // --------------- Class API method definitions -------------------------
     /**
      * Set Slider to index
@@ -235,5 +173,4 @@ class SliderSwiper {
             // mind swiper starts with index = 0
         });
     }
-
 }

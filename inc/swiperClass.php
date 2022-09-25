@@ -32,13 +32,13 @@ class myElement extends \DOMElement {
         }
         return $el;
     }
- }
+}
  
  class myDocument extends \DOMDocument {
     function setRoot($name) { 
        return $this->appendChild(new myElement($name));
     }
- }
+}
 
 /**
  * Class FotoramaClass to generate the html for the fotorama slider.
@@ -172,11 +172,21 @@ final class SwiperClass
 
         // create root div
         $root = $doc->setRoot('div');
-        $root->setAttribute('id', 'swiper0');
+        $root->setAttribute('id', 'swiper' . $this->shortcodecounter);
         $root->setAttribute('class', 'swiper myswiper');
         
         // create first level child divs with classes
         $wrapper = $root->appendElWithAttsDIV([['class', 'swiper-wrapper']]);
+
+        // create wrapper for thumbnails
+        $thumbsWrapper = $doc->createElement('div','');
+        $thumbsWrapper->setAttribute('thumbsSlider', '');
+        $thumbsWrapper->setAttribute('id', 'thumbsSwiper' . $this->shortcodecounter);
+        $thumbsWrapper->setAttribute('class', 'swiper myswiper2');
+        //$thumbsWrapper->setAttribute('style', 'height:'.$f_thumbheight.'px');
+        $inner1 = $doc->createElement('div');
+        $inner1->setAttribute('class', 'swiper-wrapper');
+        $thumbsWrapper->appendChild($inner1);
 
         foreach ($this->imageData as $data) {
 
@@ -199,8 +209,14 @@ final class SwiperClass
 			};
 			
 			// --------------- Proceed with HTML -------------------
-            $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide'],['data-hash', $data['file']]]);
+            $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide'],['data-hash', 'swiper' . $this->shortcodecounter . '/'.$data['file']]]);
             $this->zoom === true ? $zoom=$slide->appendElWithAttsDIV([['class', 'swiper-zoom-container']]) : $zoom=$slide;
+
+            // create thumbnail slide
+            $thumbsSlide = $doc->createElement('div','');
+            $thumbsSlide->setAttribute('class', 'swiper-slide');
+            $thumbsSlide->setAttribute('style', 'height:'.$f_thumbheight.'px');
+            $inner1->appendChild($thumbsSlide);
 
             // img and a href
 			if ( $data['thumbinsubdir'] ) {
@@ -209,13 +225,19 @@ final class SwiperClass
 
 			} else { // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
                 $img=$zoom->appendElement('img');
+                // add further attributes to img
                 $img->setAttribute('loading', 'lazy');
                 $img->setAttribute('class', 'swiper-lazy');
                 $img->setAttribute('alt', $alttext);
                 $img->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
+
+                // append the img to thumbnail
+                $img2 = $doc->createElement('img','');
+                $img2->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
+                $thumbsSlide->appendChild($img2);
 			};
 
-            // todo: verwende ein Icon mit Lupe rechts oben über dem Bild wie bei fotorama
+            // add the button to open fslightbox
             if ( $this->fslightbox === true) {
                 $lightbox=$slide->appendElement('a');
                 $lightbox->setAttribute('data-fslightbox','1');
@@ -230,7 +252,7 @@ final class SwiperClass
             if ( $this->showInfoButton ){ 
                 $info=$slide->appendElWithAttsDIV([['class', 'swiper-attach-link']]);
                 $infoChildA = $info->appendElement('a');
-                $infoChildA->setAttribute('href', $data['permalink']); // TODO: hier fehlt noch der Link!
+                $infoChildA->setAttribute('href', $data['permalink']); 
                 $infoChildA->setAttribute('target', "_blank");
                 $infoChildA->appendElWithAttsDIV([['class', 'fm-itemsButtons'],['type', 'info']]);
             }
@@ -266,10 +288,11 @@ final class SwiperClass
 
         $comment = $doc->createComment('------- end of swiper ---------');
         $root->appendChild($comment);
+        // append the thumbnails at the bottom the main slider
+        $doc->appendChild($thumbsWrapper);
 
         isset($phpimgdata) ? null : $phpimgdata = []; 
         $this->imageDataToPassToJavascript = $phpimgdata;
-        $this->sliderHtml = rtrim( $doc->saveHTML() );
+        $this->sliderHtml = '<div>' . rtrim( $doc->saveHTML() ) . '</div>';
     }
-
 }

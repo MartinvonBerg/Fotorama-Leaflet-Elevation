@@ -136,7 +136,7 @@ function showmulti($attr, $content = null)
 		'shortcaption'		=> 'false',
 		'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap',
 		'slider'			=> 'fotorama', // 'fotorama' or 'swiper' : secret shortcode
-		'sw_effect'			=> 'cube',
+		'sw_effect'			=> 'cube', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
 		'sw_zoom'			=> 'true',
 		'sw_fslightbox'		=> 'true',
 		'sw_pagination'		=> 'false',
@@ -242,13 +242,13 @@ function showmulti($attr, $content = null)
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
 		
-	// Generate the html-code start with the surrounding Div
-	$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
-	
 	// Generate html for Fotorama images for fotorama-javascript-rendering
 	if ($imageNumber > 0) {
 		
 		if ( $slider === 'fotorama') {
+			// Generate the html-code start with the surrounding Div
+			$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
+
 			// TODO: load the scripts for fotorama here
 			require_once __DIR__ . '/inc/fotoramaClass.php';
 			$fClass = new FotoramaClass( $shortcodecounter, $data2, $postid);
@@ -257,6 +257,9 @@ function showmulti($attr, $content = null)
 			$fClass = null;
 
 		} elseif ( $slider === 'swiper') {
+			// Generate the html-code start with the surrounding Div
+			$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" style=\"max-width:{$maxwidth}px;\">";
+
 			// TODO: load the scripts for swiper here
 			require_once __DIR__ . '/inc/swiperClass.php';
 			$sw_options = ['addPermalink' => $addPermalink, 
