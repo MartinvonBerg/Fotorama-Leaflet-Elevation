@@ -216,6 +216,8 @@ final class SwiperClass
             $thumbsSlide = $doc->createElement('div','');
             $thumbsSlide->setAttribute('class', 'swiper-slide');
             $thumbsSlide->setAttribute('style', 'height:'.$f_thumbheight.'px');
+            //$thumbsSlide->setAttribute('style', 'width:'.$f_thumbwidth.'px');
+            //$thumbsSlide->setAttribute('style', 'max-width:'.$f_thumbwidth.'px');
             $inner1->appendChild($thumbsSlide);
 
             // img and a href

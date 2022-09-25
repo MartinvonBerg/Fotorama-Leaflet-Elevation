@@ -2,7 +2,7 @@
 //import Swiper from 'swiper';
 // import Swiper styles
 //import 'swiper/css';
-// TODO: thumbnails, srcset, responsive, lazy-load
+// TODO: , srcset, , lazy-load, local swiper and load modules with option to reduce size
 
 class SliderSwiper {
     // static attributes (fields)
@@ -17,7 +17,7 @@ class SliderSwiper {
    
     // swiper
     swiper = {};
-    imageCounts = 6;
+    imageCounts = 6; // TODO: param? value for slides per view
     thumbs = {};
     sw_options = {};
     swiperTransitionDuration = 100; // number: Transition duration (in ms). Default 300ms.
@@ -45,49 +45,49 @@ class SliderSwiper {
      * Initialisation of Slider in given elementOnPage
      */
     defSlider() {
-        if (this.#pageVariables.imgdata.length < this.imageCounts) {
-            this.imageCounts = this.#pageVariables.imgdata.length;
-        }
-        
+        //if (this.#pageVariables.imgdata.length < this.imageCounts) {
+        //    this.imageCounts = this.#pageVariables.imgdata.length;
+        //}
+         
         this.thumbs = new Swiper('#thumbsSwiper'+this.number, {
             loop: true,
             spaceBetween: 2,
             slidesPerView: this.imageCounts,
-            freeMode: true,
-            watchSlidesProgress: true, 
+            freeMode: false,
+            watchSlidesProgress: true
         });
 
         this.sw_options = {
             // Default parameters
+            lazy: true,
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
             keyboard: {
-                enabled: false,
+                enabled: false, // TODO: param?
                 onlyInViewport: true,
             },
-            mousewheel: false,
+            mousewheel: false, // TODO: param?
             /*
             autoplay: {
-                delay: 2500,
+                delay: 2500, // TODO: param?
                 disableOnInteraction: true,
               },
             */  
             hashNavigation: {
-                watchState: true,
+                watchState: true, // TODO: param?
             },  
             grabCursor: true,
             effect: this.#pageVariables.sw_options.sw_effect, // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
             zoom: //this.zoom,
             {
-                enabled: this.zoom,
-                maxRatio: 3,
+                enabled: this.zoom, 
+                maxRatio: 3, // TODO: param?
                 minRatio: 1,
                 zoomedSlideClass: 'swiper-zoom-container'
             },
-            // 
-            loop: true,
-                        
+            roundLengths: true,
+            loop: true, 
             pagination: {
                 el: ".swiper-pagination",
                 clickable: true,
@@ -108,9 +108,7 @@ class SliderSwiper {
         // generate the swiper slider on the new html 
         this.swiper = new Swiper('#'+this.elementOnPage, this.sw_options);
         this.scrollToHash();
-
         this.#listenEventSliderShowend();
-        //this.#listenEventSliderLoaded();
     }
 
     // --------------- Internal private methods --------------------------------
@@ -120,6 +118,7 @@ class SliderSwiper {
             once: false,
             passive: true,
         };
+
         window.addEventListener('DOMContentLoaded', function () {
 
             if (window.location.hash === '') {
@@ -129,14 +128,12 @@ class SliderSwiper {
             if ( ! h.includes('swiper') ) {
                 return false;
             };
-        
             let el = document.querySelector(h);
-        
             if (el !== null) {
                 this.setTimeout( function () {
                     el.scrollIntoView({ behavior: 'smooth' })}, 500);
             }
-        
+
         }, options);
     }
     
@@ -159,14 +156,9 @@ class SliderSwiper {
      */
      #listenEventSliderShowend() {
         // create Event on swiper change
-        
         this.swiper.on('slideChange', function (event) {
-            // mind swiper starts with index = 0
-            let nr = event.activeIndex;
-            //if (nr = 0) nr = 1;
-            //if (nr > classThis.#pageVariables.imgdata.length) nr = 0;
-            console.log('active: ',event.activeIndex);
-            console.log('previs: ',event.previousIndex);
+            // use realIndex and mind swiper starts with index = 0
+            let nr = event.realIndex + 1;
             let m = parseInt(event.el.id.replace('swiper',''));
 
             // define the CustomEvent to be fired
@@ -188,10 +180,9 @@ class SliderSwiper {
      */
     #listenEventSliderLoaded(event) {
         // create Event on swiper init, only once 
-        let nr = event.activeIndex;
+        let nr = event.realIndex + 1;
         let m = parseInt(event.el.id.replace('swiper',''));
-        let h = window.location.hash;
-
+        
         // define the CustomEvent to be fired
         const changed = new CustomEvent('sliderload', {
             detail: {
@@ -202,6 +193,5 @@ class SliderSwiper {
         });
         setTimeout( function () {
             event.el.dispatchEvent(changed)},500);
-       
     }
 }

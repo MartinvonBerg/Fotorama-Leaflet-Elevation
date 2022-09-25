@@ -37,11 +37,14 @@
 }
 
 .myswiper {
-  height: 100%;
   width: 100%;
   z-index: 10;
   -webkit-box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68); 
   box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68);
+}
+
+.myswiper .swiper-slide {
+  height: auto;
 }
 
 .myswiper2 {
