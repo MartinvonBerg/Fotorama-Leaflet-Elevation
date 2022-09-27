@@ -56,7 +56,7 @@ final class SwiperClass
     protected $fslightbox = true;
     protected $zoom = true;
     protected $effect = 'slide';
-    protected $showInfoButton = true;
+    protected $showInfoButton = false;
 
     // PHP 7.4 version
     /*
@@ -114,7 +114,7 @@ final class SwiperClass
         return $this->imageDataToPassToJavascript;
     }
 
-    private function generateDomHtml( $attr) {
+    private function generateDomHtml( $attr ) {
         // Define path and url variables
 	    $up_url = gpxview_get_upload_dir('baseurl');  // upload_url
 	    $up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
@@ -207,10 +207,21 @@ final class SwiperClass
 				$caption = array( 0 => $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"]);
 				$jscaption = $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"];
 			};
+
+            // get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
+			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
+            // $up_url, $up_dir, $thumbsdir
+			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $imgpath, $thumbsdir );
+			$phpimgdata[$this->imgnr-1]['id'] = $this->imgnr;
+			$phpimgdata[$this->imgnr-1]['title'] = $alttext; 
+			$phpimgdata[$this->imgnr-1]['coord'][0] = round( $data['lat'], 6 );
+			$phpimgdata[$this->imgnr-1]['coord'][1] = round( $data['lon'], 6 );
+			$phpimgdata[$this->imgnr-1]['permalink'] = $data['permalink'] ?? '';
 			
 			// --------------- Proceed with HTML -------------------
-            $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide'],['data-hash', 'swiper' . $this->shortcodecounter . '/'.$data['file']]]);
-            $this->zoom === true ? $zoom=$slide->appendElWithAttsDIV([['class', 'swiper-zoom-container']]) : $zoom=$slide;
+            $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide'],
+                                                   ['data-hash', 'swiper' . $this->shortcodecounter . '/'.$data['file']]]); // TODO: is it better to use the title? But filename is always given. Title not.
+            $this->zoom ? $zoom=$slide->appendElWithAttsDIV([['class', 'swiper-zoom-container']]) : $zoom=$slide;
 
             // create thumbnail slide
             $thumbsSlide = $doc->createElement('div','');
@@ -224,6 +235,21 @@ final class SwiperClass
 			if ( $data['thumbinsubdir'] ) {
 
 			} elseif ( $data['thumbavail'] ) {
+                $img=$zoom->appendElement('img');
+                // add further attributes to img
+                $img->setAttribute('loading', 'lazy');
+                $img->setAttribute('class', 'swiper-lazy');
+                $img->setAttribute('alt', $alttext);
+                $img->setAttribute('srcset', wp_get_attachment_image_srcset( $data['wpid']));
+                // TODO: sizes is missing
+                $img->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
+
+                // append the img to thumbnail
+                $img2 = $doc->createElement('img','');
+                //$img->setAttribute('loading', 'lazy');
+                //$img->setAttribute('class', 'swiper-lazy');
+                $img2->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}");
+                $thumbsSlide->appendChild($img2);
 
 			} else { // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
                 $img=$zoom->appendElement('img');
@@ -231,16 +257,18 @@ final class SwiperClass
                 $img->setAttribute('loading', 'lazy');
                 $img->setAttribute('class', 'swiper-lazy');
                 $img->setAttribute('alt', $alttext);
-                $img->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
+                $img->setAttribute('data-src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
 
                 // append the img to thumbnail
                 $img2 = $doc->createElement('img','');
+                //$img->setAttribute('loading', 'lazy');
+                //$img->setAttribute('class', 'swiper-lazy');
                 $img2->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
                 $thumbsSlide->appendChild($img2);
 			};
 
             // add the button to open fslightbox
-            if ( $this->fslightbox === true) {
+            if ( $this->fslightbox ) {
                 $lightbox=$slide->appendElement('a');
                 $lightbox->setAttribute('data-fslightbox','1');
                 $lightbox->setAttribute('data-type','image'); // TODO: correct for video
@@ -259,7 +287,7 @@ final class SwiperClass
                 $infoChildA->appendElWithAttsDIV([['class', 'fm-itemsButtons'],['type', 'info']]);
             }
             
-            // Ergänze die Caption
+            // update and change Caption. Add to html and array for js-script.
             if ( $showcaption === 'false') {
 				$jscaption = '';
 			} else {
@@ -269,30 +297,20 @@ final class SwiperClass
                     $title->appendChild($el);
                 }
             }
-             
-            // get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
-			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
-            // $up_url, $up_dir, $thumbsdir
-			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $imgpath, $thumbsdir );
-			$phpimgdata[$this->imgnr-1]['id'] = $this->imgnr;
-			$phpimgdata[$this->imgnr-1]['title'] = $alttext; 
-			$phpimgdata[$this->imgnr-1]['coord'][0] = round( $data['lat'], 6 );
-			$phpimgdata[$this->imgnr-1]['coord'][1] = round( $data['lon'], 6 );
-			$phpimgdata[$this->imgnr-1]['permalink'] = $data['permalink'] ?? '';
-			$phpimgdata[$this->imgnr-1]['jscaption'] = $jscaption;
+            $phpimgdata[$this->imgnr-1]['jscaption'] = $jscaption;
 
 			$this->imgnr++;
 		} // end for loop for image data
 
         $root->appendElWithAttsDIV([['class', 'swiper-button-prev']]);
         $root->appendElWithAttsDIV([['class', 'swiper-button-next']]);
-        $this->showpagination === true ? $root->appendElWithAttsDIV([['class', 'swiper-pagination']]) : null;
+        // append the thumbnails at the bottom OR the pagination. Both is useless.
+        $this->showpagination ? $root->appendElWithAttsDIV([['class', 'swiper-pagination']]) : $doc->appendChild($thumbsWrapper);;
 
         $comment = $doc->createComment('------- end of swiper ---------');
         $root->appendChild($comment);
-        // append the thumbnails at the bottom the main slider
-        $doc->appendChild($thumbsWrapper);
-
+        // append the thumbnails at the bottom the main slider TODO: Don't show if pagination is true.
+        
         isset($phpimgdata) ? null : $phpimgdata = []; 
         $this->imageDataToPassToJavascript = $phpimgdata;
         $this->sliderHtml = '<div class="fotorama_multi_images">' . rtrim( $doc->saveHTML() ) . '</div>';

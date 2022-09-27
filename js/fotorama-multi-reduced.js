@@ -6,7 +6,6 @@
     let numberOfBoxes = document.querySelectorAll('[id^=multifotobox]').length;
 
     if ( numberOfBoxes > 0 ) {
-        //TODO: load script files here like raruto does!
         // fotorama variables
         let allSliders = [ numberOfBoxes-1 ];
         

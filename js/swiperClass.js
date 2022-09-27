@@ -5,12 +5,9 @@
 // TODO: , srcset, , lazy-load, local swiper and load modules with option to reduce size
 
 class SliderSwiper {
-    // static attributes (fields)
-    static count = 0; // counts the number of instances of this class.
-    
+        
     // private attributes (fields)
     #pageVariables = []; // values passed form php via html
-    #isMobile = false;
 
     // public attributes (fields). These can be set / get by dot-notation.
     number = 0;
@@ -20,7 +17,7 @@ class SliderSwiper {
     imageCounts = 6; // TODO: param? value for slides per view
     thumbs = {};
     sw_options = {};
-    swiperTransitionDuration = 100; // number: Transition duration (in ms). Default 300ms.
+    swiperTransitionDuration = 300; // number: Transition duration (in ms). Default 300ms. // TODO: param?
     zoom = true;
 
     /**
@@ -29,11 +26,9 @@ class SliderSwiper {
      * @param {string} elementOnPage id of the div on the page that shall contain the slider
      */
      constructor(number, elementOnPage) {
-        SliderSwiper.count++; // update the number of instances on construct.
         this.number = number; 
         this.elementOnPage = elementOnPage; 
         this.#pageVariables = pageVarsForJs[number];
-        this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
         this.zoom = this.#pageVariables.sw_options.sw_zoom === 'true';
         // change swiper settings for certain cases 
         if (this.#pageVariables.sw_options.sw_effect === 'cube') {
@@ -112,6 +107,11 @@ class SliderSwiper {
     }
 
     // --------------- Internal private methods --------------------------------
+    /**
+     * scroll to given hash value (e.g. the id of the swiper div on page load).
+     * This function assumes that swiper.js loads the slide given after the '/' in the url.
+     * This is currently the filename of the image
+     */
     scrollToHash() {
         const options = {
             capture: false,
