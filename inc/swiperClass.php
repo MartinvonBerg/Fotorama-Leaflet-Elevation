@@ -190,6 +190,10 @@ final class SwiperClass
 
         foreach ($this->imageData as $data) {
 
+            // TODO: update_post_meta for preloaded image in header.
+            //$postid = get_the_ID();
+            //update_post_meta( $postid,'fm_header_link', '');
+
 			// set the alt-tag and the title for SEO
 			if ( 'notitle' === $data['title'] ) {
 				$data['title'] = __('Galeriebild') . ' '. \strval( $this->imgnr );
@@ -237,18 +241,19 @@ final class SwiperClass
 			} elseif ( $data['thumbavail'] ) {
                 $img=$zoom->appendElement('img');
                 // add further attributes to img
-                $img->setAttribute('loading', 'lazy');
+                //$img->setAttribute('loading', 'lazy');
                 $img->setAttribute('class', 'swiper-lazy');
                 $img->setAttribute('alt', $alttext);
-                $img->setAttribute('srcset', wp_get_attachment_image_srcset( $data['wpid']));
-                // TODO: sizes is missing
-                $img->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
+                $img->setAttribute('data-src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
+                $img->setAttribute('data-srcset', wp_get_attachment_image_srcset( $data['wpid']));
+                // TODO: sizes is missing. but not required in examples.
 
                 // append the img to thumbnail
                 $img2 = $doc->createElement('img','');
                 //$img->setAttribute('loading', 'lazy');
                 //$img->setAttribute('class', 'swiper-lazy');
                 $img2->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}");
+                $img2->setAttribute('alt','Thumbnail for image slider operation');
                 $thumbsSlide->appendChild($img2);
 
 			} else { // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
@@ -274,6 +279,7 @@ final class SwiperClass
                 $lightbox->setAttribute('data-type','image'); // TODO: correct for video
                 $lightbox->setAttribute('data-caption', $alttext);
                 $lightbox->setAttribute('href',"{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
+                $lightbox->setAttribute('aria-label','Open fullscreen lightbox with current image');
                 $lbdiv=$lightbox->appendElement('div');
                 $lbdiv->setAttribute('class', 'button-fslightbox');
             }
@@ -283,6 +289,7 @@ final class SwiperClass
                 $info=$slide->appendElWithAttsDIV([['class', 'swiper-attach-link']]);
                 $infoChildA = $info->appendElement('a');
                 $infoChildA->setAttribute('href', $data['permalink']); 
+                $infoChildA->setAttribute('aria-label','Open page with image details');
                 $infoChildA->setAttribute('target', "_blank");
                 $infoChildA->appendElWithAttsDIV([['class', 'fm-itemsButtons'],['type', 'info']]);
             }

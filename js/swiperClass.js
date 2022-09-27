@@ -54,7 +54,12 @@ class SliderSwiper {
 
         this.sw_options = {
             // Default parameters
-            lazy: true,
+            lazy: {
+                enabled:true,
+                checkInView:true,
+                loadOnTransitionStart:true,
+            },
+            preloadImages: false,
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
