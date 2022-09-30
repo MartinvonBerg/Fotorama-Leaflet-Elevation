@@ -23,7 +23,7 @@
 $plugin_url = plugins_url('/', __FILE__);
 $mode = 'development';
 $version = '0.12.0';
-	
+
 if ( $mode === 'production') {
     wp_enqueue_style('fotorama_css', $plugin_url . 'js/fotorama/fotorama.min.css', [], $version	);
     wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
@@ -47,10 +47,11 @@ if ( $mode === 'production') {
     // --- FOTORAMA -------------
     // or
     // --- Swiper.js
-    wp_enqueue_style('swiper_css', "https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css", [], '8.3.2');
-    wp_enqueue_script('swiper_js', "https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js", [], '8.3.2');
+    wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');
+    //wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper-bundle.min.js', [], '8.4.2');
     wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], '0.12.0');
-    wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], '0.12.0', true);
+    //wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], '0.12.0', true);
+    wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.umd.js', '8.4.2', true);
     // --- Swiper.js
 
     // --- LEAFLET -------------

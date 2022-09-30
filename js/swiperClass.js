@@ -1,8 +1,7 @@
 // import Swiper JS
-//import Swiper from 'swiper';
+import Swiper from 'swiper';
 // import Swiper styles
-//import 'swiper/css';
-// TODO: , srcset, , lazy-load, local swiper and load modules with option to reduce size
+import 'swiper/css';
 
 class SliderSwiper {
         
@@ -55,11 +54,11 @@ class SliderSwiper {
         this.sw_options = {
             // Default parameters
             lazy: {
-                enabled:true,
-                checkInView:true,
-                loadOnTransitionStart:true,
+                enabled:false,
+                checkInView:false,
+                loadOnTransitionStart:false,
             },
-            preloadImages: false,
+            preloadImages: true,
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
@@ -200,3 +199,5 @@ class SliderSwiper {
             event.el.dispatchEvent(changed)},500);
     }
 }
+
+export {SliderSwiper};

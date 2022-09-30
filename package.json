@@ -18,8 +18,9 @@
 	"devDependencies": {
 		"@wordpress/scripts": "^22.3.0",
 		"css-loader": "^6.7.1",
-		"cypress": "^9.7.0",
-		"cypress-audit": "^1.1.0",
+		"cypress": "x",
+		"cypress-audit": "x",
+		"cypress-image-snapshot": "x",
 		"file-loader": "^6.2.0",
 		"minify": "^9.1.0",
 		"style-loader": "^3.3.1",
@@ -27,6 +28,6 @@
 		"webpack-cli": "^4.10.0"
 	},
 	"dependencies": {
-		"cypress-image-snapshot": "^4.0.1"
+		"swiper": "^8.4.2"
 	}
 }

@@ -1,5 +1,6 @@
 // webpack import information for bundling. localhost won't work with that.
 //import SliderFotorama from './fotoramaClass.js'
+//import { SliderSwiper } from "./release/js/swiper/swiper_bundle.js";
 
 (function (window, document, undefined) {
     "use strict";
@@ -43,7 +44,7 @@
             } else if ( hasSwiper ) {
                 sliderSel = 'swiper';
                 // define the Slider class. This class has to be enqued (loaded) before this function.
-                allSliders[m] = new SliderSwiper(m, sliderSel + m );
+                allSliders[m] = new window.A.SliderSwiper(m, sliderSel + m );
                 allSliders[m].defSlider();
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
