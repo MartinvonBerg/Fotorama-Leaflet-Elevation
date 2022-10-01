@@ -13,6 +13,26 @@
     background: #22222285;
     border-radius: 4px;
 }
+
+.button-fslightbox {
+  content: url('../css/icon-fullscreen-white.png') !important;
+  z-index: 20;
+  position: absolute;
+  height: auto;
+  width: auto;
+  top: 1%;
+  right: 1%;
+  padding-left: 5px;
+  padding-right: 5px; 
+  background: #22222280;
+  border-radius: 4px;
+}
+
+.button-fslightbox:hover, .swiper-attach-link:hover {
+  -webkit-box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68); 
+  box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68);
+  background: #22222285;
+}
 /*
 @media screen and (max-width: 574px) {
   .fm-attach-link {

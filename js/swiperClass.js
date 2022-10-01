@@ -1,7 +1,20 @@
 // import Swiper JS
-import Swiper from 'swiper';
+import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, Thumbs} from 'swiper';
 // import Swiper styles
+import 'swiper/css/bundle';
+/* This save only 0,6 kBytes. Is not worth it.
 import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/a11y';
+import 'swiper/css/controller';
+import 'swiper/css/effect-flip';
+import 'swiper/css/hash-navigation';
+import 'swiper/css/lazy';
+import 'swiper/css/mousewheel';
+import 'swiper/css/thumbs';
+import 'swiper/css/zoom';
+*/
+import "./swiperClass.css";
 
 class SliderSwiper {
         
@@ -53,12 +66,13 @@ class SliderSwiper {
 
         this.sw_options = {
             // Default parameters
+            modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, Thumbs],
             lazy: {
-                enabled:false,
-                checkInView:false,
-                loadOnTransitionStart:false,
+                enabled:true,
+                checkInView:true,
+                loadOnTransitionStart:true,
             },
-            preloadImages: true,
+            preloadImages: false,
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
@@ -66,7 +80,7 @@ class SliderSwiper {
                 enabled: false, // TODO: param?
                 onlyInViewport: true,
             },
-            mousewheel: false, // TODO: param?
+            mousewheel: true, // TODO: param?
             /*
             autoplay: {
                 delay: 2500, // TODO: param?

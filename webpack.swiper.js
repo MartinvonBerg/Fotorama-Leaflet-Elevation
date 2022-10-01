@@ -9,9 +9,10 @@ module.exports = [
   output: {
     filename: 'swiper_bundle.umd.js',
     path: path.resolve(__dirname, 'release/js/swiper'),
-    library: "A",
-    libraryTarget: "umd",
-    globalObject: 'this',
+    library: {
+      name: "A",
+      type: "var",
+    }
   },
   mode: _mode, 
   
@@ -38,7 +39,7 @@ module.exports = [
     minimizer: [
       new TerserPlugin({
         terserOptions: {
-          keep_classnames: true,
+          keep_classnames: false,
           keep_fnames: false,
           compress: true,
           mangle: true,

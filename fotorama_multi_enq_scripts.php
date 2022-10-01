@@ -24,6 +24,37 @@ $plugin_url = plugins_url('/', __FILE__);
 $mode = 'development';
 $version = '0.12.0';
 
+/**
+ * enqueue the fslightbox.js script as basic or paid version, if available.
+ *
+ * @return void
+ */
+function my_enqueue_script()
+{
+    $plugin_main_dir = ''; // TODO: Pfade anpassen. Move to fm_functions.php
+    $path = $plugin_main_dir . '/js/fslightbox-paid/fslightbox.js';
+    $slug = \WP_PLUGIN_URL . '/' . \basename($plugin_main_dir); // @phpstan-ignore-line
+
+    if (is_file($path)) {
+        $path = $slug . '/js/fslightbox-paid/fslightbox.js';
+        wp_enqueue_script('fslightbox', $path, array(), '3.4.1', true);
+    }
+
+    $path = $plugin_main_dir . '/js/fslightbox-basic/fslightbox.js';
+    if (is_file($path)) {
+        $path = $slug . '/js/fslightbox-basic/fslightbox.js';
+        wp_enqueue_script('fslightbox', $path, array(), '3.3.1', true);
+    }
+
+    // pass option to the js-script to switch fullscreen of browser off, when lightbox is closed.
+    // TODO: move to if to avoid useless loading
+    $jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;";
+    // this option increases the load time with many images.
+    //$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;fsLightboxInstances['1'].props.showThumbsOnMount = true;";
+    \wp_add_inline_script('fslightbox', $jsFullscreen); // TODO: move to if to avoid useless loading
+}
+
+
 if ( $mode === 'production') {
     wp_enqueue_style('fotorama_css', $plugin_url . 'js/fotorama/fotorama.min.css', [], $version	);
     wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
@@ -38,18 +69,18 @@ if ( $mode === 'production') {
 
     // --- FOTORAMA -------------
     // Load Styles
-    wp_enqueue_style('fotorama_css', $plugin_url . 'css/fotorama_multi.min.css', [], '4.6.4');
-    wp_enqueue_style('fotorama3_css', $plugin_url . 'css/fotorama3.min.css', [], '4.6.4');
+    wp_enqueue_style('fotorama_css', $plugin_url . 'css/fotorama_multi.css', [], '4.6.4');
+    //wp_enqueue_style('fotorama3_css', $plugin_url . 'css/fotorama3.min.css', [], '4.6.4');
     // Load Scripts
-    wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '4.6.4');
-    wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-    wp_register_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.12.0', true);
+    //wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '4.6.4');
+    //wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
+    //wp_register_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.12.0', true);
     // --- FOTORAMA -------------
     // or
     // --- Swiper.js
-    wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');
+    //wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');
     //wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper-bundle.min.js', [], '8.4.2');
-    wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], '0.12.0');
+    //wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], '0.12.0');
     //wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], '0.12.0', true);
     wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.umd.js', '8.4.2', true);
     // --- Swiper.js
