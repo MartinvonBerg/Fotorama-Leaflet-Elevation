@@ -140,6 +140,12 @@ function showmulti($attr, $content = null)
 		'sw_zoom'			=> 'true',
 		'sw_fslightbox'		=> 'true',
 		'sw_pagination'		=> 'false',
+		'sw_slides_per_view'=> 6,
+		'sw_transition_duration'=>300,
+		'sw_mousewheel'		=> 'true',
+		'sw_hashnavigation' => 'true',
+		'sw_max_zoom_ratio'	=> 3
+
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
 
@@ -267,7 +273,12 @@ function showmulti($attr, $content = null)
 						   'sw_effect'			=> $sw_effect,
 						   'sw_zoom'			=> $sw_zoom,
 						   'sw_fslightbox'		=> $sw_fslightbox,
-						   'sw_pagination'		=> $sw_pagination];
+						   'sw_pagination'		=> $sw_pagination,
+						   'sw_slides_per_view' => $sw_slides_per_view,
+						   'sw_transition_duration'=> $sw_transition_duration,
+						   'sw_mousewheel'		=> $sw_mousewheel,
+						   'sw_hashnavigation'  => $sw_hashnavigation,
+						   'sw_max_zoom_ratio'	=> $sw_max_zoom_ratio];
 			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options);
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();

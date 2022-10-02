@@ -77,7 +77,7 @@ class SliderSwiper {
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
-            mousewheel: this.#pageVariables.sw_options.sw_mousewheel, 
+            mousewheel: this.#pageVariables.sw_options.sw_mousewheel === 'true', 
             /*
             keyboard: {
                 enabled: false, // TODO: param? No. KB not used.
@@ -89,7 +89,7 @@ class SliderSwiper {
               },
             */  
             hashNavigation: {
-                watchState: this.#pageVariables.sw_options.sw_hashnavigation, 
+                watchState: this.#pageVariables.sw_options.sw_hashnavigation === 'true', 
             },  
             grabCursor: true,
             effect: this.#pageVariables.sw_options.sw_effect, // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')

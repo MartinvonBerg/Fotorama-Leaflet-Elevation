@@ -84,7 +84,7 @@ class SliderFotorama {
         this.width = this.sliderDiv[0].parentElement.clientWidth;
         let height = this.sliderDiv[0].parentElement.clientHeight;
         let ratio = this.width / height;
-        if (ratio > 1.0) this.width = this.width / 2;
+        //if (ratio > 1.0) this.width = this.width / 2;
         /*
         if (this.#isMobile) {
             let h = window.screen.height;

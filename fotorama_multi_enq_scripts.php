@@ -24,6 +24,7 @@ $plugin_url = plugins_url('/', __FILE__);
 $mode = 'development';
 $version = '0.12.0';
 
+// TODO: Pfade anpassen. Move to fm_functions.php
 /**
  * enqueue the fslightbox.js script as basic or paid version, if available.
  *
@@ -31,7 +32,7 @@ $version = '0.12.0';
  */
 function my_enqueue_script()
 {
-    $plugin_main_dir = ''; // TODO: Pfade anpassen. Move to fm_functions.php
+    $plugin_main_dir = ''; 
     $path = $plugin_main_dir . '/js/fslightbox-paid/fslightbox.js';
     $slug = \WP_PLUGIN_URL . '/' . \basename($plugin_main_dir); // @phpstan-ignore-line
 
@@ -78,11 +79,11 @@ if ( $mode === 'production') {
     // --- FOTORAMA -------------
     // or
     // --- Swiper.js
-    wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');
-    wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper-bundle.min.js', [], '8.4.2');
-    wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], '0.12.0');
-    wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], '0.12.0', true);
-    //wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.umd.js', '8.4.2', true);
+    //wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');
+    //wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper-bundle.min.js', [], '8.4.2');
+    //wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], '0.12.0');
+    //wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], '0.12.0', true);
+    wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.umd.js', '8.4.2', true);
     // --- Swiper.js
 
     // --- LEAFLET -------------
