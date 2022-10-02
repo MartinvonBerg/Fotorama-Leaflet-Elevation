@@ -300,57 +300,59 @@ EOF;
 	}
 	
 	// ----------------------------------------------------
-	$htmlstring  .= '<div class="fm-dload">';
-
-	// provide GPX-download if defined
-	if ( ('true' == $dload ) and ($i > 0))  {
-		$text = t('Download', $lang);
-		
-		if ($i == 1) {
-			$htmlstring .= "<p>{$text}: <a download=\"{$gpxfile}\" href=\"{$gpx_url}{$gpxfile}\">{$gpxfile}</a></p>";
-		} else {
-			$gpxf = explode(',',$gpxfile);
-			$htmlstring .= "<p><strong>{$text}: "; // <a download=""</a>
-			foreach ($gpxf as $f){
-				$htmlstring .= "<a download=\"{$f}\" href=\"{$gpx_url}{$f}\">{$f} - </a>";
+	if ( ('true' === $showadress) || (('true' === $dload ) && ($i > 0)) )  {
+		$htmlstring  .= '<div class="fm-dload">';
+	
+		// provide GPX-download if defined
+		if ( ('true' === $dload ) && ($i > 0))  {
+			$text = t('Download', $lang);
+			
+			if ($i == 1) {
+				$htmlstring .= "<p>{$text}: <a download=\"{$gpxfile}\" href=\"{$gpx_url}{$gpxfile}\">{$gpxfile}</a></p>";
+			} else {
+				$gpxf = explode(',',$gpxfile);
+				$htmlstring .= "<p><strong>{$text}: "; // <a download=""</a>
+				foreach ($gpxf as $f){
+					$htmlstring .= "<a download=\"{$f}\" href=\"{$gpx_url}{$f}\">{$f} - </a>";
+				}
+				$htmlstring .= "</strong></p>";
 			}
-			$htmlstring .= "</strong></p>";
 		}
-	}
 
-	// produce starting point description,  
-	if ( 'true' == $showadress ) {
-		$geoadresstest =  get_post_meta($postid,'geoadress');
-		if ( ! empty($geoadresstest[0]) ) {
-			$test = $geoadresstest[0]; // we need only the first index
-			$geoadress = maybe_unserialize($test);	// type conversion to array
-				
-			$v = '';
-			foreach ($geoadress as $key => $value) {
-				if ($key != 'country') {
-					$v .= $value . ', ';
+		// produce starting point description,  
+		if ( 'true' === $showadress ) {
+			$geoadresstest =  get_post_meta($postid,'geoadress');
+			if ( ! empty($geoadresstest[0]) ) {
+				$test = $geoadresstest[0]; // we need only the first index
+				$geoadress = maybe_unserialize($test);	// type conversion to array
+					
+				$v = '';
+				foreach ($geoadress as $key => $value) {
+					if ($key != 'country') {
+						$v .= $value . ', ';
+					} else {
+						$v .= $value;
+						break;
+					}
+				}
+
+				if ( \current_user_can('edit_posts') && ('true' == $showadress) &&  ('0' == \ini_get('allow_url_fopen') ) ) {
+					$v = 'Your Server is not set correctly! Cannot read address for GPX-Data. Check server setting "allow_url_fopen"';
+				}
+
+				$lat = get_post_meta($postid,'lat');
+				$lon = get_post_meta($postid,'lon');
+				$googleurl = 'https://www.google.com/maps/place/' . $lat[0] . ',' . $lon[0] . '/@' . $lat[0] . ',' . $lon[0] . ',9z';
+				$v2 = '<a href="' .$googleurl. '" target="_blank" rel="noopener noreferrer">'. $v .'</a>';
+				if ($adresstext != 'Start address'){
+					$htmlstring .= '<p>'. $adresstext. ': ' .  $v2 . '</p>';
 				} else {
-					$v .= $value;
-					break;
+					$htmlstring .= '<p>'. t('Start address', $lang) . ': ' .  $v2 . '</p>';
 				}
 			}
-
-			if ( \current_user_can('edit_posts') && ('true' == $showadress) &&  ('0' == \ini_get('allow_url_fopen') ) ) {
-				$v = 'Your Server is not set correctly! Cannot read address for GPX-Data. Check server setting "allow_url_fopen"';
-			}
-
-			$lat = get_post_meta($postid,'lat');
-			$lon = get_post_meta($postid,'lon');
-			$googleurl = 'https://www.google.com/maps/place/' . $lat[0] . ',' . $lon[0] . '/@' . $lat[0] . ',' . $lon[0] . ',9z';
-			$v2 = '<a href="' .$googleurl. '" target="_blank" rel="noopener noreferrer">'. $v .'</a>';
-			if ($adresstext != 'Start address'){
-				$htmlstring .= '<p>'. $adresstext. ': ' .  $v2 . '</p>';
-			} else {
-				$htmlstring .= '<p>'. t('Start address', $lang) . ': ' .  $v2 . '</p>';
-			}
 		}
-	}
     $htmlstring  .= '</div>'; // end <div class="fm-dload"> is empty w/o dload or startadress 
+	}
 	// ----------------------------------------------------
 	
 	// end for boxmap. div ends here to have fm-dload underneath the map

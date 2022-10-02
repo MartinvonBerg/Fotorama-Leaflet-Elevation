@@ -1,4 +1,4 @@
-// webpack import information for bundling. localhost won't work with that.
+// webpack import information for bundling.
 //import SliderFotorama from './fotoramaClass.js'
 //import { SliderSwiper } from "./release/js/swiper/swiper_bundle.js";
 
@@ -7,24 +7,28 @@
     let numberOfBoxes = document.querySelectorAll('[id^=multifotobox]').length;
 
     if ( numberOfBoxes > 0 ) {
-        // fotorama variables
+        let isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+        let hasFotorama = false;
+        let hasSwiper = false;
+
+        // slider variables
         let allSliders = [ numberOfBoxes-1 ];
-        
+                
         // map and chart var. The var is intentional here.
         let allMaps = [ numberOfBoxes-1 ];
         
         // do it for all shortcodes on the page or post
         for (let m = 0; m < numberOfBoxes; m++) {
 
-            //------------- fotorama part --------------------------------------
-            let hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length == 1;
-            let hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length == 1
+            //------------- Slider part --------------------------------------
+            hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length === 1;
+            hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length === 1
             let sliderSel = '';
 
             //------------- leaflet - elevation part ---------------------------
-            let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length == 1;
+            let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length === 1;
 
-            // remove grid class is parent is a column
+            // remove grid class if parent is a column.
             let el = document.getElementById('multifotobox'+m);
             let parentClass = el.parentElement.className;
             if (parentClass.includes('column')) {
@@ -34,18 +38,19 @@
                 // missing: the class fm-dload margin-bottom is set in CSS. This could be set manually.
             }
 
-            // define fotorama
+            // define slider
             if ( hasFotorama ) {
                 // define the Slider class. This class has to be enqued (loaded) before this function.
                 sliderSel = 'mfotorama';
                 allSliders[m] = new SliderFotorama(m, sliderSel + m );
-                // Initialize fotorama manually.
                 allSliders[m].defSlider();
+
             } else if ( hasSwiper ) {
                 sliderSel = 'swiper';
                 // define the Slider class. This class has to be enqued (loaded) before this function.
                 allSliders[m] = new window.A.SliderSwiper(m, sliderSel + m );
                 allSliders[m].defSlider();
+
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
@@ -54,6 +59,7 @@
                     let text = pageVarsForJs[m].markertext;
                     allMaps[m] = new LeafletMap(m, 'boxmap' + m, center, zoom );
                     allMaps[m].createSingleMarker(text);
+                    
                 } else {
                     // no fotorama, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
                     // initiate the leaflet map
@@ -93,34 +99,6 @@
                 document.querySelector('#boxmap'+ m).addEventListener('mapmarkerclick', function markerclicked(e) {
                     allSliders[e.detail.map].setSliderIndex(e.detail.marker);
                 });
-
-                // catch the event if the fullscreen button was clicked. 
-                /*
-                document.addEventListener('pointerdown', function(event) {
-                    if (event.srcElement.className === 'leaflet-control-zoom-fullscreen fullscreen-icon') {
-                        
-                        for (let m = 0; m < event.path.length; m++) {
-                            if (event.path[m].id.includes('boxmap') ) {
-                                // get the index of the map that triggered the event
-                                let mapNumber = parseFloat( event.path[m].id.replace('boxmap','') )
-                                
-                                // filter the event, as it is triggerd more than once.
-                                if (event.timeStamp > allMaps[mapNumber].timeStamp) {
-                                    allMaps[mapNumber].fullScreen = ! allMaps[mapNumber].fullScreen; 
-                                    allMaps[mapNumber].timeStamp = event.timeStamp;
-
-                                    if ( allMaps[mapNumber].timeStamp > 0 && allMaps[mapNumber].fullScreen === false) {
-                                        let elem = document.querySelector('#boxmap'+mapNumber+' > #map'+mapNumber+' > .leaflet-control-container > .leaflet-top > #undefined');
-                                        const eventClick = new Event('click');
-                                        setTimeout(function(){ elem.dispatchEvent(eventClick); }, 200);
-                                    }
-                                }
-                                break;
-                            }
-                        };
-                    }
-                });
-                */
             }
             
         } // end for m maps
@@ -135,19 +113,19 @@
          */
         function resizer(event) {
             // hide the fotorama caption on small screens
-            try {
-                let fotowidth = parseFloat( getComputedStyle( document.querySelector('[id^=mfotorama]'), null).width.replace("px", ""));
-
-                if (fotowidth<480) {
-                    document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='none';
-                } else {
-                    document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='';
-                }
-            } catch {}
-            
-            for (let m = 0; m < numberOfBoxes; m++) {    
-                // w: width, h: height as shortform.  
-                try {
+            if( isMobile && hasFotorama) {
+                document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='none';
+            }
+            if( isMobile && hasSwiper) {
+                const el = document.querySelectorAll('.swiper-slide-title');
+                el.forEach(element => {
+                    element.style.display = 'none';
+                });
+            }
+                       
+            for (let m = 0; m < numberOfBoxes; m++) {
+                // w: width, h: height as shortform.
+                if (typeof(allMaps[m]) === 'object') {
                     let wmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).width.replace("px", ""));
                     let hmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).height.replace("px", ""));
                     let ratioMap = wmap / hmap;
@@ -162,7 +140,7 @@
                     if ( ! isNaN(ratioMap)) {
                         allMaps[m].bounds = allMaps[m].setBoundsToMarkers(m, _group);
                     } 
-                } catch {}
+                }
             }
         }
     }

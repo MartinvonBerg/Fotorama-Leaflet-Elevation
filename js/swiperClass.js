@@ -1,8 +1,11 @@
 // import Swiper JS
-import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, Thumbs} from 'swiper';
+//import Swiper from 'swiper/bundle'; // imports the complete bundle.
+// The following module loading reduces bundle size from 47.8 kB to 38.2 kBytes.
+import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs} from 'swiper';
+
 // import Swiper styles
 import 'swiper/css/bundle';
-/* This save only 0,6 kBytes. Is not worth it.
+/* The following saves only 0,6 kBytes. Is not worth it.
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/a11y';
@@ -26,10 +29,8 @@ class SliderSwiper {
    
     // swiper
     swiper = {};
-    imageCounts = 6; // TODO: param? value for slides per view
     thumbs = {};
     sw_options = {};
-    swiperTransitionDuration = 300; // number: Transition duration (in ms). Default 300ms. // TODO: param?
     zoom = true;
 
     /**
@@ -59,14 +60,14 @@ class SliderSwiper {
         this.thumbs = new Swiper('#thumbsSwiper'+this.number, {
             loop: true,
             spaceBetween: 2,
-            slidesPerView: this.imageCounts,
+            slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view, // value for slides per view
             freeMode: false,
             watchSlidesProgress: true
         });
 
         this.sw_options = {
             // Default parameters
-            modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, Thumbs],
+            modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs],
             lazy: {
                 enabled:true,
                 checkInView:true,
@@ -76,26 +77,26 @@ class SliderSwiper {
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
+            mousewheel: this.#pageVariables.sw_options.sw_mousewheel, 
+            /*
             keyboard: {
-                enabled: false, // TODO: param?
+                enabled: false, // TODO: param? No. KB not used.
                 onlyInViewport: true,
             },
-            mousewheel: true, // TODO: param?
-            /*
             autoplay: {
-                delay: 2500, // TODO: param?
+                delay: 2500, // TODO: param? No. Not used.
                 disableOnInteraction: true,
               },
             */  
             hashNavigation: {
-                watchState: true, // TODO: param?
+                watchState: this.#pageVariables.sw_options.sw_hashnavigation, 
             },  
             grabCursor: true,
             effect: this.#pageVariables.sw_options.sw_effect, // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
             zoom: //this.zoom,
             {
                 enabled: this.zoom, 
-                maxRatio: 3, // TODO: param?
+                maxRatio: this.#pageVariables.sw_options.sw_max_zoom_ratio, 
                 minRatio: 1,
                 zoomedSlideClass: 'swiper-zoom-container'
             },
@@ -162,7 +163,7 @@ class SliderSwiper {
      */
     setSliderIndex(index) {
         // mind swiper starts with index = 0
-        this.swiper.slideTo(index+1, this.swiperTransitionDuration, true);
+        this.swiper.slideTo(index+1, this.#pageVariables.sw_options.sw_transition_duration, true);
     }
 
     // --------------- Generate Class Events -----------------------------------
