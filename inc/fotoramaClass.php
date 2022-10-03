@@ -2,17 +2,17 @@
 
 /**
  * Class FotoramaClass to generate the html for the fotorama slider.
- *
+ * 
  * PHP version 7.3.0 - 8.0.x
  *
- * @package    fotorama_multi
+ * Summary     Class FotoramaClass to generate the html for the fotorama slider.
+ * Description This Class generates the html for the fotoram slider.
  * @author     Martin von Berg <mail@mvb1.de>
  * @copyright  Martin von Berg, 2022
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
- * @since      File available since Plugin-Release 0.12.0
- * @version    0.0.1
- * TODO
+ * @since      0.12.0
+ * @version    0.12.0
  */
 
 namespace mvbplugins\fotoramamulti;

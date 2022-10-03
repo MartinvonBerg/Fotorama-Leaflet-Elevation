@@ -5,20 +5,25 @@
  *
  * PHP version 7.3.0 - 8.0.x
  *
- * @package    fotorama_multi
+ * Summary     Class SwiperClass to generate the html for the swiper slider.
+ * Description This Class generates the html for the Swiper slider.
  * @author     Martin von Berg <mail@mvb1.de>
  * @copyright  Martin von Berg, 2022
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
- * @since      File available since Plugin-Release 0.12.0
- * @version    0.0.1
- * TODO
+ * @since      0.12.0
+ * @version    0.12.0
  */
 
 namespace mvbplugins\fotoramamulti;
 
 use DOMDocument;
 
+/**
+ * Class to ease the generation of DOM Elements in HTML.
+ * Provides a function to append an Element and 
+ * a function to generate a <DIV>-Tag with attributes from an array.
+ */
 class myElement extends \DOMElement {
     function appendElement($name) { 
        return $this->appendChild(new myElement($name));
@@ -33,8 +38,12 @@ class myElement extends \DOMElement {
         return $el;
     }
 }
- 
- class myDocument extends \DOMDocument {
+
+/**
+ * Class to ease the generation of DOM Elements in HTML.
+ * Provides a funtion to ses the root of the DOM.
+ */
+class myDocument extends \DOMDocument {
     function setRoot($name) { 
        return $this->appendChild(new myElement($name));
     }
@@ -52,11 +61,12 @@ final class SwiperClass
     protected $imageData = [];
     protected $imageNumber = 0;
     protected $imageDataToPassToJavascript = [];
-    protected $showpagination = true; // TODO: swiper options and pass to js
+    protected $showpagination = false;
     protected $fslightbox = true;
     protected $zoom = true;
     protected $effect = 'slide';
-    protected $showInfoButton = false;
+    protected $showInfoButton = true;
+    protected $options = [];
 
     // PHP 7.4 version
     /*
@@ -69,103 +79,83 @@ final class SwiperClass
     protected boolean $fslightbox = false;
     protected boolean $zoom = true;
     protected string $effect = 'slide';
-    protected booleand $showInfoButton = true;
+    protected boolean $showInfoButton = true;
+    protected array $options = [];
     */
 
     /**
      * constructor function for the class to do the initialization settings.
      *
-     * TODO
+     * @param  integer $shortcodecounter The static number of shortcodes on the page / post.
+     * @param  array   $imageData The array with all required imageData.
+     * @param  array  $options the options for the swiper slider.
      */
-    public function __construct($shortcodecounter=0, $imageData=[], $options)
+    public function __construct( int $shortcodecounter=0, array $imageData=[], array $options = [])
     {
         $this->shortcodecounter = $shortcodecounter;
         $this->imgnr = 1;
         $this->imageData = $imageData;
         $this->imageNumber = count($this->imageData);
         // set the options from shortcode or admin setting
+        $this->options = $options;
         $this->showpagination = $options['sw_pagination'] === 'true';
         $this->fslightbox = $options['sw_fslightbox'] === 'true';
         $this->zoom = $options['sw_zoom'] === 'true';
         $this->effect = $options['sw_effect'];
         $this->showInfoButton = $this->showInfoButton && $options['addPermalink'] && $options['allImgInWPLibrary'];
 
-        // change swiper settings for certain cases TODO: might change again if added to shortcode array
+        // change swiper settings for certain cases. Because cube does not work with this settings.
         if ( $this->effect === 'cube') {
             $this->zoom = false;
             $this->showInfoButton = false;
             $this->showpagination = false;
             $this->fslightbox = false;
         }
+
     }
 
-    public function getSliderHtml( $attributes)
+    /**
+     * Get the generated HTML and pass it to the caller.
+     *
+     * @param  array $attributes All attributes passed from the shortcode.
+     * @return string The generated html code as string.
+     */
+    public function getSliderHtml()
     {
-        $this->generateDomHtml( $attributes );
+        $this->generateDomHtml();
         return $this->sliderHtml;
     }
 
+    /**
+     * Get the number of images that are in the slider.
+     *
+     * @return integer The number of images that are in the slider.
+     */
     public function getNumberImagesInHtml()
     {
         return $this->imgnr;
     }
 
+    /**
+     * Get the array with all imageData required for further processing.
+     *
+     * @return array the array with all imageData required for further processing.
+     */
     public function getImageDataForJS () {
         return $this->imageDataToPassToJavascript;
     }
 
-    private function generateDomHtml( $attr ) {
+    /**
+     * Generate the HTML code for the swiper based on DOMClass and on options.
+     *
+     * @return void no return value: just set the class attributes as result.
+     */
+    private function generateDomHtml() {
         // Define path and url variables
 	    $up_url = gpxview_get_upload_dir('baseurl');  // upload_url
 	    $up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
         $thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
-
-        // Get Values from Admin settings page
- 	    $fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
         
-        // Extract shortcode-Parameters and set Default-Values
-        extract ( shortcode_atts ( array (
-            'gpxpath' 			=> $fotorama_elevation_options['path_to_gpx_files_2'] ?? 'gpx', 
-            'gpxfile' 			=> 'test.gpx',
-            'mapheight' 		=> $fotorama_elevation_options['height_of_map_10'] ?? '1000',
-            'mapaspect'			=> $fotorama_elevation_options['aspect_ratio_of_map'] ?? '1.50',
-            'chartheight' 		=> $fotorama_elevation_options['height_of_chart_11'] ?? '200',
-            'imgpath' 	=> $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
-            'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'true', 
-            'alttext' 	=> $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '', 
-            'ignoresort' 		=> $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', 
-            'showadress' 		=> $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
-            'showmap' 			=> 'true',
-            'adresstext' 		=> $fotorama_elevation_options['text_for_start_address_8'] ?? 'Startadresse',
-            'requiregps' 		=> $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
-            'maxwidth' 			=> $fotorama_elevation_options['max_width_of_container_12'] ?? '600', 
-            'minrowwidth' 		=> $fotorama_elevation_options['min_width_css_grid_row_14'] ?? '480',
-            'showcaption' 	=> $fotorama_elevation_options['show_caption_4'] ?? 'true',
-            'eletheme' 			=> $fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] ?? 'martin-theme', 
-            'showalltracks' 	=> $fotorama_elevation_options['showalltracks'] ?? 'false', // not in gtb block
-            'mapcenter' 		=> $fotorama_elevation_options['mapcenter'] ?? '0.0, 0.0', // not in gtb block
-            'zoom' 				=> $fotorama_elevation_options['zoom'] ?? 8,		// not in gtb block			
-            'markertext' 		=> $fotorama_elevation_options['markertext'] ?? 'Home address', // not in gtb block
-            'fit' 			=> $fotorama_elevation_options['fit'] ?? 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
-            'ratio' 			=> $fotorama_elevation_options['ratio'] ?? '1.5',
-            'background' 		=> $fotorama_elevation_options['background'] ?? 'darkgrey', // background color in CSS name
-            'navposition' 	=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
-            'navwidth' 		=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
-            'f_thumbwidth' 	=> $fotorama_elevation_options['f_thumbwidth'] ?? '100', // in pixels
-            'f_thumbheight' => $fotorama_elevation_options['f_thumbheight'] ?? '75', // in pixels
-            'thumbmargin' 	=> $fotorama_elevation_options['thumbmargin'] ?? '2', // in pixels
-            'thumbborderwidth'  	=> $fotorama_elevation_options['thumbborderwidth'] ?? '2', // in pixels
-            'thumbbordercolor' 	    => $fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000', // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
-            'transition' 		=> $fotorama_elevation_options['transition'] ?? 'crossfade', // 'slide' Default 'crossfade' 'dissolve'
-            'transitionduration'    => $fotorama_elevation_options['transitionduration'] ?? '400', // in ms
-            'loop' 				    => $fotorama_elevation_options['loop'] ?? 'true', // true or false
-            'autoplay' 			    => $fotorama_elevation_options['autoplay'] ?? 'false', // on with 'true' or any interval in milliseconds.
-            'arrows' 			    => $fotorama_elevation_options['arrows'] ?? 'true',  // true : Default, false, 'always' : Do not hide controls on hover or tap
-            'shadows' 			    => $fotorama_elevation_options['shadows'] ?? 'true', // true or false
-            'shortcaption'	=> 'false',
-            'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap'
-        ), $attr));
-
         // generate the html string to show on page
         $doc = new myDocument();
         $doc->registerNodeClass('DOMElement', 'mvbplugins\fotoramamulti\myElement');
@@ -183,25 +173,30 @@ final class SwiperClass
         $thumbsWrapper->setAttribute('thumbsSlider', '');
         $thumbsWrapper->setAttribute('id', 'thumbsSwiper' . $this->shortcodecounter);
         $thumbsWrapper->setAttribute('class', 'swiper myswiper2');
-        //$thumbsWrapper->setAttribute('style', 'height:'.$f_thumbheight.'px');
         $inner1 = $doc->createElement('div');
         $inner1->setAttribute('class', 'swiper-wrapper');
         $thumbsWrapper->appendChild($inner1);
 
         foreach ($this->imageData as $data) {
 
-            // TODO: update_post_meta for preloaded image in header.
-            //$postid = get_the_ID();
-            //update_post_meta( $postid,'fm_header_link', '');
+            if ( $this->imgnr===1 && $this->shortcodecounter===0 && $data['wpid']>0 && \current_user_can('edit_posts') ) {
+                // generate the srcset and write to a custom field
+                $hrefsrc = "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}";
+                $srcset = wp_get_attachment_image_srcset($data['wpid']);
+                $args = '<link rel="preload" as="image" href="' . $hrefsrc . '" imagesrcset="' . $srcset . '" ';
+                $postid = \get_the_ID();
+                \delete_post_meta($postid, 'fm_header_link');
+                update_post_meta( $postid,'fm_header_link', $args);
+            }
 
-			// set the alt-tag and the title for SEO
+            // set the alt-tag and the title for SEO
 			if ( 'notitle' === $data['title'] ) {
 				$data['title'] = __('Galeriebild') . ' '. \strval( $this->imgnr );
 			}
 			$alttext = $data['alt'] !== '' ? $data['alt'] : $data['title'];
 
 			// generate the caption for html and javascript
-			if ( $shortcaption === 'false') {
+			if ( $this->options['shortcaption'] === 'false') {
 				//$caption = 'data-caption="' .$this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"] . ' </br> ' . $data['camera'] . ' </br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
 				$caption = array (0 => $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"],
                                   1 => $data['camera'],
@@ -215,7 +210,7 @@ final class SwiperClass
             // get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
             // $up_url, $up_dir, $thumbsdir
-			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $imgpath, $thumbsdir );
+			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $this->options['imgpath'], $thumbsdir );
 			$phpimgdata[$this->imgnr-1]['id'] = $this->imgnr;
 			$phpimgdata[$this->imgnr-1]['title'] = $alttext; 
 			$phpimgdata[$this->imgnr-1]['coord'][0] = round( $data['lat'], 6 );
@@ -223,54 +218,47 @@ final class SwiperClass
 			$phpimgdata[$this->imgnr-1]['permalink'] = $data['permalink'] ?? '';
 			
 			// --------------- Proceed with HTML -------------------
-            $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide'],
-                                                   ['data-hash', 'swiper' . $this->shortcodecounter . '/'.$data['file']]]); // TODO: is it better to use the title? But filename is always given. Title not.
+            if ( $this->options['sw_hashnavigation']==='true') {
+                $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide'], 
+                                                       ['data-hash', 'swiper' . $this->shortcodecounter . '/'.$data['file']]]); // Is it better to use the title? But filename is always given. Title not.
+            } else {
+                $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide']]);
+            }
+            
             $this->zoom ? $zoom=$slide->appendElWithAttsDIV([['class', 'swiper-zoom-container']]) : $zoom=$slide;
 
             // create thumbnail slide
             $thumbsSlide = $doc->createElement('div','');
             $thumbsSlide->setAttribute('class', 'swiper-slide');
-            $thumbsSlide->setAttribute('style', 'height:'.$f_thumbheight.'px');
-            //$thumbsSlide->setAttribute('style', 'width:'.$f_thumbwidth.'px');
-            //$thumbsSlide->setAttribute('style', 'max-width:'.$f_thumbwidth.'px');
+            $thumbsSlide->setAttribute('style', 'height:'. $this->options['f_thumbheight'].'px');
             $inner1->appendChild($thumbsSlide);
 
             // img and a href
+            $img=$zoom->appendElement('img');
+            // add further attributes to img
+            //$img->setAttribute('loading', 'lazy');
+            $img->setAttribute('class', 'swiper-lazy');
+            $img->setAttribute('alt', $alttext);
+            $img->setAttribute('data-src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
+
+            // append the img to thumbnail
+            $img2 = $doc->createElement('img','');
+            //$img->setAttribute('loading', 'lazy');
+            //$img->setAttribute('class', 'swiper-lazy');
+
 			if ( $data['thumbinsubdir'] ) {
-
+                $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
 			} elseif ( $data['thumbavail'] ) {
-                $img=$zoom->appendElement('img');
-                // add further attributes to img
-                //$img->setAttribute('loading', 'lazy');
-                $img->setAttribute('class', 'swiper-lazy');
-                $img->setAttribute('alt', $alttext);
-                $img->setAttribute('data-src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
                 $img->setAttribute('data-srcset', wp_get_attachment_image_srcset( $data['wpid']));
-                // TODO: sizes is missing. but not required in examples.
-
-                // append the img to thumbnail
-                $img2 = $doc->createElement('img','');
-                //$img->setAttribute('loading', 'lazy');
-                //$img->setAttribute('class', 'swiper-lazy');
-                $img2->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['thumbs']}");
-                $img2->setAttribute('alt','Thumbnail for image slider operation');
-                $thumbsSlide->appendChild($img2);
-
-			} else { // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
-                $img=$zoom->appendElement('img');
-                // add further attributes to img
-                $img->setAttribute('loading', 'lazy');
-                $img->setAttribute('class', 'swiper-lazy');
-                $img->setAttribute('alt', $alttext);
-                $img->setAttribute('data-src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
-
-                // append the img to thumbnail
-                $img2 = $doc->createElement('img','');
-                //$img->setAttribute('loading', 'lazy');
-                //$img->setAttribute('class', 'swiper-lazy');
-                $img2->setAttribute('src', "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
-                $thumbsSlide->appendChild($img2);
+                // sizes is missing. but not required in examples.
+                $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}"); 
+			} else { 
+                // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
+                $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}"); 
 			};
+
+            $img2->setAttribute('alt','Thumbnail for image slider operation');
+            $thumbsSlide->appendChild($img2);
 
             // add the button to open fslightbox
             if ( $this->fslightbox ) {
@@ -278,7 +266,7 @@ final class SwiperClass
                 $lightbox->setAttribute('data-fslightbox','1');
                 $lightbox->setAttribute('data-type','image'); // TODO: correct for video
                 $lightbox->setAttribute('data-caption', $alttext);
-                $lightbox->setAttribute('href',"{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}");
+                $lightbox->setAttribute('href',"{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
                 $lightbox->setAttribute('aria-label','Open fullscreen lightbox with current image');
                 $lbdiv=$lightbox->appendElement('div');
                 $lbdiv->setAttribute('class', 'button-fslightbox');
@@ -295,7 +283,7 @@ final class SwiperClass
             }
             
             // update and change Caption. Add to html and array for js-script.
-            if ( $showcaption === 'false') {
+            if ( $this->options['showcaption'] === 'false') {
 				$jscaption = '';
 			} else {
                 $title=$slide->appendElWithAttsDIV([['class', 'swiper-slide-title']]);
@@ -316,7 +304,6 @@ final class SwiperClass
 
         $comment = $doc->createComment('------- end of swiper ---------');
         $root->appendChild($comment);
-        // append the thumbnails at the bottom the main slider TODO: Don't show if pagination is true.
         
         isset($phpimgdata) ? null : $phpimgdata = []; 
         $this->imageDataToPassToJavascript = $phpimgdata;
