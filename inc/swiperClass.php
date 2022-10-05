@@ -15,6 +15,8 @@
  * @version    0.12.0
  */
 
+// TODO: same height for all slides!!!!
+
 namespace mvbplugins\fotoramamulti;
 
 use DOMDocument;
