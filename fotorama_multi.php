@@ -43,7 +43,7 @@ require_once __DIR__ . '/inc/gtb_blocks.php';
 // -------- show admin page if request is for admin page
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin_settings.php';
-	$fotorama_elevation = new FotoramaElevation();
+	$fotorama_elevation = new FotoramaElevationAdmin();
 	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
 	$fotorama_elevation->checkHtaccess() ? $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'true' : $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'false';
 	update_option( 'fotorama_elevation_option_name', $fotorama_elevation_options );
@@ -74,7 +74,7 @@ function showmulti($attr, $content = null)
 {
 	require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
 
-	// Define global Values and Variables. We need the globals for the state-transition of the post
+	// Define global Values and Variables. We need the globals for the state-transition of the post.
 	global $post_state_pub_2_draft;
 	global $post_state_draft_2_pub;
 	$pub_2_draft = $post_state_pub_2_draft ?? false;
@@ -167,7 +167,6 @@ function showmulti($attr, $content = null)
 		$custom_css3 = ".fotorama__caption__wrap { display: none; }";
 		wp_add_inline_style( 'fotorama3_css', $custom_css3 );
 	}
-				
 	
 	// Define path and url variables
 	$up_url = gpxview_get_upload_dir('baseurl');  // upload_url
@@ -287,6 +286,9 @@ function showmulti($attr, $content = null)
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
+
+			// load script for fslightbox. Move to if one level above if used for fotorama also.
+			enqueue_fslightbox();
 		} 
 	}
 

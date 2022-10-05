@@ -44,7 +44,9 @@ final class FotoramaClass
     /**
      * constructor function for the class to do the initialization settings.
      *
-     * TODO
+     * @param  integer $shortcodecounter the counter for the actual shortcode on the page.
+     * @param  array   $imageData the array with imageData.
+     * @param  int     $postid the ID of the current post.
      */
     public function __construct($shortcodecounter=0, $imageData=[], $postid)
     {

@@ -24,38 +24,6 @@ $plugin_url = plugins_url('/', __FILE__);
 $mode = 'development';
 $version = '0.12.0';
 
-// TODO: Pfade anpassen. Move to fm_functions.php
-/**
- * enqueue the fslightbox.js script as basic or paid version, if available.
- *
- * @return void
- */
-function my_enqueue_script()
-{
-    $plugin_main_dir = ''; 
-    $path = $plugin_main_dir . '/js/fslightbox-paid/fslightbox.js';
-    $slug = \WP_PLUGIN_URL . '/' . \basename($plugin_main_dir); // @phpstan-ignore-line
-
-    if (is_file($path)) {
-        $path = $slug . '/js/fslightbox-paid/fslightbox.js';
-        wp_enqueue_script('fslightbox', $path, array(), '3.4.1', true);
-    }
-
-    $path = $plugin_main_dir . '/js/fslightbox-basic/fslightbox.js';
-    if (is_file($path)) {
-        $path = $slug . '/js/fslightbox-basic/fslightbox.js';
-        wp_enqueue_script('fslightbox', $path, array(), '3.3.1', true);
-    }
-
-    // pass option to the js-script to switch fullscreen of browser off, when lightbox is closed.
-    // TODO: move to if to avoid useless loading
-    $jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;";
-    // this option increases the load time with many images.
-    //$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;fsLightboxInstances['1'].props.showThumbsOnMount = true;";
-    \wp_add_inline_script('fslightbox', $jsFullscreen); // TODO: move to if to avoid useless loading
-}
-
-
 if ( $mode === 'production') {
     wp_enqueue_style('fotorama_css', $plugin_url . 'js/fotorama/fotorama.min.css', [], $version	);
     wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');

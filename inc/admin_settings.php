@@ -6,7 +6,7 @@
  */
 
 // use this code for translation: __('string-to-translate', 'fotoramamulti'). Translate the 'string-to-translate' in your po-file
-// TODO: no admin setting for shortcaption
+// TODO: no admin setting for shortcaption. Add settings for swiper.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -14,7 +14,7 @@ $path = plugin_dir_path(__FILE__);
 require_once $path . 'custom_mime_types.php'; 
 require_once $path . 'parseGPX.php'; 
 
-class FotoramaElevation {
+final class FotoramaElevationAdmin {
 	private $fotorama_elevation_options; // TODO: missing typehints for PHP 7.4+
 	private $fotorama_option2;
 	private $up_dir = '';    
@@ -276,7 +276,7 @@ class FotoramaElevation {
 					<td class="tg-0pky">shortcaption</td>
 					<td class="tg-0pky">false / true</td>
 					<td class="tg-0pky">shortcaption="true"</td>
-					<td class="tg-0pky">Show short caption only. (No image metadata)</td>
+					<td class="tg-0pky">Show short caption only. (Don't show image metadata from EXIF. No Admin setting available)</td>
 				</tr>
 			
 				<tr><td class="tg-0pky">fit</td><td class="tg-0pky">contain , cover, scaledown, none</td><td class="tg-0pky">fit="contain"</td><td class="tg-0pky">Define the scaling of Fotos for the Fotorama Slider</td></tr>

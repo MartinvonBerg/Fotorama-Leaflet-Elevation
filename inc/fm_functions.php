@@ -3,6 +3,43 @@ namespace mvbplugins\fotoramamulti;
 
 require_once __DIR__ . '/extractMetadata.php';
 
+/**
+ * enqueue the fslightbox.js script as basic or paid version, if available.
+ *
+ * @return void
+ */
+function enqueue_fslightbox()
+{
+    $isEnqueued =  \wp_script_is('fslightbox', 'enqueued');
+
+	if ( ! $isEnqueued ) {
+		$plugin_main_dir = \WP_PLUGIN_DIR; // @phpstan-ignore-line
+		$path = $plugin_main_dir . '/simple-lightbox-fslight/js/fslightbox-paid/fslightbox.js';
+		$path = \str_replace('/', \DIRECTORY_SEPARATOR, $path); // @phpstan-ignore-line
+		$slug = \WP_PLUGIN_URL; // @phpstan-ignore-line
+
+		if (is_file($path)) {
+			$path = $slug . '/simple-lightbox-fslight/js/fslightbox-paid/fslightbox.js';
+			wp_enqueue_script('fslightbox', $path, [], '3.4.1', true);
+		}
+
+		$path = $plugin_main_dir . '/simple-lightbox-fslight/js/fslightbox-basic/fslightbox.js';
+		$path = \str_replace('/', \DIRECTORY_SEPARATOR, $path); // @phpstan-ignore-line
+
+		if (is_file($path)) {
+			$path = $slug . '/simple-lightbox-fslight/js/fslightbox-basic/fslightbox.js';
+			// This does not overload if both js-scripts are available because wp_enqueue_script does not overload.
+			wp_enqueue_script('fslightbox', $path, [], '3.3.1', true);
+		}
+
+		// pass option to the js-script to switch fullscreen of browser off, when lightbox is closed.
+		$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;";
+		// this option increases the load time with many images.
+		//$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;fsLightboxInstances['1'].props.showThumbsOnMount = true;";
+		\wp_add_inline_script('fslightbox', $jsFullscreen); 
+	}
+}
+
 // add the style for the grid to ALL headers!
 add_action('wp_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
 /**
