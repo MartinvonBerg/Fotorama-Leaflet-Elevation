@@ -19,87 +19,156 @@
 // WP GPX maps					handle: leaflet		  	  lokal ../leaflet.js
 // Geo Mashup					handle: leaflet		      cdnjs ../leaflet.js : getestet, scheint konfliktfrei zu arbeiten!
 
-//wp_reset_query();
-$plugin_url = plugins_url('/', __FILE__);
-$mode = 'development';
-$version = '0.12.0';
+function enqueue_elevation_scripts( string $mode='production' ) {
+    $plugin_url = plugins_url('/', __FILE__);
+    $version = '0.12.0';
 
-if ( $mode === 'production') {
-    wp_enqueue_style('fotorama_css', $plugin_url . 'js/fotorama/fotorama.min.css', [], $version	);
-    wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
-    wp_enqueue_style('leaflet_elevation_css', $plugin_url . 'js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
-    // Load Scripts
-    wp_enqueue_script('fotorama_bundle', $plugin_url . 'js/fotorama/fotorama_bundle.js', array('jquery'), $version, true);
-    wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
-    wp_enqueue_script('leaflet_elevation_bundle', $plugin_url . 'js/leaflet_elevation/leaflet_elevation_bundle.js', array('jquery'), $version, true);
-    wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'js/fotorama_main.js', array('jquery'), $version, true);
+    if ( $mode === 'production') {
+        //wp_enqueue_style('leaflet_css', $plugin_url . '/js/leaflet/leaflet.min.css', [], '1.8.0');
+        wp_enqueue_style('leaflet_elevation_css', $plugin_url . '/js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
+        // Load Scripts
+        //wp_enqueue_script('leaflet_map_bundle', $plugin_url . '/js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
+        wp_enqueue_script('leaflet_elevation_bundle', $plugin_url . '/js/leaflet_elevation/leaflet_elevation_bundle.js', array('jquery'), $version, true);
+        //wp_enqueue_script('fotorama_multi_js',  $plugin_url . '/js/fotorama_main.js', array('jquery'), $version, true);
+    
+    } else if ( $mode === 'prodtest') {
+        //wp_enqueue_style('leaflet_css', $plugin_url . 'release/js/leaflet/leaflet.min.css', [], '1.8.0');
+        wp_enqueue_style('leaflet_elevation_css', $plugin_url . 'release/js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
+        // Load Scripts
+        //wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'release/js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
+        wp_enqueue_script('leaflet_elevation_bundle', $plugin_url . 'release/js/leaflet_elevation/leaflet_elevation_bundle.js', array('jquery'), $version, true);
+        //wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'release/js/fotorama_main.js', array('jquery','fotorama_bundle'), $version, true);
+    
+    } else {
+        // --- LEAFLET -------------
+        // register local Styles
+        wp_register_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
+        wp_register_style('control_fullscreen_css', $plugin_url . 'js/fullscreen/Control.FullScreen.min.css', [], '2.4.0');
+        // register local Scripts
+        wp_register_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
+        wp_register_script('leaflet_ui', $plugin_url . 'js/leaflet-ui/leaflet-ui-short.min.js', array('jquery'), '0.5.9', true);
+        wp_register_script('control_fullscreen_js', $plugin_url . 'js/fullscreen/Control.FullScreen.min.js', array('jquery'), '2.4.0', true);
+        wp_register_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery'), '0.12.0', true);
+        // --- LEAFLET -------------
 
-} else {
+        // --- LEAFLET-ELEVATION -------------
+        // register local Styles
+        wp_register_style('leaflet_elevation_css', $plugin_url . 'js/elevation/dist/leaflet-elevation.min.css', [], '2.2.6');
+        // register local Scripts - load dependencies first
+        wp_register_script('d3_js',  $plugin_url . 'js/elevation/dist/d3.min.js', array('jquery'), '7.6.1', true); 
+        wp_register_script('gpx_js',  $plugin_url . 'js/libs/gpx.min.js', array('jquery'), '1.5.1', true);
+        wp_register_script('gpxgroups_js',  $plugin_url . 'js/elevation/libs/leaflet-gpxgroup.min.js', array('jquery'), '1.5.1', true);
+        wp_register_script('togeojson_js',  $plugin_url . 'js/elevation/dist/togeojson.umd.js', array('jquery'), '5.2.2', true); 
+        wp_register_script('geom_util_js',  $plugin_url . 'js/elevation/dist/leaflet.geometryutil.min.js', array('jquery'), '0.10.1', true); 
+        wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/elevation/dist/leaflet-elevation.min.js', array('jquery'), '2.2.6', true);
+        wp_register_script('elevationClass_js',  $plugin_url . 'js/elevationClass.js', array('jquery'), '0.12.0', true);
+        // --- LEAFLET-ELEVATION -------------
 
-    // --- FOTORAMA -------------
-    // Load Styles
-    wp_enqueue_style('fotorama_css', $plugin_url . 'css/fotorama_multi.css', [], '4.6.4');
-    //wp_enqueue_style('fotorama3_css', $plugin_url . 'css/fotorama3.min.css', [], '4.6.4');
-    // Load Scripts
-    //wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '4.6.4');
-    //wp_register_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
-    //wp_register_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.12.0', true);
-    // --- FOTORAMA -------------
-    // or
-    // --- Swiper.js
-    //wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');
-    //wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper-bundle.min.js', [], '8.4.2');
-    //wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], '0.12.0');
-    //wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], '0.12.0', true);
-    wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.umd.js', '8.4.2', true);
-    // --- Swiper.js
+        // load styles
+        wp_enqueue_style ('leaflet_css');
+        wp_enqueue_style ('leaflet_elevation_css');
+        wp_enqueue_style ('control_fullscreen_css');
 
-    // --- LEAFLET -------------
-    // register local Styles
-    wp_register_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
-    wp_register_style('control_fullscreen_css', $plugin_url . 'js/fullscreen/Control.FullScreen.min.css', [], '2.4.0');
-    // register local Scripts
-    wp_register_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
-    wp_register_script('leaflet_ui', $plugin_url . 'js/leaflet-ui/leaflet-ui-short.min.js', array('jquery'), '0.5.9', true);
-    wp_register_script('control_fullscreen_js', $plugin_url . 'js/fullscreen/Control.FullScreen.min.js', array('jquery'), '2.4.0', true);
-    wp_register_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery'), '0.12.0', true);
-    // --- LEAFLET -------------
+        // load scripts
+        wp_enqueue_script('d3_js');
+        wp_enqueue_script('leaflet_js');
+        wp_enqueue_script('gpx_js');
+        wp_enqueue_script('gpxgroups_js');
+        wp_enqueue_script('togeojson_js');
+        wp_enqueue_script('geom_util_js');
+        wp_enqueue_script('leaflet_elevation_js');
+        wp_enqueue_script('leaflet_ui');
+        wp_enqueue_script('control_fullscreen_js');
+        wp_enqueue_script('zoom_master_js');
+        wp_enqueue_script('fotoramaClass_js');
+        wp_enqueue_script('leafletClass_js');
+        wp_enqueue_script('elevationClass_js');
+        wp_enqueue_script('fotorama_multi_js');	
+        
+    }
+}
 
-    // --- LEAFLET-ELEVATION -------------
-    // register local Styles
-    wp_register_style('leaflet_elevation_css', $plugin_url . 'js/elevation/dist/leaflet-elevation.min.css', [], '2.2.6');
-    // register local Scripts - load dependencies first
-    wp_register_script('d3_js',  $plugin_url . 'js/elevation/dist/d3.min.js', array('jquery'), '7.6.1', true); 
-    wp_register_script('gpx_js',  $plugin_url . 'js/libs/gpx.min.js', array('jquery'), '1.5.1', true);
-    wp_register_script('gpxgroups_js',  $plugin_url . 'js/elevation/libs/leaflet-gpxgroup.min.js', array('jquery'), '1.5.1', true);
-    wp_register_script('togeojson_js',  $plugin_url . 'js/elevation/dist/togeojson.umd.js', array('jquery'), '5.2.2', true); 
-    wp_register_script('geom_util_js',  $plugin_url . 'js/elevation/dist/leaflet.geometryutil.min.js', array('jquery'), '0.10.1', true); 
-    wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/elevation/dist/leaflet-elevation.min.js', array('jquery'), '2.2.6', true);
-    wp_register_script('elevationClass_js',  $plugin_url . 'js/elevationClass.js', array('jquery'), '0.12.0', true);
-    // --- LEAFLET-ELEVATION -------------
+function enqueue_leaflet_scripts( string $mode='production' ) {
+    $plugin_url = plugins_url('/', __FILE__);
+    $version = '0.12.0';
 
-    // --- MAIN-JS-SCRIPT -------------
-    wp_register_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduced.js', array('jquery'), '0.12.0', true);
-    // --- MAIN-JS-SCRIPT -------------
+    if ( $mode === 'production') {
+        wp_enqueue_style('leaflet_css', $plugin_url . '/js/leaflet/leaflet.min.css', [], '1.8.0');
+        wp_enqueue_script('leaflet_map_bundle', $plugin_url . '/js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
+    
+    } else if ( $mode === 'prodtest') {
+        wp_enqueue_style('leaflet_css', $plugin_url . 'release/js/leaflet/leaflet.min.css', [], '1.8.0');
+        wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'release/js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
 
-    // load styles
-    wp_enqueue_style ('leaflet_css');
-    wp_enqueue_style ('leaflet_elevation_css');
-    wp_enqueue_style ('control_fullscreen_css');
+    } else {
+        // --- LEAFLET -------------
+        wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
+        wp_enqueue_style('control_fullscreen_css', $plugin_url . 'js/fullscreen/Control.FullScreen.min.css', [], '2.4.0');
+        
+        wp_enqueue_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
+        wp_enqueue_script('leaflet_ui', $plugin_url . 'js/leaflet-ui/leaflet-ui-short.min.js', array('jquery'), '0.5.9', true);
+        wp_enqueue_script('control_fullscreen_js', $plugin_url . 'js/fullscreen/Control.FullScreen.min.js', array('jquery'), '2.4.0', true);
+        wp_enqueue_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery'), '0.12.0', true);
+        // --- LEAFLET -------------
+    }
+}
 
-    // load scripts
-    wp_enqueue_script('d3_js');
-    wp_enqueue_script('leaflet_js');
-    wp_enqueue_script('gpx_js');
-    wp_enqueue_script('gpxgroups_js');
-    wp_enqueue_script('togeojson_js');
-    wp_enqueue_script('geom_util_js');
-    wp_enqueue_script('leaflet_elevation_js');
-    wp_enqueue_script('leaflet_ui');
-    wp_enqueue_script('control_fullscreen_js');
-    wp_enqueue_script('zoom_master_js');
-    wp_enqueue_script('fotoramaClass_js');
-    wp_enqueue_script('leafletClass_js');
-    wp_enqueue_script('elevationClass_js');
-    wp_enqueue_script('fotorama_multi_js');	
+function enqueue_main_scripts( string $mode='production' ) {
+    $plugin_url = plugins_url('/', __FILE__);
+    $version = '0.12.0';
+
+    if ( $mode === 'production') {
+        wp_enqueue_script('fotorama_multi_js',  $plugin_url . '/js/fotorama_main.js', array('jquery'), $version, true);
+    
+    } else if ( $mode === 'prodtest') {
+        wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'release/js/fotorama_main.js', array('jquery'), $version, true);
+    
+    } else {
+        wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduced.js', array('jquery'), '0.12.0', true);
+    
+    }
+}
+
+function enqueue_fotorama_scripts( string $mode='production' ) {
+    $plugin_url = plugins_url('/', __FILE__);
+    $version = '0.12.0';
+
+    if ( $mode === 'production') {
+        wp_enqueue_style('fotorama_css', $plugin_url . 'js/fotorama/fotorama.min.css', [], $version	);
+        wp_enqueue_script('fotorama_bundle', $plugin_url . 'js/fotorama/fotorama_bundle.js', array('jquery'), $version, true);
+    
+    } else if ( $mode === 'prodtest') {
+        wp_enqueue_style('fotorama_css', $plugin_url . 'release/js/fotorama/fotorama.min.css', [], $version	);
+        wp_enqueue_script('fotorama_bundle', $plugin_url . 'release/js/fotorama/fotorama_bundle.js', array('jquery'), $version, true);
+    
+    } else {
+        // --- FOTORAMA -------------
+        // Load Styles
+        wp_enqueue_style('fotorama_css', $plugin_url . 'css/fotorama_multi.css', [], '4.6.4');
+        wp_enqueue_style('fotorama3_css', $plugin_url . 'css/fotorama3.min.css', [], '4.6.4');
+        // Load Scripts
+        wp_enqueue_script('fotorama3_js', $plugin_url . 'js/fotorama3.min.js', array('jquery'), '4.6.4');
+        wp_enqueue_script('zoom_master_js', $plugin_url . 'js/zoom-master/jquery.zoom.min.js', array('jquery'), '1.7.21', true);
+        wp_enqueue_script('fotoramaClass_js',  $plugin_url . 'js/fotoramaClass.js', array('jquery'), '0.12.0', true);
+        // --- FOTORAMA -------------
+    }
+}
+
+function enqueue_swiper_scripts( string $mode='production' ) {
+    $plugin_url = plugins_url('/', __FILE__);
+    $version = '0.12.0';
+
+    if ( $mode === 'production') {
+        wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper_bundle.min.js', '8.4.2', true);
+
+    } else if ( $mode === 'prodtest') {
+        // in development but test the generated js bundle
+        wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.min.js', '8.4.2', true);
+
+    } else {
+        wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');
+        wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper-bundle.min.js', [], '8.4.2');
+        wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], $version);
+        wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], $version, true);
+    }
 }

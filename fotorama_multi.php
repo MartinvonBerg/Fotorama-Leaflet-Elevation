@@ -89,6 +89,7 @@ function showmulti($attr, $content = null)
 	$thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
 	static $pageVarsForJs = [];
+	$mode = 'prodtest';
 		
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
@@ -247,26 +248,31 @@ function showmulti($attr, $content = null)
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
 		
-	// Generate html for Fotorama images for fotorama-javascript-rendering
+	// Generate html for Slider images for javascript-rendering
 	if ($imageNumber > 0) {
 		
 		if ( $slider === 'fotorama') {
 			// Generate the html-code start with the surrounding Div
 			$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
 
-			// TODO: load the scripts for fotorama here
+			// load the scripts for fotorama here
 			require_once __DIR__ . '/inc/fotoramaClass.php';
+			enqueue_fotorama_scripts( $mode );
+
 			$fClass = new FotoramaClass( $shortcodecounter, $data2, $postid);
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
+			$sw_options = [];
 
 		} elseif ( $slider === 'swiper') {
 			// Generate the html-code start with the surrounding Div
 			$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
 
-			// TODO: load the scripts for swiper here
+			// load the scripts for swiper here
 			require_once __DIR__ . '/inc/swiperClass.php';
+			enqueue_swiper_scripts( $mode );
+
 			$sw_options = ['addPermalink' => $addPermalink, 
 						   'allImgInWPLibrary' => $allImgInWPLibrary,
 						   'sw_effect'			=> $sw_effect,
@@ -294,6 +300,10 @@ function showmulti($attr, $content = null)
 
 	// show Map only with valid gpx-tracks and if so, generate the div
 	if ($showmap  == 'true') {
+		// enqueue the scripts and styles for the map.
+		\enqueue_leaflet_scripts( $mode );
+		\enqueue_elevation_scripts( $mode );
+
 		$mapid = 'map' . strval($shortcodecounter); 
 		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
 		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;aspect-ratio:{$mapaspect}\"></div>";
@@ -408,7 +418,9 @@ EOF;
 		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'],
 		'sw_options'	=> $sw_options
  	);
+	 \enqueue_main_scripts( $mode );
 	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
+	
 	
 	$shortcodecounter++;
 
