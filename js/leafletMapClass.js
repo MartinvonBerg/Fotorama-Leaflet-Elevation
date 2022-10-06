@@ -109,7 +109,7 @@ class LeafletMap {
         
         // Icons definieren
         this.myIcon1 = this.setIcon(this.pageVariables.imagepath, 'photo.png', 'shadow.png');
-        this.myIcon2 = this.setIcon(this.pageVariables.imagepath, 'pin-icon-wpt.png', 'shadow.png');
+        this.myIcon2 = this.setIcon(this.pageVariables.imagepath, 'marker-icon.png', 'marker-shadow.png', [25,41]);
         this.myIcon3 = this.setIcon(this.pageVariables.imagepath, 'active.png', 'shadow.png');
 
         //change options for maps without gpx-tracks so without elevation.
@@ -152,10 +152,10 @@ class LeafletMap {
      * @param {string} shadowpng 
      * @returns {object} icon leaflet.icon-object-type
      */
-    setIcon(path, iconpng, shadowpng) {
+    setIcon(path, iconpng, shadowpng, iconSize = [32,32]) {
         let icon = L.icon({ 
             iconUrl: path + iconpng,
-            iconSize: [32, 32],
+            iconSize: iconSize,
             iconAnchor: [16, 32],
             popupAnchor: [0, -16],
             shadowUrl: path + shadowpng,

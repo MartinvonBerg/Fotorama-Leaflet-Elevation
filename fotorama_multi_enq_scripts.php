@@ -19,6 +19,18 @@
 // WP GPX maps					handle: leaflet		  	  lokal ../leaflet.js
 // Geo Mashup					handle: leaflet		      cdnjs ../leaflet.js : getestet, scheint konfliktfrei zu arbeiten!
 
+namespace mvbplugins\fotoramamulti;
+
+add_action( 'wp_enqueue_scripts', '\mvbplugins\fotoramamulti\script_checker', 10, 0 );
+
+function script_checker() {
+
+	if ( $_POST['fm_counter'] > 0 && $_POST['gpx_counter'] === 0  ) {
+        wp_deregister_script('leaflet_elevation_bundle');
+        \wp_dequeue_script('leaflet_elevation_bundle');
+    }
+}
+
 function enqueue_elevation_scripts( string $mode='production' ) {
     $plugin_url = plugins_url('/', __FILE__);
     $version = '0.12.0';

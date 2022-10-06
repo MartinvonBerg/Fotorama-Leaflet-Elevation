@@ -68,7 +68,7 @@
             }
             
             // define map and chart
-            if ( hasMap ) {
+            if ( hasMap && (hasFotorama || hasSwiper) ) {
                 
                 // initiate the leaflet map
                 if ( pageVarsForJs[m].ngpxfiles === 0) {

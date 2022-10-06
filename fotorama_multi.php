@@ -20,18 +20,16 @@
 namespace mvbplugins\fotoramamulti;
 
 // fallback for wordpress security
-if ( ! defined('ABSPATH' )) {
-    die('Are you ok?');
-}
+if ( ! defined('ABSPATH' )) die('Are you ok?');
+
+// define global Constants  
+const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. read from WP settings. wp_options: large_size_w. Did not work
+const THUMBSDIR = 'thumbs';
 
 // init the database settings for the admin panel on first activation of the plugin. Does not overwrite
 require_once __DIR__ . '/inc/init_database.php';
 register_activation_hook( plugin_basename( __FILE__ ) ,   '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
 register_deactivation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_deactivate' );
-
-// define global Constants  
-const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_image_size_threshold : read from WP settings. read from WP settings. wp_options: large_size_w. Did not work
-const THUMBSDIR = 'thumbs';
 
 // load all functions
 require_once __DIR__ . '/inc/stateTransitions.php';
@@ -49,6 +47,7 @@ if ( is_admin() ) {
 	update_option( 'fotorama_elevation_option_name', $fotorama_elevation_options );
 	
 	// do the check for activated plugins that may conflict with leaflet.js
+	/*
 	$wp_act_pis = get_option('active_plugins');
 	$wp_act_pis = \implode(', ',$wp_act_pis);
 	$fm_act_pis = \get_option('fm_plugins_checker');
@@ -62,8 +61,9 @@ if ( is_admin() ) {
 	if ( 'true' == $fm_act_pis['show_admin_message'] ) {
 		add_action( 'all_admin_notices', '\mvbplugins\fotoramamulti\fm_error_notice' ); // all_admin_notices for multisite
 	}
+	*/
 }
-add_action( 'shutdown', '\mvbplugins\fotoramamulti\action_shutdown', 10, 1 );
+//add_action( 'shutdown', '\mvbplugins\fotoramamulti\action_shutdown', 10, 0 );
 
 // ------------------ shortcode function ------------------------------------------
 // define the shortcode to generate the image-slider with map
@@ -88,10 +88,10 @@ function showmulti($attr, $content = null)
 	$tracks = [];
 	$thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
+	static $gpxTrackCounter = 0;
 	static $pageVarsForJs = [];
-	$mode = 'prodtest';
+	$mode = 'development';
 	$sw_options = [];
-	$main_jsscript_dependencies = ['jquery'];
 		
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
@@ -258,7 +258,7 @@ function showmulti($attr, $content = null)
 		if ( $slider === 'fotorama') {
 			// load the scripts for fotorama here
 			require_once __DIR__ . '/inc/fotoramaClass.php';
-			enqueue_fotorama_scripts( $mode );
+			\mvbplugins\fotoramamulti\enqueue_fotorama_scripts( $mode );
 
 			$fClass = new FotoramaClass( $shortcodecounter, $data2, $postid);
 			$htmlstring .= $fClass->getSliderHtml( $attr);
@@ -268,7 +268,7 @@ function showmulti($attr, $content = null)
 		} elseif ( $slider === 'swiper') {
 			// load the scripts for swiper here
 			require_once __DIR__ . '/inc/swiperClass.php';
-			enqueue_swiper_scripts( $mode );
+			\mvbplugins\fotoramamulti\enqueue_swiper_scripts( $mode );
 
 			$sw_options = ['addPermalink' => $addPermalink, 
 						   'allImgInWPLibrary' => $allImgInWPLibrary,
@@ -291,14 +291,15 @@ function showmulti($attr, $content = null)
 			$fClass = null;
 
 			// load script for fslightbox. Move to if() one level above if used for fotorama also.
-			enqueue_fslightbox();
+			\mvbplugins\fotoramamulti\enqueue_fslightbox();
 		} 
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
 	if ($showmap  == 'true') {
 		// enqueue the scripts and styles for the map.
-		\enqueue_leaflet_scripts( $mode );
+		\mvbplugins\fotoramamulti\enqueue_leaflet_scripts( $mode );
+		\mvbplugins\fotoramamulti\enqueue_elevation_scripts( $mode );
 
 		$mapid = 'map' . strval($shortcodecounter); 
 		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
@@ -306,9 +307,6 @@ function showmulti($attr, $content = null)
 
 		// Custom Summary
 		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
-			$main_jsscript_dependencies = ['jquery', 'leaflet_map_bundle', 'leaflet_elevation_bundle'];
-			\enqueue_elevation_scripts( $mode );	
-
 			$htmlstring .= <<<EOF
 		<div id="elevation-div{$shortcodecounter}"></div>
 		<div id="data-summary{$shortcodecounter}" class="data-summary">
@@ -418,10 +416,13 @@ EOF;
 		'sw_options'	=> $sw_options
  	);
 	
-	\enqueue_main_scripts( $mode, $main_jsscript_dependencies);
+	\mvbplugins\fotoramamulti\enqueue_main_scripts( $mode );
 	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
+	$gpxTrackCounter += $i;
+	$_POST['fm_counter'] = $shortcodecounter;
+	$_POST['gpx_counter'] = $gpxTrackCounter;
 
 	return $htmlstring;
 }

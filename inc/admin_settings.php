@@ -6,7 +6,8 @@
  */
 
 // use this code for translation: __('string-to-translate', 'fotoramamulti'). Translate the 'string-to-translate' in your po-file
-// TODO: no admin setting for shortcaption. Add settings for swiper.
+// TODO: no admin setting for shortcaption. 
+// TODO: Add settings for swiper.
 
 namespace mvbplugins\fotoramamulti;
 
