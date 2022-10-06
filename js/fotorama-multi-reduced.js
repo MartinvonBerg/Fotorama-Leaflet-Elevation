@@ -71,7 +71,11 @@
             if ( hasMap ) {
                 
                 // initiate the leaflet map
-                allMaps[m] = new LeafletElevation(m, 'boxmap' + m );
+                if ( pageVarsForJs[m].ngpxfiles === 0) {
+                    allMaps[m] = new LeafletMap(m, 'boxmap' + m );
+                } else {
+                    allMaps[m] = new LeafletElevation(m, 'boxmap' + m );
+                }
 
                 // create the markers on the map
                 allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );

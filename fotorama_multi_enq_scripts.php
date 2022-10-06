@@ -32,12 +32,8 @@ function enqueue_elevation_scripts( string $mode='production' ) {
         //wp_enqueue_script('fotorama_multi_js',  $plugin_url . '/js/fotorama_main.js', array('jquery'), $version, true);
     
     } else if ( $mode === 'prodtest') {
-        //wp_enqueue_style('leaflet_css', $plugin_url . 'release/js/leaflet/leaflet.min.css', [], '1.8.0');
         wp_enqueue_style('leaflet_elevation_css', $plugin_url . 'release/js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
-        // Load Scripts
-        //wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'release/js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
         wp_enqueue_script('leaflet_elevation_bundle', $plugin_url . 'release/js/leaflet_elevation/leaflet_elevation_bundle.js', array('jquery'), $version, true);
-        //wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'release/js/fotorama_main.js', array('jquery','fotorama_bundle'), $version, true);
     
     } else {
         // --- LEAFLET -------------
@@ -113,18 +109,18 @@ function enqueue_leaflet_scripts( string $mode='production' ) {
     }
 }
 
-function enqueue_main_scripts( string $mode='production' ) {
+function enqueue_main_scripts( string $mode='production', array $deps=['jquery']) {
     $plugin_url = plugins_url('/', __FILE__);
     $version = '0.12.0';
 
     if ( $mode === 'production') {
-        wp_enqueue_script('fotorama_multi_js',  $plugin_url . '/js/fotorama_main.js', array('jquery'), $version, true);
+        wp_enqueue_script('fotorama_multi_js',  $plugin_url . '/js/fotorama_main.js', $deps, $version, true);
     
     } else if ( $mode === 'prodtest') {
-        wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'release/js/fotorama_main.js', array('jquery'), $version, true);
+        wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'release/js/fotorama_main.js', $deps, $version, true);
     
     } else {
-        wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduced.js', array('jquery'), '0.12.0', true);
+        wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduced.js', $deps, $version, true);
     
     }
 }

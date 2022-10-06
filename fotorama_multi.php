@@ -90,6 +90,8 @@ function showmulti($attr, $content = null)
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
 	static $pageVarsForJs = [];
 	$mode = 'prodtest';
+	$sw_options = [];
+	$main_jsscript_dependencies = ['jquery'];
 		
  	// Get Values from Admin settings page
  	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
@@ -247,14 +249,13 @@ function showmulti($attr, $content = null)
 	// --------------- HTML CODE GENERATION--------------------------------------------
 	// parse GPX-Track-Files, check if it is a file, and if so append it to the string to pass to javascript
 	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
+	// Generate the html-code start with the surrounding Div
+	$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
 		
 	// Generate html for Slider images for javascript-rendering
 	if ($imageNumber > 0) {
 		
 		if ( $slider === 'fotorama') {
-			// Generate the html-code start with the surrounding Div
-			$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
-
 			// load the scripts for fotorama here
 			require_once __DIR__ . '/inc/fotoramaClass.php';
 			enqueue_fotorama_scripts( $mode );
@@ -263,12 +264,8 @@ function showmulti($attr, $content = null)
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
-			$sw_options = [];
 
 		} elseif ( $slider === 'swiper') {
-			// Generate the html-code start with the surrounding Div
-			$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
-
 			// load the scripts for swiper here
 			require_once __DIR__ . '/inc/swiperClass.php';
 			enqueue_swiper_scripts( $mode );
@@ -293,7 +290,7 @@ function showmulti($attr, $content = null)
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
 
-			// load script for fslightbox. Move to if one level above if used for fotorama also.
+			// load script for fslightbox. Move to if() one level above if used for fotorama also.
 			enqueue_fslightbox();
 		} 
 	}
@@ -302,15 +299,17 @@ function showmulti($attr, $content = null)
 	if ($showmap  == 'true') {
 		// enqueue the scripts and styles for the map.
 		\enqueue_leaflet_scripts( $mode );
-		\enqueue_elevation_scripts( $mode );
 
 		$mapid = 'map' . strval($shortcodecounter); 
 		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
 		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;aspect-ratio:{$mapaspect}\"></div>";
+
 		// Custom Summary
 		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
-			$htmlstring .= <<<EOF
+			$main_jsscript_dependencies = ['jquery', 'leaflet_map_bundle', 'leaflet_elevation_bundle'];
+			\enqueue_elevation_scripts( $mode );	
 
+			$htmlstring .= <<<EOF
 		<div id="elevation-div{$shortcodecounter}"></div>
 		<div id="data-summary{$shortcodecounter}" class="data-summary">
 		<span class="totlen">
@@ -418,9 +417,9 @@ EOF;
 		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'],
 		'sw_options'	=> $sw_options
  	);
-	 \enqueue_main_scripts( $mode );
-	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
 	
+	\enqueue_main_scripts( $mode, $main_jsscript_dependencies);
+	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
 
