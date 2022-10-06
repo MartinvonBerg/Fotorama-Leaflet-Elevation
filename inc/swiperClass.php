@@ -166,6 +166,7 @@ final class SwiperClass
         $root = $doc->setRoot('div');
         $root->setAttribute('id', 'swiper' . $this->shortcodecounter);
         $root->setAttribute('class', 'swiper myswiper');
+        $root->setAttribute('style', 'aspect-ratio:'. $this->options['sw_aspect_ratio']);
         
         // create first level child divs with classes
         $wrapper = $root->appendElWithAttsDIV([['class', 'swiper-wrapper']]);

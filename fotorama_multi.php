@@ -90,7 +90,7 @@ function showmulti($attr, $content = null)
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
 	static $gpxTrackCounter = 0;
 	static $pageVarsForJs = [];
-	$mode = 'development';
+	$mode = 'prodtest';
 	$sw_options = [];
 		
  	// Get Values from Admin settings page
@@ -281,10 +281,11 @@ function showmulti($attr, $content = null)
 						   'sw_mousewheel'		=> $sw_mousewheel,
 						   'sw_hashnavigation'  => $sw_hashnavigation,
 						   'sw_max_zoom_ratio'	=> $sw_max_zoom_ratio,
+						   'showcaption'		=> $showcaption,
 						   'shortcaption'		=> $shortcaption,
 						   'imgpath'			=> $imgpath,
 						   'f_thumbheight'		=> $f_thumbheight,
-						   'showcaption'		=> $showcaption];
+						   'sw_aspect_ratio'	=> $ratio];
 			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options);
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
