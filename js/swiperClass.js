@@ -60,7 +60,24 @@ class SliderSwiper {
         this.thumbs = new Swiper('#thumbsSwiper'+this.number, {
             loop: true,
             spaceBetween: 2,
-            slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view, // value for slides per view
+            //slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view, // value for slides per view
+            breakpoints: {
+                200: {
+                    slidesPerView: 3,
+                },
+                480: {
+                    slidesPerView: 4,
+                },
+                640: {
+                    slidesPerView: 5,
+                },
+                768: {
+                    slidesPerView: 6,
+                },
+                1024: {
+                    slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view,
+                }
+            },
             freeMode: false,
             watchSlidesProgress: true
         });

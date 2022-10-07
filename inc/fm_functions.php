@@ -36,7 +36,7 @@ function enqueue_fslightbox()
 		$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;";
 		// this option increases the load time with many images.
 		//$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;fsLightboxInstances['1'].props.showThumbsOnMount = true;";
-		\wp_add_inline_script('fslightbox', $jsFullscreen); 
+		//\wp_add_inline_script('fslightbox', $jsFullscreen); 
 	}
 }
 

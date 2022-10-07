@@ -15,8 +15,6 @@
  * @version    0.12.0
  */
 
-// TODO: same height for all slides!!!!
-
 namespace mvbplugins\fotoramamulti;
 
 use DOMDocument;
@@ -170,6 +168,24 @@ final class SwiperClass
         
         // create first level child divs with classes
         $wrapper = $root->appendElWithAttsDIV([['class', 'swiper-wrapper']]);
+
+        // video trial  
+        $videoSlide = $doc->createElement('div','');
+        $videoSlide->setAttribute('class', 'swiper-slide');
+        $video = $doc->createElement('video','');
+        $video->setAttribute('class', 'swiper-lazy');
+        $video->setAttribute('controls','');
+        $video->setAttribute('preload','none'); 
+        $video->setAttribute('controlsList','nodownload');
+        $video->setAttribute('oncontextmenu','return false');
+        $video->setAttribute('poster','https://media.istockphoto.com/photos/humpback-whales-picture-id152034630?s=612x612'); // imageData all like image incl. metadata
+        // TODO: stop play on swipe and start again if was playing before
+        $videoSource =$doc->createElement('source','');
+        $videoSource->setAttribute('type', 'video/mp4'); // imageData
+        $videoSource->setAttribute('src', 'https://ak4.picdn.net/shutterstock/videos/1025732684/preview/stock-footage-two-male-colleagues-employees-cooperating-in-office-talking-working-together-at-workplace-smiling.mp4');
+        $video->appendChild($videoSource);
+        $videoSlide->appendChild($video);
+        $wrapper->appendChild($videoSlide);
 
         // create wrapper for thumbnails
         $thumbsWrapper = $doc->createElement('div','');
