@@ -60,7 +60,8 @@ final class SwiperClassTest extends TestCase {
         );
 
         expect( 'get_option')
-            ->once()
+            //->once()
+            ->zeroOrMoreTimes()
             ->with('fotorama_elevation_option_name')
             ->andReturn( $data );
 
@@ -115,7 +116,24 @@ final class SwiperClassTest extends TestCase {
         $data2[0]['title'] = 'notitle';
         $data2[0]['alt'] = ''; 
 
-        $tested = new mvbplugins\fotoramamulti\SwiperClass(0, $data2, true);
+        $sw_options = [ 'addPermalink' => 'false',
+                        'allImgInWPLibrary' => 'false',
+                        'sw_effect'			=> 'flip',
+                        'sw_zoom'			=> 'true',
+                        'sw_fslightbox'		=> 'true',
+                        'sw_pagination'		=> 'false',
+                        'sw_slides_per_view' => 6,
+                        'sw_transition_duration'=> 300,
+                        'sw_mousewheel'		=> 'true',
+                        'sw_hashnavigation'  => 'true',
+                        'sw_max_zoom_ratio'	=> 3,
+                        'showcaption'		=> 'true',
+                        'shortcaption'		=> 'true',
+                        'imgpath'			=> 'test_imgpath',
+                        'f_thumbheight'		=> 100,
+                        'sw_aspect_ratio'	=> 1.5];
+
+        $tested = new mvbplugins\fotoramamulti\SwiperClass(0, $data2, $sw_options);
        
         expect('gpxview_get_upload_dir')
             -> andReturn('gpx');
@@ -124,7 +142,63 @@ final class SwiperClassTest extends TestCase {
         
         Functions\when('is_ssl')->justReturn(true);
         Functions\when('__')->returnArg();
+        Functions\when('current_user_can')->justReturn(false);
+        Functions\when('wp_get_attachment_image_srcset')->justReturn(false);
+       
+        $r2 = '<div id="swiper0" class="swiper myswiper"><div class="swiper-wrapper"><div class="swiper-slide"><img loading="lazy" class="swiper-lazy" alt="Galeriebild 1" src="wp-content/upload/Galleries/testfile.jpg"><div class="swiper-slide-title">1 / 1: Galeriebild 1</div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><div class="swiper-pagination"></div><!--------- end of swiper -----------></div>';
+        
+        $html=$tested->getSliderHtml( [] );
+        //$this->assertEquals($html, $r2);
 
+        // print the result to console
+        $h2 = $this->tidyHTML(PHP_EOL . $html . PHP_EOL);
+        echo PHP_EOL;
+        echo $h2;
+    }
+
+    public function testSwiperClassOneVideo() 
+    {          
+        $data2 = [];
+        $data2[0]['id'] = 0;
+        $data2[0]['lat'] = 12;
+        $data2[0]['lon'] = 48;
+        $data2[0]['file'] = 'testvideo';
+        $data2[0]['wpid'] = 9999;
+        $data2[0]['thumbavail'] = false;
+        $data2[0]['thumbinsubdir'] = false;
+        $data2[0]['thumbs'] = '';
+        $data2[0]['extension'] = '.wmv';
+        $data2[0]['permalink'] = '';
+        $data2[0]['title'] = 'video_title';
+        $data2[0]['alt'] = 'pretty nice video'; 
+
+        $sw_options = [ 'addPermalink' => 'false',
+                        'allImgInWPLibrary' => 'false',
+                        'sw_effect'			=> 'flip',
+                        'sw_zoom'			=> 'true',
+                        'sw_fslightbox'		=> 'true',
+                        'sw_pagination'		=> 'false',
+                        'sw_slides_per_view' => 6,
+                        'sw_transition_duration'=> 300,
+                        'sw_mousewheel'		=> 'true',
+                        'sw_hashnavigation'  => 'false',
+                        'sw_max_zoom_ratio'	=> 3,
+                        'showcaption'		=> 'true',
+                        'shortcaption'		=> 'true',
+                        'imgpath'			=> 'test_imgpath',
+                        'f_thumbheight'		=> 100,
+                        'sw_aspect_ratio'	=> 1.5];
+
+        $tested = new mvbplugins\fotoramamulti\SwiperClass(0, $data2, $sw_options);
+       
+        expect('gpxview_get_upload_dir')
+            -> andReturn('gpx');
+        expect('wp_get_upload_dir')
+            -> andReturn( ['basedir' => 'upload', 'baseurl' => 'wp-content/upload']);
+        
+        Functions\when('is_ssl')->justReturn(true);
+        Functions\when('__')->returnArg();
+        Functions\when('current_user_can')->justReturn(false);
         Functions\when('wp_get_attachment_image_srcset')->justReturn(false);
        
         $r2 = '<div id="swiper0" class="swiper myswiper"><div class="swiper-wrapper"><div class="swiper-slide"><img loading="lazy" class="swiper-lazy" alt="Galeriebild 1" src="wp-content/upload/Galleries/testfile.jpg"><div class="swiper-slide-title">1 / 1: Galeriebild 1</div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><div class="swiper-pagination"></div><!--------- end of swiper -----------></div>';

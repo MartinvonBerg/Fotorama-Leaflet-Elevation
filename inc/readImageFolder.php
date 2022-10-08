@@ -71,7 +71,7 @@ final class ReadImageFolder
      * @param string $gps whether gps is required or not
      * @param string $ignoresort whether to ignore the sorting or not
      */
-    public function __construct(string $folder, string $dir, string $url, string $gps, string $ignoresort)
+    public function __construct(string $folder, string $dir, string $url, string $gps, string $ignoresort, string $slider='fotorama')
     {
         $this->imageNumber = 0;
         $this->imagepath = $folder;
@@ -79,7 +79,13 @@ final class ReadImageFolder
 
         $files = glob($this->imagepath . '/*.*');
         if ($files === false) $files = [];
-        $sorted = preg_grep('/\.(jpe?g|webp)$/i', $files);
+
+        if ($slider==='fotorama') {
+            $sorted = preg_grep('/\.(jpe?g|webp)$/i', $files);
+        } else if ($slider==='swiper') {
+            $sorted = preg_grep('/\.(jpe?g|webp|mp4|m4v|webm|ogv|wmv|flv)$/i', $files);
+        }
+
         if ($sorted !== false) $this->allImageFiles = $sorted;
 
         // settings for the thumbnail checking
@@ -182,8 +188,10 @@ final class ReadImageFolder
             // All other additions to the filename will be treated as full scaled image-file that will be shown in the image-slider
             $ext = '.' . pathinfo($file, PATHINFO_EXTENSION);
             $jpgfile = basename($file, $ext);
-            $isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled');
-
+            $vidThumb = ['.jpg','.jpeg','.webp'];
+            $vidext = ['.mp4', '.m4v', '.webm', '.ogv', '.wmv', '.flv'];
+            $isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled') || stripos($jpgfile, 'poster'); 
+            // TODO: find thumb  for video and add its data to the array.
             if ( ! $isthumb ) {
 
                 $thumbcheck = '-' . $this->thumbwidth . 'x' . $this->thumbheight . $ext;
@@ -198,6 +206,14 @@ final class ReadImageFolder
                 if (('.jpg' === $ext || '.jpeg' === $ext) && ! $thumbavail) {
                     $thumbcheck = '-' . $this->thumbwidth . 'x' . $this->thumbheight . '.webp';
                     [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, '.webp');
+                // search for video thumbs    
+                //} else if (($ext === '.mp4') || ($ext === '.m4v') || ($ext === '.webm') || ($ext === '.ogv') || ($ext === '.wmv') || ($ext === '.flv') ) {
+                } else if ( \in_array( \strtolower( $ext), $vidext, true) ) {
+                    foreach ($vidThumb as $vidext) {
+                        [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, 'thumb', $vidext);
+                        if ( $thumbavail) break;
+                    }
+                    
                 }
 
                 // check conditionally whether thumbnails are available in the sub-folder ./thumbs and if, how they are named

@@ -184,7 +184,7 @@ function showmulti($attr, $content = null)
 	
 	// Loop through all webp- and jpg-files in the given folder, and get the required data
 	require_once __DIR__ . '/inc/readImageFolder.php';
-	$folder = new ReadImageFolder( $imagepath, $thumbsdir, $imageurl, $requiregps, $ignoresort );
+	$folder = new ReadImageFolder( $imagepath, $thumbsdir, $imageurl, $requiregps, $ignoresort, $slider );
 	$data2 = $folder->getImagesForGallery();
 	$imageNumber = $folder->getImageNumber();
 	$allImgInWPLibrary = $folder->areAllImgInWPLibrary();
@@ -197,7 +197,7 @@ function showmulti($attr, $content = null)
 		$csort = array_column($data2, 'sort'); // $customsort
 		$arraysum = array_sum($csort);
 	
-		if ( ($rowsum != $arraysum) or ('true' == $ignoresort) ) {
+		if ( ($rowsum != $arraysum) or ('true' === $ignoresort) ) {
 			$csort = array_column($data2, 'datesort');
 		}
 		// sort images asending with date-taken
@@ -285,8 +285,10 @@ function showmulti($attr, $content = null)
 						   'shortcaption'		=> $shortcaption,
 						   'imgpath'			=> $imgpath,
 						   'f_thumbheight'		=> $f_thumbheight,
+						   'f_thumbwidth'		=> $f_thumbwidth,
 						   'sw_aspect_ratio'	=> $ratio];
-			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options);
+			
+						   $fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options);
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;

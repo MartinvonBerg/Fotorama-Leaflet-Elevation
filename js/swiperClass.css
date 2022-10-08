@@ -33,6 +33,7 @@
 
 .swiper-slide video {
   width: 100%;
+  height: inherit;
   cursor: default;
 }
 

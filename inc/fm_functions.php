@@ -402,6 +402,56 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		} else {
 			$data['exposure_time'] = '--';
 		}
+	} else if (($ext === '.mp4') || ($ext === '.m4v') || ($ext === '.webm') || ($ext === '.ogv') || ($ext === '.wmv') || ($ext === '.flv')) {
+		// check if poster file is available.
+		$pext = '.' . pathinfo($file, PATHINFO_EXTENSION);
+		$posterBase = \str_replace($pext,'',$file) . '-poster.';
+		$hasPoster = false;
+
+		if (\is_file( $posterBase . 'jpg')) {
+			$pfile = $posterBase . 'jpg';
+			$pdata = getJpgMetadata( $pfile );
+			$hasPoster = true;
+		} else if (\is_file( $posterBase . 'jpeg')) {
+			$pfile = $posterBase . 'jpeg';
+			$pdata = getJpgMetadata( $pfile );
+			$hasPoster = true;
+		} else if (\is_file( $posterBase . 'webp')) {
+			$pfile = $posterBase . 'webp';
+			$pdata = getWebpMetadata( $pfile );
+			$hasPoster = true;
+		}
+		if ( $hasPoster) {
+			$data['poster'] =\basename($pfile);
+			$data = array_merge($data, $pdata);
+		} else {
+			$data['alt'] = 'slide showing a video';
+			$data['descr'] = 'slide showing a video';
+			$data['title'] = $title;
+		}
+
+		if ( $hasPoster && key_exists('GPS', $pdata) ) {
+			$data['GPS'] = $pdata['GPS'];
+		}
+
+		// get metadate from video file
+		require_once( ABSPATH . 'wp-admin/includes/media.php' );
+		$vidmeta = \wp_read_video_metadata($file);
+		
+		// get the dates
+		$data['datesort'] = '';
+		$dateFormat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		if (\key_exists('created_timestamp', $vidmeta)) {
+			$data['created_timestamp'] = $vidmeta['created_timestamp'];
+			$date = wp_date( $dateFormat, $vidmeta['created_timestamp'] );
+			$data['DateTimeOriginal'] = $date;
+		} else if ( ! $hasPoster) {
+			$date = wp_date( $dateFormat, \filemtime($file) );
+			$data['DateTimeOriginal'] = $date;
+			$data['created_timestamp'] = $date;
+		} else if ( $hasPoster) {
+			$data['DateTimeOriginal'] = $pdata['DateTimeOriginal'];
+		}
 	}
 
 	// Post-Processing of $data for DateTimeOriginal
@@ -453,14 +503,14 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 	// WEBP: alt and description are empty for images not in Media-Catalog.
 
 	// no-title -> caption -> description -> alt -> notitle.
-	if ( $data['title'] === 'notitle' ) {
+	if ( \key_exists('title', $data) && $data['title'] === 'notitle' ) {
 		if ( ! empty( $data['caption'] ) ) $data['title'] = $data['caption'];
 		elseif ( ! empty( $data['descr'] ) ) $data['title'] = $data['descr'];
 		elseif ( ! empty( $data['alt'] ) ) $data['title'] = $data['alt'];	
 	}
 
 	// no-alt -> title -> caption -> description -> ''
-	if ( $data['alt'] === '' ) {
+	if ( \key_exists('alt', $data) && $data['alt'] === '' ) {
 		if ( ! empty( $data['descr'] ) ) $data['alt'] = $data['descr'];
 		elseif ( ! empty( $data['caption'] ) ) $data['alt'] = $data['caption'];
 		elseif ( $data['title'] !== 'notitle') $data['alt'] = $data['title'];

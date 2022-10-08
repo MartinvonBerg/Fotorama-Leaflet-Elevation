@@ -193,6 +193,13 @@ class SliderSwiper {
      #listenEventSliderShowend() {
         // create Event on swiper change
         this.swiper.on('slideChange', function (event) {
+            // stop all videos
+            // https://stackoverflow.com/questions/72744073/stop-and-start-autoplay-in-swiper-container-based-on-the-video-play-and-pause-ev
+            let videos = document.querySelectorAll('video');
+            Array.prototype.forEach.call(videos, function(video){
+                video.pause();
+            });
+
             // use realIndex and mind swiper starts with index = 0
             let nr = event.realIndex + 1;
             let m = parseInt(event.el.id.replace('swiper',''));
