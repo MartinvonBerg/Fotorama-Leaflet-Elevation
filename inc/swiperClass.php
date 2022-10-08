@@ -313,15 +313,16 @@ final class SwiperClass
 
             if ( $this->imgnr===1 && $this->shortcodecounter===0 && \current_user_can('edit_posts') ) {
                 // generate the srcset and write to a custom field
-                // TODO: test for video
                 $postid = \get_the_ID();
                 \delete_post_meta($postid, 'fm_header_link');
 
                 if ( $data['wpid']>0 ) {
-                    $hrefsrc = "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}";
                     $srcset = wp_get_attachment_image_srcset($data['wpid']);
-                    $args = '<link rel="preload" as="image" href="' . $hrefsrc . '" imagesrcset="' . $srcset . '" ';
-                    update_post_meta( $postid,'fm_header_link', $args);
+                    if ( $srcset !== false) {
+                        $hrefsrc = "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}";
+                        $args = '<link rel="preload" as="image" href="' . $hrefsrc . '" imagesrcset="' . $srcset . '" ';
+                        update_post_meta( $postid,'fm_header_link', $args);
+                    }
                 }
             }
 
@@ -334,7 +335,7 @@ final class SwiperClass
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
             // $up_url, $up_dir, $thumbsdir
-            // TODO: test for video
+            // Mind: the srcset for video is wrong. It contains the video as image with big-image-size. But is not used for Video.
 			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $this->options['imgpath'], $thumbsdir );
 			$phpimgdata[$this->imgnr-1]['id'] = $this->imgnr;
 			$phpimgdata[$this->imgnr-1]['title'] = $alttext; 

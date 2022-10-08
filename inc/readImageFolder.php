@@ -191,7 +191,7 @@ final class ReadImageFolder
             $vidThumb = ['.jpg','.jpeg','.webp'];
             $vidext = ['.mp4', '.m4v', '.webm', '.ogv', '.wmv', '.flv'];
             $isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled') || stripos($jpgfile, 'poster'); 
-            // TODO: find thumb  for video and add its data to the array.
+            
             if ( ! $isthumb ) {
 
                 $thumbcheck = '-' . $this->thumbwidth . 'x' . $this->thumbheight . $ext;

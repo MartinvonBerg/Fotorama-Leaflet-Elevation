@@ -471,11 +471,11 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		$meta = wp_get_attachment_metadata($wpid);
 
 		// Sonderbehandlung wenn tags im jpg verfügbar sind
-		$wptags = $meta["image_meta"]["keywords"]; 
+		\key_exists('image_meta', $meta) ? $wptags = $meta["image_meta"]["keywords"] : $wptags = ''; 
 		$tags = is_array($wptags) ? $wptags : '';
 		$description = $wpmediadata["post_content"] ?? ''; // 'Beschreibung' in the Media-Catalog, means description
 		
-		$title = $meta["image_meta"]["title"];
+		\key_exists('image_meta', $meta) ? $title = $meta["image_meta"]["title"] : null;
 		$wptitle = $wpmediadata['post_title'];
 		$wptitle = \str_replace( $ext, '', $wptitle);
 		if ( $wptitle != basename($file, $ext) ) {
