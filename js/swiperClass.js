@@ -18,6 +18,7 @@ import 'swiper/css/thumbs';
 import 'swiper/css/zoom';
 */
 import "./swiperClass.css";
+export {SliderSwiper};
 
 class SliderSwiper {
         
@@ -238,5 +239,3 @@ class SliderSwiper {
             event.el.dispatchEvent(changed)},500);
     }
 }
-
-export {SliderSwiper};

@@ -15,6 +15,15 @@
  * @version    0.12.0
  */
 
+// TODO: fslightbox steuert im Vollbild auch den Swiper an?
+// TODO: mehrere Videoquellen berücksichtigen für media größen? 
+// TODO: slider overlay mit file info?
+// webpack environment umschaltung: geht nicht import muss auf top-level sein, daher nicht in if-else-
+// TODO: testen auf local WP 6.0 und bei webgo 
+// TODO: Demo Seite für Video erstellen
+// TODO: doku machen und release machen
+//
+
 namespace mvbplugins\fotoramamulti;
 
 use DOMDocument;
@@ -248,6 +257,7 @@ final class SwiperClass
         //thumbnail
         $thumbEl = $doc->createElement('div','');
         $thumbEl->setAttribute('class', 'swiper-slide');
+        $thumbEl->setAttribute('title', $data['title']);
         $thumbEl->setAttribute('style', 'height:'. $this->options['f_thumbheight'].'px');
         //$thumbEl->setAttribute('style', 'width:'. $this->options['f_thumbwidth'].'px');
 
