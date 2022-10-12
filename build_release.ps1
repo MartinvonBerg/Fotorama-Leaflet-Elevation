@@ -119,6 +119,9 @@ $path = ".\release"
 $path = "$($path)\leaflet_map_tiles"
 robocopy .\leaflet_map_tiles $path *.* /NFL /NDL /NJH /NJS
 
+# create swiper bundle
+npx webpack --config .\webpack.swiper.js
+
 # Finally write a warning that CSS-Files should have been minified before
 Write-Warning "Hast Du die CSS-Files minimiert?"
 Write-Warning "Nun den Inhalt vom realease-Ordner zippen als fotorama_multi.zip. Fertig"

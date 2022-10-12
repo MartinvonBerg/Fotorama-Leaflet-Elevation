@@ -25,11 +25,11 @@ module.exports = [
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
+        type: 'asset/resource', // see: https://stackoverflow.com/questions/67186653/webpack-loads-wrong-images-to-dist-directory
         loader: 'file-loader',
         options: {
               name: '[path][name].[ext]',
-              emitFile: false,
+              emitFile: true,
             },
       },
     ],

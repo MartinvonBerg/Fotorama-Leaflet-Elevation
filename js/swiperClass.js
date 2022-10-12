@@ -1,7 +1,7 @@
 // import Swiper JS
 //import Swiper from 'swiper/bundle'; // imports the complete bundle.
 // The following module loading reduces bundle size from 47.8 kB to 38.2 kBytes.
-import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs} from 'swiper';
+import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard} from 'swiper';
 
 // import Swiper styles
 import 'swiper/css/bundle';
@@ -86,7 +86,7 @@ class SliderSwiper {
 
         this.sw_options = {
             // Default parameters
-            modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs],
+            modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard],
             lazy: {
                 enabled:true,
                 checkInView:true,
@@ -100,7 +100,7 @@ class SliderSwiper {
             
             keyboard: {
                 enabled: this.#pageVariables.sw_options.sw_keyboard === 'true', 
-                onlyInViewport: true,
+                onlyInViewport: false,
             },
             /*
             autoplay: {
