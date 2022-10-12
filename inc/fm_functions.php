@@ -33,7 +33,7 @@ function enqueue_fslightbox()
 		}
 
 		// pass option to the js-script to switch fullscreen of browser off, when lightbox is closed.
-		$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;";
+		//$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;";
 		// this option increases the load time with many images.
 		//$jsFullscreen = "fsLightboxInstances['1'].props.exitFullscreenOnClose = true;fsLightboxInstances['1'].props.showThumbsOnMount = true;";
 		//\wp_add_inline_script('fslightbox', $jsFullscreen); 
@@ -379,6 +379,7 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 	// read exif from file independent if image is in WP database
 	if ( ('.jpg' == $ext) || ('.jpeg' == $ext) ) {
 		$data = getJpgMetadata( $file );
+		$data['type'] = 'image';
 
 	} elseif ( '.webp' == $ext) {
 		// Pre-define values that may not be in the webp
@@ -391,6 +392,7 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		$data['descr'] = '';
 		$data['title'] = $title;
 		$data['camera'] = '---';
+		$data['type'] = 'image';
 
 		$additionaldata = getWebpMetadata( $file );
 		if ( ! empty($additionaldata) ) {
@@ -402,11 +404,13 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		} else {
 			$data['exposure_time'] = '--';
 		}
+
 	} else if (($ext === '.mp4') || ($ext === '.m4v') || ($ext === '.webm') || ($ext === '.ogv') || ($ext === '.wmv') || ($ext === '.flv')) {
 		// check if poster file is available.
 		$pext = '.' . pathinfo($file, PATHINFO_EXTENSION);
 		$posterBase = \str_replace($pext,'',$file) . '-poster.';
 		$hasPoster = false;
+		$data['type'] = 'video';
 
 		if (\is_file( $posterBase . 'jpg')) {
 			$pfile = $posterBase . 'jpg';
@@ -425,8 +429,8 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 			$data['poster'] =\basename($pfile);
 			$data = array_merge($data, $pdata);
 		} else {
-			$data['alt'] = 'slide showing a video';
-			$data['descr'] = 'slide showing a video';
+			$data['alt'] = '';
+			$data['descr'] = '';
 			$data['title'] = $title;
 		}
 
@@ -509,7 +513,7 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		elseif ( ! empty( $data['alt'] ) ) $data['title'] = $data['alt'];	
 	}
 
-	// no-alt -> title -> caption -> description -> ''
+	// no-alt -> description -> caption -> title
 	if ( \key_exists('alt', $data) && $data['alt'] === '' ) {
 		if ( ! empty( $data['descr'] ) ) $data['alt'] = $data['descr'];
 		elseif ( ! empty( $data['caption'] ) ) $data['alt'] = $data['caption'];

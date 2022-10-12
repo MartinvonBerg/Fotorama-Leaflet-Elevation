@@ -15,10 +15,6 @@
  * @version    0.12.0
  */
 
-// TODO: fslightbox steuert im Vollbild auch den Swiper an?
-// TODO: mehrere Videoquellen berücksichtigen für media größen? 
-// TODO: slider overlay mit file info?
-// webpack environment umschaltung: geht nicht import muss auf top-level sein, daher nicht in if-else-
 // TODO: testen auf local WP 6.0 und bei webgo 
 // TODO: Demo Seite für Video erstellen
 // TODO: doku machen und release machen
@@ -192,34 +188,6 @@ final class SwiperClass
     }
 
     /**
-     * get the first part of the mime type from file extension.
-     *
-     * @param  string $ext file extension as 'jpg' or '.jpg'
-     * @return false | string the first part of the mime type as string or false if not found.
-     */
-    private function getMimeType ( string $ext ) {
-        $ext = \str_replace('.','',$ext);
-        $mime = $this->mime_type($ext);
-
-        if ( $mime !== false) {
-            $mime = explode('/',$mime)[0];
-            return $mime;
-        } 
-        return false;
-        /*
-        if ( ($ext === 'jpg') || ($ext === 'jpeg') || ($ext === 'webp') ) 
-        { 
-            return 'image'; 
-        }
-        else if (($ext === 'mp4') || ($ext === 'm4v') || ($ext === 'webm') || ($ext === 'ogv') || ($ext === 'wmv') || ($ext === 'flv')) 
-        { 
-            return 'video';
-        }
-        else return false;
-        */
-    }
-
-    /**
      * Generate the HTML as DOMElements for the Video Slide
      *
      * @param  DOMDocument $doc the overall DOMDocument 
@@ -233,7 +201,9 @@ final class SwiperClass
         // video slide  
         $videoSlide = $doc->createElement('div','');
         $videoSlide->setAttribute('class', 'swiper-slide');
+
         $this->options['sw_hashnavigation']==='true' ? $videoSlide->setAttribute('data-hash', 'swiper' . $this->shortcodecounter . '/'. $data['file']) : null;
+
         $video = $doc->createElement('video','Your browser does not support the video tag.');
         $video->setAttribute('class', 'swiper-lazy');
         $video->setAttribute('controls',''); 
@@ -253,6 +223,26 @@ final class SwiperClass
         $videoSource->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
         $video->appendChild($videoSource);
         $videoSlide->appendChild($video);
+
+        // add the button to open fslightbox
+        if ( $this->fslightbox ) {
+            $lightbox=$doc->createElement('a');
+            $lightbox->setAttribute('data-fslightbox','swiper' . $this->shortcodecounter);
+            $lightbox->setAttribute('data-type','video');
+            //$lightbox->setAttribute('data-caption', $data['title']);
+            $lightbox->setAttribute('href',"{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
+            $lightbox->setAttribute('aria-label','Open fullscreen lightbox with current image');
+            $lbdiv=$doc->createElement('div');
+            $lbdiv->setAttribute('class', 'button-fslightbox');
+            $lightbox->appendChild($lbdiv);
+            $videoSlide->appendChild($lightbox);
+        }
+
+        if ( $this->options['showcaption'] === 'true') {
+            $videoCaption=$doc->createElement('div', $data['title']);
+            $videoCaption->setAttribute('class','swiper-video-caption');
+            $videoSlide->appendChild($videoCaption);
+        }
 
         //thumbnail
         $thumbEl = $doc->createElement('div','');
@@ -337,9 +327,11 @@ final class SwiperClass
             }
 
             // set the alt-tag and the title for SEO
-			if ( 'notitle' === $data['title'] ) {
+			if ( $data['title'] === 'notitle' && $data['type'] === 'image' ) {
 				$data['title'] = __('Galeriebild') . ' '. \strval( $this->imgnr );
-			}
+			} if ( $data['title'] === 'notitle' && $data['type'] === 'video' ) {
+                $data['title'] = __('Video') . ' '. \strval( $this->imgnr );
+            }
 			$alttext = $data['alt'] !== '' ? $data['alt'] : $data['title'];
 
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
@@ -354,7 +346,7 @@ final class SwiperClass
 			$phpimgdata[$this->imgnr-1]['permalink'] = $data['permalink'] ?? '';
 			
 			// --------------- Proceed with HTML -------------------
-            if ( $this->getMimeType($data['extension'])==='image' ) 
+            if ( $data['type']==='image' ) 
             {
                 // generate the caption for html and javascript
                 if ( $this->options['shortcaption'] === 'false') {
@@ -414,7 +406,7 @@ final class SwiperClass
                 // add the button to open fslightbox
                 if ( $this->fslightbox ) {
                     $lightbox=$slide->appendElement('a');
-                    $lightbox->setAttribute('data-fslightbox','1');
+                    $lightbox->setAttribute('data-fslightbox', 'swiper' . $this->shortcodecounter);
                     $lightbox->setAttribute('data-type','image');
                     $lightbox->setAttribute('data-caption', $alttext);
                     $lightbox->setAttribute('href',"{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
@@ -444,7 +436,7 @@ final class SwiperClass
                     }
                 }
             // end HTML for image
-            } else if ($this->getMimeType($data['extension'])==='video') {
+            } else if ($data['type']==='video') {
                 [$vid, $thumb] = $this->genVideoSlide($doc, $data, $up_url, $thumbsdir);
                 $wrapper->appendChild($vid);
                 $inner1->appendChild($thumb);

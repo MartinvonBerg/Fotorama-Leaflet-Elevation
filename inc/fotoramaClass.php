@@ -158,14 +158,20 @@ EOF;
         // loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($this->imageData as $data) {
 
-            if ( $this->imgnr===1 && $this->shortcodecounter === 0 && \current_user_can('edit_posts')) {
+            // <link rel="preload" as="image" href="wolf.jpg" imagesrcset="wolf_400px.jpg 400w, wolf_800px.jpg 800w, wolf_1600px.jpg 1600w" imagesizes="50vw">
+            if ( $this->imgnr===1 && $this->shortcodecounter===0 && \current_user_can('edit_posts') ) {
                 // generate the srcset and write to a custom field
-                // <link rel="preload" as="image" href="wolf.jpg" imagesrcset="wolf_400px.jpg 400w, wolf_800px.jpg 800w, wolf_1600px.jpg 1600w" imagesizes="50vw">
-                $hrefsrc = "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}";
-                $srcset = wp_get_attachment_image_srcset($data['wpid']);
-                $args = '<link rel="preload" as="image" href="' . $hrefsrc . '" imagesrcset="' . $srcset . '" ';
-                //
-                update_post_meta( $this->postid,'fm_header_link', $args);
+                $postid = \get_the_ID();
+                \delete_post_meta($postid, 'fm_header_link');
+
+                if ( $data['wpid']>0 ) {
+                    $srcset = wp_get_attachment_image_srcset($data['wpid']);
+                    if ( $srcset !== false) {
+                        $hrefsrc = "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}";
+                        $args = '<link rel="preload" as="image" href="' . $hrefsrc . '" imagesrcset="' . $srcset . '" ';
+                        update_post_meta( $postid,'fm_header_link', $args);
+                    }
+                }
             }
 
 			// set the alt-tag and the title for SEO

@@ -48,7 +48,9 @@
             } else if ( hasSwiper ) {
                 sliderSel = 'swiper';
                 // define the Slider class. This class has to be enqued (loaded) before this function.
+                if ( numberOfBoxes > 1 ) { pageVarsForJs[m].sw_options.sw_keyboard = 'false';}
                 allSliders[m] = new window.A.SliderSwiper(m, sliderSel + m );
+                //allSliders[m] = new SliderSwiper(m, sliderSel + m );
                 allSliders[m].defSlider();
 
             } else {

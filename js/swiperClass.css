@@ -66,6 +66,20 @@
 
 .swiper-slide-title p {
   margin: 0px;
+  font-size: smaller;
+}
+
+@media screen and (max-width: 480px) {
+  .swiper-slide-title p {
+    font-size: small;
+  }
+}
+
+.swiper-video-caption {
+  position: absolute;
+  bottom: 0%;
+  color: white;
+  font-size: small;
 }
 
 .myswiper {
