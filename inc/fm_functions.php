@@ -221,7 +221,7 @@ function get_scripts_styles() :array
     $result['scripts'] = [];
     $result['styles'] = [];
 
-    // Print all loaded Scripts
+    // Get all loaded Scripts
     global $wp_scripts;
 	if ( 'array' == gettype( $wp_scripts) || 'object' == gettype( $wp_scripts) ) {
 		foreach( $wp_scripts->queue as $script ) {
@@ -229,7 +229,7 @@ function get_scripts_styles() :array
 		}
 	}
 
-    // Print all loaded Styles (CSS)
+    // Get all loaded Styles (CSS)
     global $wp_styles;
 	if ( 'array' == gettype( $wp_styles) || 'object' == gettype( $wp_styles) ) {
 		foreach( $wp_styles->queue as $style ) {

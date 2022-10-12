@@ -21,10 +21,17 @@
 
 namespace mvbplugins\fotoramamulti;
 
-add_action( 'wp_enqueue_scripts', '\mvbplugins\fotoramamulti\script_checker', 10, 0 );
+add_action( 'wp_enqueue_scripts', '\mvbplugins\fotoramamulti\correct_enqueued_scripts', 10, 0 );
 
-function script_checker() {
+function correct_enqueued_scripts() {
+    // make sure that the main script is loaded at the end. Better solve this with webpack!
+    $registered = $GLOBALS['wp_scripts']->queue;
+    $key = \array_search('fotorama_multi_js',$registered);
+    unset($registered[$key]); 
+    \array_push($registered,'fotorama_multi_js');
+    $GLOBALS['wp_scripts']->queue = $registered;
 
+    // remove leaflet_elevation_bundle if there is no gpx-file included on the whole page
 	if ( $_POST['fm_counter'] > 0 && $_POST['gpx_counter'] === 0  ) {
         wp_deregister_script('leaflet_elevation_bundle');
         \wp_dequeue_script('leaflet_elevation_bundle');
@@ -121,7 +128,7 @@ function enqueue_leaflet_scripts( string $mode='production' ) {
     }
 }
 
-function enqueue_main_scripts( string $mode='production', array $deps=['jquery']) {
+function enqueue_main_scripts( string $mode='production', array $deps=['jquery'] ) {
     $plugin_url = plugins_url('/', __FILE__);
     $version = '0.12.0';
 
@@ -167,11 +174,11 @@ function enqueue_swiper_scripts( string $mode='production' ) {
     $version = '0.12.0';
 
     if ( $mode === 'production') {
-        wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper_bundle.min.js', '8.4.2', true);
+        wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper_bundle.min.js', [], '8.4.2', true);
 
     } else if ( $mode === 'prodtest') {
         // in development but test the generated js bundle
-        wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.min.js', '8.4.2', true);
+        wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.min.js', [], '8.4.2', true);
 
     } else {
         wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');

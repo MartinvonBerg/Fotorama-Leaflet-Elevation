@@ -11,6 +11,8 @@
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
  * Version:           0.12.0
+ * Requires at least: 5.9
+ * Requires PHP:      7.3
  * Author:            Martin von Berg
  * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License:           GPL-2.0
@@ -260,7 +262,7 @@ function showmulti($attr, $content = null)
 			require_once __DIR__ . '/inc/fotoramaClass.php';
 			\mvbplugins\fotoramamulti\enqueue_fotorama_scripts( $mode );
 
-			$fClass = new FotoramaClass( $shortcodecounter, $data2, $postid);
+			$fClass = new FotoramaClass( $shortcodecounter, $data2, $postid); // Attention: Inconsistent constructor!
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
@@ -289,7 +291,7 @@ function showmulti($attr, $content = null)
 						   'sw_aspect_ratio'	=> $ratio,
 						   'sw_keyboard'		=> 'true'];
 			
-			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options);
+			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options); // Attention: Inconsistent constructor!
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
