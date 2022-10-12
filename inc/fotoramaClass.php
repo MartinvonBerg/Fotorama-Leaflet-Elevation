@@ -167,7 +167,7 @@ EOF;
                 if ( $data['wpid']>0 ) {
                     $srcset = wp_get_attachment_image_srcset($data['wpid']);
                     if ( $srcset !== false) {
-                        $hrefsrc = "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}";
+                        $hrefsrc = "{$up_url}/{$imgpath}/{$data['file']}{$data['extension']}";
                         $args = '<link rel="preload" as="image" href="' . $hrefsrc . '" imagesrcset="' . $srcset . '" ';
                         update_post_meta( $postid,'fm_header_link', $args);
                     }
