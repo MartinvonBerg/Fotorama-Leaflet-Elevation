@@ -18,6 +18,14 @@
  * License:           GPL-2.0
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
+// TODO-list
+// Einstellung Thumbnails: ratio, breite, größe, rahmen.
+// update swiper 8.4.4
+// --- Karte
+// unterschiedlichen Icons auf der Karte für Fotos u. Videos?
+// Kartendarstellung mit der relativ dicken Touren-Linie und den schwarzen Pfeilen
+// Höhenchart wie früher ???
+// Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 
 namespace mvbplugins\fotoramamulti;
 
@@ -39,6 +47,7 @@ require_once __DIR__ . '/inc/fm_functions.php';
 require_once __DIR__ . '/languages/locales_i18n.php';
 require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 require_once __DIR__ . '/inc/gtb_blocks.php';
+require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
 
 // -------- show admin page if request is for admin page
 if ( is_admin() ) {
@@ -74,8 +83,6 @@ add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
 function showmulti($attr, $content = null)
 {
-	require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
-
 	// Define global Values and Variables. We need the globals for the state-transition of the post.
 	global $post_state_pub_2_draft;
 	global $post_state_draft_2_pub;
@@ -94,7 +101,7 @@ function showmulti($attr, $content = null)
 	static $fotoramaCounter = 0;
 	static $swiperCounter = 0;
 	static $pageVarsForJs = [];
-	$mode = 'production';
+	$mode = 'development';
 	$sw_options = [];
 		
  	// Get Values from Admin settings page

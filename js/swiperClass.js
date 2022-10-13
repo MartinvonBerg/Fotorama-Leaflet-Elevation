@@ -1,24 +1,13 @@
 // import Swiper JS
 //import Swiper from 'swiper/bundle'; // imports the complete bundle.
 // The following module loading reduces bundle size from 47.8 kB to 38.2 kBytes.
+/*
 import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard} from 'swiper';
-
 // import Swiper styles
 import 'swiper/css/bundle';
-/* The following saves only 0,6 kBytes. Is not worth it.
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/a11y';
-import 'swiper/css/controller';
-import 'swiper/css/effect-flip';
-import 'swiper/css/hash-navigation';
-import 'swiper/css/lazy';
-import 'swiper/css/mousewheel';
-import 'swiper/css/thumbs';
-import 'swiper/css/zoom';
-*/
 import "./swiperClass.css";
 export {SliderSwiper};
+*/
 
 class SliderSwiper {
         
@@ -80,13 +69,13 @@ class SliderSwiper {
                     slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view,
                 }
             },
-            freeMode: false,
+            //freeMode: false,
             watchSlidesProgress: true
         });
 
         this.sw_options = {
             // Default parameters
-            modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard],
+            //modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard],
             lazy: {
                 enabled:true,
                 checkInView:true,
@@ -97,7 +86,6 @@ class SliderSwiper {
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
             mousewheel: this.#pageVariables.sw_options.sw_mousewheel === 'true', 
-            
             keyboard: {
                 enabled: this.#pageVariables.sw_options.sw_keyboard === 'true', 
                 onlyInViewport: false,
@@ -107,7 +95,7 @@ class SliderSwiper {
                 delay: 2500, // TODO: param? No. Not used.
                 disableOnInteraction: true,
               },
-            */  
+            */
             hashNavigation: {
                 watchState: this.#pageVariables.sw_options.sw_hashnavigation === 'true', 
             },  
@@ -140,6 +128,9 @@ class SliderSwiper {
                 init: (event) => this.#listenEventSliderLoaded(event)
             },
         };
+
+        // change sw_options for firefox to prevent the '#' at the end of the url.
+        if (navigator.userAgent.match(/firefox|fxios/i) || this.#pageVariables.sw_options.sw_hashnavigation !== 'true') delete this.sw_options['hashNavigation'];
                 
         // generate the swiper slider on the new html 
         this.swiper = new Swiper('#'+this.elementOnPage, this.sw_options);

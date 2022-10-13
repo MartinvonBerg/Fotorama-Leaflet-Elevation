@@ -344,6 +344,7 @@ final class SwiperClass
 			$phpimgdata[$this->imgnr-1]['coord'][0] = round( $data['lat'], 6 );
 			$phpimgdata[$this->imgnr-1]['coord'][1] = round( $data['lon'], 6 );
 			$phpimgdata[$this->imgnr-1]['permalink'] = $data['permalink'] ?? '';
+            $phpimgdata[$this->imgnr-1]['mime'] = $data['type'] ?? '';
 			
 			// --------------- Proceed with HTML -------------------
             if ( $data['type']==='image' ) 
