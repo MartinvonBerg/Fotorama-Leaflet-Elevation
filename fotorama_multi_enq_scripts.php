@@ -21,34 +21,50 @@
 
 namespace mvbplugins\fotoramamulti;
 
-add_action( 'wp_enqueue_scripts', '\mvbplugins\fotoramamulti\correct_enqueued_scripts', 10, 0 );
+//add_action( 'wp_print_scripts', '\mvbplugins\fotoramamulti\correct_enqueued_scripts',10 );
+//add_action( 'wp_enqueue_scripts', '\mvbplugins\fotoramamulti\correct_enqueued_scripts',10 );
+//add_action( 'wp_print_footer_scripts', '\mvbplugins\fotoramamulti\correct_enqueued_scripts',10 ); // wp_footer( )
+add_action( 'wp_footer', '\mvbplugins\fotoramamulti\correct_enqueued_scripts',10,0 ); // nur das funktioniert auf dem Server
 
 function correct_enqueued_scripts() {
     // make sure that the main script is loaded at the end. Better solve this with webpack!
-    $registered = $GLOBALS['wp_scripts']->queue;
-    $key = \array_search('fotorama_multi_js',$registered);
-    unset($registered[$key]); 
-    \array_push($registered,'fotorama_multi_js');
-    $GLOBALS['wp_scripts']->queue = $registered;
-
+    /*
+        $registered = $GLOBALS['wp_scripts']->queue;
+        \do_action('qm/debug', $registered );
+        $key = \array_search('fotorama_main_bundle',$registered);
+        unset($registered[$key]); 
+        \array_push($registered,'fotorama_main_bundle');
+        $GLOBALS['wp_scripts']->queue = $registered;
+        \do_action( 'qm/debug', $registered );
+    */
+    
     // remove leaflet_elevation_bundle if there is no gpx-file included on the whole page
 	if ( $_POST['fm_counter'] > 0 && $_POST['gpx_counter'] === 0  ) {
-        wp_deregister_script('leaflet_elevation_bundle');
+        //\wp_deregister_script('leaflet_elevation_bundle');
         \wp_dequeue_script('leaflet_elevation_bundle');
     }
+
+    if ( $_POST['fm_counter'] > 0 && $_POST['fotoramaCounter'] === 0  ) {
+        //\wp_deregister_script('fotorama_bundle');
+        \wp_dequeue_script('fotorama_bundle');
+    }
+
+    if ( $_POST['fm_counter'] > 0 && $_POST['swiperCounter'] === 0  ) {
+        //\wp_deregister_script('swiper_bundle');
+        \wp_dequeue_script('swiper_bundle');
+    }
+
 }
 
 function enqueue_elevation_scripts( string $mode='production' ) {
     $plugin_url = plugins_url('/', __FILE__);
     $version = '0.12.0';
-
+    
     if ( $mode === 'production') {
         //wp_enqueue_style('leaflet_css', $plugin_url . '/js/leaflet/leaflet.min.css', [], '1.8.0');
-        wp_enqueue_style('leaflet_elevation_css', $plugin_url . '/js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
+        wp_enqueue_style('leaflet_elevation_css', $plugin_url . 'js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
         // Load Scripts
-        //wp_enqueue_script('leaflet_map_bundle', $plugin_url . '/js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
-        wp_enqueue_script('leaflet_elevation_bundle', $plugin_url . '/js/leaflet_elevation/leaflet_elevation_bundle.js', array('jquery'), $version, true);
-        //wp_enqueue_script('fotorama_multi_js',  $plugin_url . '/js/fotorama_main.js', array('jquery'), $version, true);
+        wp_enqueue_script('leaflet_elevation_bundle', $plugin_url . 'js/leaflet_elevation/leaflet_elevation_bundle.js', array('jquery'), $version, true);
     
     } else if ( $mode === 'prodtest') {
         wp_enqueue_style('leaflet_elevation_css', $plugin_url . 'release/js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
@@ -94,12 +110,8 @@ function enqueue_elevation_scripts( string $mode='production' ) {
         wp_enqueue_script('leaflet_elevation_js');
         wp_enqueue_script('leaflet_ui');
         wp_enqueue_script('control_fullscreen_js');
-        wp_enqueue_script('zoom_master_js');
-        wp_enqueue_script('fotoramaClass_js');
         wp_enqueue_script('leafletClass_js');
         wp_enqueue_script('elevationClass_js');
-        wp_enqueue_script('fotorama_multi_js');	
-        
     }
 }
 
@@ -108,8 +120,8 @@ function enqueue_leaflet_scripts( string $mode='production' ) {
     $version = '0.12.0';
 
     if ( $mode === 'production') {
-        wp_enqueue_style('leaflet_css', $plugin_url . '/js/leaflet/leaflet.min.css', [], '1.8.0');
-        wp_enqueue_script('leaflet_map_bundle', $plugin_url . '/js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
+        wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
+        wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
     
     } else if ( $mode === 'prodtest') {
         wp_enqueue_style('leaflet_css', $plugin_url . 'release/js/leaflet/leaflet.min.css', [], '1.8.0');
@@ -133,13 +145,13 @@ function enqueue_main_scripts( string $mode='production', array $deps=['jquery']
     $version = '0.12.0';
 
     if ( $mode === 'production') {
-        wp_enqueue_script('fotorama_multi_js',  $plugin_url . '/js/fotorama_main.js', $deps, $version, true);
+        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'js/fotorama_main.js', $deps, $version, true);
     
     } else if ( $mode === 'prodtest') {
-        wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'release/js/fotorama_main.js', $deps, $version, true);
+        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'release/js/fotorama_main.js', $deps, $version, true);
     
     } else {
-        wp_enqueue_script('fotorama_multi_js',  $plugin_url . 'js/fotorama-multi-reduced.js', $deps, $version, true);
+        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'js/fotorama-multi-reduced.js', $deps, $version, true);
     
     }
 }
@@ -174,11 +186,11 @@ function enqueue_swiper_scripts( string $mode='production' ) {
     $version = '0.12.0';
 
     if ( $mode === 'production') {
-        wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper_bundle.min.js', [], '8.4.2', true);
+        wp_enqueue_script('swiper_bundle', $plugin_url . 'js/swiper/swiper_bundle.min.js', [], '8.4.2', true);
 
     } else if ( $mode === 'prodtest') {
         // in development but test the generated js bundle
-        wp_enqueue_script('swiper_js', $plugin_url . 'release/js/swiper/swiper_bundle.min.js', [], '8.4.2', true);
+        wp_enqueue_script('swiper_bundle', $plugin_url . 'release/js/swiper/swiper_bundle.min.js', [], '8.4.2', true);
 
     } else {
         wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.2');

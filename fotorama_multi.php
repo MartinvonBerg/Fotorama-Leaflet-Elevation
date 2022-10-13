@@ -91,6 +91,8 @@ function showmulti($attr, $content = null)
 	$thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
 	static $shortcodecounter = 0; // counts the number of shortcodes on ONE page!
 	static $gpxTrackCounter = 0;
+	static $fotoramaCounter = 0;
+	static $swiperCounter = 0;
 	static $pageVarsForJs = [];
 	$mode = 'production';
 	$sw_options = [];
@@ -218,7 +220,7 @@ function showmulti($attr, $content = null)
 		// Does not work in Quick-Edit-Mode. The pages has to be open in editor to set the parent.
 		foreach ($data2 as $data) {
 			if ($data['wpid'] > 0){
-				$media_post = wp_update_post( 
+				wp_update_post( 
 					array(
 					'ID'            => $data['wpid'],
 					'post_parent'   => '',
@@ -232,7 +234,7 @@ function showmulti($attr, $content = null)
 	if ($draft_2_pub){
 		foreach ($data2 as $data) {
 			if ($data['wpid'] > 0){
-				$media_post = wp_update_post( 
+				wp_update_post( 
 					array(
 					'ID'            => $data['wpid'],
 					'post_parent'   => $postid,
@@ -256,11 +258,14 @@ function showmulti($attr, $content = null)
 		
 	// Generate html for Slider images for javascript-rendering
 	if ($imageNumber > 0) {
+		\mvbplugins\fotoramamulti\enqueue_fotorama_scripts( $mode );
+		\mvbplugins\fotoramamulti\enqueue_swiper_scripts( $mode );
 		
 		if ( $slider === 'fotorama') {
 			// load the scripts for fotorama here
 			require_once __DIR__ . '/inc/fotoramaClass.php';
-			\mvbplugins\fotoramamulti\enqueue_fotorama_scripts( $mode );
+			$fotoramaCounter++;
+			//\mvbplugins\fotoramamulti\enqueue_fotorama_scripts( $mode );
 
 			$fClass = new FotoramaClass( $shortcodecounter, $data2, $postid); // Attention: Inconsistent constructor!
 			$htmlstring .= $fClass->getSliderHtml( $attr);
@@ -269,8 +274,9 @@ function showmulti($attr, $content = null)
 
 		} elseif ( $slider === 'swiper') {
 			// load the scripts for swiper here
+			$swiperCounter++;
 			require_once __DIR__ . '/inc/swiperClass.php';
-			\mvbplugins\fotoramamulti\enqueue_swiper_scripts( $mode );
+			//\mvbplugins\fotoramamulti\enqueue_swiper_scripts( $mode );
 
 			$sw_options = ['addPermalink' => $addPermalink, 
 						   'allImgInWPLibrary' => $allImgInWPLibrary,
@@ -423,12 +429,14 @@ EOF;
  	);
 	
 	\mvbplugins\fotoramamulti\enqueue_main_scripts( $mode );
-	wp_localize_script('fotorama_multi_js', 'pageVarsForJs', $pageVarsForJs);
+	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
 	$gpxTrackCounter += $i;
 	$_POST['fm_counter'] = $shortcodecounter;
 	$_POST['gpx_counter'] = $gpxTrackCounter;
+	$_POST['fotoramaCounter'] = $fotoramaCounter;
+	$_POST['swiperCounter'] = $swiperCounter;
 
 	return $htmlstring;
 }
