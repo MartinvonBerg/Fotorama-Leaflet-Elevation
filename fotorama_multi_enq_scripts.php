@@ -135,7 +135,7 @@ function enqueue_leaflet_scripts( string $mode='production' ) {
         wp_enqueue_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
         wp_enqueue_script('leaflet_ui', $plugin_url . 'js/leaflet-ui/leaflet-ui-short.min.js', array('jquery'), '0.5.9', true);
         wp_enqueue_script('control_fullscreen_js', $plugin_url . 'js/fullscreen/Control.FullScreen.min.js', array('jquery'), '2.4.0', true);
-        wp_enqueue_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery'), '0.12.0', true);
+        wp_enqueue_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery','leaflet_js'), '0.12.0', true);
         // --- LEAFLET -------------
     }
 }
@@ -151,7 +151,7 @@ function enqueue_main_scripts( string $mode='production', array $deps=['jquery']
         wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'release/js/fotorama_main.js', $deps, $version, true);
     
     } else {
-        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'js/fotorama-multi-reduced.js', $deps, $version, true);
+        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'js/fotorama-multi-reduced.js', ['jquery','leafletClass_js'], $version, true);
     
     }
 }
