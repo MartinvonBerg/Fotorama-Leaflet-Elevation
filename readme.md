@@ -350,6 +350,7 @@ This plugin uses the great work from:
 - HTML Table generator: https://www.tablesgenerator.com/html_tables
 - WordPress Option Page generator from http://jeremyhixon.com/wp-tools/option-page/
 - icons from freeicons.io
+- mapicons from https://mapicons.mapsmarker.com/
 - https://onlinepngtools.com/ for adaptation of the PNG-icons
 - OpenStreetMaps, OpentTopoMaps  are great services.
 - Nominatim for reverse geo-coding: https://nominatim.org/release-docs/develop/api/Reverse/

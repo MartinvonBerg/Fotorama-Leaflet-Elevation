@@ -22,7 +22,6 @@
 // Einstellung Thumbnails: ratio, breite, größe, rahmen.
 // update swiper 8.4.4
 // --- Karte
-// unterschiedlichen Icons auf der Karte für Fotos u. Videos?
 // Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 
 namespace mvbplugins\fotoramamulti;

@@ -112,7 +112,8 @@ class LeafletMap {
         this.myIcon1 = this.setIcon(this.pageVariables.imagepath, 'photo.png', 'shadow.png');
         this.myIcon2 = this.setIcon(this.pageVariables.imagepath, 'marker-icon.png', 'marker-shadow.png', [25,41]);
         this.myIcon3 = this.setIcon(this.pageVariables.imagepath, 'active.png', 'shadow.png');
-        this.myIcon4 = this.setIcon(this.pageVariables.imagepath, 'scenic.png', 'shadow.png');
+        this.myIcon4 = this.setIcon(this.pageVariables.imagepath, 'video2.png', 'shadow.png');
+        this.myIcon5 = this.setIcon(this.pageVariables.imagepath, 'video-active2.png', 'shadow.png');
 
         //change options for maps without gpx-tracks so without elevation.
         if ( center !== null & zoom !== null) { 
@@ -511,7 +512,9 @@ class LeafletMap {
     unSetActiveMarker () {
          // remove old markers - on change only. --> removeMarkers
          this.map.removeLayer(this.newmarker);
-         this.storemarker.setIcon(this.myIcon1); // Todo: differ image and video. do this by CSS only. add class or remove it here.
+         // differ between image and video
+         if (this.pageVariables.imgdata[this.newmarker.options.id].mime === 'image') this.storemarker.setIcon(this.myIcon1) 
+         else this.storemarker.setIcon(this.myIcon4);
          this.newmarker.setZIndexOffset(-500);
          this.storemarker.addTo(this.map);
     }
@@ -524,7 +527,9 @@ class LeafletMap {
         this.storemarker = this.mrk[markerNumber];
         this.newmarker = this.mrk[markerNumber];
         this.map.removeLayer( this.mrk[markerNumber]);
-        this.newmarker.setIcon(this.myIcon3); // Todo: differ image and video
+        // differ between image and video
+        if (this.pageVariables.imgdata[markerNumber].mime === 'image') this.newmarker.setIcon(this.myIcon3) 
+        else this.newmarker.setIcon(this.myIcon5);
         this.newmarker.setZIndexOffset(500);
         this.newmarker.addTo(this.map);
     }
