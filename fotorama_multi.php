@@ -23,8 +23,6 @@
 // update swiper 8.4.4
 // --- Karte
 // unterschiedlichen Icons auf der Karte für Fotos u. Videos?
-// Kartendarstellung mit der relativ dicken Touren-Linie und den schwarzen Pfeilen
-// Höhenchart wie früher ???
 // Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 
 namespace mvbplugins\fotoramamulti;

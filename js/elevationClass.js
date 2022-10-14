@@ -118,9 +118,12 @@ class LeafletElevation extends LeafletMap {
                 summary: false,
                 time: false,
                 downloadLink:false,
-                distanceMarkers: { lazy: true, distance: false, direction: true },
                 closeBtn: false,
-                hotline: true, // the coloured line
+                distanceMarkers: { lazy: true, distance: false, direction: false }, // direction creates the black arrows
+                hotline: true, // the coloured line. One color only if false
+                polyline: {
+                      weight: 3.111, // TODO: create a parameter for this? This changes the lineWidth. Mind that the original leaflet-elevation.js was changed for that.
+                },
                 waypoints: false,
                 wptLabels: false,
                 autofitBounds: true,

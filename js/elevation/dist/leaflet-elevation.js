@@ -720,7 +720,7 @@
 									0.5: '#ffff00',
 									1.0: '#ff0000'
 								},
-								weight: 5,
+								weight: trkseg.options.weight ?? 5, // Martin
 								outlineColor: '#000000',
 								outlineWidth: 1
 							}).addTo(this._hotline);

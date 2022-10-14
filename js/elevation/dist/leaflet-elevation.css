@@ -269,7 +269,7 @@
 /* MARTIN THEME ///////////////////////////////////////////////////// */
 
 .martin-theme {
-  --ele-bg: rgb(58 120 255 / 52%);
+  background:   linear-gradient(0deg, rgba(249,249,249,1) 40%, rgba(58, 120, 255, 0.87) 100%);
   --ele-axis: #000000;
   --ele-area: #ed7e28;
   --ele-grid: #ffffffa6;
