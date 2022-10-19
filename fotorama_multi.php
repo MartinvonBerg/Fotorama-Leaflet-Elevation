@@ -19,10 +19,18 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 // TODO-list
-// Einstellung Thumbnails: ratio, breite, größe, rahmen.
-// update swiper 8.4.4
+// PHP: filter für Bild mit Dateinamen aus Standar WP-Ordner. mehrere Ordner mit Komma getrennt. Filter mit Komma getrennt?
+// Einstellung Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem!
+//    CSS von Codepen verwenden
+// object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
+// als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
+// Eigene Thumbnail-Leiste?
+// update auf swiper 8.4.4
 // --- Karte
 // Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
+// anderen Icon-Satz verwenden? Neue Icons skalieren.
+// --- build-process : webpack 
+// lazy-loading als funktion mit await und then. splitchunks. copyfile für bilder.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -151,7 +159,7 @@ function showmulti($attr, $content = null)
 		'sw_zoom'			=> 'true',
 		'sw_fslightbox'		=> 'true',
 		'sw_pagination'		=> 'false',
-		'sw_slides_per_view'=> 4,
+		'sw_slides_per_view'=> 10,
 		'sw_transition_duration'=>300,
 		'sw_mousewheel'		=> 'true',
 		'sw_hashnavigation' => 'true',
@@ -296,6 +304,7 @@ function showmulti($attr, $content = null)
 						   'showcaption'		=> $showcaption,
 						   'shortcaption'		=> $shortcaption,
 						   'imgpath'			=> $imgpath,
+						   'slide_fit'			=> $fit,
 						   'f_thumbheight'		=> $f_thumbheight,
 						   'f_thumbwidth'		=> $f_thumbwidth,
 						   'sw_aspect_ratio'	=> $ratio,

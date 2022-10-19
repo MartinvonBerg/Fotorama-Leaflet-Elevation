@@ -22,6 +22,7 @@ class SliderSwiper {
     thumbs = {};
     sw_options = {};
     zoom = true;
+    space = 2;
 
     /**
      * Constructor Function
@@ -50,25 +51,38 @@ class SliderSwiper {
          
         this.thumbs = new Swiper('#thumbsSwiper'+this.number, {
             loop: true,
-            spaceBetween: 2,
+            spaceBetween: this.space,
             //slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view, // value for slides per view
+            breakpointsBase: 'container',
+            //centerInsufficientSlider: true,
+            //centeredSlides: true,
+            //centeredSlidesBounds: true,
+            breakpoints: this.calcBreakpoints(),
+            /*
             breakpoints: {
-                200: {
+                240: {
                     slidesPerView: 3,
                 },
-                480: {
+                361: {
                     slidesPerView: 4,
                 },
-                640: {
+                482: {
                     slidesPerView: 5,
                 },
-                768: {
+                603: {
                     slidesPerView: 6,
+                },
+                724: {
+                    slidesPerView: 7,
+                },
+                905: {
+                    slidesPerView: 8,
                 },
                 1024: {
                     slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view,
                 }
             },
+            */
             //freeMode: false,
             watchSlidesProgress: true
         });
@@ -89,6 +103,7 @@ class SliderSwiper {
             keyboard: {
                 enabled: this.#pageVariables.sw_options.sw_keyboard === 'true', 
                 onlyInViewport: false,
+                pageUpDown: false
             },
             /*
             autoplay: {
@@ -140,6 +155,16 @@ class SliderSwiper {
     }
 
     // --------------- Internal private methods --------------------------------
+    calcBreakpoints() {
+        let w = this.#pageVariables.sw_options.f_thumbwidth; // this.space
+        let max = this.#pageVariables.sw_options.sw_slides_per_view;
+        let bp = {};
+        for (let i=1; i<max; i++) {
+            let val = parseInt(i * w + (i-1)*this.space);
+            bp[val] = {slidesPerView: i+1}
+        }
+        return bp;
+    }
     /**
      * scroll to given hash value (e.g. the id of the swiper div on page load).
      * This function assumes that swiper.js loads the slide given after the '/' in the url.

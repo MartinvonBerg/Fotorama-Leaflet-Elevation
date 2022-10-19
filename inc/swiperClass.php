@@ -248,7 +248,7 @@ final class SwiperClass
         $thumbEl = $doc->createElement('div','');
         $thumbEl->setAttribute('class', 'swiper-slide');
         $thumbEl->setAttribute('title', $data['title']);
-        $thumbEl->setAttribute('style', 'height:'. $this->options['f_thumbheight'].'px');
+        //$thumbEl->setAttribute('style', 'height:'. $this->options['f_thumbheight'].'px');
         //$thumbEl->setAttribute('style', 'width:'. $this->options['f_thumbwidth'].'px');
 
         // create and append the img2 to thumbnail
@@ -373,7 +373,7 @@ final class SwiperClass
                 // create thumbnail slide
                 $thumbsSlide = $doc->createElement('div','');
                 $thumbsSlide->setAttribute('class', 'swiper-slide');
-                $thumbsSlide->setAttribute('style', 'height:'. $this->options['f_thumbheight'].'px');
+                //$thumbsSlide->setAttribute('style', 'max-height:'. $this->options['f_thumbheight'].'px');
                 //$thumbsSlide->setAttribute('style', 'width:'. $this->options['f_thumbwidth'].'px');
                 $inner1->appendChild($thumbsSlide);
 
@@ -383,12 +383,13 @@ final class SwiperClass
                 //$img->setAttribute('loading', 'lazy');
                 $img->setAttribute('class', 'swiper-lazy');
                 $img->setAttribute('alt', $alttext);
+                $img->setAttribute('object-fit', "{$this->options['slide_fit']}"); //has no effect!
                 $img->setAttribute('data-src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
 
                 // append the img to thumbnail
                 $img2 = $doc->createElement('img','');
-                //$img->setAttribute('loading', 'lazy');
-                //$img->setAttribute('class', 'swiper-lazy');
+                //$img2->setAttribute('loading', 'lazy');
+                //$img2->setAttribute('class', 'swiper-lazy');
 
                 if ( $data['thumbinsubdir'] ) {
                     $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");

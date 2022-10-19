@@ -129,7 +129,7 @@ function enqueue_leaflet_scripts( string $mode='production' ) {
 
     } else {
         // --- LEAFLET -------------
-        wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
+        wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.css', [], '1.8.0');
         wp_enqueue_style('control_fullscreen_css', $plugin_url . 'js/fullscreen/Control.FullScreen.min.css', [], '2.4.0');
         
         wp_enqueue_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
