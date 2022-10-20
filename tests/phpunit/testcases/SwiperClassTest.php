@@ -133,7 +133,8 @@ final class SwiperClassTest extends TestCase {
                         'imgpath'			=> 'test_imgpath',
                         'f_thumbheight'		=> 100,
                         'sw_aspect_ratio'	=> 1.5,
-                        'slide_fit'			=> 'contain',];
+                        'slide_fit'			=> 'contain',
+                        'thumbbartype'		=> 'special', ];
 
         $tested = new mvbplugins\fotoramamulti\SwiperClass(0, $data2, $sw_options);
        
@@ -191,7 +192,8 @@ final class SwiperClassTest extends TestCase {
                         'shortcaption'		=> 'true',
                         'imgpath'			=> 'test_imgpath',
                         'f_thumbheight'		=> 100,
-                        'sw_aspect_ratio'	=> 1.5];
+                        'sw_aspect_ratio'	=> 1.5,
+                        'thumbbartype'			=> 'special', ];
 
         $tested = new mvbplugins\fotoramamulti\SwiperClass(0, $data2, $sw_options);
        
@@ -209,7 +211,7 @@ final class SwiperClassTest extends TestCase {
         $r2 = '<div class="fotorama_multi_images"><div id="swiper0" class="swiper myswiper" style="aspect-ratio:1.5"><div class="swiper-wrapper"><div class="swiper-slide"><video class="swiper-lazy" controls="" controlsList="nodownload" oncontextmenu="return false" preload="auto">Your browser does not support the video tag.<source type="video/x-ms-vmv" src="wp-content/upload/test_imgpath/testvideo.wmv"></source></video><a data-fslightbox="swiper0" data-type="video" href="wp-content/upload/test_imgpath/testvideo.wmv" aria-label="Open fullscreen lightbox with current image"><div class="button-fslightbox"></div></a><div class="swiper-video-caption">video_title</div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><!--------- end of swiper -----------></div><div thumbsSlider="" id="thumbsSwiper0" class="swiper myswiper2"><div class="swiper-wrapper"><div class="swiper-slide" title="video_title"><div alt="Thumbnail for image slider operation">No Thumbnail</div></div></div></div></div>';
         
         $html=$tested->getSliderHtml( [] );
-        //$this->assertEquals($html, $r2);
+        $this->assertEquals($html, $r2);
 
         // print the result to console
         $h2 = $this->tidyHTML(PHP_EOL . $html . PHP_EOL);

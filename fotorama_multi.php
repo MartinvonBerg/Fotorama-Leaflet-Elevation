@@ -311,7 +311,7 @@ function showmulti($attr, $content = null)
 				'sw_keyboard'			=> 'true',
 				// thumbnails settings
 				'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs only
-				'thumbbartype'			=> 'multi', // 'slider' or 'multi'. 'multi' is from 'thumbnailClass.js'
+				'thumbbartype'			=> 'special', // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
 				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful
 				'bar_margin_top'     	=> '3px', // top margin of thumbnail bar in px
 				'thumbminheight'		=> $f_thumbheight,
