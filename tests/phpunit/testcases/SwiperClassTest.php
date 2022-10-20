@@ -115,6 +115,7 @@ final class SwiperClassTest extends TestCase {
         $data2[0]['permalink'] = '';
         $data2[0]['title'] = 'notitle';
         $data2[0]['alt'] = ''; 
+        $data2[0]['type'] = 'image'; 
 
         $sw_options = [ 'addPermalink' => 'false',
                         'allImgInWPLibrary' => 'false',
@@ -131,7 +132,8 @@ final class SwiperClassTest extends TestCase {
                         'shortcaption'		=> 'true',
                         'imgpath'			=> 'test_imgpath',
                         'f_thumbheight'		=> 100,
-                        'sw_aspect_ratio'	=> 1.5];
+                        'sw_aspect_ratio'	=> 1.5,
+                        'slide_fit'			=> 'contain',];
 
         $tested = new mvbplugins\fotoramamulti\SwiperClass(0, $data2, $sw_options);
        
@@ -145,7 +147,8 @@ final class SwiperClassTest extends TestCase {
         Functions\when('current_user_can')->justReturn(false);
         Functions\when('wp_get_attachment_image_srcset')->justReturn(false);
        
-        $r2 = '<div id="swiper0" class="swiper myswiper"><div class="swiper-wrapper"><div class="swiper-slide"><img loading="lazy" class="swiper-lazy" alt="Galeriebild 1" src="wp-content/upload/Galleries/testfile.jpg"><div class="swiper-slide-title">1 / 1: Galeriebild 1</div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><div class="swiper-pagination"></div><!--------- end of swiper -----------></div>';
+        //$r2 = '<div id="swiper0" class="swiper myswiper"><div class="swiper-wrapper"><div class="swiper-slide"><img loading="lazy" class="swiper-lazy" alt="Galeriebild 1" src="wp-content/upload/Galleries/testfile.jpg"><div class="swiper-slide-title">1 / 1: Galeriebild 1</div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><div class="swiper-pagination"></div><!--------- end of swiper -----------></div>';
+        $r2 = '<div class="fotorama_multi_images"><div id="swiper0" class="swiper myswiper" style="aspect-ratio:1.5"><div class="swiper-wrapper"><div class="swiper-slide" data-hash="swiper0/testfile"><div class="swiper-zoom-container"><img class="swiper-lazy" alt="Galeriebild 1" object-fit="contain" data-src="wp-content/upload/test_imgpath/testfile.jpg"></div><a data-fslightbox="swiper0" data-type="image" data-caption="Galeriebild 1" href="wp-content/upload/test_imgpath/testfile.jpg" aria-label="Open fullscreen lightbox with current image"><div class="button-fslightbox"></div></a><div class="swiper-attach-link"><a href="" aria-label="Open page with image details" target="_blank"><div class="fm-itemsButtons" type="info"></div></a></div><div class="swiper-slide-title"><p>1 / 1: Galeriebild 1</p></div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><!--------- end of swiper -----------></div><div thumbsSlider="" id="thumbsSwiper0" class="swiper myswiper2"><div class="swiper-wrapper"><div class="swiper-slide"><img src="wp-content/upload/test_imgpath/testfile.jpg" alt="Thumbnail for image slider operation"></div></div></div></div>';
         
         $html=$tested->getSliderHtml( [] );
         //$this->assertEquals($html, $r2);
@@ -171,6 +174,7 @@ final class SwiperClassTest extends TestCase {
         $data2[0]['permalink'] = '';
         $data2[0]['title'] = 'video_title';
         $data2[0]['alt'] = 'pretty nice video'; 
+        $data2[0]['type'] = 'video';
 
         $sw_options = [ 'addPermalink' => 'false',
                         'allImgInWPLibrary' => 'false',
@@ -201,7 +205,8 @@ final class SwiperClassTest extends TestCase {
         Functions\when('current_user_can')->justReturn(false);
         Functions\when('wp_get_attachment_image_srcset')->justReturn(false);
        
-        $r2 = '<div id="swiper0" class="swiper myswiper"><div class="swiper-wrapper"><div class="swiper-slide"><img loading="lazy" class="swiper-lazy" alt="Galeriebild 1" src="wp-content/upload/Galleries/testfile.jpg"><div class="swiper-slide-title">1 / 1: Galeriebild 1</div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><div class="swiper-pagination"></div><!--------- end of swiper -----------></div>';
+        //$r2 = '<div id="swiper0" class="swiper myswiper"><div class="swiper-wrapper"><div class="swiper-slide"><img loading="lazy" class="swiper-lazy" alt="Galeriebild 1" src="wp-content/upload/Galleries/testfile.jpg"><div class="swiper-slide-title">1 / 1: Galeriebild 1</div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><div class="swiper-pagination"></div><!--------- end of swiper -----------></div>';
+        $r2 = '<div class="fotorama_multi_images"><div id="swiper0" class="swiper myswiper" style="aspect-ratio:1.5"><div class="swiper-wrapper"><div class="swiper-slide"><video class="swiper-lazy" controls="" controlsList="nodownload" oncontextmenu="return false" preload="auto">Your browser does not support the video tag.<source type="video/x-ms-vmv" src="wp-content/upload/test_imgpath/testvideo.wmv"></source></video><a data-fslightbox="swiper0" data-type="video" href="wp-content/upload/test_imgpath/testvideo.wmv" aria-label="Open fullscreen lightbox with current image"><div class="button-fslightbox"></div></a><div class="swiper-video-caption">video_title</div></div></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div><!--------- end of swiper -----------></div><div thumbsSlider="" id="thumbsSwiper0" class="swiper myswiper2"><div class="swiper-wrapper"><div class="swiper-slide" title="video_title"><div alt="Thumbnail for image slider operation">No Thumbnail</div></div></div></div></div>';
         
         $html=$tested->getSliderHtml( [] );
         //$this->assertEquals($html, $r2);

@@ -291,32 +291,45 @@ function showmulti($attr, $content = null)
 			require_once __DIR__ . '/inc/swiperClass.php';
 			//\mvbplugins\fotoramamulti\enqueue_swiper_scripts( $mode );
 
-			$sw_options = ['addPermalink' => $addPermalink, 
-						   'allImgInWPLibrary' => $allImgInWPLibrary,
-						   'sw_effect'			=> $sw_effect,
-						   'sw_zoom'			=> $sw_zoom,
-						   'sw_fslightbox'		=> $sw_fslightbox,
-						   'sw_pagination'		=> $sw_pagination,
-						   'sw_slides_per_view' => $sw_slides_per_view,
-						   'sw_transition_duration'=> $sw_transition_duration,
-						   'sw_mousewheel'		=> $sw_mousewheel,
-						   'sw_hashnavigation'  => $sw_hashnavigation,
-						   'sw_max_zoom_ratio'	=> $sw_max_zoom_ratio,
-						   'showcaption'		=> $showcaption,
-						   'shortcaption'		=> $shortcaption,
-						   'imgpath'			=> $imgpath,
-						   'slide_fit'			=> $fit,
-						   'f_thumbheight'		=> $f_thumbheight,
-						   'f_thumbwidth'		=> $f_thumbwidth,
-						   'sw_aspect_ratio'	=> $ratio,
-						   'sw_keyboard'		=> 'true'];
+			$sw_options = [
+				'addPermalink' 			=> $addPermalink, 
+				'allImgInWPLibrary' 	=> $allImgInWPLibrary,
+				'sw_effect'				=> $sw_effect,
+				'sw_zoom'				=> $sw_zoom,
+				'sw_fslightbox'			=> $sw_fslightbox,
+				'sw_pagination'			=> $sw_pagination,
+				'sw_slides_per_view' 	=> $sw_slides_per_view, // unused with martins thumbnails
+				'sw_transition_duration'=> $sw_transition_duration,
+				'sw_mousewheel'			=> $sw_mousewheel,
+				'sw_hashnavigation'  	=> $sw_hashnavigation,
+				'sw_max_zoom_ratio'		=> $sw_max_zoom_ratio,
+				'showcaption'			=> $showcaption,
+				'shortcaption'			=> $shortcaption,
+				'imgpath'				=> $imgpath,
+				'slide_fit'				=> $fit,
+				'sw_aspect_ratio'		=> $ratio,
+				'sw_keyboard'			=> 'true',
+				// thumbnails settings
+				'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs only
+				'thumbbartype'			=> 'multi', // 'slider' or 'multi'. 'multi' is from 'thumbnailClass.js'
+				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful
+				'bar_margin_top'     	=> '3px', // top margin of thumbnail bar in px
+				'thumbminheight'		=> $f_thumbheight,
+				'thumbrelheight'		=> '15%', // height of thumbnail bar in percent. Use 1% to have a fixed height
+				'thumbmargin' 			=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
+				'nail_activeClass'		=> 'active_border', // available params: active, active_animation, active_border
+				// only for active_border  
+				'thumbborderwidth' 		=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
+				'thumbbordercolor' 		=> $thumbbordercolor, // '#ea0000', 
+				'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused
+			];
 			
 			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options); // Attention: Inconsistent constructor!
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
 
-			// load script for fslightbox. Move to if() one level above if used for fotorama also.
+			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
 			\mvbplugins\fotoramamulti\enqueue_fslightbox();
 		} 
 	}

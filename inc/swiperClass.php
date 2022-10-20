@@ -451,8 +451,11 @@ final class SwiperClass
 
         $root->appendElWithAttsDIV([['class', 'swiper-button-prev']]);
         $root->appendElWithAttsDIV([['class', 'swiper-button-next']]);
+
         // append the thumbnails at the bottom OR the pagination. Both is useless.
         $this->showpagination ? $root->appendElWithAttsDIV([['class', 'swiper-pagination']]) : $doc->appendChild($thumbsWrapper);;
+        $thumbelem = $this->generateSwiperThumbs( $doc, $data, $up_url, $thumbsdir );
+        $doc->appendChild($thumbelem);
 
         $comment = $doc->createComment('------- end of swiper ---------');
         $root->appendChild($comment);
@@ -460,5 +463,71 @@ final class SwiperClass
         isset($phpimgdata) ? null : $phpimgdata = []; 
         $this->imageDataToPassToJavascript = $phpimgdata;
         $this->sliderHtml = '<div class="fotorama_multi_images">' . rtrim( $doc->saveHTML() ) . '</div>';
+    }
+
+    /**
+     * Generate the HTML code for the swiper based on DOMClass and on options.
+     *
+     * @return \DOMNode no return value: just set the class attributes as result.
+     */
+    private function generateSwiperThumbs( DOMDocument $doc, array $data, string $up_url, string $thumbsdir ) {
+        // Define path and url variables
+	    //$up_url = gpxview_get_upload_dir('baseurl');  // upload_url
+	    //$up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
+        //$thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
+        
+        // generate the html string to show on page
+        //$doc = new myDocument();
+        //$doc->registerNodeClass('DOMElement', 'mvbplugins\fotoramamulti\myElement');
+
+        // create wrapper for thumbnails
+        $thumbsWrapper = $doc->createElement('div','');
+        $thumbsWrapper->setAttribute('thumbsSlider', '');
+        $thumbsWrapper->setAttribute('id', 'thumbsSwiper' . $this->shortcodecounter);
+        $thumbsWrapper->setAttribute('class', 'swiper myswiper2');
+        $inner1 = $doc->createElement('div');
+        $inner1->setAttribute('class', 'swiper-wrapper');
+        $thumbsWrapper->appendChild($inner1);
+
+        foreach ($this->imageData as $data) {
+			// --------------- Proceed with HTML -------------------
+            if ( $data['type']==='image' ) 
+            {
+                // create thumbnail slide
+                $thumbsSlide = $doc->createElement('div','');
+                $thumbsSlide->setAttribute('class', 'swiper-slide');
+                //$thumbsSlide->setAttribute('style', 'max-height:'. $this->options['f_thumbheight'].'px');
+                //$thumbsSlide->setAttribute('style', 'width:'. $this->options['f_thumbwidth'].'px');
+                $inner1->appendChild($thumbsSlide);
+
+                // append the img to thumbnail
+                $img2 = $doc->createElement('img','');
+                //$img2->setAttribute('loading', 'lazy');
+                //$img2->setAttribute('class', 'swiper-lazy');
+
+                if ( $data['thumbinsubdir'] ) {
+                    $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
+                } elseif ( $data['thumbavail'] ) {
+                    // sizes is missing. but not required in examples.
+                    $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}"); 
+                } else { 
+                    // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
+                    $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}"); 
+                };
+
+                $img2->setAttribute('alt','Thumbnail for image slider operation');
+                $thumbsSlide->appendChild($img2);
+                
+            }
+            // end HTML for image
+            else if ($data['type']==='video') {
+                [$vid, $thumb] = $this->genVideoSlide($doc, $data, $up_url, $thumbsdir);
+                $inner1->appendChild($thumb);
+            }
+            // ----------- end HTML for one image or video. 
+            
+			$this->imgnr++;
+		} // end for loop for image data
+        return $thumbsWrapper;
     }
 }

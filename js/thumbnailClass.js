@@ -3,7 +3,18 @@
 	license: GPL 2.0
 	Martin von Berg
 */
+
 // Class to generate a vertical, responsive Thumbnail bar. Designed to replace the thumbnails of Swiper.js.
+
+/* example usage
+let th = new ThumbnailSlider(0, {nail_activeClass : 'active_border'} );
+th.setActiveThumb(12) 
+let th1 = new ThumbnailSlider(1, {nail_activeClass : 'active_animation'} );
+
+document.querySelector('.thumb_wrapper').addEventListener('thumbnailchange', function waschanged(e) {
+  //console.log(e)
+});
+*/
 
 class ThumbnailSlider {
   number = 0;
@@ -298,11 +309,3 @@ class ThumbnailSlider {
     }
   }
 }
-
-let th = new ThumbnailSlider(0, {nail_activeClass : 'active_border'} );
-th.setActiveThumb(12) 
-let th1 = new ThumbnailSlider(1, {nail_activeClass : 'active_animation'} );
-
-document.querySelector('.thumb_wrapper').addEventListener('thumbnailchange', function waschanged(e) {
-  //console.log(e)
-});
