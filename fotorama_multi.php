@@ -29,6 +29,7 @@
 // --- Karte
 // Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 // anderen Icon-Satz verwenden? Neue Icons skalieren.
+// context-menü für das marker popup deaktivieren mit : oncontextmenu="return false;"
 // --- build-process : webpack 
 // lazy-loading als funktion mit await und then. splitchunks. copyfile für bilder.
 
