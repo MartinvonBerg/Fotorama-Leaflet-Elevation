@@ -31,6 +31,7 @@ class ThumbnailSlider {
   ele = {};
   containerObserver = null;
   isFirefox = false;
+  sumAspectRatios = 0;
   
   // options to pass to the constructor. not all are required. pass only the ones you wish to change.
   options = {
@@ -74,23 +75,25 @@ class ThumbnailSlider {
     if (navigator.userAgent.match(/firefox|fxios/i)) this.isFirefox = true;
 
     // set-up Observer for resize event
-    this.containerObserver = new ResizeObserver( (e) =>this.resizer(e) );
+    this.containerObserver = new ResizeObserver( this.resizer );
     this.containerObserver.observe(this.ele.parentElement);
 
     this.updateCSS();
 
     // add a handler to every thumbnail images and do action if all images were loaded.
     let thumbWidth = this.ele.parentElement.offsetWidth;
-    let estimatedWidth = (this.numberOfThumbnails+1) * this.options.f_thumbwidth; // add one image width as tolerance range
+    let allImagesdWidth = 0; //(this.numberOfThumbnails+1) * this.options.f_thumbwidth; // add one image width as tolerance range
 
     let imagesLeft = this.numberOfThumbnails;
     for (let i=0; i<imagesLeft; i++) {
       this.thumbnails[i].children[0].addEventListener('load', () => {
         this.thumbnails[i].aspectRatio = this.thumbnails[i].children[0].offsetWidth / this.thumbnails[i].children[0].offsetHeight;
+        this.sumAspectRatios += this.thumbnails[i].aspectRatio; // + 2*parseInt(this.options.nail_margin_side) / this.thumbnails[i].children[0].offsetHeight;
+        allImagesdWidth += this.thumbnails[i].children[0].offsetWidth + 2*parseInt(this.options.nail_margin_side);
         imagesLeft--;
 
-        if ( (imagesLeft === 0) && (estimatedWidth<thumbWidth)) { 
-          this.ele.classList.add('thumb_inner_centered')
+        if ( (imagesLeft === 0) && (allImagesdWidth < thumbWidth)) { 
+          this.ele.classList.add('thumb_inner_centered');
           //this.centerThumbs(); 
           // change CSS options
           //this.setActiveThumb(this.currentActive) // the active image has to be set, otherwise centering won't work.
@@ -268,35 +271,37 @@ class ThumbnailSlider {
    * resize the thumbnail bar 
    * @param {event} e resize event of the parent div
    */
-  resizer = (e) => {
+  resizer = () => {
     // scroll into vieewport of parent div.
     let number = this.currentActive;
-    let parentWidth = this.ele.offsetWidth; 
+    let wrapperWidth = this.ele.parentElement.offsetWidth;  // thumb_wrapper
+    let allImagesdWidth = this.sumAspectRatios * this.thumbnails[number].offsetHeight;
+    if ( allImagesdWidth < 2) return;
+    
+    let parentWidth = this.ele.offsetWidth; // thumb_inner
     let eleWidth = this.thumbnails[number].offsetWidth;
     let offsetLeft = (parentWidth - eleWidth) / 2 // das ist das Ziel für den Offset.
     let distLeft = this.thumbnails[number].getBoundingClientRect().x;
     let toScroll =0;
-    let wrapperWidth = this.ele.parentElement.offsetWidth;  
-    let allThumbsWidth = this.ele.offsetWidth;  
     
-    if ((this.thumbWidthAtBreakpoint !== 0) && (this.thumbWidthAtBreakpoint < wrapperWidth)) {
+    // remove and add class to center thumbnails with some tolerance.
+    if ( (wrapperWidth-allImagesdWidth) > 2) {
       this.ele.classList.add('thumb_inner_centered');
-    }
-    
-    if (allThumbsWidth > wrapperWidth) {
+    } else if ( (wrapperWidth-allImagesdWidth) <  -2) {
       this.ele.classList.remove('thumb_inner_centered');
-      if ( this.thumbWidthAtBreakpoint === 0) this.thumbWidthAtBreakpoint = allThumbsWidth
-    }
-    
-    if ( distLeft > (offsetLeft+10)) { // rechts von der Mitte: scrolle nach Links
-      toScroll = distLeft -offsetLeft
-      this.ele.scrollBy({top:0, left: toScroll, behavior:'instant'}); 
 
-    } else { // links von der Mitte scrolle nach rechts
-      toScroll = (offsetLeft -distLeft)
-      if (toScroll > 10 ) {
-        this.ele.scrollBy({top:0, left: -toScroll, behavior:'instant'}); 
+      // scroll only here
+      if ( distLeft > (offsetLeft)) { // rechts von der Mitte: scrolle nach Links
+        toScroll = distLeft -offsetLeft
+        this.ele.scrollBy({top:0, left: toScroll, behavior:'instant'}); 
+  
+      } else { // links von der Mitte scrolle nach rechts
+        toScroll = (offsetLeft -distLeft)
+        if (toScroll > 10 ) {
+          this.ele.scrollBy({top:0, left: -toScroll, behavior:'instant'}); 
+        }
       }
+
     }
   }
 }
