@@ -516,11 +516,17 @@ final class SwiperClass
      * @return \DOMNode no return value: just set the class attributes as result.
      */
     private function generateSpecialThumbs( DOMDocument $doc, array $data, string $up_url, string $thumbsdir ) {
-        
+        // prepare the height if style = active_border
+        if ( $this->options['nail_activeClass'] === 'active_border' ) { 
+            $height = intval( $this->options['bar_min_height'] );
+            $border = intval( $this->options['active_border_width'] );
+            $this->options['bar_min_height'] = strval($height + $border) . 'px';
+         }
         // create wrapper for thumbnails
         $thumbsWrapper = $doc->createElement('div','');
         $thumbsWrapper->setAttribute('oncontextmenu', 'return false;');
         $thumbsWrapper->setAttribute('class', 'thumb_wrapper');
+        $thumbsWrapper->setAttribute('style', 'height:'. $this->options['bar_min_height'] . ';margin-top:' . $this->options['bar_margin_top']);
 
         $inner1 = $doc->createElement('div');
         $inner1->setAttribute('id', 'thumb_inner_' . $this->shortcodecounter);
@@ -546,6 +552,7 @@ final class SwiperClass
                 $img2->setAttribute('loading', 'lazy');
                 $img2->setAttribute('class', 'th_wrap_'. $this->shortcodecounter .'_img');
                 $img2->setAttribute('draggable', 'false');
+                $img2->setAttribute('style', 'margin-left:' . $this->options['nail_margin_side'] . ';margin-right:' . $this->options['nail_margin_side']);
 
                 if ( $data['thumbinsubdir'] ) {
                     $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");

@@ -24,7 +24,7 @@ class ThumbnailSlider {
   numberOfThumbnails = 0;
   activeClass = ''; 
   activeImages = {};
-  thumbOverflow = 50 
+  thumbOverflow = 0;
   parentElement = '';
   currentActive = 0;
   thumbWidthAtBreakpoint = 0;
@@ -39,7 +39,7 @@ class ThumbnailSlider {
     nail_activeClass    : 'active', // available params: active, active_animation, active_border
     // thumbnail bar
     bar_margin_top      : '3px', // top margin of thumbnail bar in px
-    bar_height          : '15%', // height of thumbnail bar in percent. Use 1% to have a fixed height
+    bar_rel_height      : '15%', // height of thumbnail bar in percent. Use 1% to have a fixed height
     bar_min_height      : '80px', // Minimum height of thumbnail bar in px
     // single thumbnail
     nail_margin_side    : '1px', // left and right margin of thumbnails in px
@@ -74,10 +74,8 @@ class ThumbnailSlider {
     if (navigator.userAgent.match(/firefox|fxios/i)) this.isFirefox = true;
 
     // we don't need the observer for firefox.
-    if ( ! this.isFirefox) {
-      	this.containerObserver = new ResizeObserver( (e) =>this.resizer(e) );
-        this.containerObserver.observe(this.ele.parentElement);
-    }
+    this.containerObserver = new ResizeObserver( (e) =>this.resizer(e) );
+    this.containerObserver.observe(this.ele.parentElement);
 
     // add a handler to every thumbnail images and do action if all images were loaded.
     let imagesLeft = this.numberOfThumbnails;
@@ -104,17 +102,18 @@ class ThumbnailSlider {
    */
   updateCSS() {
     // CSS thumbnail bar 
-    this.ele.parentElement.style.marginTop = this.options.bar_margin_top;
-    if (! this.isFirefox) this.ele.parentElement.style.height    = this.options.bar_height; // not in Firefox
-    this.ele.parentElement.style.minHeight = this.options.bar_min_height; 
+    //this.ele.parentElement.style.marginTop = this.options.bar_margin_top;
+    //if (! this.isFirefox) this.ele.parentElement.style.height = this.options.bar_rel_height; // not in Firefox
+    //this.ele.parentElement.style.height = this.options.bar_min_height; 
     
     // CSS all thumbnails
+    /*
     let images = document.querySelectorAll('.th_wrap_'+ this.number +'_img');
     images.forEach(img => {
       img.style.marginRight = this.options.nail_margin_side ;
       img.style.marginLeft = this.options.nail_margin_side 
     });
-    
+    */
     // CSS for active class
     if ( this.options.nail_activeClass === 'active_border' ) {
       /* This code works but it is required to get the right stylesheet with correct filename
@@ -140,7 +139,7 @@ class ThumbnailSlider {
         
       document.head.appendChild(style);
     }
-
+    
     if ( this.isFirefox ) {
       const style = document.createElement('style');
       style.innerHTML = `
@@ -149,6 +148,7 @@ class ThumbnailSlider {
         }`;
       document.head.appendChild(style);
     }
+    
   }
 
   /**
@@ -157,7 +157,7 @@ class ThumbnailSlider {
    * @returns 
    */
   mouseDownHandler(e) {
-    if ( e.srcElement.parentElement.className !== 'thumbnail_slide') return; 
+    if ( e.srcElement.parentElement.className !== 'thumbnail_slide') return; // TODO: Use Event.target instead.
     
     this.pos = {
         // The current scroll
@@ -196,7 +196,7 @@ class ThumbnailSlider {
    * @returns 
    */
   mouseUpHandler(e) {
-    if ( e.srcElement.parentElement.className !== 'thumbnail_slide') return; 
+    if ( e.srcElement.parentElement.className !== 'thumbnail_slide') return; // TODO: Use Event.target instead.
 
     let posXDelta = e.clientX - this.posXOld;
     
@@ -227,26 +227,25 @@ class ThumbnailSlider {
 
     // scroll into viewport of parent div.
     let parentWidth = this.ele.offsetWidth; 
+    let xOffset = this.ele.getBoundingClientRect().left;
 
-    if (this.thumbnails[number].getBoundingClientRect().x < 20) { // to left
-      let toLeft = this.thumbnails[number].getBoundingClientRect().x;
+    if (this.thumbnails[number].getBoundingClientRect().x - xOffset < 10) { // to left
+      let toLeft = this.thumbnails[number].getBoundingClientRect().x -xOffset;
       let widthOfImageLeft = 0;
-      let thumbOverflow = 0; // added by class
+    
       if (number !== 0) {
-          widthOfImageLeft = this.thumbnails[number-1].aspectRatio * this.thumbnails[number].offsetHeight;
-          thumbOverflow = widthOfImageLeft + 10; 
+          widthOfImageLeft = this.thumbnails[number-1].aspectRatio * this.thumbnails[number].offsetHeight; 
       }
-      this.ele.scrollBy({top:0, left: (toLeft - thumbOverflow), behavior:'smooth'}); 
+      this.ele.scrollBy({top:0, left: (toLeft - widthOfImageLeft - this.thumbOverflow), behavior:'smooth'}); 
       
     } else if(this.thumbnails[number].getBoundingClientRect().x + this.thumbnails[number].getBoundingClientRect().width > parentWidth) { // to right
       let toLeft = this.thumbnails[number].getBoundingClientRect().x + this.thumbnails[number].getBoundingClientRect().width - parentWidth;
+      toLeft = toLeft - xOffset;
       let widthOfImageRight = 0;
-      let thumbOverflow = 0;
       if (number !== this.numberOfThumbnails-1) {
-        widthOfImageRight = this.thumbnails[number+1].aspectRatio * this.thumbnails[number].offsetHeight;
-          thumbOverflow = widthOfImageRight - 10; 
+        widthOfImageRight = this.thumbnails[number+1].aspectRatio * this.thumbnails[number].offsetHeight; 
       }
-      this.ele.scrollBy({top:0, left: (toLeft + thumbOverflow), behavior:'smooth'}); 
+      this.ele.scrollBy({top:0, left: (toLeft + widthOfImageRight + this.thumbOverflow), behavior:'smooth'}); 
     }
       
     // trigger event for map and swiper-slider. 

@@ -19,19 +19,25 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 // TODO-list
-// PHP: filter für Bild mit Dateinamen aus Standar WP-Ordner. mehrere Ordner mit Komma getrennt. Filter mit Komma getrennt?
-// Einstellung Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem!
-//    CSS von Codepen verwenden
-// object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
-// als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
-// Eigene Thumbnail-Leiste?
+// 			PHP: filter für Bild mit Dateinamen aus Standar WP-Ordner. mehrere Ordner mit Komma getrennt. Filter mit Komma getrennt?
+// 			Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem!
+// 			object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
+// 			als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
+
+// Eigene Thumbnail-Leiste
+// !special Thumbs: Video thumbs: breite verwenden, Text = Video 1, hintergrund grau als klasse setzen. 
+// !special Thumbs: JS: resizer noch nötig? optimierung.
+// !scroll bar unten einschalten im CSS. Farbe einstellen. JS handler dann noch erforderlich?
+// ! test resizer in Firefox mit bar schmäler als bild
+
 // update auf swiper 8.4.4
+
 // --- Karte
-// Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
-// anderen Icon-Satz verwenden? Neue Icons skalieren.
-// context-menü für das marker popup deaktivieren mit : oncontextmenu="return false;"
+// 		Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
+// 		anderen Icon-Satz verwenden? Neue Icons skalieren.
+// !context-menü für das marker popup deaktivieren mit : oncontextmenu="return false;"
 // --- build-process : webpack 
-// lazy-loading als funktion mit await und then. splitchunks. copyfile für bilder.
+// !lazy-loading als funktion mit await und then. splitchunks. copyfile für bilder.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -164,7 +170,8 @@ function showmulti($attr, $content = null)
 		'sw_transition_duration'=>300,
 		'sw_mousewheel'		=> 'true',
 		'sw_hashnavigation' => 'true',
-		'sw_max_zoom_ratio'	=> 3
+		'sw_max_zoom_ratio'	=> 3,
+		'sw_thumbbartype'	=> 'integrated',
 
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
@@ -311,16 +318,16 @@ function showmulti($attr, $content = null)
 				'sw_keyboard'			=> 'true',
 				// thumbnails settings
 				'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs only
-				'thumbbartype'			=> 'special', // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
+				'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
 				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful
 				'bar_margin_top'     	=> '3px', // top margin of thumbnail bar in px
-				'thumbminheight'		=> $f_thumbheight,
-				'thumbrelheight'		=> '15%', // height of thumbnail bar in percent. Use 1% to have a fixed height
-				'thumbmargin' 			=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
+				'bar_min_height'		=> $f_thumbheight . 'px', // TODO: now two values for the height!
+				'bar_rel_height'		=> '1%', // height of thumbnail bar in percent. Use 1% to have a fixed height
+				'nail_margin_side' 		=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
 				'nail_activeClass'		=> 'active_border', // available params: active, active_animation, active_border
 				// only for active_border  
-				'thumbborderwidth' 		=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
-				'thumbbordercolor' 		=> $thumbbordercolor, // '#ea0000', 
+				'active_border_width'	=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
+				'active_border_color'	=> $thumbbordercolor, // '#ea0000', 
 				'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused
 			];
 			

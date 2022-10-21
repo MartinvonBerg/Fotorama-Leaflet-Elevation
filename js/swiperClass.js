@@ -3,6 +3,7 @@
 // The following module loading reduces bundle size from 47.8 kB to 38.2 kBytes.
 /*
 import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard} from 'swiper';
+TODO: import thumbnails
 // import Swiper styles
 import 'swiper/css/bundle';
 import "./swiperClass.css";
@@ -26,7 +27,7 @@ class SliderSwiper {
 
     /**
      * Constructor Function
-     * @param {int} number current number
+     * @param {int} number current number of slider on page
      * @param {string} elementOnPage id of the div on the page that shall contain the slider
      */
      constructor(number, elementOnPage) {
@@ -48,44 +49,22 @@ class SliderSwiper {
         //if (this.#pageVariables.imgdata.length < this.imageCounts) {
         //    this.imageCounts = this.#pageVariables.imgdata.length;
         //}
-         
-        this.thumbs = new Swiper('#thumbsSwiper'+this.number, {
-            loop: true,
-            spaceBetween: this.space,
-            //slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view, // value for slides per view
-            breakpointsBase: 'container',
-            //centerInsufficientSlider: true,
-            //centeredSlides: true,
-            //centeredSlidesBounds: true,
-            breakpoints: this.calcBreakpoints(),
-            /*
-            breakpoints: {
-                240: {
-                    slidesPerView: 3,
-                },
-                361: {
-                    slidesPerView: 4,
-                },
-                482: {
-                    slidesPerView: 5,
-                },
-                603: {
-                    slidesPerView: 6,
-                },
-                724: {
-                    slidesPerView: 7,
-                },
-                905: {
-                    slidesPerView: 8,
-                },
-                1024: {
-                    slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view,
-                }
-            },
-            */
-            //freeMode: false,
-            watchSlidesProgress: true
-        });
+        if (this.#pageVariables.sw_options.thumbbartype === 'integrated') { 
+            this.thumbs = new Swiper('#thumbsSwiper'+this.number, {
+                loop: true,
+                spaceBetween: this.space,
+                //slidesPerView: this.#pageVariables.sw_options.sw_slides_per_view, // value for slides per view
+                breakpointsBase: 'container',
+                //centerInsufficientSlider: true,
+                //centeredSlides: true,
+                //centeredSlidesBounds: true,
+                breakpoints: this.calcBreakpoints(),
+                //freeMode: false,
+                watchSlidesProgress: true
+            });
+        } else {
+            this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options);
+        }
 
         this.sw_options = {
             // Default parameters
@@ -136,9 +115,7 @@ class SliderSwiper {
                 nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
             },
-            thumbs: {
-                swiper: this.thumbs,
-            },
+            thumbs: this.#pageVariables.sw_options.thumbbartype === 'integrated' ? { swiper: this.thumbs } : {},
             on: {
                 init: (event) => this.#listenEventSliderLoaded(event)
             },
@@ -152,9 +129,20 @@ class SliderSwiper {
         this.scrollToHash();
         this.#listenEventSliderShowend();
         ((this.#pageVariables.sw_options.sw_fslightbox === 'true') && (typeof(fsLightboxInstances) !== 'undefined')) ? window.addEventListener('load', this.lightbox(this.number), false ) : null;
+
+        if (this.#pageVariables.sw_options.thumbbartype === 'special') {
+            let classThis = this;
+            this.thumbs.ele.parentElement.addEventListener('thumbnailchange', function (event) {
+                if (event.detail.slider === classThis.number) classThis.setSliderIndex(event.detail.newslide);
+            });
+        }
     }
 
     // --------------- Internal private methods --------------------------------
+    /**
+     * calculate the breakpoints for Swiper thumbnails
+     * @returns {Object} the object with breakpoints
+     */
     calcBreakpoints() {
         let w = this.#pageVariables.sw_options.f_thumbwidth; // this.space
         let max = this.#pageVariables.sw_options.sw_slides_per_view;
@@ -165,6 +153,7 @@ class SliderSwiper {
         }
         return bp;
     }
+
     /**
      * scroll to given hash value (e.g. the id of the swiper div on page load).
      * This function assumes that swiper.js loads the slide given after the '/' in the url.
@@ -304,7 +293,6 @@ class SliderSwiper {
     }
 
     // --------------- Generate Class Events -----------------------------------
-    
     /**
      * Trigger Event that a new Image was finally loaded. Pass image index Number and Slider ID to event handler.
      * Call other functions that have to be run with that event.
@@ -312,6 +300,7 @@ class SliderSwiper {
      */
     #listenEventSliderShowend() {
         // create Event on swiper change
+        let classThis = this;
         this.swiper.on('slideChange', function (event) {
             // stop all videos
             // https://stackoverflow.com/questions/72744073/stop-and-start-autoplay-in-swiper-container-based-on-the-video-play-and-pause-ev
@@ -333,6 +322,11 @@ class SliderSwiper {
                 }
             });
             event.el.dispatchEvent(changed);
+
+            // move the thumbnail
+        if (classThis.#pageVariables.sw_options.thumbbartype === 'special') {
+            classThis.thumbs.setActiveThumb( event.realIndex)
+        }
         });
      };
 
@@ -345,6 +339,10 @@ class SliderSwiper {
         // create Event on swiper init, only once 
         let nr = event.realIndex + 1;
         let m = parseInt(event.el.id.replace('swiper',''));
+
+        if (this.#pageVariables.sw_options.thumbbartype === 'special') {
+            this.thumbs.setActiveThumb( event.realIndex)
+        }
         
         // define the CustomEvent to be fired
         const changed = new CustomEvent('sliderload', {
