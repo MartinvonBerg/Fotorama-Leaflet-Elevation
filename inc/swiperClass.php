@@ -530,7 +530,8 @@ final class SwiperClass
 
         $inner1 = $doc->createElement('div');
         $inner1->setAttribute('id', 'thumb_inner_' . $this->shortcodecounter);
-        $inner1->setAttribute('class', 'thumb_inner thumb_inner_centered');
+        //$inner1->setAttribute('class', 'thumb_inner thumb_inner_centered'); // centered here
+        $inner1->setAttribute('class', 'thumb_inner'); 
         $thumbsWrapper->appendChild($inner1);
 
         $imgnr = 0;

@@ -73,23 +73,28 @@ class ThumbnailSlider {
     // detect firefox to prevent wrong height.
     if (navigator.userAgent.match(/firefox|fxios/i)) this.isFirefox = true;
 
-    // we don't need the observer for firefox.
+    // set-up Observer for resize event
     this.containerObserver = new ResizeObserver( (e) =>this.resizer(e) );
     this.containerObserver.observe(this.ele.parentElement);
 
+    this.updateCSS();
+
     // add a handler to every thumbnail images and do action if all images were loaded.
+    let thumbWidth = this.ele.parentElement.offsetWidth;
+    let estimatedWidth = (this.numberOfThumbnails+1) * this.options.f_thumbwidth; // add one image width as tolerance range
+
     let imagesLeft = this.numberOfThumbnails;
     for (let i=0; i<imagesLeft; i++) {
       this.thumbnails[i].children[0].addEventListener('load', () => {
         this.thumbnails[i].aspectRatio = this.thumbnails[i].children[0].offsetWidth / this.thumbnails[i].children[0].offsetHeight;
         imagesLeft--;
 
-        if (imagesLeft === 0) { 
-          this.centerThumbs(); 
+        if ( (imagesLeft === 0) && (estimatedWidth<thumbWidth)) { 
+          this.ele.classList.add('thumb_inner_centered')
+          //this.centerThumbs(); 
           // change CSS options
-          this.setActiveThumb(this.currentActive) // the active image has to be set, otherwise centering won't work.
-          this.updateCSS();
-          
+          //this.setActiveThumb(this.currentActive) // the active image has to be set, otherwise centering won't work.
+          //this.updateCSS();
           // TODO: trigger event thumbnails loaded ??? Is it needed ??? Probably not.
         }
         
@@ -292,19 +297,6 @@ class ThumbnailSlider {
       if (toScroll > 10 ) {
         this.ele.scrollBy({top:0, left: -toScroll, behavior:'instant'}); 
       }
-    }
-  }
-
-  
-  /**
-   * Center the active thumbnail and remove the centered Thumbnails at load if initially the width of all thumbs is NOT smaller than the thumbsbar.
-   */
-  centerThumbs() {
-    let wrapperWidth = this.ele.parentElement.offsetWidth; //document.getElementsByClassName('thumb_wrapper')[0].offsetWidth;  
-    let allThumbsWidth = this.ele.offsetWidth; //document.getElementsByClassName('thumb_inner')[0].offsetWidth;  
-    if (allThumbsWidth > wrapperWidth) {
-      // is wider: remove styles from current thumbs but not all. because not all classes on page might be same.
-      this.ele.classList.remove('thumb_inner_centered')
     }
   }
 }

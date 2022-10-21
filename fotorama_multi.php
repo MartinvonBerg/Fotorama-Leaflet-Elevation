@@ -28,7 +28,7 @@
 // !special Thumbs: Video thumbs: breite verwenden, Text = Video 1, hintergrund grau als klasse setzen. 
 // !special Thumbs: JS: resizer noch nötig? optimierung.
 // !scroll bar unten einschalten im CSS. Farbe einstellen. JS handler dann noch erforderlich?
-// ! test resizer in Firefox mit bar schmäler als bild
+// ! mediaquereis für die thumb höhe einbauen?
 
 // update auf swiper 8.4.4
 
@@ -172,6 +172,8 @@ function showmulti($attr, $content = null)
 		'sw_hashnavigation' => 'true',
 		'sw_max_zoom_ratio'	=> 3,
 		'sw_thumbbartype'	=> 'integrated',
+		'sw_bar_margin_top'	=> '5px',
+		'sw_activetype'	 	=> 'active',
 
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
@@ -319,16 +321,16 @@ function showmulti($attr, $content = null)
 				// thumbnails settings
 				'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs only
 				'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
-				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful
-				'bar_margin_top'     	=> '3px', // top margin of thumbnail bar in px
+				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful. for future change.
+				'bar_margin_top'     	=> $sw_bar_margin_top, // top margin of thumbnail bar in px
 				'bar_min_height'		=> $f_thumbheight . 'px', // TODO: now two values for the height!
-				'bar_rel_height'		=> '1%', // height of thumbnail bar in percent. Use 1% to have a fixed height
+				'bar_rel_height'		=> '1%', // height of thumbnail bar in percent. Use 1% to have a fixed height. for future change.
 				'nail_margin_side' 		=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
-				'nail_activeClass'		=> 'active_border', // available params: active, active_animation, active_border
+				'nail_activeClass'		=> $sw_activetype, // available params: active, active_animation, active_border
 				// only for active_border  
 				'active_border_width'	=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
 				'active_border_color'	=> $thumbbordercolor, // '#ea0000', 
-				'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused
+				'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused. for future change.
 			];
 			
 			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options); // Attention: Inconsistent constructor!
