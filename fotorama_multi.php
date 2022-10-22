@@ -26,8 +26,6 @@
 
 // Eigene Thumbnail-Leiste
 // !special Thumbs: Video thumbs: breite verwenden, Text = Video 1, hintergrund grau als klasse setzen. 
-// !scroll bar unten einschalten im CSS. Farbe einstellen. JS handler dann noch erforderlich?
-// ! mediaquereis für die thumb höhe einbauen?
 
 // update auf swiper 8.4.4
 

@@ -341,7 +341,7 @@ class SliderSwiper {
         let m = parseInt(event.el.id.replace('swiper',''));
 
         if (this.#pageVariables.sw_options.thumbbartype === 'special') {
-            this.thumbs.setActiveThumb( event.realIndex)
+            this.thumbs.setActiveThumb( event.realIndex) // this method is called before all images are loaded, so only the index is set.
         }
         
         // define the CustomEvent to be fired

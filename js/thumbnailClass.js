@@ -75,7 +75,7 @@ class ThumbnailSlider {
     if (navigator.userAgent.match(/firefox|fxios/i)) this.isFirefox = true;
 
     // set-up Observer for resize event
-    this.containerObserver = new ResizeObserver( this.resizer );
+    this.containerObserver = new ResizeObserver( (e) =>this.resizer(e) );
     this.containerObserver.observe(this.ele.parentElement);
 
     this.updateCSS();
@@ -85,6 +85,7 @@ class ThumbnailSlider {
     let allImagesdWidth = 0; //(this.numberOfThumbnails+1) * this.options.f_thumbwidth; // add one image width as tolerance range
 
     let imagesLeft = this.numberOfThumbnails;
+
     for (let i=0; i<imagesLeft; i++) {
       this.thumbnails[i].children[0].addEventListener('load', () => {
         this.thumbnails[i].aspectRatio = this.thumbnails[i].children[0].offsetWidth / this.thumbnails[i].children[0].offsetHeight;
@@ -92,15 +93,8 @@ class ThumbnailSlider {
         allImagesdWidth += this.thumbnails[i].children[0].offsetWidth + 2*parseInt(this.options.nail_margin_side);
         imagesLeft--;
 
-        if ( (imagesLeft === 0) && (allImagesdWidth < thumbWidth)) { 
-          this.ele.classList.add('thumb_inner_centered');
-          //this.centerThumbs(); 
-          // change CSS options
-          //this.setActiveThumb(this.currentActive) // the active image has to be set, otherwise centering won't work.
-          //this.updateCSS();
-          // TODO: trigger event thumbnails loaded ??? Is it needed ??? Probably not.
-        }
-        
+        if ( (imagesLeft === 0) ) this.setActiveThumb(this.currentActive);
+        if ( (imagesLeft === 0) && (allImagesdWidth < thumbWidth)) this.ele.classList.add('thumb_inner_centered');
       });
     }
   }
@@ -147,16 +141,29 @@ class ThumbnailSlider {
         
       document.head.appendChild(style);
     }
+
+    let h = 0.8 * parseInt(this.options.bar_min_height);
     
     if ( this.isFirefox ) {
       const style = document.createElement('style');
       style.innerHTML = `
         .thumb_inner div img { 
           height: ${this.options.bar_min_height};
-        }`;
+        }
+        @media screen and (max-width: 480px) {
+          .thumb_inner div img {
+              height: ${h}px !important;
+        }}`;
       document.head.appendChild(style);
     }
-    
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @media screen and (max-width: 480px) {
+	      .thumb_wrapper {
+		        height: ${h}px !important;
+	    }}`;
+    document.head.appendChild(style);
   }
 
   /**
@@ -289,19 +296,19 @@ class ThumbnailSlider {
       this.ele.classList.add('thumb_inner_centered');
     } else if ( (wrapperWidth-allImagesdWidth) <  -2) {
       this.ele.classList.remove('thumb_inner_centered');
-
-      // scroll only here
-      if ( distLeft > (offsetLeft)) { // rechts von der Mitte: scrolle nach Links
-        toScroll = distLeft -offsetLeft
-        this.ele.scrollBy({top:0, left: toScroll, behavior:'instant'}); 
-  
-      } else { // links von der Mitte scrolle nach rechts
-        toScroll = (offsetLeft -distLeft)
-        if (toScroll > 10 ) {
-          this.ele.scrollBy({top:0, left: -toScroll, behavior:'instant'}); 
-        }
-      }
-
     }
+
+    // scroll only here
+    if ( distLeft > (offsetLeft)) { // rechts von der Mitte: scrolle nach Links
+      toScroll = distLeft -offsetLeft
+      this.ele.scrollBy({top:0, left: toScroll, behavior:'instant'}); 
+
+    } else { // links von der Mitte scrolle nach rechts
+      toScroll = (offsetLeft -distLeft)
+      if (toScroll > 10 ) {
+        this.ele.scrollBy({top:0, left: -toScroll, behavior:'instant'}); 
+      }
+    }
+    
   }
 }
