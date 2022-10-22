@@ -25,12 +25,11 @@
 // 			als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
 // 			update auf swiper 8.4.4
 // --- Karte
-// 		Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
-// 		anderen Icon-Satz verwenden? Neue Icons skalieren.
+// 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
+// 			anderen Icon-Satz verwenden? Neue Icons skalieren.
 
-// !context-menü für das marker popup deaktivieren mit : oncontextmenu="return false;"
 // --- build-process : webpack 
-// !lazy-loading als funktion mit await und then. splitchunks. copyfile für bilder.
+// !copyfile für bilder.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -106,7 +105,7 @@ function showmulti($attr, $content = null)
 	static $fotoramaCounter = 0;
 	static $swiperCounter = 0;
 	static $pageVarsForJs = [];
-	$mode = 'development';
+	$mode = 'production';
 	$sw_options = [];
 		
  	// Get Values from Admin settings page

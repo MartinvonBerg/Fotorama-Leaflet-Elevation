@@ -48,8 +48,6 @@ module.exports = [
       }),
     ],
   },
-  
-},
 /* create bundle for Leaflet
 {
   entry: './js/leafletMapClass.js',
@@ -142,4 +140,5 @@ module.exports = [
   },
 },
 */
+}
 ];

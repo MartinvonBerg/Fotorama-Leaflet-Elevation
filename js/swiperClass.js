@@ -1,14 +1,13 @@
 // import Swiper JS
 //import Swiper from 'swiper/bundle'; // imports the complete bundle.
 // The following module loading reduces bundle size from 47.8 kB to 38.2 kBytes.
-/*
-import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard} from 'swiper';
-TODO: import thumbnails
+import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectFade, EffectCube, Keyboard} from 'swiper';
 // import Swiper styles
 import 'swiper/css/bundle';
 import "./swiperClass.css";
+import {ThumbnailSlider} from "./thumbnailClass";
+
 export {SliderSwiper};
-*/
 
 class SliderSwiper {
         
@@ -63,12 +62,16 @@ class SliderSwiper {
                 watchSlidesProgress: true
             });
         } else {
-            this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options);
+            // this dynamic import works fine but the class is loaded to late and therefore unknown
+            //import(/* webpackPreload: true */ './thumbnailClass').then((ThumbnailSlider) => {
+            //  this.thumbs = new ThumbnailSlider.ThumbnailSlider(this.number, this.#pageVariables.sw_options)
+            //});
+            this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options)
         }
 
         this.sw_options = {
             // Default parameters
-            //modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard],
+            modules: [Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Keyboard],
             lazy: {
                 enabled:true,
                 checkInView:true,
@@ -340,7 +343,7 @@ class SliderSwiper {
         let nr = event.realIndex + 1;
         let m = parseInt(event.el.id.replace('swiper',''));
 
-        if (this.#pageVariables.sw_options.thumbbartype === 'special') {
+        if (this.#pageVariables.sw_options.thumbbartype === 'special' && typeof(this.thumbs.setActiveThumb) === 'function') {
             this.thumbs.setActiveThumb( event.realIndex) // this method is called before all images are loaded, so only the index is set.
         }
         
