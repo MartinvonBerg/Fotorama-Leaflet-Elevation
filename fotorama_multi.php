@@ -23,15 +23,11 @@
 // 			Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem!
 // 			object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
 // 			als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
-
-// Eigene Thumbnail-Leiste
-// !special Thumbs: Video thumbs: breite verwenden, Text = Video 1, hintergrund grau als klasse setzen. 
-
-// update auf swiper 8.4.4
-
+// 			update auf swiper 8.4.4
 // --- Karte
 // 		Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 // 		anderen Icon-Satz verwenden? Neue Icons skalieren.
+
 // !context-menü für das marker popup deaktivieren mit : oncontextmenu="return false;"
 // --- build-process : webpack 
 // !lazy-loading als funktion mit await und then. splitchunks. copyfile für bilder.
@@ -316,7 +312,7 @@ function showmulti($attr, $content = null)
 				'sw_aspect_ratio'		=> $ratio,
 				'sw_keyboard'			=> 'true',
 				// thumbnails settings
-				'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs only
+				'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
 				'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
 				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful. for future change.
 				'bar_margin_top'     	=> $sw_bar_margin_top, // top margin of thumbnail bar in px

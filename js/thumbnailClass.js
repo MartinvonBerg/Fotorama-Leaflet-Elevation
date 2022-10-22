@@ -93,8 +93,10 @@ class ThumbnailSlider {
         allImagesdWidth += this.thumbnails[i].children[0].offsetWidth + 2*parseInt(this.options.nail_margin_side);
         imagesLeft--;
 
-        if ( (imagesLeft === 0) ) this.setActiveThumb(this.currentActive);
-        if ( (imagesLeft === 0) && (allImagesdWidth < thumbWidth)) this.ele.classList.add('thumb_inner_centered');
+        if ( (imagesLeft === 0) ) 
+          {this.setActiveThumb(this.currentActive);}
+        if ( (imagesLeft === 0) && (allImagesdWidth < thumbWidth)) 
+          {this.ele.classList.add('thumb_inner_centered');}
       });
     }
   }
@@ -172,7 +174,7 @@ class ThumbnailSlider {
    * @returns 
    */
   mouseDownHandler(e) {
-    if ( e.srcElement.parentElement.className !== 'thumbnail_slide') return; // TODO: Use Event.target instead.
+    if ( e.target.parentElement.className !== 'thumbnail_slide') return; 
     
     this.pos = {
         // The current scroll
@@ -211,11 +213,11 @@ class ThumbnailSlider {
    * @returns 
    */
   mouseUpHandler(e) {
-    if ( e.srcElement.parentElement.className !== 'thumbnail_slide') return; // TODO: Use Event.target instead.
+    if ( e.target.parentElement.className !== 'thumbnail_slide') return; 
 
     let posXDelta = e.clientX - this.posXOld;
     
-    if ( (Math.abs(posXDelta) < 5) && (e.composedPath()[0].nodeName.toLowerCase() === 'img') ) {
+    if ( (Math.abs(posXDelta) < 5) ) {
       let thnumb = parseInt(e.composedPath()[1].id.replace('thumb','')) 
       this.setActiveThumb(thnumb)
     }
@@ -226,6 +228,14 @@ class ThumbnailSlider {
     this.ele.style.cursor = 'pointer';
     this.ele.style.removeProperty('user-select');
   };
+
+  getAspectRatio(number) {
+    let aspR = this.thumbnails[number].aspectRatio;
+    if ( typeof(aspR) === 'undefined') {
+      aspR = parseInt(this.options['f_thumbwidth']) / parseInt(this.options['bar_min_height']);
+    }
+    return aspR;
+  }
 
   /**
    * set the active thumbnail of the bar and trigger an event that this happened.
@@ -249,7 +259,7 @@ class ThumbnailSlider {
       let widthOfImageLeft = 0;
     
       if (number !== 0) {
-          widthOfImageLeft = this.thumbnails[number-1].aspectRatio * this.thumbnails[number].offsetHeight; 
+          widthOfImageLeft = this.getAspectRatio(number-1) * this.thumbnails[number].offsetHeight; 
       }
       this.ele.scrollBy({top:0, left: (toLeft - widthOfImageLeft - this.thumbOverflow), behavior:'smooth'}); 
       
@@ -258,7 +268,7 @@ class ThumbnailSlider {
       toLeft = toLeft - xOffset;
       let widthOfImageRight = 0;
       if (number !== this.numberOfThumbnails-1) {
-        widthOfImageRight = this.thumbnails[number+1].aspectRatio * this.thumbnails[number].offsetHeight; 
+        widthOfImageRight = this.getAspectRatio(number+1) * this.thumbnails[number].offsetHeight; 
       }
       this.ele.scrollBy({top:0, left: (toLeft + widthOfImageRight + this.thumbOverflow), behavior:'smooth'}); 
     }

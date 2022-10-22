@@ -565,14 +565,49 @@ final class SwiperClass
                     $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}"); 
                 };
 
-                $img2->setAttribute('alt','Thumbnail '.($imgnr+1).' for image slider '.$this->shortcodecounter.' operation');
+                $img2->setAttribute('alt','Image Thumbnail '.($imgnr+1).' for Slider '.$this->shortcodecounter.' operation');
                 $thumbsSlide->appendChild($img2);
                 
             }
             // end HTML for image
             else if ($data['type']==='video') {
-                [$vid, $thumb] = $this->genVideoSlide($doc, $data, $up_url, $thumbsdir);
-                $inner1->appendChild($thumb);
+                //[$vid, $thumb] = $this->genVideoSlide($doc, $data, $up_url, $thumbsdir);
+                //$inner1->appendChild($thumb);
+                // create thumbnail slide
+                $thumbsSlide = $doc->createElement('div','');
+                $thumbsSlide->setAttribute('class', 'thumbnail_slide');
+                $thumbsSlide->setAttribute('id', 'thumb' . $imgnr);
+                $thumbsSlide->setAttribute('draggable', 'false');
+        
+                $inner1->appendChild($thumbsSlide);
+
+                // append the img to thumbnail
+                $img2 = $doc->createElement('img','');
+                $img2->setAttribute('loading', 'lazy');
+                $img2->setAttribute('class', 'th_wrap_'. $this->shortcodecounter .'_img');
+                $img2->setAttribute('draggable', 'false');
+                $img2->setAttribute('style', 'margin-left:' . $this->options['nail_margin_side'] . ';margin-right:' . $this->options['nail_margin_side']);
+
+                if ( $data['thumbinsubdir'] ) {
+                    $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
+                } elseif ( $data['thumbavail'] ) {
+                    // sizes is missing. but not required in examples.
+                    $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}"); 
+                } else { 
+                    // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
+                    //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}"); 
+                    // append the img to Thumbnail
+                    $img2 = null;
+                    $img2 = $doc->createElement('div','Video '.($imgnr+1));
+                    //$img2->setAttribute('loading', 'lazy');
+                    $img2->setAttribute('class', 'th_wrap_'. $this->shortcodecounter .'_img');
+                    $img2->setAttribute('draggable', 'false');
+                    $img2->setAttribute('style', 'display:flex;justify-content:center;align-items:center;width:'.$this->options['f_thumbwidth'].'px;background:gray;height:100%;margin-left:' . $this->options['nail_margin_side'] . ';margin-right:' . $this->options['nail_margin_side']); 
+                };
+
+                $img2->setAttribute('alt','Video Thumbnail '.($imgnr+1).' for Slider '.$this->shortcodecounter.' operation');
+                $thumbsSlide->appendChild($img2);
+
             }
             // ----------- end HTML for one image or video. 
             
