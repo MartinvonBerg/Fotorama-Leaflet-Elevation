@@ -5,6 +5,7 @@ import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, Effect
 // import Swiper styles (Selection of CSS saves 0,6 kB only)
 import 'swiper/css/bundle';
 import "./swiperClass.css";
+import {ThumbnailSlider} from "./thumbnailClass";
 
 export {SliderSwiper};
 
@@ -61,7 +62,9 @@ class SliderSwiper {
                 watchSlidesProgress: true
             });
         } else if (this.#pageVariables.sw_options.thumbbartype === 'special') {
-            // dynamic import of ThumbnailClass: Saves 1.3 kB only. Just for testing of async imports.
+            // dynamic import of ThumbnailClass: Saves 1.3 kB only. Just for testing of async imports. 
+            // HashNavigation does not work with that. 
+            /*
             import('./thumbnailClass').then((ThumbnailSlider) => {
               this.thumbs = new ThumbnailSlider.ThumbnailSlider(this.number, this.#pageVariables.sw_options);
               let classThis = this;
@@ -69,7 +72,8 @@ class SliderSwiper {
                   if (event.detail.slider === classThis.number) classThis.setSliderIndex(event.detail.newslide);
               });
             });
-            //this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options)
+            */
+            this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options)
         }
 
         this.sw_options = {
@@ -135,14 +139,14 @@ class SliderSwiper {
         this.scrollToHash();
         this.#listenEventSliderShowend();
         ((this.#pageVariables.sw_options.sw_fslightbox === 'true') && (typeof(fsLightboxInstances) !== 'undefined')) ? window.addEventListener('load', this.lightbox(this.number), false ) : null;
-        /* This does not work here if the ThumbnailClass is conditionally imported
+        
+        // This does not work here if the ThumbnailClass is conditionally imported
         if (this.#pageVariables.sw_options.thumbbartype === 'special') {
             let classThis = this;
             this.thumbs.ele.parentElement.addEventListener('thumbnailchange', function (event) {
                 if (event.detail.slider === classThis.number) classThis.setSliderIndex(event.detail.newslide);
             });
         }
-        */
     }
 
     // --------------- Internal private methods --------------------------------

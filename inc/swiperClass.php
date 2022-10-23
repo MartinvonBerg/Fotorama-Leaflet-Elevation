@@ -15,8 +15,6 @@
  * @version    0.12.0
  */
 
-// TODO: testen auf local WP 6.0 und bei webgo 
-// TODO: Demo Seite für Video erstellen
 // TODO: doku machen und release machen
 //
 

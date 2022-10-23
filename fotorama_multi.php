@@ -23,13 +23,9 @@
 // 			Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem!
 // 			object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
 // 			als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
-// 			update auf swiper 8.4.4
 // --- Karte
 // 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 // 			anderen Icon-Satz verwenden? Neue Icons skalieren.
-
-// --- build-process : webpack 
-// !copyfile für bilder.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -315,8 +311,8 @@ function showmulti($attr, $content = null)
 				'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
 				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful. for future change.
 				'bar_margin_top'     	=> $sw_bar_margin_top, // top margin of thumbnail bar in px
-				'bar_min_height'		=> $f_thumbheight . 'px', // TODO: now two values for the height!
-				'bar_rel_height'		=> '1%', // height of thumbnail bar in percent. Use 1% to have a fixed height. for future change.
+				'bar_min_height'		=> $f_thumbheight . 'px', // now two values for the height!
+				'bar_rel_height'		=> '1%', // Does not work.height of thumbnail bar in percent. Use 1% to have a fixed height. for future change.
 				'nail_margin_side' 		=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
 				'nail_activeClass'		=> $sw_activetype, // available params: active, active_animation, active_border
 				// only for active_border  
