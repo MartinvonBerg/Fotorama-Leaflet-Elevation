@@ -8,7 +8,7 @@ module.exports = [
   entry: ['./js/swiperClass.js'],
   output: {
     filename: 'swiper_bundle.min.js',
-    path: path.resolve(__dirname, 'release/js/swiper'),
+    path: path.resolve(__dirname, 'build/js/swiper'),
     library: {
       name: "fm_swiper",
       type: "var",

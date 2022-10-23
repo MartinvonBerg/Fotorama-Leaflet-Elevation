@@ -183,21 +183,5 @@ function enqueue_fotorama_scripts( string $mode='production' ) {
 
 function enqueue_swiper_scripts( string $mode='production' ) {
     $plugin_url = plugins_url('/', __FILE__);
-    $version = '0.12.0';
-
-    if ( $mode === 'production') {
-        wp_enqueue_script('swiper_bundle', $plugin_url . 'js/swiper/swiper_bundle.min.js', [], '8.4.4', true);
-
-    } else if ( $mode === 'prodtest') {
-        // in development but test the generated js bundle
-        wp_enqueue_script('swiper_bundle', $plugin_url . 'release/js/swiper/swiper_bundle.min.js', [], '8.4.4', true);
-
-    } else {
-        wp_enqueue_style('swiper_css', $plugin_url . 'js/swiper/swiper-bundle.min.css', [], '8.4.4');
-        wp_enqueue_script('swiper_js', $plugin_url . 'js/swiper/swiper-bundle.min.js', [], '8.4.4');
-        wp_enqueue_style('swiperClass_css', $plugin_url . 'js/swiperClass.css', [], $version);
-        wp_enqueue_style('thumbnailClass_css', $plugin_url . 'js/thumbnailClass.css', [], $version);
-        wp_enqueue_script('thumbnailClass_js', $plugin_url . 'js/thumbnailClass.js', [], $version, true);
-        wp_enqueue_script('swiperClass_js', $plugin_url . 'js/swiperClass.js', [], $version, true);
-    }
+    wp_enqueue_script('swiper_bundle', $plugin_url . 'build/js/swiper/swiper_bundle.min.js', [], '8.4.4', true);
 }

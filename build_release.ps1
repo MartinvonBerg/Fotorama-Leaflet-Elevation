@@ -13,6 +13,9 @@ Copy-Item ".\uninstall.php" -Destination "$($path)\uninstall.php"
 # first build the new gutenberg block build files
 npm run build
 
+# create swiper bundle
+npx webpack --config .\webpack.swiper.js
+
 # copy gutenberg build files
 $path = ".\release"
 $path = "$($path)\build"
@@ -118,9 +121,6 @@ robocopy .\languages $path *.* /s /NFL /NDL /NJH /NJS
 $path = ".\release"
 $path = "$($path)\leaflet_map_tiles"
 robocopy .\leaflet_map_tiles $path *.* /NFL /NDL /NJH /NJS
-
-# create swiper bundle
-npx webpack --config .\webpack.swiper.js
 
 # Finally write a warning that CSS-Files should have been minified before
 Write-Warning "Hast Du die CSS-Files minimiert?"

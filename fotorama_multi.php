@@ -26,6 +26,8 @@
 // --- Karte
 // 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 // 			anderen Icon-Satz verwenden? Neue Icons skalieren.
+// TODO: Multitrack schaltet die Statistik nicht um bzw. zeigt nur die vom ersten Trail!
+// TODO: ladereihenfolge bei Multitrack stimmt nicht.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -150,7 +152,7 @@ function showmulti($attr, $content = null)
 		'shortcaption'		=> 'false',
 		'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap',
 		'slider'			=> 'fotorama', // 'fotorama' or 'swiper' : secret shortcode
-		'sw_effect'			=> 'cube', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+		'sw_effect'			=> 'slide', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
 		'sw_zoom'			=> 'true',
 		'sw_fslightbox'		=> 'true',
 		'sw_pagination'		=> 'false',
@@ -159,9 +161,9 @@ function showmulti($attr, $content = null)
 		'sw_mousewheel'		=> 'true',
 		'sw_hashnavigation' => 'true',
 		'sw_max_zoom_ratio'	=> 3,
-		'sw_thumbbartype'	=> 'integrated',
+		'sw_thumbbartype'	=> 'special',
 		'sw_bar_margin_top'	=> '5px',
-		'sw_activetype'	 	=> 'active',
+		'sw_activetype'	 	=> 'active_border',
 
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
