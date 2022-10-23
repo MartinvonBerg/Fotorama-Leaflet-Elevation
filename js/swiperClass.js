@@ -1,11 +1,10 @@
 // import Swiper JS
 //import Swiper from 'swiper/bundle'; // imports the complete bundle.
-// The following module loading reduces bundle size from 47.8 kB to 38.2 kBytes.
+// The following module loading reduces bundle size from 47.8 kB to 38.0 kBytes.
 import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectFade, EffectCube, Keyboard} from 'swiper';
-// import Swiper styles
+// import Swiper styles (Selection of CSS saves 0,6 kB only)
 import 'swiper/css/bundle';
 import "./swiperClass.css";
-import {ThumbnailSlider} from "./thumbnailClass";
 
 export {SliderSwiper};
 
@@ -61,12 +60,16 @@ class SliderSwiper {
                 //freeMode: false,
                 watchSlidesProgress: true
             });
-        } else {
-            // this dynamic import works fine but the class is loaded to late and therefore unknown
-            //import(/* webpackPreload: true */ './thumbnailClass').then((ThumbnailSlider) => {
-            //  this.thumbs = new ThumbnailSlider.ThumbnailSlider(this.number, this.#pageVariables.sw_options)
-            //});
-            this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options)
+        } else if (this.#pageVariables.sw_options.thumbbartype === 'special') {
+            // dynamic import of ThumbnailClass: Saves 1.3 kB only. Just for testing of async imports.
+            import('./thumbnailClass').then((ThumbnailSlider) => {
+              this.thumbs = new ThumbnailSlider.ThumbnailSlider(this.number, this.#pageVariables.sw_options);
+              let classThis = this;
+              this.thumbs.ele.parentElement.addEventListener('thumbnailchange', function (event) {
+                  if (event.detail.slider === classThis.number) classThis.setSliderIndex(event.detail.newslide);
+              });
+            });
+            //this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options)
         }
 
         this.sw_options = {
@@ -132,13 +135,14 @@ class SliderSwiper {
         this.scrollToHash();
         this.#listenEventSliderShowend();
         ((this.#pageVariables.sw_options.sw_fslightbox === 'true') && (typeof(fsLightboxInstances) !== 'undefined')) ? window.addEventListener('load', this.lightbox(this.number), false ) : null;
-
+        /* This does not work here if the ThumbnailClass is conditionally imported
         if (this.#pageVariables.sw_options.thumbbartype === 'special') {
             let classThis = this;
             this.thumbs.ele.parentElement.addEventListener('thumbnailchange', function (event) {
                 if (event.detail.slider === classThis.number) classThis.setSliderIndex(event.detail.newslide);
             });
         }
+        */
     }
 
     // --------------- Internal private methods --------------------------------
