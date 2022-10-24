@@ -244,11 +244,9 @@ class ThumbnailSlider {
    * @param {int} number active thumbnail number
    */
   setActiveThumb(number) {
-    /* if more than one element has .activeXXX then remove class */
-    if (this.activeImages.length > 0) {
-      this.activeImages[0].classList.remove(this.activeClass); 
-    }
-
+    // remove active class
+    this.ele.childNodes[this.currentActive].classList.remove(this.activeClass)
+    // set active class and number
     this.thumbnails[number].classList.add(this.activeClass)
     this.currentActive = number
 

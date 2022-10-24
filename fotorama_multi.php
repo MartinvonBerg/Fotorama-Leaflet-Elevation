@@ -28,6 +28,8 @@
 // 			anderen Icon-Satz verwenden? Neue Icons skalieren.
 // TODO: Multitrack schaltet die Statistik nicht um bzw. zeigt nur die vom ersten Trail!
 // TODO: ladereihenfolge bei Multitrack stimmt nicht.
+// 			lighthouse : bei swiper angeblich der Fall. stimmt aber nicht. Bei d3.js geändert in 2 zeilen. in swiper wird nach passive getestet.
+// lighthouse : special thumbnails haben keine width und height
 
 namespace mvbplugins\fotoramamulti;
 

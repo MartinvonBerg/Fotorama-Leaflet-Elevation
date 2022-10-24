@@ -45,6 +45,7 @@
 	-o-object-fit: contain;
 	object-fit: contain;
 	width: auto;
+	max-width: unset;
 	height: 100%;
 	margin-right: 1px;
 }
