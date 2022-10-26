@@ -39,17 +39,17 @@ function correct_enqueued_scripts() {
     */
     
     // remove leaflet_elevation_bundle if there is no gpx-file included on the whole page
-	if ( \array_key_exists('fm-counter',$_POST) && $_POST['fm_counter'] > 0 && $_POST['gpx_counter'] === 0  ) {
+	if ( \array_key_exists('fm_counter',$_POST) && $_POST['fm_counter'] > 0 && $_POST['gpx_counter'] === 0  ) {
         //\wp_deregister_script('leaflet_elevation_bundle');
         \wp_dequeue_script('leaflet_elevation_bundle');
     }
 
-    if ( \array_key_exists('fm-counter',$_POST) && $_POST['fm_counter'] > 0 && $_POST['fotoramaCounter'] === 0  ) {
+    if ( \array_key_exists('fm_counter',$_POST) && $_POST['fm_counter'] > 0 && $_POST['fotoramaCounter'] === 0  ) {
         //\wp_deregister_script('fotorama_bundle');
         \wp_dequeue_script('fotorama_bundle');
     }
 
-    if ( \array_key_exists('fm-counter',$_POST) && $_POST['fm_counter'] > 0 && $_POST['swiperCounter'] === 0  ) {
+    if ( \array_key_exists('fm_counter',$_POST) && $_POST['fm_counter'] > 0 && $_POST['swiperCounter'] === 0  ) {
         //\wp_deregister_script('swiper_bundle');
         \wp_dequeue_script('swiper_bundle');
     }
@@ -145,7 +145,7 @@ function enqueue_main_scripts( string $mode='production', array $deps=['jquery']
     $version = '0.12.0';
 
     if ( $mode === 'production') {
-        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'js/fotorama_main.js', $deps, $version, true);
+        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'js/fotorama_main.js', ['jquery','fotorama_bundle'], $version, true);
     
     } else if ( $mode === 'prodtest') {
         wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'release/js/fotorama_main.js', $deps, $version, true);

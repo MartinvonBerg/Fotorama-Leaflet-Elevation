@@ -19,17 +19,17 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 // TODO-list
-// 			PHP: filter für Bild mit Dateinamen aus Standar WP-Ordner. mehrere Ordner mit Komma getrennt. Filter mit Komma getrennt?
+// 			PHP: filter für Bild mit Dateinamen aus Standard WP-Ordner. mehrere Ordner mit Komma getrennt. Filter mit Komma getrennt?
 // 			Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem!
 // 			object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
 // 			als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
 // --- Karte
 // 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 // 			anderen Icon-Satz verwenden? Neue Icons skalieren.
-// TODO: Multitrack schaltet die Statistik nicht um bzw. zeigt nur die vom ersten Trail!
-// TODO: ladereihenfolge bei Multitrack stimmt nicht.
-// 			lighthouse : bei swiper angeblich der Fall. stimmt aber nicht. Bei d3.js geändert in 2 zeilen. in swiper wird nach passive getestet.
-// lighthouse : special thumbnails haben keine width und height
+// !lighthouse : passive event listener bei swiper angeblich der Fall. stimmt aber nicht. Bei d3.js geändert in 2 zeilen. in swiper wird nach passive getestet.
+// !lighthouse : special thumbnails haben keine width und height
+// 			preloadimages: +- 1 rechts und linkes von aktivem ergänzen
+// !attachlink: das Bild fehlt!
 
 namespace mvbplugins\fotoramamulti;
 

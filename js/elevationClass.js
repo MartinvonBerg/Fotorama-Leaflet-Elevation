@@ -158,23 +158,24 @@ class LeafletElevation extends LeafletMap {
     setTrackStatistics(event) {
         // get the trace info from the gpx-file
         let track = '';
+        let info = '';
 
         if (event.type === 'legend_selected') {
-            track = this.tracks.find(element => {
+            let index = this.tracks.findIndex(element => { 
                 if (element.includes(event.layer.options.name)) {
-                  return true;
+                    return true;
                 }
             });
+            track = Object.values(this.pageVariables.tracks)[index].url;
+            info = Object.values(this.pageVariables.tracks)[index].info;
+
         } else {
-            track = this.pageVariables.tracks.track_0.url
-        }
-        
-        if (event.type !== 'legend_selected') {
+            track = this.pageVariables.tracks.track_0.url;
+            info = this.pageVariables.tracks.track_0.info;
             let key = Object.keys(event.layer._layers)[0];
             this.bounds = event.layer._layers[key]._bounds;
         }
-
-        let info = this.pageVariables.tracks.track_0.info;
+        
         if (info) {info = info.split(' ')} else {info='';};
 
         let q = document.querySelector.bind(document);
