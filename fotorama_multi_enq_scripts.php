@@ -117,7 +117,8 @@ function enqueue_elevation_scripts( string $mode='production' ) {
 
 function enqueue_leaflet_scripts( string $mode='production' ) {
     $plugin_url = plugins_url('/', __FILE__);
-    wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'build/js/leaflet/leafletmap_bundle.min.js', array('jquery'), '1.8.0', true);
+    wp_enqueue_script('leaflet', $plugin_url . 'build/js/leaflet/leaflet_607.js', array('jquery'), '1.9.2', true);
+    wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'build/js/leaflet/leaflet_main.js', array('jquery'), '0.12.0', true);
 }
 
 function enqueue_main_scripts( string $mode='production', array $deps=['jquery'] ) {

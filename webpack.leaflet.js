@@ -1,13 +1,13 @@
 const path = require('path');
 const TerserPlugin = require("terser-webpack-plugin");
-let _mode = 'development';
+let _mode = 'production';
 
 // create bundle for fotorama
 module.exports = [
 {
   entry: ['./js/leafletMapClass.js'],
   output: {
-    filename: 'leafletmap_bundle.min.js',
+    filename: 'leaflet_[name].js',
     path: path.resolve(__dirname, 'build/js/leaflet'),
     library: {
       name: "fm_leaflet",
@@ -38,6 +38,10 @@ module.exports = [
         },
       }),
     ],
+    splitChunks: {
+      // include all types of chunks
+      chunks: 'all',
+    },
   },
 },
 ];
