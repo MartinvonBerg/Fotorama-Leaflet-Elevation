@@ -42,7 +42,8 @@
             if ( hasFotorama ) {
                 // define the Slider class. This class has to be enqued (loaded) before this function.
                 sliderSel = 'mfotorama';
-                allSliders[m] = new SliderFotorama(m, sliderSel + m );
+                allSliders[m] = new window.fm_fotorama.SliderFotorama(m, sliderSel + m );
+                //allSliders[m] = new SliderFotorama(m, sliderSel + m );
                 allSliders[m].defSlider();
 
             } else if ( hasSwiper ) {

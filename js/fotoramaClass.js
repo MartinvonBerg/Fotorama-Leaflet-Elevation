@@ -20,12 +20,14 @@
 // this gives the best performance.
 
 // webpack import information for bundling. localhost won't work with that.
-/*
+
 import '../css/fotorama_multi.css';
 import '../css/fotorama3.css'
 import './fotorama3.js';
 import './zoom-master/jquery.zoom.js';
-*/
+
+export {SliderFotorama};
+
 class SliderFotorama {
     // static attributes (fields)
     static count = 0; // counts the number of instances of this class.

@@ -1,14 +1,18 @@
 const path = require('path');
 const TerserPlugin = require("terser-webpack-plugin");
-let _mode = 'development';
+let _mode = 'production';
 
 // create bundle for fotorama
 module.exports = [
 {
-  entry: ['./js/aggregator.js', './js/fotoramaClass.js'],
+  entry: ['./js/fotoramaClass.js'],
   output: {
-    filename: 'fotorama_bundle.js',
-    path: path.resolve(__dirname, 'release/js/fotorama'),
+    filename: 'fotorama_bundle.min.js',
+    path: path.resolve(__dirname, 'build/js/fotorama'),
+    library: {
+      name: "fm_fotorama",
+      type: "var",
+    }
   },
   mode: _mode, 
   module: {
@@ -20,15 +24,17 @@ module.exports = [
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        //type: 'asset/resource',
-        loader: 'file-loader',
-        options: {
-              name: '[path][name].[ext]',
-            },
+        type: 'asset/resource', // see: https://stackoverflow.com/questions/67186653/webpack-loads-wrong-images-to-dist-directory
+        //loader: 'file-loader', // this uncommented copies png correctly!
+        //options: {
+        //      name: '[path][name].[ext]',
+        //      emitFile: true,
+        //    },
       },
     ],
     
   },
+  
   optimization: {
     minimizer: [
       new TerserPlugin({

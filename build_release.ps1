@@ -16,6 +16,9 @@ npm run build
 # create swiper bundle
 npx webpack --config .\webpack.swiper.js
 
+# create fotorama bundle
+npx webpack --config .\webpack.fotorama.js
+
 # copy gutenberg build files
 $path = ".\release"
 $path = "$($path)\build"
@@ -52,14 +55,14 @@ New-Item "$($path)" -Force -itemType Directory
 terser --keep-classnames --keep-fnames --mangle --ecma 5 .\js\fotorama-multi-reduced.js -o .\release\js\fotorama_main.js
 #
 ### fotorama-bundle
-$path = ".\release"
-$path = "$($path)\js\fotorama"
-New-Item "$($path)" -Force -itemType Directory
+#$path = ".\release"
+#$path = "$($path)\js\fotorama"
+#New-Item "$($path)" -Force -itemType Directory
 # js for fotorama
-terser --keep-classnames --comment --keep-fnames --mangle --ecma 5 .\js\fotorama3.js .\js\zoom-master/jquery.zoom.js .\js\fotoramaClass.js -o .\release\js\fotorama\fotorama_bundle.js
+#terser --keep-classnames --comment --keep-fnames --mangle --ecma 5 .\js\fotorama3.js .\js\zoom-master/jquery.zoom.js .\js\fotoramaClass.js -o .\release\js\fotorama\fotorama_bundle.js
 # css for fotorama 
-minify .\css\fotorama_multi.css > .\release\js\fotorama\fotorama.min.css
-minify .\css\fotorama3.css >> .\release\js\fotorama\fotorama.min.css
+#minify .\css\fotorama_multi.css > .\release\js\fotorama\fotorama.min.css
+#minify .\css\fotorama3.css >> .\release\js\fotorama\fotorama.min.css
 #
 ### leaflet-map-bundle
 $path = ".\release"
