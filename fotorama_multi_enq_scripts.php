@@ -117,27 +117,7 @@ function enqueue_elevation_scripts( string $mode='production' ) {
 
 function enqueue_leaflet_scripts( string $mode='production' ) {
     $plugin_url = plugins_url('/', __FILE__);
-    $version = '0.12.0';
-
-    if ( $mode === 'production') {
-        wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
-        wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
-    
-    } else if ( $mode === 'prodtest') {
-        wp_enqueue_style('leaflet_css', $plugin_url . 'release/js/leaflet/leaflet.min.css', [], '1.8.0');
-        wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'release/js/leaflet/leaflet_map_bundle.js', array('jquery'), $version, true);
-
-    } else {
-        // --- LEAFLET -------------
-        wp_enqueue_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.css', [], '1.8.0');
-        wp_enqueue_style('control_fullscreen_css', $plugin_url . 'js/fullscreen/Control.FullScreen.min.css', [], '2.4.0');
-        
-        wp_enqueue_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
-        wp_enqueue_script('leaflet_ui', $plugin_url . 'js/leaflet-ui/leaflet-ui-short.min.js', array('jquery'), '0.5.9', true);
-        wp_enqueue_script('control_fullscreen_js', $plugin_url . 'js/fullscreen/Control.FullScreen.min.js', array('jquery'), '2.4.0', true);
-        wp_enqueue_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery','leaflet_js'), '0.12.0', true);
-        // --- LEAFLET -------------
-    }
+    wp_enqueue_script('leaflet_map_bundle', $plugin_url . 'build/js/leaflet/leafletmap_bundle.min.js', array('jquery'), '1.8.0', true);
 }
 
 function enqueue_main_scripts( string $mode='production', array $deps=['jquery'] ) {

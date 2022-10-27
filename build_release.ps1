@@ -19,7 +19,10 @@ npx webpack --config .\webpack.swiper.js
 # create fotorama bundle
 npx webpack --config .\webpack.fotorama.js
 
-# copy gutenberg build files
+# create fotorama bundle
+npx webpack --config .\webpack.leaflet.js
+
+# copy gutenberg, swiper, fotorama, leaflet-map build files
 $path = ".\release"
 $path = "$($path)\build"
 New-Item "$($path)" -Force -itemType Directory
@@ -65,25 +68,25 @@ terser --keep-classnames --keep-fnames --mangle --ecma 5 .\js\fotorama-multi-red
 #minify .\css\fotorama3.css >> .\release\js\fotorama\fotorama.min.css
 #
 ### leaflet-map-bundle
-$path = ".\release"
-$path = "$($path)\js\leaflet"
-New-Item "$($path)" -Force -itemType Directory
+#$path = ".\release"
+#$path = "$($path)\js\leaflet"
+#New-Item "$($path)" -Force -itemType Directory
 # css for leaflet 
-minify .\js\leaflet\leaflet.css > .\release\js\leaflet\leaflet.min.css
-minify .\js\fullscreen\Control.FullScreen.css >> .\release\js\leaflet\leaflet.min.css
+#minify .\js\leaflet\leaflet.css > .\release\js\leaflet\leaflet.min.css
+#minify .\js\fullscreen\Control.FullScreen.css >> .\release\js\leaflet\leaflet.min.css
 # js for leaflet
 #minify .\js\leaflet\leaflet.js > .\release\js\leaflet\leaflet_map_bundle.js
 #minify .\js\leaflet-ui\leaflet-ui-short.js >> .\release\js\leaflet\leaflet_map_bundle.js
 #minify .\js\fullscreen\Control.FullScreen.js >> .\release\js\leaflet\leaflet_map_bundle.js
 #minify .\js\leafletMapClass.js >> .\release\js\leaflet\leaflet_map_bundle.js
-terser --keep-classnames --comment --keep-fnames --mangle --ecma 5 .\js\leaflet\leaflet.js .\js\leaflet-ui\leaflet-ui-short.js .\js\fullscreen\Control.FullScreen.js .\js\leafletMapClass.js -o .\release\js\leaflet\leaflet_map_bundle.js 
+#terser --keep-classnames --comment --keep-fnames --mangle --ecma 5 .\js\leaflet\leaflet.js .\js\leaflet-ui\leaflet-ui-short.js .\js\fullscreen\Control.FullScreen.js .\js\leafletMapClass.js -o .\release\js\leaflet\leaflet_map_bundle.js 
 # correction for german umlauts
 
 # leaflet images
-$path = ".\release"
-$path = "$($path)\js\leaflet\images"
-New-Item "$($path)" -Force -itemType Directory
-robocopy .\js\leaflet\images $path *.* /s /NFL /NDL /NJH /NJS
+#$path = ".\release"
+#$path = "$($path)\js\leaflet\images"
+#New-Item "$($path)" -Force -itemType Directory
+#robocopy .\js\leaflet\images $path *.* /s /NFL /NDL /NJH /NJS
 #
 ### leaflet_elevation_bundle, js/leaflet_elevation/leaflet_elevation_bundle.js
 $path = ".\release"

@@ -1,7 +1,3 @@
-// webpack import information for bundling.
-//import SliderFotorama from './fotoramaClass.js'
-//import { SliderSwiper } from "./release/js/swiper/swiper_bundle.js";
-
 (function (window, document, undefined) {
     "use strict";
     let numberOfBoxes = document.querySelectorAll('[id^=multifotobox]').length;
@@ -60,7 +56,7 @@
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
                     let text = pageVarsForJs[m].markertext;
-                    allMaps[m] = new LeafletMap(m, 'boxmap' + m, center, zoom );
+                    allMaps[m] = new window.fm_leaflet.LeafletMap(m, 'boxmap' + m, center, zoom );
                     allMaps[m].createSingleMarker(text);
                     
                 } else {
@@ -75,7 +71,7 @@
                 
                 // initiate the leaflet map
                 if ( pageVarsForJs[m].ngpxfiles === 0) {
-                    allMaps[m] = new LeafletMap(m, 'boxmap' + m );
+                    allMaps[m] = new window.fm_leaflet.LeafletMap(m, 'boxmap' + m );
                 } else {
                     allMaps[m] = new LeafletElevation(m, 'boxmap' + m );
                 }

@@ -10,14 +10,16 @@
 
 // webpack import information for bundling. localhost won't work with that.
 // local Styles
-/*
+
 import './leaflet/leaflet.css';
 import './fullscreen/Control.FullScreen.css';
 // local Scripts
-import './leaflet/leaflet.js';
+//import './leaflet/leaflet.js'; // is loaded by Control.FullScreen.js
 import './leaflet-ui/leaflet-ui-short.js';
 import './fullscreen/Control.FullScreen.js';
-*/
+
+export {LeafletMap};
+
 class LeafletMap {
     // static attributes (fields)
     static count = 0; // counts the number of instances of this class.
@@ -126,9 +128,7 @@ class LeafletMap {
         this.defMapLayers();
 
         // static set the language strings. same for all instances.
-        if (typeof(L.registerLocale) !== 'function') {
-            // nothing
-        } else if (LeafletMap.myLocale === null) {
+        if (LeafletMap.myLocale === null) {
             LeafletMap.myLocale = this.setLanguage();
         }
 
@@ -268,10 +268,12 @@ class LeafletMap {
     }
     
     i18n(text) {
-        if (typeof(L.registerLocale) !== 'function') {
-            return text;
-        } else  {
+        if (typeof(L.registerLocale) === 'function') {
             return L._(text);
+        } else if (LeafletMap.myLocale !== null && typeof(LeafletMap.myLocale[text]) !== 'undefined') {
+            return LeafletMap.myLocale[text];
+        } else {
+            return text;
         }
     }
     
@@ -332,19 +334,19 @@ class LeafletMap {
 			"x: "				: "Distancia: ",
         };
 
-        var lang = navigator.language;
+        let langs = {'de': de, 'it':it, 'fr':fr, 'es':es};
+
+        let lang = navigator.language;
         lang = lang.split('-')[0];
 
         if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
-            try {
-                L.registerLocale(lang, eval(lang) );
+            if (typeof(L.registerLocale) === 'function') {
+                L.registerLocale(lang, langs[lang] );
                 L.setLocale(lang);
-                return lang;
-            } catch (e) {
-                return null;
-            }
-
-        } else {
+            } 
+            return langs[lang];
+        } 
+        else {
             return null;
         }
     }; 
