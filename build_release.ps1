@@ -19,8 +19,9 @@ npx webpack --config .\webpack.swiper.js
 # create fotorama bundle
 npx webpack --config .\webpack.fotorama.js
 
-# create fotorama bundle
+# create leaflet, leaflet-elevation bundle
 npx webpack --config .\webpack.leaflet.js
+npx webpack --config .\webpack.elevation.js
 
 # copy gutenberg, swiper, fotorama, leaflet-map build files
 $path = ".\release"

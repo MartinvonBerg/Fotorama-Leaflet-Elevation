@@ -189,7 +189,8 @@ L.GpxGroup = L.Class.extend({
     });
 
     
-    this._elevation.import(this._elevation.__LGEOMUTIL).then(() => {
+    //this._elevation.import(this._elevation.__LGEOMUTIL).then(() => {
+    import('../dist/leaflet.geometryutil.min.js').then(() => {
       route.addTo(this._layers);
 
       route.eachLayer((layer) => this._onEachRouteLayer(route, layer));

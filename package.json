@@ -28,6 +28,7 @@
 		"webpack-cli": "^4.10.0"
 	},
 	"dependencies": {
+		"@raruto/leaflet-elevation": "^2.2.7",
 		"leaflet": "^1.9.x",
 		"screenfull": "^6.0.2",
 		"swiper": "^8.4.2"

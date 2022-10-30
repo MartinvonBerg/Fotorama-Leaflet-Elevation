@@ -59,60 +59,8 @@ function correct_enqueued_scripts() {
 function enqueue_elevation_scripts( string $mode='production' ) {
     $plugin_url = plugins_url('/', __FILE__);
     $version = '0.12.0';
-    
-    if ( $mode === 'production') {
-        //wp_enqueue_style('leaflet_css', $plugin_url . '/js/leaflet/leaflet.min.css', [], '1.8.0');
-        wp_enqueue_style('leaflet_elevation_css', $plugin_url . 'js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
-        // Load Scripts
-        wp_enqueue_script('leaflet_elevation_bundle', $plugin_url . 'js/leaflet_elevation/leaflet_elevation_bundle.js', array('jquery'), $version, true);
-    
-    } else if ( $mode === 'prodtest') {
-        wp_enqueue_style('leaflet_elevation_css', $plugin_url . 'release/js/leaflet_elevation/leaflet_elevation.min.css', [], '1.8.0');
-        wp_enqueue_script('leaflet_elevation_bundle', $plugin_url . 'release/js/leaflet_elevation/leaflet_elevation_bundle.js', array('jquery'), $version, true);
-    
-    } else {
-        // --- LEAFLET -------------
-        // register local Styles
-        wp_register_style('leaflet_css', $plugin_url . 'js/leaflet/leaflet.min.css', [], '1.8.0');
-        wp_register_style('control_fullscreen_css', $plugin_url . 'js/fullscreen/Control.FullScreen.min.css', [], '2.4.0');
-        // register local Scripts
-        wp_register_script('leaflet_js',  $plugin_url . 'js/leaflet/leaflet.js', array('jquery'), '1.8.0', true);
-        wp_register_script('leaflet_ui', $plugin_url . 'js/leaflet-ui/leaflet-ui-short.min.js', array('jquery'), '0.5.9', true);
-        wp_register_script('control_fullscreen_js', $plugin_url . 'js/fullscreen/Control.FullScreen.min.js', array('jquery'), '2.4.0', true);
-        wp_register_script('leafletClass_js',  $plugin_url . 'js/leafletMapClass.js', array('jquery'), '0.12.0', true);
-        // --- LEAFLET -------------
-
-        // --- LEAFLET-ELEVATION -------------
-        // register local Styles
-        wp_register_style('leaflet_elevation_css', $plugin_url . 'js/elevation/dist/leaflet-elevation.css', [], '2.2.6');
-        // register local Scripts - load dependencies first
-        wp_register_script('d3_js',  $plugin_url . 'js/elevation/dist/d3.min.js', array('jquery'), '7.6.1', true); 
-        wp_register_script('gpx_js',  $plugin_url . 'js/libs/gpx.min.js', array('jquery'), '1.5.1', true);
-        wp_register_script('gpxgroups_js',  $plugin_url . 'js/elevation/libs/leaflet-gpxgroup.min.js', array('jquery'), '1.5.1', true);
-        wp_register_script('togeojson_js',  $plugin_url . 'js/elevation/dist/togeojson.umd.js', array('jquery'), '5.2.2', true); 
-        wp_register_script('geom_util_js',  $plugin_url . 'js/elevation/dist/leaflet.geometryutil.min.js', array('jquery'), '0.10.1', true); 
-        wp_register_script('leaflet_elevation_js',  $plugin_url . 'js/elevation/dist/leaflet-elevation.js', array('jquery'), '2.2.6', true);
-        wp_register_script('elevationClass_js',  $plugin_url . 'js/elevationClass.js', array('jquery'), '0.12.0', true);
-        // --- LEAFLET-ELEVATION -------------
-
-        // load styles
-        wp_enqueue_style ('leaflet_css');
-        wp_enqueue_style ('leaflet_elevation_css');
-        wp_enqueue_style ('control_fullscreen_css');
-
-        // load scripts
-        wp_enqueue_script('d3_js');
-        wp_enqueue_script('leaflet_js');
-        wp_enqueue_script('gpx_js');
-        wp_enqueue_script('gpxgroups_js');
-        wp_enqueue_script('togeojson_js');
-        wp_enqueue_script('geom_util_js');
-        wp_enqueue_script('leaflet_elevation_js');
-        wp_enqueue_script('leaflet_ui');
-        wp_enqueue_script('control_fullscreen_js');
-        wp_enqueue_script('leafletClass_js');
-        wp_enqueue_script('elevationClass_js');
-    }
+    wp_enqueue_script('elevation_leaflet', $plugin_url . 'build/js/elevation/elevation_607.js', array('jquery'), '1.9.2', true);
+    wp_enqueue_script('elevation_bundle', $plugin_url . 'build/js/elevation/elevation_main.js', array('jquery'), $version, true);
 }
 
 function enqueue_leaflet_scripts( string $mode='production' ) {

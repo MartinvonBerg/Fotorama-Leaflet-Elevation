@@ -36,7 +36,7 @@
  * rendered on the Leaflet map.
  */
 
-var L = L; //|| require('leaflet');
+var L = L|| require('leaflet');
 
 var _MAX_POINT_INTERVAL_MS = 15000;
 var _SECOND_IN_MILLIS = 1000;

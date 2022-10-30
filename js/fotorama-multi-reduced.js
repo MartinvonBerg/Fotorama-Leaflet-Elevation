@@ -62,7 +62,7 @@
                 } else {
                     // no fotorama, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
                     // initiate the leaflet map
-                    allMaps[m] = new LeafletElevation(m, 'boxmap' + m );
+                    allMaps[m] = new window.fm_elevation.LeafletElevation(m, 'boxmap' + m );
                 }
             }
             
@@ -73,7 +73,7 @@
                 if ( pageVarsForJs[m].ngpxfiles === 0) {
                     allMaps[m] = new window.fm_leaflet.LeafletMap(m, 'boxmap' + m );
                 } else {
-                    allMaps[m] = new LeafletElevation(m, 'boxmap' + m );
+                    allMaps[m] = new window.fm_elevation.LeafletElevation(m, 'boxmap' + m );
                 }
 
                 // create the markers on the map

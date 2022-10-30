@@ -3,28 +3,16 @@
 	license: GPL 2.0
 	Martin von Berg
 */
-/*
-import LeafletMap from './leafletMapClass';
 
+import {LeafletMap} from './leafletMapClass';
 // webpack import information for bundling. localhost won't work with that.
-// local Styles from leafletMapClass
-import './leaflet/leaflet.css';
-import './fullscreen/Control.FullScreen.css';
-// local Scripts from leafletMapClass
-import './leaflet/leaflet.js';
-import './leaflet-ui/leaflet-ui-short.js';
-import './fullscreen/Control.FullScreen.js';
-
 // local Styles for LEAFLET-ELEVATION 
 import './elevation/dist/leaflet-elevation.css';
 // register local Scripts - load dependencies first
-import './elevation/dist/d3.min.js';
-import './libs/gpx.js';
-import './elevation/libs/leaflet-gpxgroup.min.js';
-import './elevation/dist/togeojson.umd.js';
-import './elevation/dist/leaflet.geometryutil.min.js'
-import './elevation/dist/leaflet-elevation.min.js';
-*/
+import './elevation/dist/leaflet-elevation.js';
+
+export {LeafletElevation};
+
 class LeafletElevation extends LeafletMap {
 
     controlElevation = {};
@@ -64,18 +52,19 @@ class LeafletElevation extends LeafletMap {
                 
                 //load the tracks on the map: kein Event gefunden map.on('load') geht nicht.
                 if (classThis.timesMoveendCalled === 1) {
-                    routes = L.gpxGroup(classThis.tracks, {
-                        elevation: true,
-                        elevation_options: classThis.eleopts.elevationControl.options, //
-                        legend: true,
-                        legend_options: {
-                            position: "bottomright",
-                            collapsed: true,
-                        },
-                        distanceMarkers: false,
+                    import('./elevation/libs/leaflet-gpxgroup.js').then( () => {
+                        routes = L.gpxGroup(classThis.tracks, {
+                            elevation: true,
+                            elevation_options: classThis.eleopts.elevationControl.options, //
+                            legend: true,
+                            legend_options: {
+                                position: "bottomright",
+                                collapsed: true,
+                            },
+                            distanceMarkers: false,
+                        });
+                        routes.addTo(classThis.map);
                     });
-                      
-                    routes.addTo(classThis.map);
                 }
 
                 if (classThis.timesMoveendCalled === 2) {   
@@ -132,7 +121,7 @@ class LeafletElevation extends LeafletMap {
                 skipNullZCoords: true,
                 height: this.pageVariables.chartheight,
                 handlers: ["Distance", "Altitude"],
-                //lazyLoadJS: false, // set the lazyLoadJS option to false to avoid automatically including missing javascript dependencies (i.e. not detected in the global scope).
+                //lazyLoadJS: true, // set the lazyLoadJS option to false to avoid automatically including missing javascript dependencies (i.e. not detected in the global scope).
                 //loadData: { 
                 //    defer: true,
                 //    lazy: true,
