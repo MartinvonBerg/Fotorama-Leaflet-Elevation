@@ -338,6 +338,10 @@ class LeafletMap {
 
         let lang = navigator.language;
         lang = lang.split('-')[0];
+        
+        if (!L._ || !L.i18n) {
+            L._ = L.i18n = this.i18n;
+        }
 
         if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
             if (typeof(L.registerLocale) === 'function') {

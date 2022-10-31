@@ -74,7 +74,7 @@ function enqueue_main_scripts( string $mode='production', array $deps=['jquery']
     $version = '0.12.0';
 
     if ( $mode === 'production') {
-        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'js/fotorama_main.js', ['jquery','fotorama_bundle'], $version, true);
+        wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], $version, true);
     
     } else if ( $mode === 'prodtest') {
         wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'release/js/fotorama_main.js', $deps, $version, true);

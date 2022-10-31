@@ -38,17 +38,18 @@
             if ( hasFotorama ) {
                 // define the Slider class. This class has to be enqued (loaded) before this function.
                 sliderSel = 'mfotorama';
-                allSliders[m] = new window.fm_fotorama.SliderFotorama(m, sliderSel + m );
-                //allSliders[m] = new SliderFotorama(m, sliderSel + m );
-                allSliders[m].defSlider();
+                import('./fotoramaClass.js').then( (SliderFotorama) => {
+                    allSliders[m] = new SliderFotorama.SliderFotorama(m, sliderSel + m );
+                    allSliders[m].defSlider(); 
+                })
 
             } else if ( hasSwiper ) {
                 sliderSel = 'swiper';
-                // define the Slider class. This class has to be enqued (loaded) before this function.
-                if ( numberOfBoxes > 1 ) { pageVarsForJs[m].sw_options.sw_keyboard = 'false';}
-                allSliders[m] = new window.fm_swiper.SliderSwiper(m, sliderSel + m );
-                //allSliders[m] = new SliderSwiper(m, sliderSel + m );
-                allSliders[m].defSlider();
+                import('./swiperClass.js').then( (SliderSwiper) => {
+                    if ( numberOfBoxes > 1 ) { pageVarsForJs[m].sw_options.sw_keyboard = 'false';}
+                    allSliders[m] = new SliderSwiper.SliderSwiper(m, sliderSel + m );
+                    allSliders[m].defSlider(); 
+                })
 
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
@@ -56,13 +57,18 @@
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
                     let text = pageVarsForJs[m].markertext;
-                    allMaps[m] = new window.fm_leaflet.LeafletMap(m, 'boxmap' + m, center, zoom );
-                    allMaps[m].createSingleMarker(text);
+                    import('./leafletMapClass.js').then( (LeafletMap) => {
+                        allMaps[m] = new LeafletMap.LeafletMap(m, 'boxmap' + m, center, zoom );
+                        // create the markers on the map
+                        allMaps[m].createSingleMarker(text);
+                    })                    
                     
                 } else {
                     // no fotorama, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
                     // initiate the leaflet map
-                    allMaps[m] = new window.fm_elevation.LeafletElevation(m, 'boxmap' + m );
+                    import('./elevationClass.js').then( (LeafletElevation) => {
+                        allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
+                    })
                 }
             }
             
@@ -71,14 +77,20 @@
                 
                 // initiate the leaflet map
                 if ( pageVarsForJs[m].ngpxfiles === 0) {
-                    allMaps[m] = new window.fm_leaflet.LeafletMap(m, 'boxmap' + m );
+                    import('./leafletMapClass.js').then( (LeafletMap) => {
+                        allMaps[m] = new LeafletMap.LeafletMap(m, 'boxmap' + m );
+                        // create the markers on the map
+                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+                    })
                 } else {
-                    allMaps[m] = new window.fm_elevation.LeafletElevation(m, 'boxmap' + m );
+                    import('./elevationClass.js').then( (LeafletElevation) => {
+                        allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
+                        // create the markers on the map
+                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+                    })
+                    
                 }
 
-                // create the markers on the map
-                allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
-                
                 // update markers on the map if the active image changes
                 document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
                     // move map
