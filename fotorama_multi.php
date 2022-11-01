@@ -10,7 +10,7 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.12.0
+ * Version:           0.13.0
  * Requires at least: 5.9
  * Requires PHP:      7.3
  * Author:            Martin von Berg
@@ -52,7 +52,6 @@ require_once __DIR__ . '/inc/fm_functions.php';
 require_once __DIR__ . '/languages/locales_i18n.php';
 require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 require_once __DIR__ . '/inc/gtb_blocks.php';
-require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
 
 // -------- show admin page if request is for admin page
 if ( is_admin() ) {
@@ -106,7 +105,6 @@ function showmulti($attr, $content = null)
 	static $fotoramaCounter = 0;
 	static $swiperCounter = 0;
 	static $pageVarsForJs = [];
-	$mode = 'production';
 	$sw_options = [];
 		
  	// Get Values from Admin settings page
@@ -273,15 +271,11 @@ function showmulti($attr, $content = null)
 		
 	// Generate html for Slider images for javascript-rendering
 	if ($imageNumber > 0) {
-		\mvbplugins\fotoramamulti\enqueue_fotorama_scripts( $mode );
-		\mvbplugins\fotoramamulti\enqueue_swiper_scripts( $mode );
-		
+				
 		if ( $slider === 'fotorama') {
 			// load the scripts for fotorama here
 			require_once __DIR__ . '/inc/fotoramaClass.php';
 			$fotoramaCounter++;
-			//\mvbplugins\fotoramamulti\enqueue_fotorama_scripts( $mode );
-
 			$fClass = new FotoramaClass( $shortcodecounter, $data2, $postid); // Attention: Inconsistent constructor!
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
@@ -291,8 +285,7 @@ function showmulti($attr, $content = null)
 			// load the scripts for swiper here
 			$swiperCounter++;
 			require_once __DIR__ . '/inc/swiperClass.php';
-			//\mvbplugins\fotoramamulti\enqueue_swiper_scripts( $mode );
-
+		
 			$sw_options = [
 				'addPermalink' 			=> $addPermalink, 
 				'allImgInWPLibrary' 	=> $allImgInWPLibrary,
@@ -338,10 +331,6 @@ function showmulti($attr, $content = null)
 
 	// show Map only with valid gpx-tracks and if so, generate the div
 	if ($showmap  == 'true') {
-		// enqueue the scripts and styles for the map.
-		\mvbplugins\fotoramamulti\enqueue_leaflet_scripts( $mode );
-		\mvbplugins\fotoramamulti\enqueue_elevation_scripts( $mode );
-
 		$mapid = 'map' . strval($shortcodecounter); 
 		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
 		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;aspect-ratio:{$mapaspect}\"></div>";
@@ -361,7 +350,7 @@ function showmulti($attr, $content = null)
 		<span class="summarylabel"> </span>
 		<span class="summaryvalue">0</span></span></div>
 EOF;
-		}
+		} 
 	}
 	
 	// ----------------------------------------------------
@@ -456,16 +445,12 @@ EOF;
 		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'],
 		'sw_options'	=> $sw_options
  	);
-	
-	\mvbplugins\fotoramamulti\enqueue_main_scripts( $mode );
+	 $plugin_url = plugins_url('/', __FILE__);
+	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . '/build/fm_bundle/fm_main.js', ['jquery'], '0.13.0', true);
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
 	$gpxTrackCounter += $i;
-	$_POST['fm_counter'] = $shortcodecounter;
-	$_POST['gpx_counter'] = $gpxTrackCounter;
-	$_POST['fotoramaCounter'] = $fotoramaCounter;
-	$_POST['swiperCounter'] = $swiperCounter;
 
 	return $htmlstring;
 }

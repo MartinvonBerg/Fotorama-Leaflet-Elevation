@@ -24,7 +24,7 @@ class LeafletElevation extends LeafletMap {
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
 
-        import('./elevation/dist/leaflet-elevation.js').then( () => {
+        import(/* webpackChunkName: "leaflet-elevation" */'./elevation/dist/leaflet-elevation.js').then( () => {
             // set options for elevation chart
             this.setChartOptions(number);
 
@@ -49,7 +49,7 @@ class LeafletElevation extends LeafletMap {
                     
                     //load the tracks on the map: kein Event gefunden map.on('load') geht nicht.
                     if (classThis.timesMoveendCalled === 1) {
-                        import('./elevation/libs/leaflet-gpxgroup.js').then( () => {
+                        import(/* webpackChunkName: "leaflet-gpxgroup" */'./elevation/libs/leaflet-gpxgroup.js').then( () => {
                             routes = L.gpxGroup(classThis.tracks, {
                                 elevation: true,
                                 elevation_options: classThis.eleopts.elevationControl.options, //

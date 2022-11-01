@@ -401,6 +401,11 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.13.0 =
+1.11.2022: Swiper Slider added. Fotos and Videos are now possible. Own development of thumbnail bar with shortocde parameters. No gutenberg or admin settings at the moment.
+            Fsllight box form another plugin from me is used as lightbox for swiper.
+            Webpack dynamic bundling of JS-files, so simplified script loading in WordPress (get out off the dependency hell)
+
 = 0.12.0 =
 17.09.2022: Update for lighthouse performance tests. Finally reached 100!
 

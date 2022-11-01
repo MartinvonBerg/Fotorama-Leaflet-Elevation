@@ -38,14 +38,14 @@
             if ( hasFotorama ) {
                 // define the Slider class. This class has to be enqued (loaded) before this function.
                 sliderSel = 'mfotorama';
-                import('./fotoramaClass.js').then( (SliderFotorama) => {
+                import(/* webpackChunkName: "fotorama" */ './fotoramaClass.js').then( (SliderFotorama) => {
                     allSliders[m] = new SliderFotorama.SliderFotorama(m, sliderSel + m );
                     allSliders[m].defSlider(); 
                 })
 
             } else if ( hasSwiper ) {
                 sliderSel = 'swiper';
-                import('./swiperClass.js').then( (SliderSwiper) => {
+                import(/* webpackChunkName: "swiper" */'./swiperClass.js').then( (SliderSwiper) => {
                     if ( numberOfBoxes > 1 ) { pageVarsForJs[m].sw_options.sw_keyboard = 'false';}
                     allSliders[m] = new SliderSwiper.SliderSwiper(m, sliderSel + m );
                     allSliders[m].defSlider(); 
@@ -57,7 +57,7 @@
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
                     let text = pageVarsForJs[m].markertext;
-                    import('./leafletMapClass.js').then( (LeafletMap) => {
+                    import(/* webpackChunkName: "leaflet" */'./leafletMapClass.js').then( (LeafletMap) => {
                         allMaps[m] = new LeafletMap.LeafletMap(m, 'boxmap' + m, center, zoom );
                         // create the markers on the map
                         allMaps[m].createSingleMarker(text);
@@ -66,7 +66,7 @@
                 } else {
                     // no fotorama, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
                     // initiate the leaflet map
-                    import('./elevationClass.js').then( (LeafletElevation) => {
+                    import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
                     })
                 }
@@ -77,13 +77,13 @@
                 
                 // initiate the leaflet map
                 if ( pageVarsForJs[m].ngpxfiles === 0) {
-                    import('./leafletMapClass.js').then( (LeafletMap) => {
+                    import(/* webpackChunkName: "leaflet" */'./leafletMapClass.js').then( (LeafletMap) => {
                         allMaps[m] = new LeafletMap.LeafletMap(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
                     })
                 } else {
-                    import('./elevationClass.js').then( (LeafletElevation) => {
+                    import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );

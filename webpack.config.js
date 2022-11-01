@@ -1,6 +1,6 @@
 const path = require('path');
 //const webpack = require('webpack');
-const TerserPlugin = require("terser-webpack-plugin");
+//const TerserPlugin = require("terser-webpack-plugin");
 let _mode = 'production';
 
 // create bundle for fotorama
@@ -9,7 +9,8 @@ module.exports = [
   entry: ['./js/fotorama-multi-reduced.js'],
   output: {
     filename: 'fm_[name].js',
-    path: path.resolve(__dirname, 'release/build/fm_bundle'),
+    chunkFilename: 'fm_[name].js',
+    path: path.resolve(__dirname, 'build/fm_bundle'),
   },
   mode: _mode, 
   module: {

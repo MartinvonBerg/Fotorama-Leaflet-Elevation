@@ -62,17 +62,8 @@ class SliderSwiper {
                 watchSlidesProgress: true
             });
         } else if (this.#pageVariables.sw_options.thumbbartype === 'special') {
-            // dynamic import of ThumbnailClass: Saves 1.3 kB only. Just for testing of async imports. 
-            // HashNavigation does not work with that. 
-            /*
-            import('./thumbnailClass').then((ThumbnailSlider) => {
-              this.thumbs = new ThumbnailSlider.ThumbnailSlider(this.number, this.#pageVariables.sw_options);
-              let classThis = this;
-              this.thumbs.ele.parentElement.addEventListener('thumbnailchange', function (event) {
-                  if (event.detail.slider === classThis.number) classThis.setSliderIndex(event.detail.newslide);
-              });
-            });
-            */
+            // optional dynamic import of ThumbnailClass: Saves 1.3 kB only. Just for testing of async imports. 
+            // HashNavigation does not work with that, so not usable here.
             this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options)
         }
 

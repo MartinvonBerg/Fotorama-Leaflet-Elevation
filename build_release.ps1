@@ -7,21 +7,24 @@ New-Item "$($path)" -Force -itemType Directory
 
 # copy php files from main folder to the same structure
 Copy-Item ".\fotorama_multi.php" -Destination "$($path)\fotorama_multi.php" 
-Copy-Item ".\fotorama_multi_enq_scripts.php" -Destination "$($path)\fotorama_multi_enq_scripts.php" 
+#Copy-Item ".\fotorama_multi_enq_scripts.php" -Destination "$($path)\fotorama_multi_enq_scripts.php" 
 Copy-Item ".\uninstall.php" -Destination "$($path)\uninstall.php" 
 
 # first build the new gutenberg block build files
 npm run build
 
+# create all js files 
+npx webpack --config .\webpack.config.js
+
 # create swiper bundle
-npx webpack --config .\webpack.swiper.js
+#npx webpack --config .\webpack.swiper.js
 
 # create fotorama bundle
-npx webpack --config .\webpack.fotorama.js
+#npx webpack --config .\webpack.fotorama.js
 
 # create leaflet, leaflet-elevation bundle
-npx webpack --config .\webpack.leaflet.js
-npx webpack --config .\webpack.elevation.js
+#npx webpack --config .\webpack.leaflet.js
+#npx webpack --config .\webpack.elevation.js
 
 # copy gutenberg, swiper, fotorama, leaflet-map build files
 $path = ".\release"
@@ -53,10 +56,10 @@ robocopy .\inc $path *.* /s /xf shortCodeTester.php /NFL /NDL /NJH /NJS
 # ./js - use webpack before then copy
 # *.js AND *.css and all loaded image files are processed.
 ### main
-$path = ".\release"
-$path = "$($path)\js"
-New-Item "$($path)" -Force -itemType Directory
-terser --keep-classnames --keep-fnames --mangle --ecma 5 .\js\fotorama-multi-reduced.js -o .\release\js\fotorama_main.js
+#$path = ".\release"
+#$path = "$($path)\js"
+#New-Item "$($path)" -Force -itemType Directory
+#terser --keep-classnames --keep-fnames --mangle --ecma 5 .\js\fotorama-multi-reduced.js -o .\release\js\fotorama_main.js
 #
 ### fotorama-bundle
 #$path = ".\release"
@@ -90,11 +93,11 @@ terser --keep-classnames --keep-fnames --mangle --ecma 5 .\js\fotorama-multi-red
 #robocopy .\js\leaflet\images $path *.* /s /NFL /NDL /NJH /NJS
 #
 ### leaflet_elevation_bundle, js/leaflet_elevation/leaflet_elevation_bundle.js
-$path = ".\release"
-$path = "$($path)\js\leaflet_elevation"
-New-Item "$($path)" -Force -itemType Directory
+#$path = ".\release"
+#$path = "$($path)\js\leaflet_elevation"
+#New-Item "$($path)" -Force -itemType Directory
 # css
-minify .\js\elevation\dist\leaflet-elevation.css > .\release\js\leaflet_elevation\leaflet_elevation.min.css
+#minify .\js\elevation\dist\leaflet-elevation.css > .\release\js\leaflet_elevation\leaflet_elevation.min.css
 # js
 #minify .\js\elevation\dist\d3.min.js > .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
 #minify .\js\libs\gpx.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
@@ -103,18 +106,18 @@ minify .\js\elevation\dist\leaflet-elevation.css > .\release\js\leaflet_elevatio
 #minify .\js\elevation\dist\leaflet.geometryutil.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
 #minify .\js\elevation\dist\leaflet-elevation.min.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
 #minify .\js\elevationClass.js >> .\release\js\leaflet_elevation\leaflet_elevation_bundle.js
-terser --keep-classnames --comment --keep-fnames --mangle --ecma 5 .\js\elevation\dist\d3.min.js .\js\elevation\libs\leaflet-gpxgroup.min.js .\js\elevation\dist\togeojson.umd.js .\js\elevation\dist\leaflet.geometryutil.min.js .\js\elevation\dist\leaflet-elevation.js .\js\elevationClass.js -o .\release\js\leaflet_elevation\leaflet_elevation_bundle.js 
+#terser --keep-classnames --comment --keep-fnames --mangle --ecma 5 .\js\elevation\dist\d3.min.js .\js\elevation\libs\leaflet-gpxgroup.min.js .\js\elevation\dist\togeojson.umd.js .\js\elevation\dist\leaflet.geometryutil.min.js .\js\elevation\dist\leaflet-elevation.js .\js\elevationClass.js -o .\release\js\leaflet_elevation\leaflet_elevation_bundle.js 
 
 # copy leaflet-elevation dependencies
-$path = ".\release"
-$path = "$($path)\js\libs"
-New-Item "$($path)" -Force -itemType Directory
-robocopy .\js\elevation\libs $path *.* /s /NFL /NDL /NJH /NJS
+#$path = ".\release"
+#$path = "$($path)\js\libs"
+#New-Item "$($path)" -Force -itemType Directory
+#robocopy .\js\elevation\libs $path *.* /s /NFL /NDL /NJH /NJS
 #
-$path = ".\release"
-$path = "$($path)\js\src"
-New-Item "$($path)" -Force -itemType Directory
-robocopy .\js\elevation\src $path *.* /s /NFL /NDL /NJH /NJS
+#$path = ".\release"
+#$path = "$($path)\js\src"
+#New-Item "$($path)" -Force -itemType Directory
+#robocopy .\js\elevation\src $path *.* /s /NFL /NDL /NJH /NJS
 
 # TODO: webpack bundling does not work!
 # npx webpack --config ./webpack.fotorama.js
