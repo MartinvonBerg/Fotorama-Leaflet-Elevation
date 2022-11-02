@@ -112,13 +112,13 @@ final class SwiperClassTest extends TestCase {
         $data2[0]['thumbinsubdir'] = false;
         $data2[0]['thumbs'] = '';
         $data2[0]['extension'] = '.jpg';
-        $data2[0]['permalink'] = '';
+        $data2[0]['permalink'] = 'XXXXXXXXXXXXXXXXX';
         $data2[0]['title'] = 'notitle';
         $data2[0]['alt'] = ''; 
         $data2[0]['type'] = 'image'; 
 
-        $sw_options = [ 'addPermalink' => 'false',
-                        'allImgInWPLibrary' => 'false',
+        $sw_options = [ 'addPermalink' => 'true',
+                        'allImgInWPLibrary' => 'true',
                         'sw_effect'			=> 'flip',
                         'sw_zoom'			=> 'true',
                         'sw_fslightbox'		=> 'true',
@@ -134,7 +134,11 @@ final class SwiperClassTest extends TestCase {
                         'f_thumbheight'		=> 100,
                         'sw_aspect_ratio'	=> 1.5,
                         'slide_fit'			=> 'contain',
-                        'thumbbartype'		=> 'special', ];
+                        'thumbbartype'		=> 'special',
+                        'nail_activeClass'  => 'active',
+                        'nail_margin_side'  => '1px',
+                        'bar_min_height'    => '2px',
+                        'bar_margin_top'    => '5px' ];
 
         $tested = new mvbplugins\fotoramamulti\SwiperClass(0, $data2, $sw_options);
        

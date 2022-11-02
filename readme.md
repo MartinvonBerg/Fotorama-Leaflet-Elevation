@@ -69,7 +69,7 @@ It is possible to reach a Google lighthouse Performance and SEO result of 100! I
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.6 - 5.9 and PHP 7.4.2 - 8.0.1
+- The plugin was tested with wordpress versions 5.6 - 6.1 and PHP 7.4.2 - 8.0.1
 - The plugin was tested with other Plugins using leaflet Map:
 - It works together with:
     - Leaflet Map (uses the same script-handle 'leaflet_js')
@@ -401,10 +401,11 @@ This plugin uses the great work from:
 
 # Changelog
 
-= 0.13.0 =
+= 0.13.1 =
 1.11.2022: Swiper Slider added. Fotos and Videos are now possible. Own development of thumbnail bar with shortocde parameters. No gutenberg or admin settings at the moment.
             Fsllight box form another plugin from me is used as lightbox for swiper.
             Webpack dynamic bundling of JS-files, so simplified script loading in WordPress (get out off the dependency hell)
+2.11.2022: Test with WP 6.1. Works!. Minor CSS update.
 
 = 0.12.0 =
 17.09.2022: Update for lighthouse performance tests. Finally reached 100!

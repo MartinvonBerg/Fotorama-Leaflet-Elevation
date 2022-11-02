@@ -351,3 +351,59 @@
   color: #000;
   background: #fff;
 }
+
+/* ------- copy from fotorama-mult.css*/
+
+.leaf_pup_img {
+  min-width: 100px !important;
+}
+
+.boxmap {
+  border-top: 1px solid lightslategray; 
+  padding: 5px 5px 5px 5px; 
+}
+
+#boxmap0 {
+ overflow: hidden;
+}
+
+[id^="map"] {
+  width: 100%;
+  /*aspect-ratio: 1.50; */
+  height: auto;
+}
+
+[id^="elevation-div"] {
+  margin-top: 6px;
+}
+/*
+.fm-dload {
+  margin-bottom: 15px;
+}
+*/
+.fm-dload p {
+  margin: 5px;
+}
+
+.data-summary {
+  /*font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  /* position: absolute;
+    bottom: 765px; 
+  top: 451px;
+  right: 25px; 
+  background: lightgrey;
+  border: solid;
+  border-color: black;
+  border-width: 1px;
+  border:inset;*/
+  left: 3px;
+  right: 3px;
+  padding-left: 5px;
+  margin-bottom: 1px;
+  border-bottom: 1px solid lightslategray;
+}
+
+.data-summary .summaryvalue {
+    font-weight: bold;
+  }

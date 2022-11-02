@@ -12,7 +12,7 @@
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * @since      0.12.0
- * @version    0.13.0
+ * @version    0.13.1
  */
 
 namespace mvbplugins\fotoramamulti;
