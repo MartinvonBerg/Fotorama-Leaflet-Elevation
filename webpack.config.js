@@ -1,11 +1,13 @@
 const path = require('path');
 //const webpack = require('webpack');
 //const TerserPlugin = require("terser-webpack-plugin");
+//const OptimizePlugin = require('optimize-plugin');
 let _mode = 'production';
 
 // create bundle for fotorama
 module.exports = [
 {
+  target: ['web','es2017'],
   entry: ['./js/fotorama-multi-reduced.js'],
   output: {
     filename: 'fm_[name].js',
@@ -25,4 +27,9 @@ module.exports = [
       },
     ],
   },
+  //plugins: [new OptimizePlugin({
+  //  minify: false,
+  //  downlevel: false,
+  //  verbose: true
+  //})],
 }];

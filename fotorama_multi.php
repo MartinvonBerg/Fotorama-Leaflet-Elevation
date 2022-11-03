@@ -445,7 +445,7 @@ EOF;
 		'sw_options'	=> $sw_options
  	);
 	 $plugin_url = plugins_url('/', __FILE__);
-	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . '/build/fm_bundle/fm_main.js', ['jquery'], '0.13.1', true);
+	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.13.1', true);
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
