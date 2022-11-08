@@ -5,7 +5,8 @@ import Swiper, {Navigation, Mousewheel, Zoom, Lazy, A11y, HashNavigation, Effect
 // import Swiper styles (Selection of CSS saves 0,6 kB only)
 import 'swiper/css/bundle';
 import "./swiperClass.css";
-import {ThumbnailSlider} from "./thumbnailClass";
+//import {ThumbnailSlider} from "./thumbnailClass";
+import {ThumbnailSlider} from './typescript/thumbnailClass.ts'
 
 export {SliderSwiper};
 

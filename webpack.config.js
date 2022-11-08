@@ -1,8 +1,5 @@
 const path = require('path');
-//const webpack = require('webpack');
-//const TerserPlugin = require("terser-webpack-plugin");
-//const OptimizePlugin = require('optimize-plugin');
-let _mode = 'production';
+let _mode = 'development';
 
 // create bundle for fotorama
 module.exports = [
@@ -25,11 +22,12 @@ module.exports = [
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/resource', // see: https://stackoverflow.com/questions/67186653/webpack-loads-wrong-images-to-dist-directory
       },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
     ],
   },
-  //plugins: [new OptimizePlugin({
-  //  minify: false,
-  //  downlevel: false,
-  //  verbose: true
-  //})],
+  
 }];
