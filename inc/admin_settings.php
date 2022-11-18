@@ -6,8 +6,7 @@
  */
 
 // use this code for translation: __('string-to-translate', 'fotoramamulti'). Translate the 'string-to-translate' in your po-file
-// TODO: no admin setting for shortcaption. 
-// TODO: Add settings for swiper.
+// TODO: Add settings for swiper in Tabs.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -448,6 +447,14 @@ final class FotoramaElevationAdmin {
 			'fotorama-elevation-admin', // page
 			'fotorama_elevation_setting_section' // section
         );
+
+		add_settings_field(
+			'short_caption', // id
+			__( 'Short Caption', 'fotoramamulti' ), // title
+			array( $this, 'short_caption_callback' ), // callback
+			'fotorama-elevation-admin', // page
+			'fotorama_elevation_setting_section' // section
+        );
         
         add_settings_field(
 			'images_with_gps_required_5', // id
@@ -827,6 +834,13 @@ final class FotoramaElevationAdmin {
 		);
 	}
 
+	public function short_caption_callback() {
+		printf(
+			'<input type="checkbox" name="fotorama_elevation_option_name[short_caption]" id="short_caption" value="short_caption" %s>',
+			( isset( $this->fotorama_elevation_options['short_caption'] ) && $this->fotorama_elevation_options['short_caption'] === 'true' ) ? 'checked' : ''
+		);
+	}
+
 	public function images_with_gps_required_5_callback() {
 		printf(
 			'<input type="checkbox" name="fotorama_elevation_option_name[images_with_gps_required_5]" id="images_with_gps_required_5" value="images_with_gps_required_5" %s> <label for="images_with_gps_required_5">%s</label>',
@@ -1123,6 +1137,12 @@ final class FotoramaElevationAdmin {
 			$sanitary_values['show_caption_4'] = 'true';
 		} else {
 			$sanitary_values['show_caption_4'] = 'false';
+		}
+
+		if ( isset( $input['short_caption'] ) ) {
+			$sanitary_values['short_caption'] = 'true';
+		} else {
+			$sanitary_values['short_caption'] = 'false';
 		}
 
 		if ( isset( $input['images_with_gps_required_5'] ) ) {
