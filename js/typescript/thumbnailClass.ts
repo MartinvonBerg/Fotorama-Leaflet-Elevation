@@ -67,9 +67,16 @@ type optionsType = {
 	 sw_keyboard? : string, //true',
 }; 
 
+interface thumbnailClassInterface {
+  // variables
+  ele: HTMLElement;
+  // methods
+  setActiveThumb (number : number): void;
+}
 
 
-class ThumbnailSlider {
+
+class ThumbnailSlider implements thumbnailClassInterface {
   private number : number = 0;
   private posXOld : number = 0;
   private numberOfThumbnails: number = 0;
@@ -83,7 +90,7 @@ class ThumbnailSlider {
   private containerObserver : ResizeObserver;
 
   // TODO: the next two are missing or too simple
-  public ele : any;
+  public ele : HTMLElement;
   private thumbnails : any;
     
   // options to pass to the constructor. not all are required. pass only the ones you wish to change.
@@ -274,10 +281,11 @@ class ThumbnailSlider {
    */
    public setActiveThumb(number : number) : void {
     // remove active class
-    this.ele.childNodes[this.currentActive].classList.remove(this.activeClass)
+    // @ts-ignore
+    this.ele.childNodes[this.currentActive].classList.remove(this.activeClass); // TODO
     // set active class and number
-    this.thumbnails[number].classList.add(this.activeClass)
-    this.currentActive = number
+    this.thumbnails[number].classList.add(this.activeClass);
+    this.currentActive = number;
 
     // scroll into viewport of parent div.
     let parentWidth : number = this.ele.offsetWidth; 
