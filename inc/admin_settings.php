@@ -6,7 +6,6 @@
  */
 
 // use this code for translation: __('string-to-translate', 'fotoramamulti'). Translate the 'string-to-translate' in your po-file
-// TODO: Add settings for swiper in Tabs.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -24,10 +23,12 @@ final class FotoramaElevationAdmin {
 	private $max_height_chart = 800;
 	private $min_width = 100;
 	private $max_width = 1500;
+	private $swiperClass;
 
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'fotorama_elevation_page_init' ) );
 		add_action( 'admin_menu', array( $this, 'fotorama_elevation_add_plugin_page' ) );
+		$this->swiperClass = new SwiperAdmin();
 	}
 
 	public function fotorama_elevation_add_plugin_page() {
@@ -44,260 +45,310 @@ final class FotoramaElevationAdmin {
 		$this->fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
 
+		//Get the active tab from the $_GET param
+		$default_tab = null;
+		$tab = isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
+
 		?>
 		<div class="wrap">
 			<h2><?php esc_html_e('Settings for Fotorama-Elevation Plugin','fotoramamulti') ?></h2>
 			<h4><?php esc_html_e('General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.','fotoramamulti') ?></h4>
-			<hr>
+			<!-- Here are our tabs -->
+			<nav class="nav-tab-wrapper">
+				<a href="?page=fotorama-elevation" class="nav-tab <?php if($tab===null):?>nav-tab-active<?php endif; ?>">GPX-File</a>
+				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if($tab==='fotorama'):?>nav-tab-active<?php endif; ?>">Fotorama</a>
+				<a href="?page=fotorama-elevation&tab=swiper"   class="nav-tab <?php if($tab==='swiper')  :?>nav-tab-active<?php endif; ?>">Swiper</a>
+				<a href="?page=fotorama-elevation&tab=leaflet"  class="nav-tab <?php if($tab==='leaflet') :?>nav-tab-active<?php endif; ?>">Leaflet</a>
+				<a href="?page=fotorama-elevation&tab=params"   class="nav-tab <?php if($tab==='params')  :?>nav-tab-active<?php endif; ?>">Parameters</a>
+				<a href="?page=fotorama-elevation&tab=show"     class="nav-tab <?php if($tab==='show')    :?>nav-tab-active<?php endif; ?>">Show</a>
+			</nav>
 
-			<form method="post" action="options.php" enctype="multipart/form-data">
-            <?php
-			   settings_fields("gpx_section");
-			   do_settings_sections("gpx_file");
-			   ?>
-			   <p><b><?php esc_html_e('Hint: GPX-routes without elevation data should be converted to tracks with','fotoramamulti') ?> <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
-			   <?php esc_html_e('Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.','fotoramamulti') ?></b></br>
-			   <?php esc_html_e('Button Save GPX-File underneath will save settings and / or GPX-File.','fotoramamulti') ?></p> 
-			   <?php
-			   $strg = __('Save GPX-File', 'fotoramamulti');
-			   submit_button( $strg );            
-            ?>
-
-         	</form>
-			<hr>
-			<form method="post" action="options.php">
-				<?php
-					settings_fields( 'fotorama_elevation_option_group' );
-					do_settings_sections( 'fotorama-elevation-admin' );
-					submit_button();
-				?>
-			</form>
-			
-			<hr>
-            <h3>List of shortcode Parameters:</h3>
-			<p><b>(Almost) Complete EXAMPLE shortcode with the above settings (No need to use it in Post!): </br></b> <?php
-				$example = '[gpxview imgpath="' . 	$this->fotorama_elevation_options['path_to_images_for_fotorama_0'] . '" ';
-				$example.= 'gpxpath="' .            $this->fotorama_elevation_options['path_to_gpx_files_2'] . '" ';
-				$example.= 'gpxfile="test.gpx" ';
-				//$example.= 'showalltracks="' . 		$this->fotorama_elevation_options['showalltracks'] . '" ';
-				$example.= 'showalltracks="boolean" ';
-				$example.= 'mapheight="' .          $this->fotorama_elevation_options['height_of_map_10'] . '" ';
-				$example.= 'chartheight="' .        $this->fotorama_elevation_options['height_of_chart_11'] . '" ';
-				$example.= 'dload="' .              $this->fotorama_elevation_options['download_gpx_files_3'] . '" ';
-				$example.= 'alttext="' .            $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] . '" ';
-				$example.= 'ignoresort="' .         $this->fotorama_elevation_options['ignore_custom_sort_6'] . '" ';
-				$example.= 'useCDN="' .             $this->fotorama_elevation_options['useCDN_13'] . '" ';
-				$example.= 'showadress="' .         $this->fotorama_elevation_options['show_address_of_start_7'] . '" ';
-				$example.= 'showmap="true" ';
-				$example.= 'adresstext="' .         $this->fotorama_elevation_options['text_for_start_address_8'] . '" ';
-				$example.= 'requiregps="' .         $this->fotorama_elevation_options['images_with_gps_required_5'] . '" ';
-				$example.= 'maxwidth="' .           $this->fotorama_elevation_options['max_width_of_container_12'] . '" ';
-				$example.= 'minrowwidth="' .        $this->fotorama_elevation_options['min_width_css_grid_row_14'] . '" ';
-				$example.= 'showcaption="' .        $this->fotorama_elevation_options['show_caption_4'] . '" ';
-				$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '" ';
-				$example.= 'mapcenter="' . 			($this->fotorama_elevation_options['mapcenter'] ?? '48.12,12.35') . '" ';
-				$example.= 'zoom="' . 				($this->fotorama_elevation_options['zoom'] ?? '8') . '" ';
-				$example.= 'markertext="' . 		($this->fotorama_elevation_options['markertext'] ?? 'My Address') . '" ';
-				$example.= 'fit="' .				($this->fotorama_elevation_options['fit'] ?? 'cover') . '" '; // 'contain' Default, 'cover', 'scaledown', 'none'
-				$example.= 'ratio="' .				($this->fotorama_elevation_options['ratio'] ?? '1.5') . '" ';
-				$example.= 'background="' .			($this->fotorama_elevation_options['background'] ?? 'darkgrey') . '" '; // background color in CSS name
-				$example.= 'nav="' .				($this->fotorama_elevation_options['nav'] ?? 'thumbs') . '" '; // Default: 'dots', 'thumbs') . '" '; false, // funktioniert nicht
-				$example.= 'navposition="' .		($this->fotorama_elevation_options['navposition'] ?? 'bottom') . '" '; // 'top'
-				$example.= 'navwidth="' .			($this->fotorama_elevation_options['navwidth'] ?? '100') . '" '; // in percent
-				$example.= 'f_thumbwidth="' .		($this->fotorama_elevation_options['f_thumbwidth'] ?? '100') . '" '; // in pixels
-				$example.= 'f_thumbheight="' .		($this->fotorama_elevation_options['f_thumbheight'] ?? '75') . '" '; // in pixels
-				$example.= 'thumbmargin="' .		($this->fotorama_elevation_options['thumbmargin'] ?? '2') . '" '; // in pixels
-				$example.= 'thumbborderwidth="' .	($this->fotorama_elevation_options['thumbborderwidth'] ?? '2') . '" '; // in pixels
-				$example.= 'thumbbordercolor="' .	($this->fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000') . '" '; // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
-				$example.= 'transition="' .			($this->fotorama_elevation_options['transition'] ?? 'crossfade') . '" '; // 'slide' Default 'crossfade' 'dissolve'
-				$example.= 'transitionduration="' .	($this->fotorama_elevation_options['transitionduration'] ?? '400') . '" '; // in ms
-				$example.= 'loop="' .				($this->fotorama_elevation_options['loop'] ?? 'true') . '" '; // true or false
-				$example.= 'autoplay="' .			($this->fotorama_elevation_options['autoplay'] ?? '3000') . '" '; // on with 'true' or any interval in milliseconds.
-				$example.= 'arrows="' .				($this->fotorama_elevation_options['arrows'] ?? 'true') . '" ';  // true : Default, false, 'always' : Do not hide controls on hover or tap
-				$example.= 'shadows="' .			($this->fotorama_elevation_options['shadows'] ?? 'true') . '"]'; // true or false
-			 	echo $example;
-			?></p>
-
-			<style type="text/css">
-				.tg  {border-collapse:collapse;border-spacing:2;background-color: white;}
-				.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-				overflow:hidden;padding:10px 5px;word-break:normal;}
-				.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-				font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-				.tg .tg-dncm{border-color:inherit;font-weight:bold;position:-webkit-sticky;position:sticky;text-align:left;top:-1px;
-				vertical-align:top;will-change:transform;background-color: goldenrod;}
-				.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-				.tg tr:nth-child(even) {background-color:lightgray;}
-			</style>
-
-			<table class="tg">
-				<thead>
-				<tr>
-					<th class="tg-dncm">Shortcode</th>
-					<th class="tg-dncm">Value (Default first)</th>
-					<th class="tg-dncm">Example</th>
-					<th class="tg-dncm">Description</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<td class="tg-0pky">gpxpath</td>
-					<td class="tg-0pky">gpx</td>
-					<td class="tg-0pky">gpxpath="gpx"</td>
-					<td class="tg-0pky">Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/gpx</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">gpxfile</td>
-					<td class="tg-0pky">'' / test.gpx</td>
-					<td class="tg-0pky">gpxfile="test.gpx"</td>
-					<td class="tg-0pky">File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: "f1.gpx, f2.gpx, f3.gpx"</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">dload</td>
-					<td class="tg-0pky">yes / no</td>
-					<td class="tg-0pky">dload="yes"</td>
-					<td class="tg-0pky">Provide download link for the GPX-Tracks, if "yes".</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">showalltracks</td>
-					<td class="tg-0pky">false / true </td>
-					<td class="tg-0pky">showalltracks="true"</td>
-					<td class="tg-0pky">Show all given tracks together in one Map. Works only with one map!. Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option.</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">showadress</td>
-					<td class="tg-0pky">true / false</td>
-					<td class="tg-0pky">showadress="true"</td>
-					<td class="tg-0pky">Show start adress of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image.</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">adresstext</td>
-					<td class="tg-0pky">Startadresse</td>
-					<td class="tg-0pky">adresstext="Startadresse"</td>
-					<td class="tg-0pky">Text for header above start address</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">showmap</td>
-					<td class="tg-0pky">true / false</td>
-					<td class="tg-0pky">showmap="true"</td>
-					<td class="tg-0pky">Show the map, independent of other settinges. Currently no Admin setting for that.</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">mapselector</td>
-					<td class="tg-0pky">OpenTopoMap</td>
-					<td class="tg-0pky">mapselector="OpenStreetMap"</td>
-					<td class="tg-0pky">Choose which map should be shown first. Possible values for Maps: OpenStreetMap, OpenTopoMap, CycleOSM, Satellit</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">mapheight</td>
-					<td class="tg-0pky">450</td>
-					<td class="tg-0pky">mapheight="450"</td>
-					<td class="tg-0pky">Height of the leaflet map in pixels (px)</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">chartheight</td>
-					<td class="tg-0pky">200</td>
-					<td class="tg-0pky">chartheight="200"</td>
-					<td class="tg-0pky">Height of the leaflet elevation chart in pixels (px)</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">eletheme</td>
-					<td class="tg-0pky">lime-theme</td>
-					<td class="tg-0pky">eletheme="lime-theme"</td>
-					<td class="tg-0pky">Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. Martin-theme is my special theme.</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">mapcenter</td>
-					<td class="tg-0pky">0.0,0.0</td>
-					<td class="tg-0pky">mapcenter="48.12,12.35"</td>
-					<td class="tg-0pky">Center of the map if NO tracks are defined. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option.</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">zoom</td>
-					<td class="tg-0pky">8</td>
-					<td class="tg-0pky">zoom="8"</td>
-					<td class="tg-0pky">Zoom level for the map if NO tracks are defined. There is no admin-setting for this option.</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">markertext</td>
-					<td class="tg-0pky">Home Address</td>
-					<td class="tg-0pky">markertext="My Address"</td>
-					<td class="tg-0pky">Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option.</td>
-				</tr>
-				<tr>
-				<td class="tg-0pky"><strong>Fotorama Settings</strong></td><td></td><td></td><td></td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">imgpath</td>
-					<td class="tg-0pky">Bilder</td>
-					<td class="tg-0pky">imgpath="Bilder"</td>
-					<td class="tg-0pky">Path the images relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/galleries/holiday2020</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">alttext</td>
-					<td class="tg-0pky">''</td>
-					<td class="tg-0pky">alttext="Image Slider with map from holiday"</td>
-					<td class="tg-0pky">Alltext for the fotorama slider for SEO</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">ignoresort</td>
-					<td class="tg-0pky">false / true</td>
-					<td class="tg-0pky">ignoresort="false"</td>
-					<td class="tg-0pky">Ignore custom sort even if provided by Wordpress. If checked sort by date ascending</td>
-				</tr>
-			
-				<tr>
-					<td class="tg-0pky">requiregps</td>
-					<td class="tg-0pky">true / false</td>
-					<td class="tg-0pky">requiregps="true"</td>
-					<td class="tg-0pky">Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF.</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">maxwidth</td>
-					<td class="tg-0pky">600</td>
-					<td class="tg-0pky">maxwidth="600"</td>
-					<td class="tg-0pky">Maximum width of the whole container with slider and map</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">minrowwidth</td>
-					<td class="tg-0pky">480</td>
-					<td class="tg-0pky">minrowwidth="480"</td>
-					<td class="tg-0pky">Minimum width of one row of the CSS-Grid. If greater than maxwidth/2 Fotorama and the map are never shown in one row. 
-										Mind that the max. width of the outer div may be inherited from other elements or set by the theme.</td>
-				</tr>
-				<tr>
-					<td class="tg-0pky">showcaption</td>
-					<td class="tg-0pky">true / false</td>
-					<td class="tg-0pky">showcaption="true"</td>
-					<td class="tg-0pky">Show the caption in the fotorama slider</td>
-				</tr>
-
-				<tr>
-					<td class="tg-0pky">shortcaption</td>
-					<td class="tg-0pky">false / true</td>
-					<td class="tg-0pky">shortcaption="true"</td>
-					<td class="tg-0pky">Show short caption only. (Don't show image metadata from EXIF. No Admin setting available)</td>
-				</tr>
-			
-				<tr><td class="tg-0pky">fit</td><td class="tg-0pky">contain , cover, scaledown, none</td><td class="tg-0pky">fit="contain"</td><td class="tg-0pky">Define the scaling of Fotos for the Fotorama Slider</td></tr>
-				<tr><td class="tg-0pky">ratio</td><td class="tg-0pky">1.5</td><td class="tg-0pky">ratio="1.0"</td><td class="tg-0pky">Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now</td></tr>
-				<tr><td class="tg-0pky">background</td><td class="tg-0pky">darkgrey</td><td class="tg-0pky">background="red"</td><td class="tg-0pky">Background color of the slider defined by a valid CSS name</td></tr>
-				<tr><td class="tg-0pky">navposition</td><td class="tg-0pky">bottom , top</td><td class="tg-0pky">navposition="top"</td><td class="tg-0pky">Position of the navigation bar</td></tr>
-				<tr><td class="tg-0pky">navwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">navwidth="80"</td><td class="tg-0pky">Width of the navigation bar in percent.</td></tr>
-				<tr><td class="tg-0pky">f_thumbwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">f_thumbwidth="80"</td><td class="tg-0pky">Width of the single thumbnail in the navigation bar in pixels</td></tr>
-				<tr><td class="tg-0pky">f_thumbheight</td><td class="tg-0pky">75</td><td class="tg-0pky">f_thumbheight="80"</td><td class="tg-0pky">Height of the single thumbnail in the navigation bar in pixels</td></tr>
-				<tr><td class="tg-0pky">thumbmargin</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbmargin="3"</td><td class="tg-0pky">Margin between thumbnails in pixels</td></tr>
-				<tr><td class="tg-0pky">thumbborderwidth</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbborderwidth="3"</td><td class="tg-0pky">Width of the coloured thumbnail border in pixels</td></tr>
-				<tr><td class="tg-0pky">thumbbordercolor</td><td class="tg-0pky">#ea0000</td><td class="tg-0pky">thumbbordercolor="blue"</td><td class="tg-0pky">Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken.</td></tr>
-				<tr><td class="tg-0pky">transition</td><td class="tg-0pky">crossfade , slide , dissolve</td><td class="tg-0pky">transition="slide"</td><td class="tg-0pky">Type of transition between images</td></tr>
-				<tr><td class="tg-0pky">transitionduration</td><td class="tg-0pky">400</td><td class="tg-0pky">transitionduration="200"</td><td class="tg-0pky">Duration of transition in ms</td></tr>
-				<tr><td class="tg-0pky">loop</td><td class="tg-0pky">true , false</td><td class="tg-0pky">loop="false"</td><td class="tg-0pky">Loop through images (proceed with first once the reached the las) true or false</td></tr>
-				<tr><td class="tg-0pky">autoplay</td><td class="tg-0pky">3000</td><td class="tg-0pky">autoplay="false"</td><td class="tg-0pky">Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false"</td></tr>
-				<tr><td class="tg-0pky">arrows</td><td class="tg-0pky">true , false , always</td><td class="tg-0pky">arrows="false"</td><td class="tg-0pky">Show arrows for the slider control. 'always' : Do not hide controls on hover or tap</td></tr>
-				<tr><td class="tg-0pky">shadows</td><td class="tg-0pky">true , false</td><td class="tg-0pky">shadows="false"</td><td class="tg-0pky">Show shadows. Does not work as expected.</td></tr>
+			<div class="tab-content">
+    		<?php switch($tab) :
 				
-				</tbody>
-			</table>
+			case 'fotorama':?>
+				<!-- all Settings in one section -->
+				<form method="post" action="options.php">
+					<?php
+						settings_fields( 'fotorama_elevation_option_group' );
+						do_settings_sections( 'fotorama-elevation-admin' );
+						submit_button();
+					?>
+				</form>
+				<?php break;
+
+			case 'swiper':?>
+				<!-- all Settings in one section -->
+				<form method="post" action="options.php">
+					<?php
+						$this->swiperClass->wporg_options_page_html();
+					?>
+				</form>
+				<?php break;
+
+			case 'leaflet':?>
+				<!-- all Settings in one section -->
+				<form method="post" action="options.php">
+					<?php
+						settings_fields( 'fotorama_elevation_option_group' );
+						do_settings_sections( 'fotorama-elevation-admin' );
+						submit_button();
+					?>
+				</form>
+				<?php break;
+
+			case 'params':?>
+				<!-- table with all shortcode Parameters -->
+				<h3>List of shortcode Parameters (Swiper Parameters are still missing):</h3>
+				<p><b>(Almost) Complete EXAMPLE shortcode with the above settings (No need to use it in Post!): </br></b> <?php
+					$example = '[gpxview imgpath="' . 	$this->fotorama_elevation_options['path_to_images_for_fotorama_0'] . '" ';
+					$example.= 'gpxpath="' .            $this->fotorama_elevation_options['path_to_gpx_files_2'] . '" ';
+					$example.= 'gpxfile="test.gpx" ';
+					//$example.= 'showalltracks="' . 		$this->fotorama_elevation_options['showalltracks'] . '" ';
+					$example.= 'showalltracks="boolean" ';
+					$example.= 'mapheight="' .          $this->fotorama_elevation_options['height_of_map_10'] . '" ';
+					$example.= 'chartheight="' .        $this->fotorama_elevation_options['height_of_chart_11'] . '" ';
+					$example.= 'dload="' .              $this->fotorama_elevation_options['download_gpx_files_3'] . '" ';
+					$example.= 'alttext="' .            $this->fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] . '" ';
+					$example.= 'ignoresort="' .         $this->fotorama_elevation_options['ignore_custom_sort_6'] . '" ';
+					$example.= 'useCDN="' .             $this->fotorama_elevation_options['useCDN_13'] . '" ';
+					$example.= 'showadress="' .         $this->fotorama_elevation_options['show_address_of_start_7'] . '" ';
+					$example.= 'showmap="true" ';
+					$example.= 'adresstext="' .         $this->fotorama_elevation_options['text_for_start_address_8'] . '" ';
+					$example.= 'requiregps="' .         $this->fotorama_elevation_options['images_with_gps_required_5'] . '" ';
+					$example.= 'maxwidth="' .           $this->fotorama_elevation_options['max_width_of_container_12'] . '" ';
+					$example.= 'minrowwidth="' .        $this->fotorama_elevation_options['min_width_css_grid_row_14'] . '" ';
+					$example.= 'showcaption="' .        $this->fotorama_elevation_options['show_caption_4'] . '" ';
+					$example.= 'eletheme="' .           $this->fotorama_elevation_options['colour_theme_for_leaflet_elevation_1'] . '" ';
+					$example.= 'mapcenter="' . 			($this->fotorama_elevation_options['mapcenter'] ?? '48.12,12.35') . '" ';
+					$example.= 'zoom="' . 				($this->fotorama_elevation_options['zoom'] ?? '8') . '" ';
+					$example.= 'markertext="' . 		($this->fotorama_elevation_options['markertext'] ?? 'My Address') . '" ';
+					$example.= 'fit="' .				($this->fotorama_elevation_options['fit'] ?? 'cover') . '" '; // 'contain' Default, 'cover', 'scaledown', 'none'
+					$example.= 'ratio="' .				($this->fotorama_elevation_options['ratio'] ?? '1.5') . '" ';
+					$example.= 'background="' .			($this->fotorama_elevation_options['background'] ?? 'darkgrey') . '" '; // background color in CSS name
+					$example.= 'nav="' .				($this->fotorama_elevation_options['nav'] ?? 'thumbs') . '" '; // Default: 'dots', 'thumbs') . '" '; false, // funktioniert nicht
+					$example.= 'navposition="' .		($this->fotorama_elevation_options['navposition'] ?? 'bottom') . '" '; // 'top'
+					$example.= 'navwidth="' .			($this->fotorama_elevation_options['navwidth'] ?? '100') . '" '; // in percent
+					$example.= 'f_thumbwidth="' .		($this->fotorama_elevation_options['f_thumbwidth'] ?? '100') . '" '; // in pixels
+					$example.= 'f_thumbheight="' .		($this->fotorama_elevation_options['f_thumbheight'] ?? '75') . '" '; // in pixels
+					$example.= 'thumbmargin="' .		($this->fotorama_elevation_options['thumbmargin'] ?? '2') . '" '; // in pixels
+					$example.= 'thumbborderwidth="' .	($this->fotorama_elevation_options['thumbborderwidth'] ?? '2') . '" '; // in pixels
+					$example.= 'thumbbordercolor="' .	($this->fotorama_elevation_options['thumbbordercolor'] ?? '#ea0000') . '" '; // background color in CSS name or HEX-value. The color of the last shortcode on the page will be taken.
+					$example.= 'transition="' .			($this->fotorama_elevation_options['transition'] ?? 'crossfade') . '" '; // 'slide' Default 'crossfade' 'dissolve'
+					$example.= 'transitionduration="' .	($this->fotorama_elevation_options['transitionduration'] ?? '400') . '" '; // in ms
+					$example.= 'loop="' .				($this->fotorama_elevation_options['loop'] ?? 'true') . '" '; // true or false
+					$example.= 'autoplay="' .			($this->fotorama_elevation_options['autoplay'] ?? '3000') . '" '; // on with 'true' or any interval in milliseconds.
+					$example.= 'arrows="' .				($this->fotorama_elevation_options['arrows'] ?? 'true') . '" ';  // true : Default, false, 'always' : Do not hide controls on hover or tap
+					$example.= 'shadows="' .			($this->fotorama_elevation_options['shadows'] ?? 'true') . '"]'; // true or false
+					echo $example;
+				?></p>
+
+				<style type="text/css">
+					.tg  {border-collapse:collapse;border-spacing:2;background-color: white;}
+					.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+					overflow:hidden;padding:10px 5px;word-break:normal;}
+					.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+					font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+					.tg .tg-dncm{border-color:inherit;font-weight:bold;position:-webkit-sticky;position:sticky;text-align:left;top:-1px;
+					vertical-align:top;will-change:transform;background-color: goldenrod;}
+					.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+					.tg tr:nth-child(even) {background-color:lightgray;}
+				</style>
+
+				<table class="tg">
+					<thead>
+					<tr>
+						<th class="tg-dncm">Shortcode</th>
+						<th class="tg-dncm">Value (Default first)</th>
+						<th class="tg-dncm">Example</th>
+						<th class="tg-dncm">Description</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td class="tg-0pky">gpxpath</td>
+						<td class="tg-0pky">gpx</td>
+						<td class="tg-0pky">gpxpath="gpx"</td>
+						<td class="tg-0pky">Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/gpx</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">gpxfile</td>
+						<td class="tg-0pky">'' / test.gpx</td>
+						<td class="tg-0pky">gpxfile="test.gpx"</td>
+						<td class="tg-0pky">File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: "f1.gpx, f2.gpx, f3.gpx"</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">dload</td>
+						<td class="tg-0pky">yes / no</td>
+						<td class="tg-0pky">dload="yes"</td>
+						<td class="tg-0pky">Provide download link for the GPX-Tracks, if "yes".</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">showalltracks</td>
+						<td class="tg-0pky">false / true </td>
+						<td class="tg-0pky">showalltracks="true"</td>
+						<td class="tg-0pky">Show all given tracks together in one Map. Works only with one map!. Will be ignored for multiple maps or if only one track is provided. There is no admin-setting for this option.</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">showadress</td>
+						<td class="tg-0pky">true / false</td>
+						<td class="tg-0pky">showadress="true"</td>
+						<td class="tg-0pky">Show start adress of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image.</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">adresstext</td>
+						<td class="tg-0pky">Startadresse</td>
+						<td class="tg-0pky">adresstext="Startadresse"</td>
+						<td class="tg-0pky">Text for header above start address</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">showmap</td>
+						<td class="tg-0pky">true / false</td>
+						<td class="tg-0pky">showmap="true"</td>
+						<td class="tg-0pky">Show the map, independent of other settinges. Currently no Admin setting for that.</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">mapselector</td>
+						<td class="tg-0pky">OpenTopoMap</td>
+						<td class="tg-0pky">mapselector="OpenStreetMap"</td>
+						<td class="tg-0pky">Choose which map should be shown first. Possible values for Maps: OpenStreetMap, OpenTopoMap, CycleOSM, Satellit</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">mapheight</td>
+						<td class="tg-0pky">450</td>
+						<td class="tg-0pky">mapheight="450"</td>
+						<td class="tg-0pky">Height of the leaflet map in pixels (px)</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">chartheight</td>
+						<td class="tg-0pky">200</td>
+						<td class="tg-0pky">chartheight="200"</td>
+						<td class="tg-0pky">Height of the leaflet elevation chart in pixels (px)</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">eletheme</td>
+						<td class="tg-0pky">lime-theme</td>
+						<td class="tg-0pky">eletheme="lime-theme"</td>
+						<td class="tg-0pky">Theme for leaflet elevation. Other themes are: steelblue-theme, purple-theme, yellow-theme, red-theme, magenta-theme, lightblue-theme and martin-theme. Martin-theme is my special theme.</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">mapcenter</td>
+						<td class="tg-0pky">0.0,0.0</td>
+						<td class="tg-0pky">mapcenter="48.12,12.35"</td>
+						<td class="tg-0pky">Center of the map if NO tracks are defined. Usa comma "," for separation and dot "." for decimals. There is no admin-setting for this option.</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">zoom</td>
+						<td class="tg-0pky">8</td>
+						<td class="tg-0pky">zoom="8"</td>
+						<td class="tg-0pky">Zoom level for the map if NO tracks are defined. There is no admin-setting for this option.</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">markertext</td>
+						<td class="tg-0pky">Home Address</td>
+						<td class="tg-0pky">markertext="My Address"</td>
+						<td class="tg-0pky">Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option.</td>
+					</tr>
+					<tr>
+					<td class="tg-0pky"><strong>Fotorama Settings</strong></td><td></td><td></td><td></td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">imgpath</td>
+						<td class="tg-0pky">Bilder</td>
+						<td class="tg-0pky">imgpath="Bilder"</td>
+						<td class="tg-0pky">Path the images relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/galleries/holiday2020</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">alttext</td>
+						<td class="tg-0pky">''</td>
+						<td class="tg-0pky">alttext="Image Slider with map from holiday"</td>
+						<td class="tg-0pky">Alltext for the fotorama slider for SEO</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">ignoresort</td>
+						<td class="tg-0pky">false / true</td>
+						<td class="tg-0pky">ignoresort="false"</td>
+						<td class="tg-0pky">Ignore custom sort even if provided by Wordpress. If checked sort by date ascending</td>
+					</tr>
+				
+					<tr>
+						<td class="tg-0pky">requiregps</td>
+						<td class="tg-0pky">true / false</td>
+						<td class="tg-0pky">requiregps="true"</td>
+						<td class="tg-0pky">Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF.</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">maxwidth</td>
+						<td class="tg-0pky">600</td>
+						<td class="tg-0pky">maxwidth="600"</td>
+						<td class="tg-0pky">Maximum width of the whole container with slider and map</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">minrowwidth</td>
+						<td class="tg-0pky">480</td>
+						<td class="tg-0pky">minrowwidth="480"</td>
+						<td class="tg-0pky">Minimum width of one row of the CSS-Grid. If greater than maxwidth/2 Fotorama and the map are never shown in one row. 
+											Mind that the max. width of the outer div may be inherited from other elements or set by the theme.</td>
+					</tr>
+					<tr>
+						<td class="tg-0pky">showcaption</td>
+						<td class="tg-0pky">true / false</td>
+						<td class="tg-0pky">showcaption="true"</td>
+						<td class="tg-0pky">Show the caption in the fotorama slider</td>
+					</tr>
+
+					<tr>
+						<td class="tg-0pky">shortcaption</td>
+						<td class="tg-0pky">false / true</td>
+						<td class="tg-0pky">shortcaption="true"</td>
+						<td class="tg-0pky">Show short caption only. (Don't show image metadata from EXIF)</td>
+					</tr>
+				
+					<tr><td class="tg-0pky">fit</td><td class="tg-0pky">contain , cover, scaledown, none</td><td class="tg-0pky">fit="contain"</td><td class="tg-0pky">Define the scaling of Fotos for the Fotorama Slider</td></tr>
+					<tr><td class="tg-0pky">ratio</td><td class="tg-0pky">1.5</td><td class="tg-0pky">ratio="1.0"</td><td class="tg-0pky">Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now</td></tr>
+					<tr><td class="tg-0pky">background</td><td class="tg-0pky">darkgrey</td><td class="tg-0pky">background="red"</td><td class="tg-0pky">Background color of the slider defined by a valid CSS name</td></tr>
+					<tr><td class="tg-0pky">navposition</td><td class="tg-0pky">bottom , top</td><td class="tg-0pky">navposition="top"</td><td class="tg-0pky">Position of the navigation bar</td></tr>
+					<tr><td class="tg-0pky">navwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">navwidth="80"</td><td class="tg-0pky">Width of the navigation bar in percent.</td></tr>
+					<tr><td class="tg-0pky">f_thumbwidth</td><td class="tg-0pky">100</td><td class="tg-0pky">f_thumbwidth="80"</td><td class="tg-0pky">Width of the single thumbnail in the navigation bar in pixels</td></tr>
+					<tr><td class="tg-0pky">f_thumbheight</td><td class="tg-0pky">75</td><td class="tg-0pky">f_thumbheight="80"</td><td class="tg-0pky">Height of the single thumbnail in the navigation bar in pixels</td></tr>
+					<tr><td class="tg-0pky">thumbmargin</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbmargin="3"</td><td class="tg-0pky">Margin between thumbnails in pixels</td></tr>
+					<tr><td class="tg-0pky">thumbborderwidth</td><td class="tg-0pky">2</td><td class="tg-0pky">thumbborderwidth="3"</td><td class="tg-0pky">Width of the coloured thumbnail border in pixels</td></tr>
+					<tr><td class="tg-0pky">thumbbordercolor</td><td class="tg-0pky">#ea0000</td><td class="tg-0pky">thumbbordercolor="blue"</td><td class="tg-0pky">Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken.</td></tr>
+					<tr><td class="tg-0pky">transition</td><td class="tg-0pky">crossfade , slide , dissolve</td><td class="tg-0pky">transition="slide"</td><td class="tg-0pky">Type of transition between images</td></tr>
+					<tr><td class="tg-0pky">transitionduration</td><td class="tg-0pky">400</td><td class="tg-0pky">transitionduration="200"</td><td class="tg-0pky">Duration of transition in ms</td></tr>
+					<tr><td class="tg-0pky">loop</td><td class="tg-0pky">true , false</td><td class="tg-0pky">loop="false"</td><td class="tg-0pky">Loop through images (proceed with first once the reached the las) true or false</td></tr>
+					<tr><td class="tg-0pky">autoplay</td><td class="tg-0pky">3000</td><td class="tg-0pky">autoplay="false"</td><td class="tg-0pky">Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false"</td></tr>
+					<tr><td class="tg-0pky">arrows</td><td class="tg-0pky">true , false , always</td><td class="tg-0pky">arrows="false"</td><td class="tg-0pky">Show arrows for the slider control. 'always' : Do not hide controls on hover or tap</td></tr>
+					<tr><td class="tg-0pky">shadows</td><td class="tg-0pky">true , false</td><td class="tg-0pky">shadows="false"</td><td class="tg-0pky">Show shadows. Does not work as expected.</td></tr>
+					
+					</tbody>
+				</table>
+				<?php break;
+			
+			case 'show':?>
+				<h3>Show all Parameters</h3>
+				<h4>Swiper Settings:</h4>
+				<?php 
+				// Get the value of all settings
+				$this->swiperClass->show_settings();
+				break;?>
+
+			<?php default:?>
+				<!-- GPX section -->
+				<form method="post" action="options.php" enctype="multipart/form-data">
+				<?php
+				settings_fields("gpx_section");
+				do_settings_sections("gpx_file");
+				?>
+				<p><b><?php esc_html_e('Hint: GPX-routes without elevation data should be converted to tracks with','fotoramamulti') ?> <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
+				<?php esc_html_e('Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.','fotoramamulti') ?></b></br>
+				<?php esc_html_e('Button Save GPX-File underneath will save settings and / or GPX-File.','fotoramamulti') ?></p> 
+				<?php
+				$strg = __('Save GPX-File', 'fotoramamulti');
+				submit_button( $strg );
+				?></form><?php
+				break;
+			endswitch; ?>
 
 		</div>
 		<?php 
@@ -1492,5 +1543,268 @@ final class FotoramaElevationAdmin {
 		// html code here is shown after the heading of the section
     }
     public function leaflet_elevation_section_info() {
+	}
+}
+
+final class SwiperAdmin {
+	
+	private $settings = [
+		'pre' => 'wporg',
+		'options' => 'wporg_options',
+		'sanitizer' => 'wporg_options_sanitizer',
+		'section' => 'wporg_section_developers',
+		'sectionsText' => 'Swiper Slider Settings',
+		'namespace' => 'fotoramamulti',
+		'subTitle' => 'All Settings for the Swiper Slider',
+		'param1' => [
+			'label' => 'sw_effect', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Swiper Slide Change Effect',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom1',
+			'type' => 'select',
+			'values' => ['slide' => 'Slide', 'fade' => 'Fade', 'flip' => 'Flip', 'cube' => 'Cube', 'coverflow' => 'Coverflow'],
+			'description' => ''
+		],
+		'param2' => [
+			'label' => 'sw_thumbbartype',
+			'text' => 'Thumbnailbar Type',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom2',
+			'type' => 'select',
+			'values' => ['integrated' => 'Swiper Thumbbar', 'special' => 'Special Thumbbar'],
+			'description' => ''
+		],
+		'param3' => [
+			'label' => 'sw_activetype',
+			'text' => 'Thumbbar Effect for Special Thumbbar',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom3',
+			'type' => 'select',
+			'values' => ['active' => 'Brightness', 'active_animation' => 'Shake', 'active_border' => 'Border'],
+			'description' => ''
+		],
+		'param4' => [
+			'label' => 'sw_zoom',
+			'text' => 'Activate Zoom in Slider',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom4',
+			'type' => 'checkbox',
+			'values' => '',
+			'description' => 'Activates the Zoom Function within the Swiper Slider'
+		],
+		'param5' => [
+			'label' => 'sw_fslightbox',
+			'text' => 'Use fslightbox for Fullscreen',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom5',
+			'type' => 'checkbox',
+			'values' => '',
+			'description' => 'Requires an additonal Plugin!'
+		],
+		/*
+		'param6' => [
+			'label' => 'sw_pagination',
+			'text' => 'Activate Zoom in Slider',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom6',
+			'type' => 'checkbox',
+			'values' => '',
+			'description' => 'Activates the Zoom Function within the Swiper Slider'
+		],
+		*/
+		'param7' => [
+			'label' => 'sw_mousewheel',
+			'text' => 'Use Mousewheel for Slide Change',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom7',
+			'type' => 'checkbox',
+			'values' => '',
+			'description' => 'Only active if there is one Slider on Page.'
+		],
+		'param8' => [
+			'label' => 'sw_hashnavigation',
+			'text' => 'Activate Hash Naviagation',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom8',
+			'type' => 'checkbox',
+			'values' => '',
+			'description' => 'Enables the option to use a page-link to a dedicated image.'
+		],
+		
+	];
+
+	public function __construct() {
+		/**
+		 * Register our wporg_settings_init to the admin_init action hook.
+		 */
+		add_action( 'admin_init', array( $this, 'wporg_settings_init') );
+	}
+
+	/**
+	 * @internal never define functions inside callbacks.
+	 * these functions could be run multiple times; this would result in a fatal error.
+	 */
+
+	/**
+	 * custom option and settings
+	 */
+	function wporg_settings_init() {
+		// Register a new setting for "wporg" page.
+		register_setting( 
+			$this->settings['pre'], // option_group
+			$this->settings['options'], // option_name
+			array('sanitize_callback' => array($this, $this->settings['sanitizer']))
+		);
+
+		// Register a new section in the "wporg" page.
+		add_settings_section(
+			$this->settings['section'],
+			__( $this->settings['sectionsText'], $this->settings['namespace'] ), array( $this, $this->settings['pre'].'_section_callback'),
+			$this->settings['pre']
+		);
+
+		// Register all new fields in the section, inside the page.
+		foreach($this->settings as $key => $param) {
+			
+			if ( \gettype($param) === 'array') {
+				add_settings_field(
+					$this->settings[$key]['label'], // As of WP 4.6 this value is used only internally. // Use $args' label_for to populate the id inside the callback.
+					__( $this->settings[$key]['text'], $this->settings['namespace'] ),
+					array( $this, $this->settings['pre'].'_param_cb'),
+					$this->settings['pre'],
+					$this->settings['section'],
+					array(
+						'label_for'   => $this->settings[$key]['label'],
+						'class'       => $this->settings[$key]['class'],
+						'custom_data' => $this->settings[$key]['custom_data'],
+						'param'		  => $key
+					)
+				);
+			}
+		}
+	}
+
+	function wporg_options_sanitizer( $args ) {
+		foreach($this->settings as $key => $param) {
+			if ( \gettype($param) === 'array' && $param['type'] === 'checkbox') {
+				if ( isset($args[ $param['label'] ]) ) {
+					$args[$param['label']] = 'true';
+				} else {
+					$args[$param['label']] = 'false';
+				}
+			}
+		}
+		return $args;
+	}
+
+	/**
+	 * Custom option and settings:
+	 *  - callback functions
+	 */
+
+
+	/**
+	 * Developers section callback function.
+	 *
+	 * @param array $args  The settings array, defining title, id, callback.
+	 */
+	function wporg_section_callback( $args ) {
+		?>
+		<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( $this->settings['subTitle'], $this->settings['namespace'] ); ?></p>
+		<?php
+	}
+
+	/**
+	 * Pill field callbakc function.
+	 *
+	 * WordPress has magic interaction with the following keys: label_for, class.
+	 * - the "label_for" key value is used for the "for" attribute of the <label>.
+	 * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
+	 * Note: you can add custom key value pairs to be used inside your callbacks.
+	 *
+	 * @param array $args
+	 */
+	function wporg_param_cb( $args ) {
+		// Get the value of the setting we've registered with register_setting()
+		$options = get_option( $this->settings['options'] );
+
+		if ($this->settings[ $args['param']]['type'] === 'select') {
+			?>
+			<select id="<?php echo esc_attr( $args['label_for'] ); ?>"
+					data-custom="<?php echo esc_attr( $args['custom_data'] ); ?>"
+					name="<?php echo esc_attr( $this->settings['options']) ?>[<?php echo esc_attr( $args['label_for'] ); ?>]">
+
+				<?php
+				foreach($this->settings[ $args['param']]['values'] as $key => $value) {
+					?>
+					<option value="<?php echo esc_attr($key); ?>" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], $key, false ) ) : ( '' ); ?>>
+						<?php 
+						esc_html_e( $value, $this->settings['pre'] ); 
+						?>
+					</option>
+					<?php
+				}
+				?>
+			</select>
+			<?php
+		}
+
+		if ($this->settings[ $args['param']]['type'] === 'checkbox') {
+			$optset =  \array_key_exists( $args['label_for'], $options ) && $options[$args['label_for']] === 'true' ? 'checked' : '';
+			?>
+			<input type="checkbox" 
+				   id="<?php echo esc_attr( $args['label_for'] ); ?>"
+				   data-custom="<?php echo esc_attr( $args['custom_data'] ); ?>"
+				   name="wporg_options[<?php echo($args['label_for']) ?>]"
+				   <?php echo esc_attr( $optset ); ?>
+				   >
+			<label for="<?php echo esc_attr( $args['label_for'] ); ?>"><?php esc_attr_e($this->settings[ $args['param']]['description'], $this->settings['namespace']);?></label>
+			<?php
+		}
+	}
+
+	/**
+	 * Top level menu callback function
+	 */
+	function wporg_options_page_html() {
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// add error/update messages
+
+		// check if the user have submitted the settings
+		// WordPress will add the "settings-updated" $_GET parameter to the url
+		if ( isset( $_GET['settings-updated'] ) ) {
+			// add settings saved message with the class of "updated"
+			add_settings_error( $this->settings['pre'].'_messages', $this->settings['pre'].'_message', __( 'Settings saved', $this->settings['namespace'] ), 'updated' );
+		}
+
+		?>
+		<div class="wrap">
+			<form action="options.php" method="post">
+				<?php
+				// output security fields for the registered setting "wporg"
+				settings_fields( $this->settings['pre'] );
+				// output setting sections and their fields
+				// (sections are registered for "wporg", each field is registered to a specific section)
+				do_settings_sections( $this->settings['pre'] );
+				// output save settings button
+				submit_button();
+				?>
+			</form>
+		</div>
+		<?php
+	}
+
+	function show_settings() {
+		$options = get_option( 'wporg_options' );
+		$string =\var_export($options);
+		?><p><?php echo $string;?></p><?php
+
+		$options = get_option( 'fotorama_elevation_option_name' );
+		//$string =\var_export($options);
+		?><pre><?php print_r($options);?></pre><?php
 	}
 }
