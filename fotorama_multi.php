@@ -155,14 +155,14 @@ function showmulti($attr, $content = null)
 		'sw_effect'			=> 'slide', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
 		'sw_zoom'			=> 'true',
 		'sw_fslightbox'		=> 'true',
-		'sw_pagination'		=> 'false',
+		'sw_pagination'		=> 'false', // unused
 		'sw_slides_per_view'=> 10,
-		'sw_transition_duration'=>300,
+		'sw_transition_duration'=> 300,
 		'sw_mousewheel'		=> 'true',
 		'sw_hashnavigation' => 'true',
 		'sw_max_zoom_ratio'	=> 3,
 		'sw_thumbbartype'	=> 'special',
-		'sw_bar_margin_top'	=> '5px',
+		'sw_bar_margin_top'	=> 5,
 		'sw_activetype'	 	=> 'active_border',
 
 	), $attr));
@@ -302,12 +302,12 @@ function showmulti($attr, $content = null)
 				'imgpath'				=> $imgpath,
 				'slide_fit'				=> $fit,
 				'sw_aspect_ratio'		=> $ratio,
-				'sw_keyboard'			=> 'true',
+				'sw_keyboard'			=> 'true', // fixed to this setting
 				// thumbnails settings
 				'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
 				'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
 				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful. for future change.
-				'bar_margin_top'     	=> $sw_bar_margin_top, // top margin of thumbnail bar in px
+				'bar_margin_top'     	=> $sw_bar_margin_top . 'px', // top margin of thumbnail bar in px
 				'bar_min_height'		=> $f_thumbheight . 'px', // now two values for the height!
 				'bar_rel_height'		=> '1%', // Does not work.height of thumbnail bar in percent. Use 1% to have a fixed height. for future change.
 				'nail_margin_side' 		=> $thumbmargin . 'px', // left and right margin of single thumb in pixels

@@ -56,11 +56,11 @@ final class FotoramaElevationAdmin {
 			<!-- Here are our tabs -->
 			<nav class="nav-tab-wrapper">
 				<a href="?page=fotorama-elevation" class="nav-tab <?php if($tab===null):?>nav-tab-active<?php endif; ?>">GPX-File</a>
-				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if($tab==='fotorama'):?>nav-tab-active<?php endif; ?>">Fotorama</a>
+				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if($tab==='fotorama'):?>nav-tab-active<?php endif; ?>">Fotorama+Leaflet</a>
 				<a href="?page=fotorama-elevation&tab=swiper"   class="nav-tab <?php if($tab==='swiper')  :?>nav-tab-active<?php endif; ?>">Swiper</a>
-				<a href="?page=fotorama-elevation&tab=leaflet"  class="nav-tab <?php if($tab==='leaflet') :?>nav-tab-active<?php endif; ?>">Leaflet</a>
+				<!--a href="?page=fotorama-elevation&tab=leaflet"  class="nav-tab <?php if($tab==='leaflet') :?>nav-tab-active<?php endif; ?>">Leaflet</a-->
 				<a href="?page=fotorama-elevation&tab=params"   class="nav-tab <?php if($tab==='params')  :?>nav-tab-active<?php endif; ?>">Parameters</a>
-				<a href="?page=fotorama-elevation&tab=show"     class="nav-tab <?php if($tab==='show')    :?>nav-tab-active<?php endif; ?>">Show</a>
+				<!--a href="?page=fotorama-elevation&tab=show"     class="nav-tab <?php if($tab==='show')    :?>nav-tab-active<?php endif; ?>">Show</a-->
 			</nav>
 
 			<div class="tab-content">
@@ -1547,6 +1547,9 @@ final class FotoramaElevationAdmin {
 }
 
 final class SwiperAdmin {
+	// TODO: add swiper parameters to html table
+	// TODO: use the options for the slider
+	// TODO: split fotorama and leaflet settings
 	
 	private $settings = [
 		'pre' => 'wporg',
@@ -1555,7 +1558,16 @@ final class SwiperAdmin {
 		'section' => 'wporg_section_developers',
 		'sectionsText' => 'Swiper Slider Settings',
 		'namespace' => 'fotoramamulti',
-		'subTitle' => 'All Settings for the Swiper Slider',
+		'subTitle' => 'Additonal Settings for the Swiper Slider. Mind that several Settings from Fotorama are used for Swiper, too!',
+		'param0' => [
+			'label' => 'slider', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Slider Type',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom0',
+			'type' => 'select',
+			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'],
+			'description' => ''
+		],
 		'param1' => [
 			'label' => 'sw_effect', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
 			'text' => 'Swiper Slide Change Effect',
@@ -1576,21 +1588,43 @@ final class SwiperAdmin {
 		],
 		'param3' => [
 			'label' => 'sw_activetype',
-			'text' => 'Thumbbar Effect for Special Thumbbar',
+			'text' => 'Effect for Special Thumbbar',
 			'class' => 'wporg_row',
 			'custom_data' => 'custom3',
 			'type' => 'select',
 			'values' => ['active' => 'Brightness', 'active_animation' => 'Shake', 'active_border' => 'Border'],
 			'description' => ''
 		],
+		'param10' => [
+			'label' => 'sw_bar_margin_top',
+			'text' => 'Margin above Special Thumbbar in px',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom10',
+			'type' => 'integer',
+			'values' => 5, // default value
+			'min' => 0,
+			'max' => 100,
+			'description' => ''
+		],
 		'param4' => [
 			'label' => 'sw_zoom',
-			'text' => 'Activate Zoom in Slider',
+			'text' => 'Activate Zoom on Slider',
 			'class' => 'wporg_row',
 			'custom_data' => 'custom4',
 			'type' => 'checkbox',
 			'values' => '',
 			'description' => 'Activates the Zoom Function within the Swiper Slider'
+		],
+		'param9' => [
+			'label' => 'sw_max_zoom_ratio',
+			'text' => 'Set the Zoom Ratio for Swiper Zoom',
+			'class' => 'wporg_row',
+			'custom_data' => 'custom9',
+			'type' => 'integer',
+			'values' => 3, // default value
+			'min' => 1,
+			'max' => 10,
+			'description' => ''
 		],
 		'param5' => [
 			'label' => 'sw_fslightbox',
@@ -1599,10 +1633,10 @@ final class SwiperAdmin {
 			'custom_data' => 'custom5',
 			'type' => 'checkbox',
 			'values' => '',
-			'description' => 'Requires an additonal Plugin!'
+			'description' => 'Requires an additional Plugin!'
 		],
 		/*
-		'param6' => [
+		'param6' => [ // unused
 			'label' => 'sw_pagination',
 			'text' => 'Activate Zoom in Slider',
 			'class' => 'wporg_row',
@@ -1623,14 +1657,42 @@ final class SwiperAdmin {
 		],
 		'param8' => [
 			'label' => 'sw_hashnavigation',
-			'text' => 'Activate Hash Naviagation',
+			'text' => 'Activate Hash Navigation',
 			'class' => 'wporg_row',
 			'custom_data' => 'custom8',
 			'type' => 'checkbox',
 			'values' => '',
 			'description' => 'Enables the option to use a page-link to a dedicated image.'
 		],
-		
+		//'sw_slides_per_view'=> 10, // unused
+		//'sw_transition_duration'=>300, // unused
+		//'sw_keyboard'			=> 'true', // fixed to this setting
+	];
+
+	private $fotoramaSettings = [ // prepared for future use
+		'addPermalink' 			,//=> $addPermalink, 
+		'allImgInWPLibrary' 	,//=> $allImgInWPLibrary,
+		'sw_effect'				,//=> $sw_effect,
+		'sw_zoom'				,//=> $sw_zoom,
+		'sw_fslightbox'			,//=> $sw_fslightbox,
+		'sw_pagination'			,//=> $sw_pagination,
+		'sw_slides_per_view' 	,//=> $sw_slides_per_view, // unused with martins thumbnails
+		'sw_transition_duration',//=> $sw_transition_duration,
+		'sw_mousewheel'			,//=> $sw_mousewheel,
+		'sw_hashnavigation'  	,//=> $sw_hashnavigation,
+		'sw_max_zoom_ratio'		,//=> $sw_max_zoom_ratio,
+		'showcaption'			,//=> $showcaption,
+		'shortcaption'			,//=> $shortcaption,
+		'imgpath'				,//=> $imgpath,
+		'slide_fit'				,//=> $fit,
+		'sw_aspect_ratio'		,//=> $ratio,
+		// thumbnails settings
+		'f_thumbwidth'			,//=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
+		'bar_min_height'		,//=> $f_thumbheight . 'px', // now two values for the height!
+		'nail_margin_side' 		,//=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
+		// only for active_border 
+		'active_border_width'	,//=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
+		'active_border_color'	,//=> $thumbbordercolor, // '#ea0000', 
 	];
 
 	public function __construct() {
@@ -1761,6 +1823,17 @@ final class SwiperAdmin {
 			<label for="<?php echo esc_attr( $args['label_for'] ); ?>"><?php esc_attr_e($this->settings[ $args['param']]['description'], $this->settings['namespace']);?></label>
 			<?php
 		}
+
+		if ($this->settings[ $args['param']]['type'] === 'integer') {
+			$current = isset( $options[$args['label_for']] ) ? $options[$args['label_for']] : '';
+			?>
+			<input type="number" min="<?php echo( $this->settings[ $args['param']]['min']) ?>" max="<?php echo( $this->settings[ $args['param']]['max']) ?>" 
+				name="wporg_options[<?php echo($args['label_for']) ?>]" 
+				id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+				value="<?php echo esc_attr( $current ); ?>">
+			<label>  Min: <?php echo( $this->settings[ $args['param']]['min']) ?>, Max: <?php echo( $this->settings[ $args['param']]['max']) ?></label>
+			<?php
+		}
 	}
 
 	/**
@@ -1790,6 +1863,7 @@ final class SwiperAdmin {
 				// output setting sections and their fields
 				// (sections are registered for "wporg", each field is registered to a specific section)
 				do_settings_sections( $this->settings['pre'] );
+				?><hr><?php
 				// output save settings button
 				submit_button();
 				?>
