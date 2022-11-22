@@ -27,6 +27,9 @@ delete_option($option_name);
 $option_name = 'fm_plugins_checker';
 delete_option($option_name);
 
+$option_name = 'swiper_options';
+delete_option($option_name);
+
 delete_custom_field( 'lat' );
 delete_custom_field( 'lon' );
 delete_custom_field( 'geoadress' );

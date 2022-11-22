@@ -12,6 +12,7 @@ namespace mvbplugins\fotoramamulti;
 $path = plugin_dir_path(__FILE__);
 require_once $path . 'custom_mime_types.php'; 
 require_once $path . 'parseGPX.php'; 
+require_once $path . 'swiperAdminClass.php';
 
 final class FotoramaElevationAdmin {
 	private $fotorama_elevation_options; // TODO: missing typehints for PHP 7.4+
@@ -23,12 +24,162 @@ final class FotoramaElevationAdmin {
 	private $max_height_chart = 800;
 	private $min_width = 100;
 	private $max_width = 1500;
-	private $swiperClass;
 
+	private $swiperClass;
+	private $swiperSettings = [
+		'pre' => 'swiper', // change
+		'options' => 'swiper_options', // change
+		'sanitizer' => 'options_sanitizer', // don't change
+		'section' => 'swiper_section', // change
+		'sectionsText' => 'Swiper Slider Settings', // change
+		'namespace' => 'fotoramamulti', // change
+		'subTitle' => 'Additonal Settings for the Swiper Slider. Mind that several Settings from Fotorama are used for Swiper, too!',
+		'param0' => [
+			'label' => 'slider', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Slider Type',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom0',
+			'type' => 'select',
+			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'],
+			'default' => 'fotorama',
+			'description' => ''
+		],
+		'param1' => [
+			'label' => 'sw_effect', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Swiper Slide Change Effect',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom1',
+			'type' => 'select',
+			'values' => ['slide' => 'Slide', 'fade' => 'Fade', 'flip' => 'Flip', 'cube' => 'Cube', 'coverflow' => 'Coverflow'],
+			'default' => 'slide',
+			'description' => ''
+		],
+		'param2' => [
+			'label' => 'sw_thumbbartype',
+			'text' => 'Thumbnailbar Type',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom2',
+			'type' => 'select',
+			'values' => ['integrated' => 'Swiper Thumbbar', 'special' => 'Special Thumbbar'],
+			'default' => 'special',
+			'description' => ''
+		],
+		'param3' => [
+			'label' => 'sw_activetype',
+			'text' => 'Effect for Special Thumbbar',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom3',
+			'type' => 'select',
+			'values' => ['active' => 'Brightness', 'active_animation' => 'Shake', 'active_border' => 'Border'],
+			'default' => 'active_border',
+			'description' => ''
+		],
+		'param10' => [
+			'label' => 'sw_bar_margin_top',
+			'text' => 'Margin above Special Thumbbar in px',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom10',
+			'type' => 'integer',
+			'values' => 5, // default value
+			'default' => 5,
+			'min' => 0,
+			'max' => 100,
+			'description' => ''
+		],
+		'param4' => [
+			'label' => 'sw_zoom',
+			'text' => 'Activate Zoom on Slider',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom4',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Activates the Zoom Function within the Swiper Slider'
+		],
+		'param9' => [
+			'label' => 'sw_max_zoom_ratio',
+			'text' => 'Set the Zoom Ratio for Swiper Zoom',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom9',
+			'type' => 'integer',
+			'values' => 3, // default value
+			'default' => 3,
+			'min' => 1,
+			'max' => 10,
+			'description' => ''
+		],
+		'param5' => [
+			'label' => 'sw_fslightbox',
+			'text' => 'Use fslightbox for Fullscreen',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom5',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Requires an additional Plugin!'
+		],
+		/*
+		'param6' => [ // unused
+			'label' => 'sw_pagination',
+			'text' => 'Activate Zoom in Slider',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom6',
+			'type' => 'checkbox',
+			'values' => '',
+			'description' => 'Activates the Zoom Function within the Swiper Slider'
+		],
+		*/
+		'param7' => [
+			'label' => 'sw_mousewheel',
+			'text' => 'Use Mousewheel for Slide Change',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom7',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Only active if there is one Slider on Page.'
+		],
+		'param8' => [
+			'label' => 'sw_hashnavigation',
+			'text' => 'Activate Hash Navigation',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom8',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Enables the option to use a page-link to a dedicated image.'
+		],
+		//'sw_slides_per_view'=> 10, // unused
+		//'sw_transition_duration'=>300, // unused
+		//'sw_keyboard'			=> 'true', // fixed to this setting
+	];
+	
+	private $fotoramaClass;
+	private $fotoramaSettings = [
+		'pre' => 'fotorama', //
+		'options' => 'fotorama_elevation_option_name', //
+		'sanitizer' => 'options_sanitizer', // do not change!
+		'section' => 'fotorama_section', //
+		'sectionsText' => 'Fotorama Slider Settings',
+		'namespace' => 'fotoramamulti',
+		'subTitle' => 'Settings for the Fotorama Slider',
+		'param0' => [
+			'label' => 'download_gpx_files_3', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Download GPX-Files',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom0',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Provide download link for GPX-Files',
+		],
+	];
+	
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'fotorama_elevation_page_init' ) );
 		add_action( 'admin_menu', array( $this, 'fotorama_elevation_add_plugin_page' ) );
-		$this->swiperClass = new SwiperAdmin();
+		$this->swiperClass = new SwiperAdmin( $this->swiperSettings );
+		//$this->fotoramaClass = new SwiperAdmin( $this->fotoramaSettings );
 	}
 
 	public function fotorama_elevation_add_plugin_page() {
@@ -60,7 +211,7 @@ final class FotoramaElevationAdmin {
 				<a href="?page=fotorama-elevation&tab=swiper"   class="nav-tab <?php if($tab==='swiper')  :?>nav-tab-active<?php endif; ?>">Swiper</a>
 				<!--a href="?page=fotorama-elevation&tab=leaflet"  class="nav-tab <?php if($tab==='leaflet') :?>nav-tab-active<?php endif; ?>">Leaflet</a-->
 				<a href="?page=fotorama-elevation&tab=params"   class="nav-tab <?php if($tab==='params')  :?>nav-tab-active<?php endif; ?>">Parameters</a>
-				<!--a href="?page=fotorama-elevation&tab=show"     class="nav-tab <?php if($tab==='show')    :?>nav-tab-active<?php endif; ?>">Show</a-->
+				<a href="?page=fotorama-elevation&tab=show"     class="nav-tab <?php if($tab==='show')    :?>nav-tab-active<?php endif; ?>">Show</a>
 			</nav>
 
 			<div class="tab-content">
@@ -81,7 +232,8 @@ final class FotoramaElevationAdmin {
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
 					<?php
-						$this->swiperClass->wporg_options_page_html();
+						$this->swiperClass->show_options_page_html();
+						//$this->fotoramaClass->show_options_page_html();
 					?>
 				</form>
 				<?php break;
@@ -376,7 +528,7 @@ final class FotoramaElevationAdmin {
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
-
+		
 		add_settings_field(
 			'download_gpx_files_3', // id
 			__( 'Download GPX-Files', 'fotoramamulti' ), // title
@@ -384,7 +536,7 @@ final class FotoramaElevationAdmin {
 			'fotorama-elevation-admin', // page
 			'leaflet_elevation_setting_section' // section
 		);
-
+		
 		add_settings_field (
 			'show_address_of_start_7', // id
 			__( 'Show Address', 'fotoramamulti' ), // title
@@ -1177,13 +1329,13 @@ final class FotoramaElevationAdmin {
 		if ( isset( $input['path_to_gpx_files_2'] ) ) {
 			$sanitary_values['path_to_gpx_files_2'] = $this->my_sanitize_path( $input['path_to_gpx_files_2'] );
 		}
-
+		
 		if ( isset( $input['download_gpx_files_3'] ) ) { // wird nur durchlaufen, wenn button gecheckt ist, sonst nicht.
 			$sanitary_values['download_gpx_files_3'] = 'true';
 		} else {
 			$sanitary_values['download_gpx_files_3'] = 'false';
 		}
-
+		
 		if ( isset( $input['show_caption_4'] ) ) {
 			$sanitary_values['show_caption_4'] = 'true';
 		} else {
@@ -1543,342 +1695,5 @@ final class FotoramaElevationAdmin {
 		// html code here is shown after the heading of the section
     }
     public function leaflet_elevation_section_info() {
-	}
-}
-
-final class SwiperAdmin {
-	// TODO: add swiper parameters to html table
-	// TODO: use the options for the slider
-	// TODO: split fotorama and leaflet settings
-	
-	private $settings = [
-		'pre' => 'wporg',
-		'options' => 'wporg_options',
-		'sanitizer' => 'wporg_options_sanitizer',
-		'section' => 'wporg_section_developers',
-		'sectionsText' => 'Swiper Slider Settings',
-		'namespace' => 'fotoramamulti',
-		'subTitle' => 'Additonal Settings for the Swiper Slider. Mind that several Settings from Fotorama are used for Swiper, too!',
-		'param0' => [
-			'label' => 'slider', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
-			'text' => 'Slider Type',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom0',
-			'type' => 'select',
-			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'],
-			'description' => ''
-		],
-		'param1' => [
-			'label' => 'sw_effect', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
-			'text' => 'Swiper Slide Change Effect',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom1',
-			'type' => 'select',
-			'values' => ['slide' => 'Slide', 'fade' => 'Fade', 'flip' => 'Flip', 'cube' => 'Cube', 'coverflow' => 'Coverflow'],
-			'description' => ''
-		],
-		'param2' => [
-			'label' => 'sw_thumbbartype',
-			'text' => 'Thumbnailbar Type',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom2',
-			'type' => 'select',
-			'values' => ['integrated' => 'Swiper Thumbbar', 'special' => 'Special Thumbbar'],
-			'description' => ''
-		],
-		'param3' => [
-			'label' => 'sw_activetype',
-			'text' => 'Effect for Special Thumbbar',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom3',
-			'type' => 'select',
-			'values' => ['active' => 'Brightness', 'active_animation' => 'Shake', 'active_border' => 'Border'],
-			'description' => ''
-		],
-		'param10' => [
-			'label' => 'sw_bar_margin_top',
-			'text' => 'Margin above Special Thumbbar in px',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom10',
-			'type' => 'integer',
-			'values' => 5, // default value
-			'min' => 0,
-			'max' => 100,
-			'description' => ''
-		],
-		'param4' => [
-			'label' => 'sw_zoom',
-			'text' => 'Activate Zoom on Slider',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom4',
-			'type' => 'checkbox',
-			'values' => '',
-			'description' => 'Activates the Zoom Function within the Swiper Slider'
-		],
-		'param9' => [
-			'label' => 'sw_max_zoom_ratio',
-			'text' => 'Set the Zoom Ratio for Swiper Zoom',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom9',
-			'type' => 'integer',
-			'values' => 3, // default value
-			'min' => 1,
-			'max' => 10,
-			'description' => ''
-		],
-		'param5' => [
-			'label' => 'sw_fslightbox',
-			'text' => 'Use fslightbox for Fullscreen',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom5',
-			'type' => 'checkbox',
-			'values' => '',
-			'description' => 'Requires an additional Plugin!'
-		],
-		/*
-		'param6' => [ // unused
-			'label' => 'sw_pagination',
-			'text' => 'Activate Zoom in Slider',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom6',
-			'type' => 'checkbox',
-			'values' => '',
-			'description' => 'Activates the Zoom Function within the Swiper Slider'
-		],
-		*/
-		'param7' => [
-			'label' => 'sw_mousewheel',
-			'text' => 'Use Mousewheel for Slide Change',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom7',
-			'type' => 'checkbox',
-			'values' => '',
-			'description' => 'Only active if there is one Slider on Page.'
-		],
-		'param8' => [
-			'label' => 'sw_hashnavigation',
-			'text' => 'Activate Hash Navigation',
-			'class' => 'wporg_row',
-			'custom_data' => 'custom8',
-			'type' => 'checkbox',
-			'values' => '',
-			'description' => 'Enables the option to use a page-link to a dedicated image.'
-		],
-		//'sw_slides_per_view'=> 10, // unused
-		//'sw_transition_duration'=>300, // unused
-		//'sw_keyboard'			=> 'true', // fixed to this setting
-	];
-
-	private $fotoramaSettings = [ // prepared for future use
-		'addPermalink' 			,//=> $addPermalink, 
-		'allImgInWPLibrary' 	,//=> $allImgInWPLibrary,
-		'sw_effect'				,//=> $sw_effect,
-		'sw_zoom'				,//=> $sw_zoom,
-		'sw_fslightbox'			,//=> $sw_fslightbox,
-		'sw_pagination'			,//=> $sw_pagination,
-		'sw_slides_per_view' 	,//=> $sw_slides_per_view, // unused with martins thumbnails
-		'sw_transition_duration',//=> $sw_transition_duration,
-		'sw_mousewheel'			,//=> $sw_mousewheel,
-		'sw_hashnavigation'  	,//=> $sw_hashnavigation,
-		'sw_max_zoom_ratio'		,//=> $sw_max_zoom_ratio,
-		'showcaption'			,//=> $showcaption,
-		'shortcaption'			,//=> $shortcaption,
-		'imgpath'				,//=> $imgpath,
-		'slide_fit'				,//=> $fit,
-		'sw_aspect_ratio'		,//=> $ratio,
-		// thumbnails settings
-		'f_thumbwidth'			,//=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
-		'bar_min_height'		,//=> $f_thumbheight . 'px', // now two values for the height!
-		'nail_margin_side' 		,//=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
-		// only for active_border 
-		'active_border_width'	,//=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
-		'active_border_color'	,//=> $thumbbordercolor, // '#ea0000', 
-	];
-
-	public function __construct() {
-		/**
-		 * Register our wporg_settings_init to the admin_init action hook.
-		 */
-		add_action( 'admin_init', array( $this, 'wporg_settings_init') );
-	}
-
-	/**
-	 * @internal never define functions inside callbacks.
-	 * these functions could be run multiple times; this would result in a fatal error.
-	 */
-
-	/**
-	 * custom option and settings
-	 */
-	function wporg_settings_init() {
-		// Register a new setting for "wporg" page.
-		register_setting( 
-			$this->settings['pre'], // option_group
-			$this->settings['options'], // option_name
-			array('sanitize_callback' => array($this, $this->settings['sanitizer']))
-		);
-
-		// Register a new section in the "wporg" page.
-		add_settings_section(
-			$this->settings['section'],
-			__( $this->settings['sectionsText'], $this->settings['namespace'] ), array( $this, $this->settings['pre'].'_section_callback'),
-			$this->settings['pre']
-		);
-
-		// Register all new fields in the section, inside the page.
-		foreach($this->settings as $key => $param) {
-			
-			if ( \gettype($param) === 'array') {
-				add_settings_field(
-					$this->settings[$key]['label'], // As of WP 4.6 this value is used only internally. // Use $args' label_for to populate the id inside the callback.
-					__( $this->settings[$key]['text'], $this->settings['namespace'] ),
-					array( $this, $this->settings['pre'].'_param_cb'),
-					$this->settings['pre'],
-					$this->settings['section'],
-					array(
-						'label_for'   => $this->settings[$key]['label'],
-						'class'       => $this->settings[$key]['class'],
-						'custom_data' => $this->settings[$key]['custom_data'],
-						'param'		  => $key
-					)
-				);
-			}
-		}
-	}
-
-	function wporg_options_sanitizer( $args ) {
-		foreach($this->settings as $key => $param) {
-			if ( \gettype($param) === 'array' && $param['type'] === 'checkbox') {
-				if ( isset($args[ $param['label'] ]) ) {
-					$args[$param['label']] = 'true';
-				} else {
-					$args[$param['label']] = 'false';
-				}
-			}
-		}
-		return $args;
-	}
-
-	/**
-	 * Custom option and settings:
-	 *  - callback functions
-	 */
-
-
-	/**
-	 * Developers section callback function.
-	 *
-	 * @param array $args  The settings array, defining title, id, callback.
-	 */
-	function wporg_section_callback( $args ) {
-		?>
-		<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( $this->settings['subTitle'], $this->settings['namespace'] ); ?></p>
-		<?php
-	}
-
-	/**
-	 * Pill field callbakc function.
-	 *
-	 * WordPress has magic interaction with the following keys: label_for, class.
-	 * - the "label_for" key value is used for the "for" attribute of the <label>.
-	 * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
-	 * Note: you can add custom key value pairs to be used inside your callbacks.
-	 *
-	 * @param array $args
-	 */
-	function wporg_param_cb( $args ) {
-		// Get the value of the setting we've registered with register_setting()
-		$options = get_option( $this->settings['options'] );
-
-		if ($this->settings[ $args['param']]['type'] === 'select') {
-			?>
-			<select id="<?php echo esc_attr( $args['label_for'] ); ?>"
-					data-custom="<?php echo esc_attr( $args['custom_data'] ); ?>"
-					name="<?php echo esc_attr( $this->settings['options']) ?>[<?php echo esc_attr( $args['label_for'] ); ?>]">
-
-				<?php
-				foreach($this->settings[ $args['param']]['values'] as $key => $value) {
-					?>
-					<option value="<?php echo esc_attr($key); ?>" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], $key, false ) ) : ( '' ); ?>>
-						<?php 
-						esc_html_e( $value, $this->settings['pre'] ); 
-						?>
-					</option>
-					<?php
-				}
-				?>
-			</select>
-			<?php
-		}
-
-		if ($this->settings[ $args['param']]['type'] === 'checkbox') {
-			$optset =  \array_key_exists( $args['label_for'], $options ) && $options[$args['label_for']] === 'true' ? 'checked' : '';
-			?>
-			<input type="checkbox" 
-				   id="<?php echo esc_attr( $args['label_for'] ); ?>"
-				   data-custom="<?php echo esc_attr( $args['custom_data'] ); ?>"
-				   name="wporg_options[<?php echo($args['label_for']) ?>]"
-				   <?php echo esc_attr( $optset ); ?>
-				   >
-			<label for="<?php echo esc_attr( $args['label_for'] ); ?>"><?php esc_attr_e($this->settings[ $args['param']]['description'], $this->settings['namespace']);?></label>
-			<?php
-		}
-
-		if ($this->settings[ $args['param']]['type'] === 'integer') {
-			$current = isset( $options[$args['label_for']] ) ? $options[$args['label_for']] : '';
-			?>
-			<input type="number" min="<?php echo( $this->settings[ $args['param']]['min']) ?>" max="<?php echo( $this->settings[ $args['param']]['max']) ?>" 
-				name="wporg_options[<?php echo($args['label_for']) ?>]" 
-				id="<?php echo esc_attr( $args['label_for'] ); ?>" 
-				value="<?php echo esc_attr( $current ); ?>">
-			<label>  Min: <?php echo( $this->settings[ $args['param']]['min']) ?>, Max: <?php echo( $this->settings[ $args['param']]['max']) ?></label>
-			<?php
-		}
-	}
-
-	/**
-	 * Top level menu callback function
-	 */
-	function wporg_options_page_html() {
-		// check user capabilities
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		// add error/update messages
-
-		// check if the user have submitted the settings
-		// WordPress will add the "settings-updated" $_GET parameter to the url
-		if ( isset( $_GET['settings-updated'] ) ) {
-			// add settings saved message with the class of "updated"
-			add_settings_error( $this->settings['pre'].'_messages', $this->settings['pre'].'_message', __( 'Settings saved', $this->settings['namespace'] ), 'updated' );
-		}
-
-		?>
-		<div class="wrap">
-			<form action="options.php" method="post">
-				<?php
-				// output security fields for the registered setting "wporg"
-				settings_fields( $this->settings['pre'] );
-				// output setting sections and their fields
-				// (sections are registered for "wporg", each field is registered to a specific section)
-				do_settings_sections( $this->settings['pre'] );
-				?><hr><?php
-				// output save settings button
-				submit_button();
-				?>
-			</form>
-		</div>
-		<?php
-	}
-
-	function show_settings() {
-		$options = get_option( 'wporg_options' );
-		$string =\var_export($options);
-		?><p><?php echo $string;?></p><?php
-
-		$options = get_option( 'fotorama_elevation_option_name' );
-		//$string =\var_export($options);
-		?><pre><?php print_r($options);?></pre><?php
 	}
 }
