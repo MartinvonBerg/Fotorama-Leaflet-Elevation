@@ -157,29 +157,65 @@ final class FotoramaElevationAdmin {
 	private $fotoramaClass;
 	private $fotoramaSettings = [
 		'pre' => 'fotorama', //
-		'options' => 'fotorama_elevation_option_name', //
+		'options' => 'fotorama_options', //
 		'sanitizer' => 'options_sanitizer', // do not change!
 		'section' => 'fotorama_section', //
 		'sectionsText' => 'Fotorama Slider Settings',
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Settings for the Fotorama Slider',
 		'param0' => [
-			'label' => 'download_gpx_files_3', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
-			'text' => 'Download GPX-Files',
+			'label' => 'navposition', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Thumbnailbar Position',
 			'class' => 'fotorama_row',
 			'custom_data' => 'custom0',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
+			'type' => 'select',
+			'values' => ['bottom'=>'Bottom','top'=>'Top'],
+			'default' => 'bottom',
 			'description' => 'Provide download link for GPX-Files',
 		],
+		'param1' => [
+			'label' => 'navwidth',
+			'text' => 'Thumbnailbar Width in %',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'integer',
+			'values' => 100, // default value
+			'default' => 100,
+			'min' => 10,
+			'max' => 100,
+			'description' => ''
+		],
 	];
+
+	private $leafletClass;
+	private $leafletSettings = [
+		'pre' => 'leaflet', //
+		'options' => 'leaflet_options', //
+		'sanitizer' => 'options_sanitizer', // do not change!
+		'section' => 'leaflet_section', //
+		'sectionsText' => 'Leaflet Map and Elevation Chart Settings',
+		'namespace' => 'fotoramamulti',
+		'subTitle' => 'Settings for the Leaflet Map and Elevation Chart',
+		'param0' => [
+			'label' => 'path_to_gpx_files_2', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Path to GPX-Files',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom0',
+			'type' => 'path',
+			'values' => '',
+			'default' => 'gpx',
+			'description' => '',
+		],
+		
+	];
+
 	
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'fotorama_elevation_page_init' ) );
 		add_action( 'admin_menu', array( $this, 'fotorama_elevation_add_plugin_page' ) );
 		$this->swiperClass = new SwiperAdmin( $this->swiperSettings );
-		//$this->fotoramaClass = new SwiperAdmin( $this->fotoramaSettings );
+		$this->fotoramaClass = new SwiperAdmin( $this->fotoramaSettings );
+		$this->leafletClass = new SwiperAdmin( $this->leafletSettings );
 	}
 
 	public function fotorama_elevation_add_plugin_page() {
@@ -204,23 +240,35 @@ final class FotoramaElevationAdmin {
 		<div class="wrap">
 			<h2><?php esc_html_e('Settings for Fotorama-Elevation Plugin','fotoramamulti') ?></h2>
 			<h4><?php esc_html_e('General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.','fotoramamulti') ?></h4>
+			
 			<!-- Here are our tabs -->
 			<nav class="nav-tab-wrapper">
 				<a href="?page=fotorama-elevation" class="nav-tab <?php if($tab===null):?>nav-tab-active<?php endif; ?>">GPX-File</a>
-				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if($tab==='fotorama'):?>nav-tab-active<?php endif; ?>">Fotorama+Leaflet</a>
+				<a href="?page=fotorama-elevation&tab=leaflet" class="nav-tab <?php if($tab==='leaflet'):?>nav-tab-active<?php endif; ?>">Map + Chart</a>
+				<a href="?page=fotorama-elevation&tab=fotorama_leaflet" class="nav-tab <?php if($tab==='fotorama_leaflet'):?>nav-tab-active<?php endif; ?>">Fotorama+Leaflet</a>
+				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if($tab==='fotorama'):?>nav-tab-active<?php endif; ?>">Fotorama</a>
 				<a href="?page=fotorama-elevation&tab=swiper"   class="nav-tab <?php if($tab==='swiper')  :?>nav-tab-active<?php endif; ?>">Swiper</a>
-				<!--a href="?page=fotorama-elevation&tab=leaflet"  class="nav-tab <?php if($tab==='leaflet') :?>nav-tab-active<?php endif; ?>">Leaflet</a-->
 				<a href="?page=fotorama-elevation&tab=params"   class="nav-tab <?php if($tab==='params')  :?>nav-tab-active<?php endif; ?>">Parameters</a>
 				<a href="?page=fotorama-elevation&tab=show"     class="nav-tab <?php if($tab==='show')    :?>nav-tab-active<?php endif; ?>">Show</a>
 			</nav>
 
 			<div class="tab-content">
     		<?php switch($tab) :
-				
-			case 'fotorama':?>
+
+			case 'leaflet':?>
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
 					<?php
+						$this->leafletClass->show_options_page_html();
+					?>
+				</form>
+				<?php break;
+				
+			case 'fotorama_leaflet':?>
+				<!-- all Settings in one section -->
+				<form method="post" action="options.php">
+					<?php
+						submit_button();
 						settings_fields( 'fotorama_elevation_option_group' );
 						do_settings_sections( 'fotorama-elevation-admin' );
 						submit_button();
@@ -228,12 +276,20 @@ final class FotoramaElevationAdmin {
 				</form>
 				<?php break;
 
+			case 'fotorama':?>
+				<!-- all Settings in one section -->
+				<form method="post" action="options.php">
+					<?php
+						$this->fotoramaClass->show_options_page_html();
+					?>
+				</form>
+				<?php break;	
+
 			case 'swiper':?>
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
 					<?php
 						$this->swiperClass->show_options_page_html();
-						//$this->fotoramaClass->show_options_page_html();
 					?>
 				</form>
 				<?php break;
@@ -242,6 +298,7 @@ final class FotoramaElevationAdmin {
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
 					<?php
+						submit_button();
 						settings_fields( 'fotorama_elevation_option_group' );
 						do_settings_sections( 'fotorama-elevation-admin' );
 						submit_button();
@@ -479,10 +536,17 @@ final class FotoramaElevationAdmin {
 			
 			case 'show':?>
 				<h3>Show all Parameters</h3>
-				<h4>Swiper Settings:</h4>
-				<?php 
-				// Get the value of all settings
+
+				<h4>Swiper Settings:</h4><?php 
 				$this->swiperClass->show_settings();
+
+				?><h4>Fotorama Settings:</h4><?php 
+				$this->fotoramaClass->show_settings();
+
+				?><h4>Fotorama-Leaflet Settings:</h4><?php
+				$options = get_option( 'fotorama_elevation_option_name' );
+				//$string =\var_export($options);
+				?><pre><?php print_r($options);?></pre><?php
 				break;?>
 
 			<?php default:?>
@@ -889,7 +953,8 @@ final class FotoramaElevationAdmin {
 	// --------------------- Calllbacks -------------------------------//
 	public function gpx_file_callback() {
 		?><input type="file" name="gpx-file" /><?php // create html button for file name
-		echo ('</br>Upload' .  get_option('gpx-file') );
+		echo( '</br>Upload path: ' . $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2']);
+		echo ('</br>(Last) uploaded: ' .  get_option('gpx-file') );
 	}
 
 	public function gpx_reduce_callback() {
@@ -979,7 +1044,7 @@ final class FotoramaElevationAdmin {
 			return $temp;  
 		}
 		
-		if ($file == '') { $temp = '. ' . __('No Filename given!') ;}
+		if ($file == '') { $temp = __('No Filename given!') ;}
 		else { $temp = __("File alread exists!"); }
 
 		return $temp;

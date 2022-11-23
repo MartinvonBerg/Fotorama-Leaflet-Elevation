@@ -56,7 +56,7 @@ final class SwiperAdmin {
 	/**
 	 * custom option and settings
 	 */
-	private function swiper_settings_init() {
+	public function swiper_settings_init() {
 		// init the option_name
 		$this->initOptionInDb();
 
@@ -224,6 +224,9 @@ final class SwiperAdmin {
 		<div class="wrap">
 			<form action="options.php" method="post">
 				<?php
+				// output save settings button
+				//submit_button();
+				?><hr><?php
 				// output security fields for the registered setting "swiper"
 				settings_fields( $this->settings['pre'] );
 				// output setting sections and their fields
@@ -240,11 +243,8 @@ final class SwiperAdmin {
 
 	function show_settings() {
 		$options = get_option( $this->settings['options'] );
-		$string =\var_export($options);
-		?><p><?php echo $string;?></p><?php
-
-		$options = get_option( 'fotorama_elevation_option_name' );
 		//$string =\var_export($options);
+		?><p><?php //echo $string;?></p><?php
 		?><pre><?php print_r($options);?></pre><?php
 	}
 }
