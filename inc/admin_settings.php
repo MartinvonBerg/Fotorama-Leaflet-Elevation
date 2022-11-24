@@ -79,7 +79,7 @@ final class FotoramaElevationAdmin {
 			'text' => 'Margin above Special Thumbbar in px',
 			'class' => 'swiper_row',
 			'custom_data' => 'custom10',
-			'type' => 'integer',
+			'type' => 'number',
 			'values' => 5, // default value
 			'default' => 5,
 			'min' => 0,
@@ -101,7 +101,7 @@ final class FotoramaElevationAdmin {
 			'text' => 'Set the Zoom Ratio for Swiper Zoom',
 			'class' => 'swiper_row',
 			'custom_data' => 'custom9',
-			'type' => 'integer',
+			'type' => 'number',
 			'values' => 3, // default value
 			'default' => 3,
 			'min' => 1,
@@ -178,7 +178,7 @@ final class FotoramaElevationAdmin {
 			'text' => 'Thumbnailbar Width in %',
 			'class' => 'fotorama_row',
 			'custom_data' => 'custom1',
-			'type' => 'integer',
+			'type' => 'number',
 			'values' => 100, // default value
 			'default' => 100,
 			'min' => 10,
@@ -197,13 +197,100 @@ final class FotoramaElevationAdmin {
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Settings for the Leaflet Map and Elevation Chart',
 		'param0' => [
-			'label' => 'path_to_gpx_files_2', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'label' => 'path_to_gpx_files_2', 
 			'text' => 'Path to GPX-Files',
 			'class' => 'leaflet_row',
 			'custom_data' => 'custom0',
 			'type' => 'path',
+			'required' => 'required',
 			'values' => '',
 			'default' => 'gpx',
+			'description' => 'Define path without leading and trailing slashes',
+		],
+		'param1' => [
+			'label' => 'download_gpx_files_3', 
+			'text' => 'Download GPX-Files',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Provide download link for GPX-Files',
+		],
+		'param2' => [
+			'label' => 'show_address_of_start_7', 
+			'text' => 'Show Address',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom2',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)',
+		],
+		'param3' => [
+			'label' => 'text_for_start_address_8', 
+			'text' => 'Text for Start address',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom3',
+			'type' => 'text',
+			'required' => 'required',
+			'values' => '',
+			'default' => 'Start Address',
+			'description' => 'Set the Text for the Start Address',
+		],
+		'param4' => [
+			'label' => 'mapselector', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Select the Map',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom4',
+			'type' => 'select',
+			'values' => ['OpenStreetMap' => 'OpenStreetMap', 'OpenTopoMap' => 'OpenTopoMap', 'CycleOSM'=>'CycleOSM', 'Satellit'=>'Satellite'],
+			'default' => 'OpenStreetMap',
+			'description' => ''
+		],
+		'param5' => [
+			'label' => 'use_tile_server', 
+			'text' => 'Use local Tileserver',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom5',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'ATTENTION: File .htaccess not checked yet!',
+		],
+		'param6' => [
+			'label' => 'convert_tiles_to_webp', 
+			'text' => 'Convert and serve local Tiles as webp',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom6',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Convert Tile-Files to webp (conversion settings in PHP only)',
+		],
+		'param7' => [
+			'label' => 'height_of_map_10', 
+			'text' => 'Maximum Height of Map in px',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom7',
+			'type' => 'number',
+			'values' => 400, // default value
+			'default' => 400,
+			'min' => 100,
+			'max' => 1000,
+			'description' => '',
+		],
+		'param8' => [
+			'label' => 'aspect_ratio_of_map', 
+			'text' => 'Aspect Ratio of Map',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom8',
+			'type' => 'number',
+			'values' => 1.5, // default value
+			'default' => 1.5,
+			'min' => 0.1,
+			'max' => 5,
+			'step' => 0.01,
 			'description' => '',
 		],
 		
@@ -215,6 +302,16 @@ final class FotoramaElevationAdmin {
 		add_action( 'admin_menu', array( $this, 'fotorama_elevation_add_plugin_page' ) );
 		$this->swiperClass = new SwiperAdmin( $this->swiperSettings );
 		$this->fotoramaClass = new SwiperAdmin( $this->fotoramaSettings );
+
+		// check .htaccess and change info text accordingly
+		$hasWorkingHtaccess = $this->checkHtaccess();
+		if ( $hasWorkingHtaccess) {
+			$infoText = __( 'Use a local Tile-Server to provide Map-Tiles (.htaccess checked and OK)', 'fotoramamulti' );
+		} else {
+			$infoText = 'ATTENTION: File .htaccess is NOT OK.';
+		}
+		$this->leafletSettings['param5']['description'] = $infoText;
+
 		$this->leafletClass = new SwiperAdmin( $this->leafletSettings );
 	}
 

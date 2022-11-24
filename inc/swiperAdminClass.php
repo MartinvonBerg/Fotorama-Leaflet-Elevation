@@ -153,14 +153,15 @@ final class SwiperAdmin {
 	 *
 	 * @param array $args
 	 */
-	function integer_callback( $args) {
+	function number_callback( $args) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
-		if ($this->settings[ $args['param']]['type'] === 'integer') {
+		if ( $this->settings[ $args['param']]['type'] === 'number') {
 			$current = isset( $options[$args['label_for']] ) ? $options[$args['label_for']] : '';
+			$step = \array_key_exists('step',$this->settings[ $args['param'] ]) ? $this->settings[ $args['param']]['step'] : ''
 			?>
-			<input type="number" min="<?php echo( $this->settings[ $args['param']]['min']) ?>" max="<?php echo( $this->settings[ $args['param']]['max']) ?>" 
+			<input type="number" min="<?php echo( $this->settings[ $args['param']]['min']) ?>" max="<?php echo( $this->settings[ $args['param']]['max']) ?>" step="<?php echo( $step ) ?>" 
                 name="<?php echo( $this->settings['options'])?>[<?php echo($args['label_for']) ?>]"
 				id="<?php echo esc_attr( $args['label_for'] ); ?>" 
 				value="<?php echo esc_attr( $current ); ?>">
@@ -217,21 +218,27 @@ final class SwiperAdmin {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
-		if ($this->settings[ $args['param']]['type'] === 'path') {
+		if ($this->settings[ $args['param']]['type'] === 'path' || ($this->settings[ $args['param']]['type'] === 'text') ) {
 			
 			$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
-			$path = $this->up_dir . '/' . $options[ $args['label_for'] ];
+			$path = $this->settings[ $args['param']]['type'] === 'path' ? $path = $this->up_dir . '/' . $options[ $args['label_for'] ]: '';
 			
 			?>
 			<input class="regular-text"
 					type="text"
-					placeholder="Define path without leading and trailing slashes" 
+					<?php echo( $this->settings[ $args['param']]['required'] );?>
+					placeholder="<?php echo esc_attr( $this->settings[ $args['param']]['description'] );?>" 
 					name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr( $args['label_for'] ); ?>]" 
 					id="<?php echo esc_attr( $args['label_for'] ); ?>" 
-					value=<?php echo($optset); ?>>
-					<p><?php echo($path); ?></p>
+					value="<?php echo($optset); ?>">
+					<p><?php echo($path);?></p>
 			<?php
 		}
+	}
+
+	function text_callback( $args) {
+		// Get the value of the setting we've registered with register_setting()
+		$this->path_callback( $args );
 	}
 
 	/**
