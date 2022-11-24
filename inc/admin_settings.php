@@ -17,7 +17,7 @@ require_once $path . 'swiperAdminClass.php';
 final class FotoramaElevationAdmin {
 	private $fotorama_elevation_options; // TODO: missing typehints for PHP 7.4+
 	private $fotorama_option2;
-	private $up_dir = '';    
+	private $up_dir = '';
 	private $min_height_map = 100;
 	private $max_height_map = 1000;
 	private $min_height_chart = 100;
