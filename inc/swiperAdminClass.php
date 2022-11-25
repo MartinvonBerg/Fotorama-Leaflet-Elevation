@@ -5,9 +5,10 @@
  * 
  */
 // TODO: add swiper parameters to html table
-	// TODO: use the options for the slider
-	// TODO: split fotorama and leaflet settings and correct sanitizer
-    // TODO: translation i18n
+// TODO: use the options for the slider
+// TODO: split fotorama and leaflet settings and correct sanitizer
+// TODO: translation i18n
+// TODO: shortcode mit aufnehmen, Tabelle aus settings generieren, shortcode generator nur mit Werten, die nicht default sind.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -41,7 +42,7 @@ final class SwiperAdmin {
 		'active_border_color'	,//=> $thumbbordercolor, // '#ea0000', 
 	];
 
-	public function __construct( $settings ) {
+	public function __construct( array $settings ) {
 		$this->settings = $settings;
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
 
@@ -77,7 +78,7 @@ final class SwiperAdmin {
 			$this->settings['pre']
 		);
 
-		// Register all new fields in the section, inside the page.
+		// Get all settings from the array and register all new fields in the section, inside the page.
 		foreach($this->settings as $key => $param) {
 			
 			if ( \gettype($param) === 'array') {
@@ -98,6 +99,11 @@ final class SwiperAdmin {
 		}
 	}
 
+	/**
+	 * Initialize the settings in the database from the array with settings.
+	 *
+	 * @return boolean result of the initialization process so the update_option
+	 */
 	function initOptionInDb() {
 		$options = get_option( $this->settings['options'] );
 		if ( $options === false || $options === '') $options = [];
@@ -110,11 +116,16 @@ final class SwiperAdmin {
 				}
 			}
 		}
-
 		return \update_option( $this->settings['options'], $options);
 	}
 
-	function options_sanitizer( $args ) {
+	/**
+	 * sanitize the array with input arguments. Only for checkbox the setting is converted to true / false.
+	 *
+	 * @param  array $args to sanitize
+	 * @return array $args sanitized
+	 */
+	function options_sanitizer( array $args ) {
 		foreach($this->settings as $key => $param) {
 			if ( \gettype($param) === 'array' && $param['type'] === 'checkbox') {
 				if ( isset($args[ $param['label'] ]) ) { // ist immer gesetzt, egal ob true oder false key ist da und (true oder on)
@@ -129,13 +140,7 @@ final class SwiperAdmin {
 	}
 
 	/**
-	 * Custom option and settings:
-	 *  - callback functions
-	 */
-
-
-	/**
-	 * Developers section callback function.
+	 * Section callback function which outputs the subtitle under the header.
 	 *
 	 * @param array $args  The settings array, defining title, id, callback.
 	 */
@@ -152,6 +157,7 @@ final class SwiperAdmin {
 	 * Note: you can add custom key value pairs to be used inside your callbacks.
 	 *
 	 * @param array $args
+	 * @return void
 	 */
 	function number_callback( $args) {
 		// Get the value of the setting we've registered with register_setting()
@@ -242,7 +248,7 @@ final class SwiperAdmin {
 	}
 
 	/**
-	 * Top level menu callback function
+	 * produces the HTML for the settings page using high level WP-functions and shows the result of the settings submit button.
 	 */
 	function show_options_page_html() {
 		// check user capabilities
@@ -280,6 +286,11 @@ final class SwiperAdmin {
 		<?php
 	}
 
+	/**
+	 * helper function to show the settings
+	 *
+	 * @return void
+	 */
 	function show_settings() {
 		$options = get_option( $this->settings['options'] );
 		//$string =\var_export($options);

@@ -34,7 +34,7 @@ final class FotoramaElevationAdmin {
 		'sectionsText' => 'Swiper Slider Settings', // change
 		'namespace' => 'fotoramamulti', // change
 		'subTitle' => 'Additonal Settings for the Swiper Slider. Mind that several Settings from Fotorama are used for Swiper, too!',
-		'param0' => [
+		'param0' => [ // general!
 			'label' => 'slider', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
 			'text' => 'Slider Type',
 			'class' => 'swiper_row',
@@ -163,8 +163,78 @@ final class FotoramaElevationAdmin {
 		'sectionsText' => 'Fotorama Slider Settings',
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Settings for the Fotorama Slider',
+		//'shortcode_no_admin' => [], // none!
+		'param0' => [ // general
+			'label' => 'path_to_images_for_fotorama_0', 
+			'text' => 'Path to Images for Slider',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom0',
+			'type' => 'path',
+			'required' => 'required',
+			'values' => '',
+			'default' => '',
+			'description' => 'Define path without leading and trailing slashes',
+			'shortcode' => 'imgpath',
+		],
+		'param1' => [ // general
+			'label' => 'show_caption_4', 
+			'text' => 'Show Caption',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show the caption in the fotorama slider',
+			'shortcode' => 'showcaption',
+		],
+		'param2' => [ // general
+			'label' => 'short_caption', 
+			'text' => 'Short Caption',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom2',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show short caption only. (Don not show image metadata from EXIF)',
+			'shortcode' => 'shortcaption',
+		],
+		'param3' => [ // general
+			'label' => 'images_with_gps_required_5', 
+			'text' => 'Images with GPS required',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom3',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show images only if they provide GPS-Data in EXIF. Remember to set showmap="false".',
+			'shortcode' => 'requiregps',
+		],
+		'param4' => [ // general
+			'label' => 'ignore_custom_sort_6', 
+			'text' => 'Ignore custom sort',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom4',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'gnore custom sort even if provided by Wordpress. Sort ascending by date taken if checked.',
+			'shortcode' => 'ignoresort',
+		],
+		'param5' => [
+			'label' => 'general_text_for_the_fotorama_alt_9', 
+			'text' => 'General text for the Fotorama alt',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom5',
+			'type' => 'text',
+			'required' => '',
+			'values' => '',
+			'default' => 'Image Slider with caption and GPX-Data',
+			'description' => 'Used for SEO only.',
+			'shortcode' => 'alttext',
+		],
+		/*
 		'param0' => [
-			'label' => 'navposition', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'label' => 'navposition',
 			'text' => 'Thumbnailbar Position',
 			'class' => 'fotorama_row',
 			'custom_data' => 'custom0',
@@ -185,6 +255,7 @@ final class FotoramaElevationAdmin {
 			'max' => 100,
 			'description' => ''
 		],
+		*/
 	];
 
 	private $leafletClass;
@@ -196,6 +267,7 @@ final class FotoramaElevationAdmin {
 		'sectionsText' => 'Leaflet Map and Elevation Chart Settings',
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Settings for the Leaflet Map and Elevation Chart',
+		//'shortcode_no_admin' => ['gpxfile', 'showalltracks', 'mapcenter', 'zoom', 'markertext'],
 		'param0' => [
 			'label' => 'path_to_gpx_files_2', 
 			'text' => 'Path to GPX-Files',
@@ -206,6 +278,7 @@ final class FotoramaElevationAdmin {
 			'values' => '',
 			'default' => 'gpx',
 			'description' => 'Define path without leading and trailing slashes',
+			'shortcode' => 'gpxpath',
 		],
 		'param1' => [
 			'label' => 'download_gpx_files_3', 
@@ -216,6 +289,7 @@ final class FotoramaElevationAdmin {
 			'values' => '',
 			'default' => 'true',
 			'description' => 'Provide download link for GPX-Files',
+			'shortcode' => 'dload',
 		],
 		'param2' => [
 			'label' => 'show_address_of_start_7', 
@@ -226,6 +300,7 @@ final class FotoramaElevationAdmin {
 			'values' => '',
 			'default' => 'true',
 			'description' => 'Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)',
+			'shortcode' => 'showadress',
 		],
 		'param3' => [
 			'label' => 'text_for_start_address_8', 
@@ -235,18 +310,20 @@ final class FotoramaElevationAdmin {
 			'type' => 'text',
 			'required' => 'required',
 			'values' => '',
-			'default' => 'Start Address',
+			'default' => 'Startadresse',
 			'description' => 'Set the Text for the Start Address',
+			'shortcode' => 'adresstext',
 		],
 		'param4' => [
-			'label' => 'mapselector', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'label' => 'mapselector', 
 			'text' => 'Select the Map',
 			'class' => 'leaflet_row',
 			'custom_data' => 'custom4',
 			'type' => 'select',
 			'values' => ['OpenStreetMap' => 'OpenStreetMap', 'OpenTopoMap' => 'OpenTopoMap', 'CycleOSM'=>'CycleOSM', 'Satellit'=>'Satellite'],
 			'default' => 'OpenStreetMap',
-			'description' => ''
+			'description' => '',
+			'shortcode' => 'mapselector',
 		],
 		'param5' => [
 			'label' => 'use_tile_server', 
@@ -257,6 +334,7 @@ final class FotoramaElevationAdmin {
 			'values' => '',
 			'default' => 'true',
 			'description' => 'ATTENTION: File .htaccess not checked yet!',
+			'shortcode' => '', // none!
 		],
 		'param6' => [
 			'label' => 'convert_tiles_to_webp', 
@@ -267,6 +345,7 @@ final class FotoramaElevationAdmin {
 			'values' => '',
 			'default' => 'true',
 			'description' => 'Convert Tile-Files to webp (conversion settings in PHP only)',
+			'shortcode' => '', // none!
 		],
 		'param7' => [
 			'label' => 'height_of_map_10', 
@@ -279,6 +358,7 @@ final class FotoramaElevationAdmin {
 			'min' => 100,
 			'max' => 1000,
 			'description' => '',
+			'shortcode' => 'mapheight',
 		],
 		'param8' => [
 			'label' => 'aspect_ratio_of_map', 
@@ -292,8 +372,66 @@ final class FotoramaElevationAdmin {
 			'max' => 5,
 			'step' => 0.01,
 			'description' => '',
+			'shortcode' => 'mapaspect',
 		],
-		
+		'param9' => [
+			'label' => 'height_of_chart_11', 
+			'text' => 'Height of Chart in px',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom9',
+			'type' => 'number',
+			'values' => 200, // default value
+			'default' => 200,
+			'min' => 100,
+			'max' => 1000,
+			'description' => '',
+			'shortcode' => 'chartheight',
+		],
+		'param10' => [ // general setting!
+			'label' => 'max_width_of_container_12', 
+			'text' => 'Max Width of Container in px',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom10',
+			'type' => 'number',
+			'values' => 800, // default value
+			'default' => 800,
+			'min' => 100,
+			'max' => 1500,
+			'description' => '',
+			'shortcode' => 'maxwidth',
+		],
+		'param11' => [ // general setting!
+			'label' => 'min_width_css_grid_row_14',
+			'text' => 'Min Width of one CSS-grid Row in px',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom11',
+			'type' => 'number',
+			'values' => 480, // default value
+			'default' => 480,
+			'min' => 50,
+			'max' => 1500,
+			'description' => '',
+			'shortcode' => 'minrowwidth',
+		],
+		'param12' => [
+			'label' => 'colour_theme_for_leaflet_elevation_1', 
+			'text' => 'Colour Theme for Leaflet Elevation',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom12',
+			'type' => 'select',
+			'values' => [
+				'martin-theme' => 'Martin', 
+				'lime-theme' => 'Lime', 
+				'steelblue-theme'=>'Steelblue', 
+				'purple-theme'=>'Purple', 
+				'yellow-theme'=>'Yellow', 
+				'red-theme'=>'Red', 
+				'magenta-theme'=>'Magenta', 
+				'lightblue-theme'=>'Lightblue'],
+			'default' => 'Martin',
+			'description' => '',
+			'shortcode' => 'eletheme',
+		]
 	];
 
 	
@@ -338,10 +476,14 @@ final class FotoramaElevationAdmin {
 			<h2><?php esc_html_e('Settings for Fotorama-Elevation Plugin','fotoramamulti') ?></h2>
 			<h4><?php esc_html_e('General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.','fotoramamulti') ?></h4>
 			
-			<!-- Here are our tabs -->
+			<!-- Here are our tabs TODO: Generate this from array-->
+			<?php
+			$tab = [ 'default' => 'GPX-File', 'general' => 'General', 'leaflet' => 'Map + Chart', 'fotorama' => 'Fotorama', 'swiper' => 'Swiper']
+			// add params tab at the end. Tab 'Show' will be omitted at the end.
+			?>
 			<nav class="nav-tab-wrapper">
-				<a href="?page=fotorama-elevation" class="nav-tab <?php if($tab===null):?>nav-tab-active<?php endif; ?>">GPX-File</a>
-				<a href="?page=fotorama-elevation&tab=leaflet" class="nav-tab <?php if($tab==='leaflet'):?>nav-tab-active<?php endif; ?>">Map + Chart</a>
+				<a href="?page=fotorama-elevation"              class="nav-tab <?php if($tab===null):?>nav-tab-active<?php endif; ?>">GPX-File</a>
+				<a href="?page=fotorama-elevation&tab=leaflet"  class="nav-tab <?php if($tab==='leaflet'):?>nav-tab-active<?php endif; ?>">Map + Chart</a>
 				<a href="?page=fotorama-elevation&tab=fotorama_leaflet" class="nav-tab <?php if($tab==='fotorama_leaflet'):?>nav-tab-active<?php endif; ?>">Fotorama+Leaflet</a>
 				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if($tab==='fotorama'):?>nav-tab-active<?php endif; ?>">Fotorama</a>
 				<a href="?page=fotorama-elevation&tab=swiper"   class="nav-tab <?php if($tab==='swiper')  :?>nav-tab-active<?php endif; ?>">Swiper</a>
@@ -350,8 +492,8 @@ final class FotoramaElevationAdmin {
 			</nav>
 
 			<div class="tab-content">
-    		<?php switch($tab) :
-
+    		<?php switch($tab):
+			// TODO: generate this in loop from $tab
 			case 'leaflet':?>
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
@@ -360,7 +502,7 @@ final class FotoramaElevationAdmin {
 					?>
 				</form>
 				<?php break;
-				
+			// this one will be removed
 			case 'fotorama_leaflet':?>
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
@@ -390,7 +532,7 @@ final class FotoramaElevationAdmin {
 					?>
 				</form>
 				<?php break;
-
+			// this one will be removed
 			case 'leaflet':?>
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
