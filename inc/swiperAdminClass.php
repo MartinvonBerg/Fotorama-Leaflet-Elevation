@@ -53,11 +53,6 @@ final class SwiperAdmin {
 	}
 
 	/**
-	 * @internal never define functions inside callbacks.
-	 * these functions could be run multiple times; this would result in a fatal error.
-	 */
-
-	/**
 	 * custom option and settings
 	 */
 	public function swiper_settings_init() {
@@ -134,7 +129,17 @@ final class SwiperAdmin {
 				} else {
 					$args[$param['label']] = 'false';
 				}
-			}
+
+			} else if ( \gettype($param) === 'array' && $param['type'] === 'path') {
+				$args[$param['label']] = $this->my_sanitize_path( $args[$param['label']] );
+
+			} else if ( \gettype($param) === 'array' && $param['type'] === 'text') {
+				if ( $param['label'] === 'autoplay') {
+					$args[$param['label']] = $this->my_sanitize_autoplay( $args[$param['label']], array('false', 'true', array('integer', 0, 5000) ) );
+				} else {
+					$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] );
+				}
+			} 
 		}
 		return $args;
 	}
@@ -143,8 +148,9 @@ final class SwiperAdmin {
 	 * Section callback function which outputs the subtitle under the header.
 	 *
 	 * @param array $args  The settings array, defining title, id, callback.
+	 * @return void
 	 */
-	function section_callback( $args ) {
+	function section_callback( array $args ) {
 		?>
 		<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( $this->settings['subTitle'], $this->settings['namespace'] ); ?></p>
 		<?php
@@ -159,7 +165,7 @@ final class SwiperAdmin {
 	 * @param array $args
 	 * @return void
 	 */
-	function number_callback( $args) {
+	function number_callback( array $args) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -176,7 +182,7 @@ final class SwiperAdmin {
 		}
 	}
 
-	function checkbox_callback( $args) {
+	function checkbox_callback( array $args) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -194,7 +200,7 @@ final class SwiperAdmin {
 		}
 	}
 
-	function select_callback( $args) {
+	function select_callback( array $args) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -220,7 +226,7 @@ final class SwiperAdmin {
 		}
 	}
 
-	function path_callback( $args) {
+	function path_callback( array $args) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -228,6 +234,7 @@ final class SwiperAdmin {
 			
 			$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
 			$path = $this->settings[ $args['param']]['type'] === 'path' ? $path = $this->up_dir . '/' . $options[ $args['label_for'] ]: '';
+			$label = $this->settings[ $args['param']]['type'] === 'text' ? $this->settings[ $args['param']]['description'] : '';
 			
 			?>
 			<input class="regular-text"
@@ -237,18 +244,39 @@ final class SwiperAdmin {
 					name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr( $args['label_for'] ); ?>]" 
 					id="<?php echo esc_attr( $args['label_for'] ); ?>" 
 					value="<?php echo($optset); ?>">
+					<label><?php echo($label);?></label>
 					<p><?php echo($path);?></p>
 			<?php
 		}
 	}
 
-	function text_callback( $args) {
+	function text_callback( array $args) {
 		// Get the value of the setting we've registered with register_setting()
 		$this->path_callback( $args );
 	}
 
+	function color_callback( array $args) {
+		// Get the value of the setting we've registered with register_setting()
+		$options = get_option( $this->settings['options'] );
+
+		if ($this->settings[ $args['param']]['type'] === 'color' ) {
+			
+			$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
+			
+			?>
+			<input class="color-picker"
+					type="color"
+					name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+					id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+					value="<?php echo($optset); ?>">
+					<label><?php echo('hex: '.$optset);?></label>
+			<?php
+		}
+	}
+
 	/**
 	 * produces the HTML for the settings page using high level WP-functions and shows the result of the settings submit button.
+	 * @return void
 	 */
 	function show_options_page_html() {
 		// check user capabilities
@@ -285,6 +313,78 @@ final class SwiperAdmin {
 		</div>
 		<?php
 	}
+
+	// -------------- helpers ------------------
+	/**
+	 * Clean user input to one single string containing only relevant characters with using 'sanitize_text_field'
+	 * filter_var with 'FILTER_SANITIZE_STRING'.
+	 *
+	 * @param  string $inp the input string to be sanitized
+	 * @return string sanitized string
+	 */	
+	private static function my_sanitize_text ( string $inp) :string
+	{
+		$inp = sanitize_text_field( $inp);
+		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
+		return $inp;
+	}
+
+	/**
+	 * Standardize a path:
+	 *  - no leading or trailing slashes
+	 *  - no other characters than 'A-Za-z0-9-_/'
+	 *  - and clean user input to one single string containing only relevant characters
+	 *
+	 * @param  string $inp the input path to be sanitized
+	 * @return string sanitized path
+	 */
+	private function my_sanitize_path (string $inp) :string
+	{
+		//$inp = $this::my_sanitize_text( $inp );
+		$inp = \sanitize_file_name($inp);
+		
+		$inp = preg_replace("/[^A-Za-z0-9-_\/]/", "", $inp);
+		$inp = rtrim($inp,'/');
+		$inp = rtrim($inp,'\\');
+		$inp = ltrim($inp,'/');
+		$inp = ltrim($inp,'\\');
+		return $inp;
+	}
+
+	/**
+	 * Convert a string value to an integer within given min- / max-Limits or to 'false' / 'true' if input is 'FaLse' or 'TrUe' or so. Return 'false' as fallback.
+	 *
+	 * @param  string $inp the input value from field autoplay which could be true, false or an integer-value
+	 * @param  array  $checks array of arrays where $checks[0] and $checks[1] are not used. 
+	 * 				  $checks[2] defines the target value for the type conversion (only integer supported) and the min / max-Value.
+	 * @return string the converted input value: 'false' or 'true' or string from integer value from $inp
+	 */
+	private function my_sanitize_autoplay( string $inp, array $checks ) :string
+	{
+		$inp = $this::my_sanitize_text( $inp );
+		
+		if ( strtolower ( $inp ) == 'false' ) { return 'false'; }
+		if ( strtolower ( $inp ) == 'true'  ) { return 'true'; }
+
+		if ( ($checks[2][0] == 'integer') && \is_numeric( $inp ) ) {
+			$val = intval( $inp );
+		} else {
+			return 'false';
+		}
+
+		$min = $checks[2][1];
+		$max= $checks[2][2];
+
+		if (filter_var($val, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max))) === false) {
+			// echo("Variable value is not within the legal range"); Restrict to min / max-Value.
+			($val < $min) ? $val = $min : $val = $max;
+		} else {
+			//echo("Variable value is within the legal range"). Do nothing.
+		}
+		
+		return strval($val);
+	}
+
 
 	/**
 	 * helper function to show the settings

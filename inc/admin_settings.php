@@ -25,6 +25,230 @@ final class FotoramaElevationAdmin {
 	private $min_width = 100;
 	private $max_width = 1500;
 
+	private $commonClass;
+	private $commonSettings = [
+		'pre' => 'common', //
+		'options' => 'common_options', //
+		'sanitizer' => 'options_sanitizer', // do not change!
+		'section' => 'common_section', //
+		'sectionsText' => 'General and Common Settings',
+		'namespace' => 'fotoramamulti',
+		'subTitle' => 'Common Setttings and Settings used for both Sliders',
+		//'shortcode_no_admin' => [], // none!
+		'param0' => [ // general
+			'label' => 'path_to_images_for_fotorama_0', 
+			'text' => 'Path to Images for Slider',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom0',
+			'type' => 'path',
+			'required' => 'required',
+			'values' => '',
+			'default' => '',
+			'description' => 'Define path without leading and trailing slashes',
+			'shortcode' => 'imgpath',
+		],
+		'param1' => [ // general
+			'label' => 'show_caption_4', 
+			'text' => 'Show Caption',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show the caption in the fotorama slider',
+			'shortcode' => 'showcaption',
+		],
+		'param2' => [ // general
+			'label' => 'short_caption', 
+			'text' => 'Short Caption',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom2',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show short caption only. (Don not show image metadata from EXIF)',
+			'shortcode' => 'shortcaption',
+		],
+		'param3' => [ // general
+			'label' => 'images_with_gps_required_5', 
+			'text' => 'Images with GPS required',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom3',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show images only if they provide GPS-Data in EXIF. Remember to set showmap="false".',
+			'shortcode' => 'requiregps',
+		],
+		'param4' => [ // general
+			'label' => 'ignore_custom_sort_6', 
+			'text' => 'Ignore custom sort',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom4',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'gnore custom sort even if provided by Wordpress. Sort ascending by date taken if checked.',
+			'shortcode' => 'ignoresort',
+		],
+		'param6' => [ // general
+			'label' => 'fit', 
+			'text' => 'How to fit the images in Slider',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom6',
+			'type' => 'select',
+			'values' => ['contain' => 'Contain', 'cover' => 'Cover', 'scaledown' => 'Scaledown', 'none' => 'None'],
+			'default' => 'contain',
+			'description' => '',
+			'shortcode' => 'fit',
+		],
+		'param7' => [ // general
+			'label' => 'ratio', 
+			'text' => 'Width / Height (Aspect) Ratio',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom7',
+			'type' => 'number',
+			'values' => 1.5, // default value
+			'default' => 1.5,
+			'min' => 0.1,
+			'max' => 5,
+			'step' => 0.01,
+			'description' => '',
+			'shortcode' => 'ratio',
+		],
+		'param8' => [ // general
+			'label' => 'background',
+			'text' => 'Slide Background Colour',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom8',
+			'type' => 'color',
+			'values' => 'red',
+			'default' => 'red',
+			'description' => '',
+			'shortcode' => 'background',
+		],
+		'param11' => [ // general
+			'label' => 'f_thumbwidth',
+			'text' => 'Thumbnail Width in px',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom11',
+			'type' => 'number',
+			'values' => 96, // default value
+			'default' => 96,
+			'min' => 10,
+			'max' => 200,
+			'description' => '',
+			'shortcode' => 'f_thumbwidth',
+		],
+		'param12' => [ // general
+			'label' => 'f_thumbheight',
+			'text' => 'Thumbnail Height in px',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom12',
+			'type' => 'number',
+			'values' => 64, // default value
+			'default' => 64,
+			'min' => 10,
+			'max' => 200,
+			'description' => '',
+			'shortcode' => 'f_thumbheight',
+		],
+		'param13' => [ // general
+			'label' => 'thumbmargin',
+			'text' => 'Thumbnail Side Margin in px',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom13',
+			'type' => 'number',
+			'values' => 2, // default value
+			'default' => 2,
+			'min' => 0,
+			'max' => 20,
+			'description' => '',
+			'shortcode' => 'thumbmargin',
+		],
+		'param14' => [ // general
+			'label' => 'thumbborderwidth',
+			'text' => 'Thumbnail Border Width in px',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom14',
+			'type' => 'number',
+			'values' => 2, // default value
+			'default' => 2,
+			'min' => 0,
+			'max' => 20,
+			'description' => '',
+			'shortcode' => 'thumbborderwidth',
+		],
+		'param15' => [ // general
+			'label' => 'thumbbordercolor',
+			'text' => 'Thumbnail Border Colour',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom15',
+			'type' => 'color',
+			'values' => 'red',
+			'default' => 'red',
+			'description' => '',
+			'shortcode' => 'thumbbordercolor',
+		],
+		'param17' => [ // general
+			'label' => 'transitionduration',
+			'text' => 'Transition Duration in ms',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom17',
+			'type' => 'number',
+			'values' => 0, // default value
+			'default' => 0,
+			'min' => 0,
+			'max' => 2000,
+			'description' => '',
+			'shortcode' => 'transitionduration',
+		],
+		'param18' => [ // general
+			'label' => 'loop', 
+			'text' => 'Loop through Slides',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom18',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'loop',
+			'shortcode' => 'loop',
+		],
+		'param21' => [ // general
+			'label' => 'useCDN_13',  // label was used before for that
+			'text' => 'Add Permalink',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => ' Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.',
+			'shortcode' => '', //none
+		],
+		'param22' => [ // general
+			'label' => 'setCustomFields_15', 
+			'text' => 'Set Custom Fields for post',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.',
+			'shortcode' => '', // none
+		],
+		'param23' => [ // general
+			'label' => 'doYoastXmlSitemap_16', 
+			'text' => 'Generate Entries in Yoast XML-Sitemap for Fotorama Images',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO.',
+			'shortcode' => '', // none!
+		],
+	];
+
 	private $swiperClass;
 	private $swiperSettings = [
 		'pre' => 'swiper', // change
@@ -164,98 +388,210 @@ final class FotoramaElevationAdmin {
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Settings for the Fotorama Slider',
 		//'shortcode_no_admin' => [], // none!
-		'param0' => [ // general
-			'label' => 'path_to_images_for_fotorama_0', 
-			'text' => 'Path to Images for Slider',
+		
+		'param7' => [ // ????
+			'label' => 'ratio', 
+			'text' => 'Width / Height (Aspect) Ratio',
 			'class' => 'fotorama_row',
-			'custom_data' => 'custom0',
-			'type' => 'path',
-			'required' => 'required',
-			'values' => '',
-			'default' => '',
-			'description' => 'Define path without leading and trailing slashes',
-			'shortcode' => 'imgpath',
+			'custom_data' => 'custom7',
+			'type' => 'number',
+			'values' => 1.5, // default value
+			'default' => 1.5,
+			'min' => 0.1,
+			'max' => 5,
+			'step' => 0.01,
+			'description' => '',
+			'shortcode' => 'ratio',
 		],
-		'param1' => [ // general
-			'label' => 'show_caption_4', 
-			'text' => 'Show Caption',
+		'param8' => [ // general
+			'label' => 'background',
+			'text' => 'Slide Background Colour',
 			'class' => 'fotorama_row',
-			'custom_data' => 'custom1',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Show the caption in the fotorama slider',
-			'shortcode' => 'showcaption',
+			'custom_data' => 'custom8',
+			'type' => 'color',
+			'values' => 'red',
+			'default' => 'red',
+			'description' => '',
+			'shortcode' => 'background',
 		],
-		'param2' => [ // general
-			'label' => 'short_caption', 
-			'text' => 'Short Caption',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom2',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Show short caption only. (Don not show image metadata from EXIF)',
-			'shortcode' => 'shortcaption',
-		],
-		'param3' => [ // general
-			'label' => 'images_with_gps_required_5', 
-			'text' => 'Images with GPS required',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom3',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Show images only if they provide GPS-Data in EXIF. Remember to set showmap="false".',
-			'shortcode' => 'requiregps',
-		],
-		'param4' => [ // general
-			'label' => 'ignore_custom_sort_6', 
-			'text' => 'Ignore custom sort',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom4',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'gnore custom sort even if provided by Wordpress. Sort ascending by date taken if checked.',
-			'shortcode' => 'ignoresort',
-		],
-		'param5' => [
-			'label' => 'general_text_for_the_fotorama_alt_9', 
-			'text' => 'General text for the Fotorama alt',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom5',
-			'type' => 'text',
-			'required' => '',
-			'values' => '',
-			'default' => 'Image Slider with caption and GPX-Data',
-			'description' => 'Used for SEO only.',
-			'shortcode' => 'alttext',
-		],
-		/*
-		'param0' => [
+		'param9' => [
 			'label' => 'navposition',
 			'text' => 'Thumbnailbar Position',
 			'class' => 'fotorama_row',
-			'custom_data' => 'custom0',
+			'custom_data' => 'custom9',
 			'type' => 'select',
 			'values' => ['bottom'=>'Bottom','top'=>'Top'],
 			'default' => 'bottom',
 			'description' => 'Provide download link for GPX-Files',
+			'shortcode' => 'navposition',
 		],
-		'param1' => [
+		'param10' => [
 			'label' => 'navwidth',
 			'text' => 'Thumbnailbar Width in %',
 			'class' => 'fotorama_row',
-			'custom_data' => 'custom1',
+			'custom_data' => 'custom10',
 			'type' => 'number',
 			'values' => 100, // default value
 			'default' => 100,
 			'min' => 10,
 			'max' => 100,
-			'description' => ''
+			'description' => '',
+			'shortcode' => 'navwidth',
 		],
-		*/
+		'param11' => [
+			'label' => 'f_thumbwidth',
+			'text' => 'Thumbnail Width in px',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom11',
+			'type' => 'number',
+			'values' => 96, // default value
+			'default' => 96,
+			'min' => 10,
+			'max' => 200,
+			'description' => '',
+			'shortcode' => 'f_thumbwidth',
+		],
+		'param12' => [ // general
+			'label' => 'f_thumbheight',
+			'text' => 'Thumbnail Height in px',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom12',
+			'type' => 'number',
+			'values' => 64, // default value
+			'default' => 64,
+			'min' => 10,
+			'max' => 200,
+			'description' => '',
+			'shortcode' => 'f_thumbheight',
+		],
+		'param13' => [ // general
+			'label' => 'thumbmargin',
+			'text' => 'Thumbnail Side Margin in px',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom13',
+			'type' => 'number',
+			'values' => 2, // default value
+			'default' => 2,
+			'min' => 0,
+			'max' => 20,
+			'description' => '',
+			'shortcode' => 'thumbmargin',
+		],
+		'param14' => [ // general
+			'label' => 'thumbborderwidth',
+			'text' => 'Thumbnail Border Width in px',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom14',
+			'type' => 'number',
+			'values' => 2, // default value
+			'default' => 2,
+			'min' => 0,
+			'max' => 20,
+			'description' => '',
+			'shortcode' => 'thumbborderwidth',
+		],
+		'param15' => [ // general
+			'label' => 'thumbbordercolor',
+			'text' => 'Thumbnail Border Colour',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom15',
+			'type' => 'color',
+			'values' => 'red',
+			'default' => 'red',
+			'description' => '',
+			'shortcode' => 'thumbbordercolor',
+		],
+		'param16' => [ 
+			'label' => 'transition', 
+			'text' => 'Slide Transition Type',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom16',
+			'type' => 'select',
+			'values' => ['slide' => 'Slide', 'crossfade' => 'Crossfade', 'dissolve' => 'Dissolve'],
+			'default' => 'slide',
+			'description' => '',
+			'shortcode' => 'transition',
+		],
+		'param17' => [ // general
+			'label' => 'transitionduration',
+			'text' => 'Transition Duration in ms',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom17',
+			'type' => 'number',
+			'values' => 0, // default value
+			'default' => 0,
+			'min' => 0,
+			'max' => 2000,
+			'description' => '',
+			'shortcode' => 'transitionduration',
+		],
+		'param18' => [ // general
+			'label' => 'loop', 
+			'text' => 'Loop through Slides',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom18',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'loop',
+			'shortcode' => 'loop',
+		],
+		'param19' => [ // ????
+			'label' => 'autoplay', 
+			'text' => 'Autoplay Slideshow',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom19',
+			'type' => 'text',
+			'required' => 'required',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Values: false, true, or integer value in milliseconds',
+			'shortcode' => 'autoplay',
+		],
+		'param20' => [ 
+			'label' => 'arrows', 
+			'text' => 'Show Arrows',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom16',
+			'type' => 'select',
+			'values' => ['true' => 'True', 'false' => 'False', 'always' => 'Always'],
+			'default' => 'true',
+			'description' => '',
+			'shortcode' => 'arrows',
+		],
+		'param21' => [ // general
+			'label' => 'useCDN_13',  // label was used before for that
+			'text' => 'Add Permalink',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => ' Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.',
+			'shortcode' => '', //none
+		],
+		'param22' => [ // general
+			'label' => 'setCustomFields_15', 
+			'text' => 'Set Custom Fields for post',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.',
+			'shortcode' => '', // none
+		],
+		'param23' => [ // general
+			'label' => 'doYoastXmlSitemap_16', 
+			'text' => 'Generate Entries in Yoast XML-Sitemap for Fotorama Images',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO.',
+			'shortcode' => '', // none!
+		],
 	];
 
 	private $leafletClass;
@@ -434,6 +770,9 @@ final class FotoramaElevationAdmin {
 		]
 	];
 
+	private $tabs = [ 'default' => 'GPX-File', 'general' => 'General', 'leaflet' => 'Map + Chart', 'fotorama' => 'Fotorama', 'swiper' => 'Swiper'];
+	// add params tab at the end. Tab 'Show' will be omitted at the end. Here are our tabs TODO: Generate this from array
+
 	
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'fotorama_elevation_page_init' ) );
@@ -476,11 +815,6 @@ final class FotoramaElevationAdmin {
 			<h2><?php esc_html_e('Settings for Fotorama-Elevation Plugin','fotoramamulti') ?></h2>
 			<h4><?php esc_html_e('General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.','fotoramamulti') ?></h4>
 			
-			<!-- Here are our tabs TODO: Generate this from array-->
-			<?php
-			$tab = [ 'default' => 'GPX-File', 'general' => 'General', 'leaflet' => 'Map + Chart', 'fotorama' => 'Fotorama', 'swiper' => 'Swiper']
-			// add params tab at the end. Tab 'Show' will be omitted at the end.
-			?>
 			<nav class="nav-tab-wrapper">
 				<a href="?page=fotorama-elevation"              class="nav-tab <?php if($tab===null):?>nav-tab-active<?php endif; ?>">GPX-File</a>
 				<a href="?page=fotorama-elevation&tab=leaflet"  class="nav-tab <?php if($tab==='leaflet'):?>nav-tab-active<?php endif; ?>">Map + Chart</a>
@@ -493,7 +827,7 @@ final class FotoramaElevationAdmin {
 
 			<div class="tab-content">
     		<?php switch($tab):
-			// TODO: generate this in loop from $tab
+			// TODO: generate this in loop from $tabs
 			case 'leaflet':?>
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
@@ -775,12 +1109,22 @@ final class FotoramaElevationAdmin {
 			
 			case 'show':?>
 				<h3>Show all Parameters</h3>
+				<h4>Array-Diff</h4>
+				<?php 
+				$new = \array_merge( get_option( 'fotorama_options'), get_option( 'leaflet_options'));
+				$options = get_option( 'fotorama_elevation_option_name' );
+				$result=array_diff($options,$new);
+				print_r($result);
+				?>
 
 				<h4>Swiper Settings:</h4><?php 
 				$this->swiperClass->show_settings();
 
 				?><h4>Fotorama Settings:</h4><?php 
 				$this->fotoramaClass->show_settings();
+
+				?><h4>Leaflet Settings:</h4><?php 
+				$this->leafletClass->show_settings();
 
 				?><h4>Fotorama-Leaflet Settings:</h4><?php
 				$options = get_option( 'fotorama_elevation_option_name' );
@@ -1140,13 +1484,13 @@ final class FotoramaElevationAdmin {
         );        
 
 		// --------------- GPX-Section --------------------------------------------------------
-		add_settings_section("gpx_section", __('GPX-File', 'fotoramamulti') . ' upload', null, "gpx_file");
-    	add_settings_field("gpx-file", __('GPX-File', 'fotoramamulti') , array( $this, "gpx_file_callback"), "gpx_file", "gpx_section");  
+		add_settings_section("gpx_section", __('GPX-File', 'fotoramamulti') . ' settings + upload', null, "gpx_file");
+    	add_settings_field("gpx-file", __('Select GPX-File', 'fotoramamulti') , array( $this, "gpx_file_callback"), "gpx_file", "gpx_section");  
 		register_setting("gpx_section", "gpx-file", array( $this, "handle_file_upload") );
 
 		add_settings_field(
 			'gpx_reduce', // id
-			__('GPX-Parsing', 'fotoramamulti'), // title
+			__('GPX-File-Parsing', 'fotoramamulti'), // title
 			array( $this, 'gpx_reduce_callback' ), // callback
 			'gpx_file', // page
 			'gpx_section' // section
@@ -1154,7 +1498,7 @@ final class FotoramaElevationAdmin {
 
 		add_settings_field(
 			'gpx_smooth', // id
-			__('Distance-Smooth', 'fotoramamulti'), // title
+			__('Distance Smooth', 'fotoramamulti'), // title
 			array( $this, 'gpx_smooth_callback' ), // callback
 			'gpx_file', // page
 			'gpx_section' // section
@@ -1162,7 +1506,7 @@ final class FotoramaElevationAdmin {
 
 		add_settings_field(
 			'gpx_elesmooth', // id
-			__('Elevation-Smooth', 'fotoramamulti'), // title
+			__('Elevation Smooth', 'fotoramamulti'), // title
 			array( $this, 'gpx_elesmooth_callback' ), // callback
 			'gpx_file', // page
 			'gpx_section' // section
@@ -1170,7 +1514,7 @@ final class FotoramaElevationAdmin {
 
 		add_settings_field(
 			'gpx_overwrite', // id
-			__('Overwrite GPX-Track', 'fotoramamulti'), // title
+			__('Overwrite GPX-File', 'fotoramamulti'), // title
 			array( $this, 'gpx_overwrite_callback' ), // callback
 			'gpx_file', // page
 			'gpx_section' // section
@@ -1200,8 +1544,8 @@ final class FotoramaElevationAdmin {
 		printf(
 			'<input type="checkbox" name="gpx-file[gpx_reduce]" id="gpx_reduce" value="gpx_reduce" %s><label for="gpx_reduce">%s %s</label>',
 			( $this->fotorama_option2['gpx_reduce'] === 'true' ) ? 'checked' : '',
-			__('Reduce and add Metadata to', 'fotoramamulti'), 
-			__('GPX-File', 'fotoramamulti')
+			__('GPX-File', 'fotoramamulti'),
+			__(': Reduce with Settings below and add Track Statistics (Track length and difference in altitude).', 'fotoramamulti'),
 		);
 	}
 
@@ -1210,7 +1554,7 @@ final class FotoramaElevationAdmin {
 		printf(
 			'<input type="number" min="1" max="50" name="gpx-file[gpx_smooth]" id="gpx_smooth" value=%s><label> %s</label>',
 			( isset( $this->fotorama_option2['gpx_smooth'] ) ? esc_attr( $this->fotorama_option2['gpx_smooth']): ''),
-			__( 'Min. Distance of Track-Points in Meters', 'fotoramamulti')
+			__( 'Min. Distance of Track Points in Meters', 'fotoramamulti')
 		);
 	}
 
@@ -1219,7 +1563,7 @@ final class FotoramaElevationAdmin {
 		printf(
 			'<input type="number" min="1" max="50" name="gpx-file[gpx_elesmooth]" id="gpx_elesmooth" value=%s><label> %s</label>',
 			( isset( $this->fotorama_option2['gpx_elesmooth'] ) ? esc_attr( $this->fotorama_option2['gpx_elesmooth']) : '' ),
-			__( 'Min. Elevation between Track-Points in Meters. Used in Statistics Calc only. Best is 4.', 'fotoramamulti')
+			__( 'Min. Elevation between Track Points in Meters. Used for Statistics Calc only. Best is 4.', 'fotoramamulti')
 		);
 	}
 
