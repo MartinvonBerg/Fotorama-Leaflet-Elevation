@@ -35,66 +35,21 @@ final class FotoramaElevationAdmin {
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Common Setttings and Settings used for both Sliders',
 		//'shortcode_no_admin' => [], // none!
-		'param0' => [ // general
-			'label' => 'path_to_images_for_fotorama_0', 
-			'text' => 'Path to Images for Slider',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom0',
-			'type' => 'path',
-			'required' => 'required',
-			'values' => '',
-			'default' => '',
-			'description' => 'Define path without leading and trailing slashes',
-			'shortcode' => 'imgpath',
-		],
-		'param1' => [ // general
-			'label' => 'show_caption_4', 
-			'text' => 'Show Caption',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom1',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Show the caption in the fotorama slider',
-			'shortcode' => 'showcaption',
-		],
-		'param2' => [ // general
-			'label' => 'short_caption', 
-			'text' => 'Short Caption',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom2',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Show short caption only. (Don not show image metadata from EXIF)',
-			'shortcode' => 'shortcaption',
-		],
-		'param3' => [ // general
-			'label' => 'images_with_gps_required_5', 
-			'text' => 'Images with GPS required',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom3',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Show images only if they provide GPS-Data in EXIF. Remember to set showmap="false".',
-			'shortcode' => 'requiregps',
-		],
-		'param4' => [ // general
-			'label' => 'ignore_custom_sort_6', 
-			'text' => 'Ignore custom sort',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom4',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'gnore custom sort even if provided by Wordpress. Sort ascending by date taken if checked.',
-			'shortcode' => 'ignoresort',
+		'param5' => [ // general!
+			'label' => 'slider', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+			'text' => 'Slider Type',
+			'class' => 'common_row',
+			'custom_data' => 'custom5',
+			'type' => 'select',
+			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'],
+			'default' => 'fotorama',
+			'description' => '',
+			'shortcode' => 'slider',
 		],
 		'param6' => [ // general
 			'label' => 'fit', 
 			'text' => 'How to fit the images in Slider',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom6',
 			'type' => 'select',
 			'values' => ['contain' => 'Contain', 'cover' => 'Cover', 'scaledown' => 'Scaledown', 'none' => 'None'],
@@ -104,8 +59,8 @@ final class FotoramaElevationAdmin {
 		],
 		'param7' => [ // general
 			'label' => 'ratio', 
-			'text' => 'Width / Height (Aspect) Ratio',
-			'class' => 'fotorama_row',
+			'text' => 'Slider Aspect Ratio',
+			'class' => 'common_row',
 			'custom_data' => 'custom7',
 			'type' => 'number',
 			'values' => 1.5, // default value
@@ -119,7 +74,7 @@ final class FotoramaElevationAdmin {
 		'param8' => [ // general
 			'label' => 'background',
 			'text' => 'Slide Background Colour',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom8',
 			'type' => 'color',
 			'values' => 'red',
@@ -127,10 +82,92 @@ final class FotoramaElevationAdmin {
 			'description' => '',
 			'shortcode' => 'background',
 		],
+		'param0' => [ // general
+			'label' => 'path_to_images_for_fotorama_0', 
+			'text' => 'Path to Images for Slider',
+			'class' => 'common_row',
+			'custom_data' => 'custom0',
+			'type' => 'path',
+			'required' => '',
+			'values' => '',
+			'default' => '',
+			'description' => 'Define path without leading and trailing slashes',
+			'shortcode' => 'imgpath',
+		],
+		'param1' => [ // general
+			'label' => 'show_caption_4', 
+			'text' => 'Show Caption',
+			'class' => 'common_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show the caption in the fotorama slider',
+			'shortcode' => 'showcaption',
+		],
+		'param2' => [ // general
+			'label' => 'short_caption', 
+			'text' => 'Short Caption',
+			'class' => 'common_row',
+			'custom_data' => 'custom2',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show short caption only. (Don not show image metadata from EXIF)',
+			'shortcode' => 'shortcaption',
+		],
+		'param3' => [ // general
+			'label' => 'images_with_gps_required_5', 
+			'text' => 'Images with GPS required',
+			'class' => 'common_row',
+			'custom_data' => 'custom3',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show images only if they provide GPS-Data in EXIF. Remember to set showmap="false".',
+			'shortcode' => 'requiregps',
+		],
+		'param4' => [ // general
+			'label' => 'ignore_custom_sort_6', 
+			'text' => 'Ignore custom sort',
+			'class' => 'common_row',
+			'custom_data' => 'custom4',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Ignore custom sort even if provided by Wordpress. Sort ascending by date taken if checked.',
+			'shortcode' => 'ignoresort',
+		],
+		'param24' => [ // general setting!
+			'label' => 'max_width_of_container_12', 
+			'text' => 'Max Width of Container in px',
+			'class' => 'common_row',
+			'custom_data' => 'custom24',
+			'type' => 'number',
+			'values' => 1500, // default value
+			'default' => 1500,
+			'min' => 100,
+			'max' => 1500,
+			'description' => '',
+			'shortcode' => 'maxwidth',
+		],
+		'param25' => [ // general setting!
+			'label' => 'min_width_css_grid_row_14',
+			'text' => 'Min Width of one CSS-grid Row in px',
+			'class' => 'common_row',
+			'custom_data' => 'custom25',
+			'type' => 'number',
+			'values' => 480, // default value
+			'default' => 480,
+			'min' => 50,
+			'max' => 1500,
+			'description' => '',
+			'shortcode' => 'minrowwidth',
+		],
 		'param11' => [ // general
 			'label' => 'f_thumbwidth',
 			'text' => 'Thumbnail Width in px',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom11',
 			'type' => 'number',
 			'values' => 96, // default value
@@ -143,7 +180,7 @@ final class FotoramaElevationAdmin {
 		'param12' => [ // general
 			'label' => 'f_thumbheight',
 			'text' => 'Thumbnail Height in px',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom12',
 			'type' => 'number',
 			'values' => 64, // default value
@@ -156,7 +193,7 @@ final class FotoramaElevationAdmin {
 		'param13' => [ // general
 			'label' => 'thumbmargin',
 			'text' => 'Thumbnail Side Margin in px',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom13',
 			'type' => 'number',
 			'values' => 2, // default value
@@ -169,7 +206,7 @@ final class FotoramaElevationAdmin {
 		'param14' => [ // general
 			'label' => 'thumbborderwidth',
 			'text' => 'Thumbnail Border Width in px',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom14',
 			'type' => 'number',
 			'values' => 2, // default value
@@ -182,7 +219,7 @@ final class FotoramaElevationAdmin {
 		'param15' => [ // general
 			'label' => 'thumbbordercolor',
 			'text' => 'Thumbnail Border Colour',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom15',
 			'type' => 'color',
 			'values' => 'red',
@@ -193,7 +230,7 @@ final class FotoramaElevationAdmin {
 		'param17' => [ // general
 			'label' => 'transitionduration',
 			'text' => 'Transition Duration in ms',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom17',
 			'type' => 'number',
 			'values' => 0, // default value
@@ -206,7 +243,7 @@ final class FotoramaElevationAdmin {
 		'param18' => [ // general
 			'label' => 'loop', 
 			'text' => 'Loop through Slides',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom18',
 			'type' => 'checkbox',
 			'values' => '',
@@ -217,7 +254,7 @@ final class FotoramaElevationAdmin {
 		'param21' => [ // general
 			'label' => 'useCDN_13',  // label was used before for that
 			'text' => 'Add Permalink',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom1',
 			'type' => 'checkbox',
 			'values' => '',
@@ -228,7 +265,7 @@ final class FotoramaElevationAdmin {
 		'param22' => [ // general
 			'label' => 'setCustomFields_15', 
 			'text' => 'Set Custom Fields for post',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom1',
 			'type' => 'checkbox',
 			'values' => '',
@@ -239,7 +276,7 @@ final class FotoramaElevationAdmin {
 		'param23' => [ // general
 			'label' => 'doYoastXmlSitemap_16', 
 			'text' => 'Generate Entries in Yoast XML-Sitemap for Fotorama Images',
-			'class' => 'fotorama_row',
+			'class' => 'common_row',
 			'custom_data' => 'custom1',
 			'type' => 'checkbox',
 			'values' => '',
@@ -257,17 +294,7 @@ final class FotoramaElevationAdmin {
 		'section' => 'swiper_section', // change
 		'sectionsText' => 'Swiper Slider Settings', // change
 		'namespace' => 'fotoramamulti', // change
-		'subTitle' => 'Additonal Settings for the Swiper Slider. Mind that several Settings from Fotorama are used for Swiper, too!',
-		'param0' => [ // general!
-			'label' => 'slider', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
-			'text' => 'Slider Type',
-			'class' => 'swiper_row',
-			'custom_data' => 'custom0',
-			'type' => 'select',
-			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'],
-			'default' => 'fotorama',
-			'description' => ''
-		],
+		'subTitle' => 'Settings for the Swiper Slider only.',
 		'param1' => [
 			'label' => 'sw_effect', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
 			'text' => 'Swiper Slide Change Effect',
@@ -276,39 +303,19 @@ final class FotoramaElevationAdmin {
 			'type' => 'select',
 			'values' => ['slide' => 'Slide', 'fade' => 'Fade', 'flip' => 'Flip', 'cube' => 'Cube', 'coverflow' => 'Coverflow'],
 			'default' => 'slide',
-			'description' => ''
+			'description' => '',
+			'shortcode' => 'sw_effect',
 		],
-		'param2' => [
-			'label' => 'sw_thumbbartype',
-			'text' => 'Thumbnailbar Type',
+		'param7' => [
+			'label' => 'sw_mousewheel',
+			'text' => 'Use Mousewheel for Slide Change',
 			'class' => 'swiper_row',
-			'custom_data' => 'custom2',
-			'type' => 'select',
-			'values' => ['integrated' => 'Swiper Thumbbar', 'special' => 'Special Thumbbar'],
-			'default' => 'special',
-			'description' => ''
-		],
-		'param3' => [
-			'label' => 'sw_activetype',
-			'text' => 'Effect for Special Thumbbar',
-			'class' => 'swiper_row',
-			'custom_data' => 'custom3',
-			'type' => 'select',
-			'values' => ['active' => 'Brightness', 'active_animation' => 'Shake', 'active_border' => 'Border'],
-			'default' => 'active_border',
-			'description' => ''
-		],
-		'param10' => [
-			'label' => 'sw_bar_margin_top',
-			'text' => 'Margin above Special Thumbbar in px',
-			'class' => 'swiper_row',
-			'custom_data' => 'custom10',
-			'type' => 'number',
-			'values' => 5, // default value
-			'default' => 5,
-			'min' => 0,
-			'max' => 100,
-			'description' => ''
+			'custom_data' => 'custom7',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Only active if there is one Slider on Page.',
+			'shortcode' => 'sw_mousewheel',
 		],
 		'param4' => [
 			'label' => 'sw_zoom',
@@ -318,7 +325,8 @@ final class FotoramaElevationAdmin {
 			'type' => 'checkbox',
 			'values' => '',
 			'default' => 'true',
-			'description' => 'Activates the Zoom Function within the Swiper Slider'
+			'description' => 'Activates the Zoom Function within the Swiper Slider',
+			'shortcode' => 'sw_zoom',
 		],
 		'param9' => [
 			'label' => 'sw_max_zoom_ratio',
@@ -330,7 +338,8 @@ final class FotoramaElevationAdmin {
 			'default' => 3,
 			'min' => 1,
 			'max' => 10,
-			'description' => ''
+			'description' => '',
+			'shortcode' => 'sw_max_zoom_ratio',
 		],
 		'param5' => [
 			'label' => 'sw_fslightbox',
@@ -340,7 +349,43 @@ final class FotoramaElevationAdmin {
 			'type' => 'checkbox',
 			'values' => '',
 			'default' => 'true',
-			'description' => 'Requires an additional Plugin!'
+			'description' => 'Requires an additional Plugin!',
+			'shortcode' => 'sw_fslightbox',
+		],
+		'param2' => [
+			'label' => 'sw_thumbbartype',
+			'text' => 'Thumbnailbar Type',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom2',
+			'type' => 'select',
+			'values' => ['integrated' => 'Swiper Thumbbar', 'special' => 'Special Thumbbar'],
+			'default' => 'special',
+			'description' => '',
+			'shortcode' => 'sw_thumbbartype',
+		],
+		'param3' => [
+			'label' => 'sw_activetype',
+			'text' => 'Effect for Special Thumbbar',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom3',
+			'type' => 'select',
+			'values' => ['active' => 'Brightness', 'active_animation' => 'Shake', 'active_border' => 'Border'],
+			'default' => 'active_border',
+			'description' => '',
+			'shortcode' => 'sw_activetype',
+		],
+		'param10' => [
+			'label' => 'sw_bar_margin_top',
+			'text' => 'Margin above Special Thumbbar in px',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom10',
+			'type' => 'number',
+			'values' => 5, // default value
+			'default' => 5,
+			'min' => 0,
+			'max' => 100,
+			'description' => '',
+			'shortcode' => 'sw_bar_margin_top',
 		],
 		/*
 		'param6' => [ // unused
@@ -350,19 +395,10 @@ final class FotoramaElevationAdmin {
 			'custom_data' => 'custom6',
 			'type' => 'checkbox',
 			'values' => '',
-			'description' => 'Activates the Zoom Function within the Swiper Slider'
+			'description' => 'Activates the Zoom Function within the Swiper Slider',
+			'shortcode' => '',
 		],
 		*/
-		'param7' => [
-			'label' => 'sw_mousewheel',
-			'text' => 'Use Mousewheel for Slide Change',
-			'class' => 'swiper_row',
-			'custom_data' => 'custom7',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Only active if there is one Slider on Page.'
-		],
 		'param8' => [
 			'label' => 'sw_hashnavigation',
 			'text' => 'Activate Hash Navigation',
@@ -371,7 +407,8 @@ final class FotoramaElevationAdmin {
 			'type' => 'checkbox',
 			'values' => '',
 			'default' => 'false',
-			'description' => 'Enables the option to use a page-link to a dedicated image.'
+			'description' => 'Enables the option to use a page-link to a dedicated image.',
+			'shortcode' => 'sw_hashnavigation',
 		],
 		//'sw_slides_per_view'=> 10, // unused
 		//'sw_transition_duration'=>300, // unused
@@ -386,33 +423,41 @@ final class FotoramaElevationAdmin {
 		'section' => 'fotorama_section', //
 		'sectionsText' => 'Fotorama Slider Settings',
 		'namespace' => 'fotoramamulti',
-		'subTitle' => 'Settings for the Fotorama Slider',
+		'subTitle' => 'Settings for the Fotorama Slider only.',
 		//'shortcode_no_admin' => [], // none!
-		
-		'param7' => [ // ????
-			'label' => 'ratio', 
-			'text' => 'Width / Height (Aspect) Ratio',
+		'param16' => [ 
+			'label' => 'transition', 
+			'text' => 'Slide Transition Type',
 			'class' => 'fotorama_row',
-			'custom_data' => 'custom7',
-			'type' => 'number',
-			'values' => 1.5, // default value
-			'default' => 1.5,
-			'min' => 0.1,
-			'max' => 5,
-			'step' => 0.01,
+			'custom_data' => 'custom16',
+			'type' => 'select',
+			'values' => ['slide' => 'Slide', 'crossfade' => 'Crossfade', 'dissolve' => 'Dissolve'],
+			'default' => 'slide',
 			'description' => '',
-			'shortcode' => 'ratio',
+			'shortcode' => 'transition',
 		],
-		'param8' => [ // general
-			'label' => 'background',
-			'text' => 'Slide Background Colour',
+		'param19' => [ 
+			'label' => 'autoplay', 
+			'text' => 'Autoplay Slideshow',
 			'class' => 'fotorama_row',
-			'custom_data' => 'custom8',
-			'type' => 'color',
-			'values' => 'red',
-			'default' => 'red',
+			'custom_data' => 'custom19',
+			'type' => 'text',
+			'required' => 'required',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Values: false, true, or integer value in milliseconds',
+			'shortcode' => 'autoplay',
+		],
+		'param20' => [ 
+			'label' => 'arrows', 
+			'text' => 'Show Arrows',
+			'class' => 'fotorama_row',
+			'custom_data' => 'custom16',
+			'type' => 'select',
+			'values' => ['true' => 'True', 'false' => 'False', 'always' => 'Always'],
+			'default' => 'true',
 			'description' => '',
-			'shortcode' => 'background',
+			'shortcode' => 'arrows',
 		],
 		'param9' => [
 			'label' => 'navposition',
@@ -438,160 +483,6 @@ final class FotoramaElevationAdmin {
 			'description' => '',
 			'shortcode' => 'navwidth',
 		],
-		'param11' => [
-			'label' => 'f_thumbwidth',
-			'text' => 'Thumbnail Width in px',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom11',
-			'type' => 'number',
-			'values' => 96, // default value
-			'default' => 96,
-			'min' => 10,
-			'max' => 200,
-			'description' => '',
-			'shortcode' => 'f_thumbwidth',
-		],
-		'param12' => [ // general
-			'label' => 'f_thumbheight',
-			'text' => 'Thumbnail Height in px',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom12',
-			'type' => 'number',
-			'values' => 64, // default value
-			'default' => 64,
-			'min' => 10,
-			'max' => 200,
-			'description' => '',
-			'shortcode' => 'f_thumbheight',
-		],
-		'param13' => [ // general
-			'label' => 'thumbmargin',
-			'text' => 'Thumbnail Side Margin in px',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom13',
-			'type' => 'number',
-			'values' => 2, // default value
-			'default' => 2,
-			'min' => 0,
-			'max' => 20,
-			'description' => '',
-			'shortcode' => 'thumbmargin',
-		],
-		'param14' => [ // general
-			'label' => 'thumbborderwidth',
-			'text' => 'Thumbnail Border Width in px',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom14',
-			'type' => 'number',
-			'values' => 2, // default value
-			'default' => 2,
-			'min' => 0,
-			'max' => 20,
-			'description' => '',
-			'shortcode' => 'thumbborderwidth',
-		],
-		'param15' => [ // general
-			'label' => 'thumbbordercolor',
-			'text' => 'Thumbnail Border Colour',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom15',
-			'type' => 'color',
-			'values' => 'red',
-			'default' => 'red',
-			'description' => '',
-			'shortcode' => 'thumbbordercolor',
-		],
-		'param16' => [ 
-			'label' => 'transition', 
-			'text' => 'Slide Transition Type',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom16',
-			'type' => 'select',
-			'values' => ['slide' => 'Slide', 'crossfade' => 'Crossfade', 'dissolve' => 'Dissolve'],
-			'default' => 'slide',
-			'description' => '',
-			'shortcode' => 'transition',
-		],
-		'param17' => [ // general
-			'label' => 'transitionduration',
-			'text' => 'Transition Duration in ms',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom17',
-			'type' => 'number',
-			'values' => 0, // default value
-			'default' => 0,
-			'min' => 0,
-			'max' => 2000,
-			'description' => '',
-			'shortcode' => 'transitionduration',
-		],
-		'param18' => [ // general
-			'label' => 'loop', 
-			'text' => 'Loop through Slides',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom18',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'loop',
-			'shortcode' => 'loop',
-		],
-		'param19' => [ // ????
-			'label' => 'autoplay', 
-			'text' => 'Autoplay Slideshow',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom19',
-			'type' => 'text',
-			'required' => 'required',
-			'values' => '',
-			'default' => 'false',
-			'description' => 'Values: false, true, or integer value in milliseconds',
-			'shortcode' => 'autoplay',
-		],
-		'param20' => [ 
-			'label' => 'arrows', 
-			'text' => 'Show Arrows',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom16',
-			'type' => 'select',
-			'values' => ['true' => 'True', 'false' => 'False', 'always' => 'Always'],
-			'default' => 'true',
-			'description' => '',
-			'shortcode' => 'arrows',
-		],
-		'param21' => [ // general
-			'label' => 'useCDN_13',  // label was used before for that
-			'text' => 'Add Permalink',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom1',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => ' Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.',
-			'shortcode' => '', //none
-		],
-		'param22' => [ // general
-			'label' => 'setCustomFields_15', 
-			'text' => 'Set Custom Fields for post',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom1',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.',
-			'shortcode' => '', // none
-		],
-		'param23' => [ // general
-			'label' => 'doYoastXmlSitemap_16', 
-			'text' => 'Generate Entries in Yoast XML-Sitemap for Fotorama Images',
-			'class' => 'fotorama_row',
-			'custom_data' => 'custom1',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'Generate the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO.',
-			'shortcode' => '', // none!
-		],
 	];
 
 	private $leafletClass;
@@ -604,6 +495,38 @@ final class FotoramaElevationAdmin {
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Settings for the Leaflet Map and Elevation Chart',
 		//'shortcode_no_admin' => ['gpxfile', 'showalltracks', 'mapcenter', 'zoom', 'markertext'],
+		'param12' => [
+			'label' => 'colour_theme_for_leaflet_elevation_1', 
+			'text' => 'Colour Theme for Leaflet Elevation',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom12',
+			'type' => 'select',
+			'values' => [
+				'martin-theme' => 'Martin', 
+				'lime-theme' => 'Lime', 
+				'steelblue-theme'=>'Steelblue', 
+				'purple-theme'=>'Purple', 
+				'yellow-theme'=>'Yellow', 
+				'red-theme'=>'Red', 
+				'magenta-theme'=>'Magenta', 
+				'lightblue-theme'=>'Lightblue'],
+			'default' => 'martin-theme',
+			'description' => '',
+			'shortcode' => 'eletheme',
+		],
+		'param9' => [
+			'label' => 'height_of_chart_11', 
+			'text' => 'Height of Chart in px',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom9',
+			'type' => 'number',
+			'values' => 200, // default value
+			'default' => 200,
+			'min' => 100,
+			'max' => 1000,
+			'description' => '',
+			'shortcode' => 'chartheight',
+		],
 		'param0' => [
 			'label' => 'path_to_gpx_files_2', 
 			'text' => 'Path to GPX-Files',
@@ -710,64 +633,6 @@ final class FotoramaElevationAdmin {
 			'description' => '',
 			'shortcode' => 'mapaspect',
 		],
-		'param9' => [
-			'label' => 'height_of_chart_11', 
-			'text' => 'Height of Chart in px',
-			'class' => 'leaflet_row',
-			'custom_data' => 'custom9',
-			'type' => 'number',
-			'values' => 200, // default value
-			'default' => 200,
-			'min' => 100,
-			'max' => 1000,
-			'description' => '',
-			'shortcode' => 'chartheight',
-		],
-		'param10' => [ // general setting!
-			'label' => 'max_width_of_container_12', 
-			'text' => 'Max Width of Container in px',
-			'class' => 'leaflet_row',
-			'custom_data' => 'custom10',
-			'type' => 'number',
-			'values' => 800, // default value
-			'default' => 800,
-			'min' => 100,
-			'max' => 1500,
-			'description' => '',
-			'shortcode' => 'maxwidth',
-		],
-		'param11' => [ // general setting!
-			'label' => 'min_width_css_grid_row_14',
-			'text' => 'Min Width of one CSS-grid Row in px',
-			'class' => 'leaflet_row',
-			'custom_data' => 'custom11',
-			'type' => 'number',
-			'values' => 480, // default value
-			'default' => 480,
-			'min' => 50,
-			'max' => 1500,
-			'description' => '',
-			'shortcode' => 'minrowwidth',
-		],
-		'param12' => [
-			'label' => 'colour_theme_for_leaflet_elevation_1', 
-			'text' => 'Colour Theme for Leaflet Elevation',
-			'class' => 'leaflet_row',
-			'custom_data' => 'custom12',
-			'type' => 'select',
-			'values' => [
-				'martin-theme' => 'Martin', 
-				'lime-theme' => 'Lime', 
-				'steelblue-theme'=>'Steelblue', 
-				'purple-theme'=>'Purple', 
-				'yellow-theme'=>'Yellow', 
-				'red-theme'=>'Red', 
-				'magenta-theme'=>'Magenta', 
-				'lightblue-theme'=>'Lightblue'],
-			'default' => 'Martin',
-			'description' => '',
-			'shortcode' => 'eletheme',
-		]
 	];
 
 	private $tabs = [ 'default' => 'GPX-File', 'general' => 'General', 'leaflet' => 'Map + Chart', 'fotorama' => 'Fotorama', 'swiper' => 'Swiper'];
@@ -790,6 +655,7 @@ final class FotoramaElevationAdmin {
 		$this->leafletSettings['param5']['description'] = $infoText;
 
 		$this->leafletClass = new SwiperAdmin( $this->leafletSettings );
+		$this->commonClass = new SwiperAdmin( $this->commonSettings );
 	}
 
 	public function fotorama_elevation_add_plugin_page() {
@@ -816,9 +682,9 @@ final class FotoramaElevationAdmin {
 			<h4><?php esc_html_e('General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.','fotoramamulti') ?></h4>
 			
 			<nav class="nav-tab-wrapper">
+				<a href="?page=fotorama-elevation&tab=general"  class="nav-tab <?php if($tab==='general'):?>nav-tab-active<?php endif; ?>">General</a>	
 				<a href="?page=fotorama-elevation"              class="nav-tab <?php if($tab===null):?>nav-tab-active<?php endif; ?>">GPX-File</a>
 				<a href="?page=fotorama-elevation&tab=leaflet"  class="nav-tab <?php if($tab==='leaflet'):?>nav-tab-active<?php endif; ?>">Map + Chart</a>
-				<a href="?page=fotorama-elevation&tab=fotorama_leaflet" class="nav-tab <?php if($tab==='fotorama_leaflet'):?>nav-tab-active<?php endif; ?>">Fotorama+Leaflet</a>
 				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if($tab==='fotorama'):?>nav-tab-active<?php endif; ?>">Fotorama</a>
 				<a href="?page=fotorama-elevation&tab=swiper"   class="nav-tab <?php if($tab==='swiper')  :?>nav-tab-active<?php endif; ?>">Swiper</a>
 				<a href="?page=fotorama-elevation&tab=params"   class="nav-tab <?php if($tab==='params')  :?>nav-tab-active<?php endif; ?>">Parameters</a>
@@ -836,6 +702,16 @@ final class FotoramaElevationAdmin {
 					?>
 				</form>
 				<?php break;
+
+			case 'general':?>
+				<!-- all Settings in one section -->
+				<form method="post" action="options.php">
+					<?php
+						$this->commonClass->show_options_page_html();
+					?>
+				</form>
+				<?php break;
+
 			// this one will be removed
 			case 'fotorama_leaflet':?>
 				<!-- all Settings in one section -->
