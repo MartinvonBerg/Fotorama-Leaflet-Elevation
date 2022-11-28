@@ -12,7 +12,7 @@
 
 namespace mvbplugins\fotoramamulti;
 
-final class SwiperAdmin {
+final class AdminSettingsPage {
 	
 	private $up_dir = '';
 	
