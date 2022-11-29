@@ -21,7 +21,7 @@
 // Ideen-liste
 // 			PHP: filter für Bild mit Dateinamen aus Standard WP-Ordner. mehrere Ordner mit Komma getrennt. Filter mit Komma getrennt?
 // --- Swiper
-//			preloadimages: +- 1 rechts und linkes von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
+//			preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
 // 			Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem!
 // 			object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
 // 			als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.

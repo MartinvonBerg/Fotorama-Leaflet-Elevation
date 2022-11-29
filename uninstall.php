@@ -27,7 +27,16 @@ delete_option($option_name);
 $option_name = 'fm_plugins_checker';
 delete_option($option_name);
 
-$option_name = 'swiper_options';
+$option_name = 'fm_swiper_options';
+delete_option($option_name);
+
+$option_name = 'fm_leaflet_options';
+delete_option($option_name);
+
+$option_name = 'fm_common_options';
+delete_option($option_name);
+
+$option_name = 'fm_fotorama_options';
 delete_option($option_name);
 
 delete_custom_field( 'lat' );

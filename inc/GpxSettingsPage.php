@@ -11,21 +11,26 @@ require_once $path . 'custom_mime_types.php';
 require_once $path . 'parseGPX.php'; 
 
 final class GpxSettingsPage {
-    private $fotorama_elevation_options; // TODO: missing typehints for PHP 7.4+
+    private $fotorama_elevation_options;
 	private $fotorama_option2;
 	private $up_dir = '';
 	
     /**
 	* Register our settings_page_init to the admin_init action hook.
 	*/
-	public function __construct(  ) {
+	public function __construct() {
         $this->up_dir = wp_get_upload_dir()['basedir'];
-        $this->fotorama_elevation_options = get_option( 'leaflet_options' );
+        $this->fotorama_elevation_options = get_option( 'fm_leaflet_options' );
 
 		add_action( 'admin_init', array( $this, 'gpx_settings_page_init') );
 	}
 
     // --------------- GPX-Tab --------------------------------------------------------
+	/**
+	 * TODO: Undocumented function
+	 *
+	 * @return void
+	 */
 	public function gpx_settings_page_init() { 
 
         register_setting(
@@ -33,7 +38,6 @@ final class GpxSettingsPage {
             "gpx-file", 
             array('sanitize_callback' => array($this, 'handle_file_upload') ) 
         );
-        //register_setting("gpx_section", "gpx_file", array( $this, "handle_file_upload") );
 
         add_settings_section("gpx_section", __('GPX-File', 'fotoramamulti') . ' settings + upload', null, "gpx_file");
     	
@@ -77,7 +81,7 @@ final class GpxSettingsPage {
 			'gpx_section' // section
 		);
 
-        // Database options for GPX-File-Upload Section. not quite correct but we are in the admin_init hook
+        // TODO: Database options for GPX-File-Upload Section. not quite correct but we are in the admin_init hook
 		if ( ! get_option('fotorama_option2')){
 			$this->fotorama_option2 = array(
 				'gpx_reduce' => true,
@@ -90,24 +94,23 @@ final class GpxSettingsPage {
 		}
     }
 
-    public function options_sanitizer($args) {
-
-        return $args;
-    }
-
+	/**
+	 * TODO: Undocumented function
+	 *
+	 * @return void
+	 */
     function show_options_page_html() {
 		// check user capabilities
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
         ?>
-		
 			<form method="post" action="options.php" enctype="multipart/form-data">
 				<?php
-                // output save settings button
+				// output save settings button
 				//submit_button();
 				?><hr><?php
-				settings_fields("gpx_section");
+               	settings_fields("gpx_section");
 				do_settings_sections("gpx_file");
 				?>
 				<p><b><?php esc_html_e('Hint: GPX-routes without elevation data should be converted to tracks with','fotoramamulti') ?> <a href="https://www.gpsvisualizer.com/elevation" target="_blank">www.gpsvisualizer.com.</a></br> 
@@ -117,11 +120,15 @@ final class GpxSettingsPage {
 				submit_button( __('Save GPX-File', 'fotoramamulti') );
 				?>
             </form>
-        
 		<?php
     }
 
     // --------------------- GPX Calllbacks -------------------------------//
+	/**
+	 * TODO: Undocumented function. for all callbacks
+	 *
+	 * @return void
+	 */
 	public function gpx_file_callback() {
 		?><input type="file" name="uploadedfile" /><?php // create html button for file name
 		echo( '</br>Upload path: ' . $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2']);
@@ -163,11 +170,14 @@ final class GpxSettingsPage {
 		);
 	}
 
+	/**
+	 * TODO: Undocumented function
+	 *
+	 * @return void
+	 */
 	public function handle_file_upload($option) { 
 
-		//$this->fotorama_elevation_options = get_option( 'leaflet_options' );
 		$this->fotorama_option2 = get_option('fotorama_option2');
-		//$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
 
 		$parsegpxfile = $option["gpx_reduce"] == 'gpx_reduce';
 		$parsegpxfile ? $this->fotorama_option2['gpx_reduce'] = 'true' : $this->fotorama_option2['gpx_reduce'] = 'false';
@@ -183,21 +193,15 @@ final class GpxSettingsPage {
 			
 		update_option( 'fotorama_option2', $this->fotorama_option2 );
 
-		$file = $_FILES['gpx-file']['name'];
-        //$file = $_POST['uploadfile'];
+		$file = $_FILES['uploadedfile']['name'];
 		$path = $this->up_dir . '/' . $this->fotorama_elevation_options['path_to_gpx_files_2'];
 		$complete = $path . '/' . $file;
 
-		if( is_dir($path) ) {
-			//echo "The Directory {$path} exists";
-		} else {
-			mkdir($path , 0777);
-			//echo "The Directory {$path} was created";
-		}
+		if( ! is_dir($path) ) { mkdir($path , 0777); }
 
 		if( (! is_file($complete) || ($overwrite) ) && ($file != '')) {
-			$name_file = $_FILES['gpx-file']['name'];
-			$tmp_name = $_FILES['gpx-file']['tmp_name']; 
+			$name_file = $_FILES['uploadedfile']['name'];
+			$tmp_name = $_FILES['uploadedfile']['tmp_name']; 
 
 			if ($parsegpxfile) { 
 				$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth);
@@ -220,6 +224,5 @@ final class GpxSettingsPage {
 		else { $temp = __("File alread exists!"); }
 
 		return $temp;
-	}
-		
+	}	
 }

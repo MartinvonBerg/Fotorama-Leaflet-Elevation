@@ -21,7 +21,7 @@ final class FotoramaElevationAdmin {
 	private $commonClass;
 	private $commonSettings = [
 		'pre' => 'common', //
-		'options' => 'common_options', //
+		'options' => 'fm_common_options', //
 		'sanitizer' => 'options_sanitizer', // do not change!
 		'section' => 'common_section', //
 		'sectionsText' => 'General and Common Settings',
@@ -282,7 +282,7 @@ final class FotoramaElevationAdmin {
 	private $swiperClass;
 	private $swiperSettings = [
 		'pre' => 'swiper', // change
-		'options' => 'swiper_options', // change
+		'options' => 'fm_swiper_options', // change
 		'sanitizer' => 'options_sanitizer', // don't change
 		'section' => 'swiper_section', // change
 		'sectionsText' => 'Swiper Slider Settings', // change
@@ -411,7 +411,7 @@ final class FotoramaElevationAdmin {
 	private $fotoramaClass;
 	private $fotoramaSettings = [
 		'pre' => 'fotorama', //
-		'options' => 'fotorama_options', //
+		'options' => 'fm_fotorama_options', //
 		'sanitizer' => 'options_sanitizer', // do not change!
 		'section' => 'fotorama_section', //
 		'sectionsText' => 'Fotorama Slider Settings',
@@ -481,7 +481,7 @@ final class FotoramaElevationAdmin {
 	private $leafletClass;
 	private $leafletSettings = [
 		'pre' => 'leaflet', //
-		'options' => 'leaflet_options', //
+		'options' => 'fm_leaflet_options', //
 		'sanitizer' => 'options_sanitizer', // do not change!
 		'section' => 'leaflet_section', //
 		'sectionsText' => 'Leaflet Map and Elevation Chart Settings',
@@ -938,7 +938,7 @@ final class FotoramaElevationAdmin {
 				<h3>Show all Parameters</h3>
 				<h4>Array-Diff</h4>
 				<?php 
-				$new = \array_merge( get_option( 'fotorama_options'), get_option( 'leaflet_options'));
+				$new = \array_merge( get_option( 'fm_fotorama_options'), get_option( 'fm_leaflet_options'));
 				$options = get_option( 'fotorama_elevation_option_name' );
 				$result=array_diff($options,$new);
 				print_r($result);
@@ -961,11 +961,9 @@ final class FotoramaElevationAdmin {
 
 			default:?>
 				<!-- all Settings in one section -->
-				<form method="post" action="options.php">
-					<?php
-						$this->gpxClass->show_options_page_html();
-					?>
-				</form>
+				<?php
+					$this->gpxClass->show_options_page_html();
+				?>
 				<?php break;
 				
 			endswitch; ?>

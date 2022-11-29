@@ -6,7 +6,6 @@
  */
 // TODO: add swiper parameters to html table
 // TODO: use the options for the slider
-// TODO: split fotorama and leaflet settings and correct sanitizer
 // TODO: translation i18n
 // TODO: shortcode mit aufnehmen, Tabelle aus settings generieren, shortcode generator nur mit Werten, die nicht default sind.
 
