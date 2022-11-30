@@ -19,15 +19,8 @@ class GpxAdminSettings extends AdminSettingsPage {
     }
 
     function show_options_page_html() {
+        $this->hasFileInput = true;
         parent::show_options_page_html();
-        ?>
-            <form method="post" enctype="multipart/form-data">
-            <label>Wählen Sie eine Textdatei (*.txt, *.html usw.) von Ihrem Rechner aus.
-                <input name="datei" type="file" size="50" accept=".gpx"> 
-            </label>  
-            <button>… und ab geht die Post!</button>
-            </form>
-        <?php
-
+        
     }
 }

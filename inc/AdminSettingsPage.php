@@ -2,48 +2,31 @@
 
 /**
  *  by Martin von Berg
- * 
+ * todo
  */
 // TODO: add swiper parameters to html table
 // TODO: use the options for the slider
 // TODO: translation i18n
-// TODO: shortcode mit aufnehmen, Tabelle aus settings generieren, shortcode generator nur mit Werten, die nicht default sind.
+// TODO: Tabelle aus settings generieren.
 
 namespace mvbplugins\fotoramamulti;
 
 class AdminSettingsPage {
 	
 	private $up_dir = '';
+	private $hasFileInput = false;
 	
-	private $fotoramaSettings = [ // currently unused. For future extension.
-		'addPermalink' 			,//=> $addPermalink, 
-		'allImgInWPLibrary' 	,//=> $allImgInWPLibrary,
-		'sw_effect'				,//=> $sw_effect,
-		'sw_zoom'				,//=> $sw_zoom,
-		'sw_fslightbox'			,//=> $sw_fslightbox,
-		'sw_pagination'			,//=> $sw_pagination,
-		'sw_slides_per_view' 	,//=> $sw_slides_per_view, // unused with martins thumbnails
-		'sw_transition_duration',//=> $sw_transition_duration,
-		'sw_mousewheel'			,//=> $sw_mousewheel,
-		'sw_hashnavigation'  	,//=> $sw_hashnavigation,
-		'sw_max_zoom_ratio'		,//=> $sw_max_zoom_ratio,
-		'showcaption'			,//=> $showcaption,
-		'shortcaption'			,//=> $shortcaption,
-		'imgpath'				,//=> $imgpath,
-		'slide_fit'				,//=> $fit,
-		'sw_aspect_ratio'		,//=> $ratio,
-		// thumbnails settings
-		'f_thumbwidth'			,//=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
-		'bar_min_height'		,//=> $f_thumbheight . 'px', // now two values for the height!
-		'nail_margin_side' 		,//=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
-		// only for active_border 
-		'active_border_width'	,//=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
-		'active_border_color'	,//=> $thumbbordercolor, // '#ea0000', 
-	];
-
+	/**
+	 * TODO
+	 *
+	 * @param  array $settings to generate on admin page
+	 */
 	public function __construct( array $settings ) {
 		$this->settings = $settings;
-		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
+		$this->up_dir = wp_get_upload_dir()['basedir']; // upload_dir
+
+		// check if settings contains a file_input field
+		if (array_search('file_input', array_column($settings, 'type')) !== false) $this->hasFileInput = true;
 
 		/**
 		 * Register our swiper_settings_init to the admin_init action hook.
@@ -52,7 +35,7 @@ class AdminSettingsPage {
 	}
 
 	/**
-	 * custom option and settings
+	 * init the option and settings
 	 */
 	public function swiper_settings_init() {
 		// init the option_name
@@ -62,7 +45,7 @@ class AdminSettingsPage {
 		register_setting( 
 			$this->settings['pre'], // option_group
 			$this->settings['options'], // option_name
-			array('sanitize_callback' => array($this, 'options_sanitizer') )
+			array('sanitize_callback' => array($this, $this->settings['sanitizer']) )
 		);
 
 		// Register a new section in the "swiper" page.
@@ -273,6 +256,24 @@ class AdminSettingsPage {
 		}
 	}
 
+	function file_input_callback ( array $args) {
+		$options = get_option( $this->settings['options'] );
+
+		if ($this->settings[ $args['param']]['type'] === 'file_input' ) {
+			
+			$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
+			$optset = html_entity_decode($optset);
+
+			?>
+			<input class="file-input"
+					type="file"
+					name="uploadedfile" style='width:400px;'
+					accept="<?php echo( $this->settings[ $args['param']]['accept'] );?>">
+			<?php 
+			echo ('</br>Upload: ' .  $optset );
+		}
+	}
+
 	/**
 	 * produces the HTML for the settings page using high level WP-functions and shows the result of the settings submit button.
 	 * @return void
@@ -292,9 +293,14 @@ class AdminSettingsPage {
 			add_settings_error( $this->settings['pre'].'_messages', $this->settings['pre'].'_message', __( 'Settings saved', $this->settings['namespace'] ), 'updated' );
 		}
 
+		$extendForm = '';
+		if ( $this->hasFileInput === true) {
+			$extendForm = 'enctype="multipart/form-data"';
+		}
+
 		?>
 		<div class="wrap">
-			<form action="options.php" method="post">
+			<form action="options.php" method="post" <?php echo( $extendForm );?>>
 				<?php
 				// output save settings button
 				//submit_button();
@@ -384,7 +390,6 @@ class AdminSettingsPage {
 		return strval($val);
 	}
 
-
 	/**
 	 * helper function to show the settings
 	 *
@@ -396,4 +401,54 @@ class AdminSettingsPage {
 		?><p><?php //echo $string;?></p><?php
 		?><pre><?php print_r($options);?></pre><?php
 	}
+
+	/**
+	 * sanitize the options for the page and store the GPX-File. This function works only with dedicated settings!
+	 *
+	 * @param  array  $option the current options settings on the page
+	 * @return array the sanitized options to handle with options.php
+	 */
+	public function handle_file_upload(array $option) :array { 
+
+		// sanitize options
+		$option = $this->options_sanitizer( $option );
+		
+		// convert options to boolean variables
+		$parsegpxfile = $option["gpx_reduce"] == 'true';
+		$overwrite = $option["gpx_overwrite"] == 'true';
+		$smooth = $option['gpx_smooth'];
+		$elesmooth = $option['gpx_elesmooth'];
+		
+		// get and generate file names and upload directory if not exists
+		$file = $_FILES['uploadedfile']['name'];
+		$path = $this->up_dir . '/' . $option['path_to_gpx_files_2']; 
+		$complete = $path . '/' . $file;
+		if( ! is_dir($path) ) { mkdir($path , 0777); }
+
+		// store gpx-file
+		if( ($file !== '') && (! is_file($complete) || ($overwrite) ) ) {
+			$name_file = $_FILES['uploadedfile']['name'];
+			$tmp_name = $_FILES['uploadedfile']['tmp_name']; 
+
+			if ($parsegpxfile) { 
+				$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth);
+				$result = strpos($values, 'Skip') == false;
+			} else {
+				$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
+				$values = __('File not touched!');
+			}
+
+			if( $result )  {
+				$temp = ' of "'. $name_file . '" successful! </br> With: ' . $values;
+			} else {
+				$temp = ". " . __('The file was not uploaded. ') . $values;
+			}
+		} 
+		
+		if ($file === '') { $temp = __('No Filename given!') ;}
+		elseif ( is_file($complete) &&  ! $overwrite ) { $temp = __("File alread exists!"); }
+
+		$option['gpxfile'] = $temp;
+		return $option;
+	}	
 }
