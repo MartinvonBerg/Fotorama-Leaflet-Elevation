@@ -12,12 +12,71 @@ namespace mvbplugins\fotoramamulti;
 $path = plugin_dir_path(__FILE__);
 require_once $path . 'custom_mime_types.php'; // TODO: needed here?
 require_once $path . 'AdminSettingsPage.php';
-require_once $path . 'GpxSettingsPage.php';
+//require_once $path . 'GpxSettingsPage.php';
+require_once $path . 'GpxAdminSettings.php';
 
 final class FotoramaElevationAdmin {
 	
 	private $gpxClass;
-
+	private $gpxSettings = [
+		'pre' => 'gpx', //
+		'options' => 'fm_gpx_options', //
+		'sanitizer' => 'options_sanitizer', // do not change!
+		'section' => 'gpx_section', //
+		'sectionsText' => 'GPX-File settings + upload',
+		'namespace' => 'fotoramamulti',
+		'subTitle' => '',
+		//'shortcode_no_admin' => [], // none!
+		'param0' => [ // general
+			'label' => 'gpx_reduce', 
+			'text' => 'Select GPX-File',
+			'class' => 'gpx_row',
+			'custom_data' => 'custom0',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'GPX-File : Reduce with Settings below and add Track Statistics (Track length and difference in altitude).',
+			'shortcode' => '',
+		],
+		'param1' => [ 
+			'label' => 'gpx_smooth', 
+			'text' => 'Distance Smooth',
+			'class' => 'gpx_row',
+			'custom_data' => 'custom1',
+			'type' => 'number',
+			'values' => 25, // default value
+			'default' => 25,
+			'min' => 1,
+			'max' => 50,
+			'description' => 'Min. Distance of Track Points in Meters',
+			'shortcode' => '',
+		],
+		'param2' => [ 
+			'label' => 'gpx_elesmooth', 
+			'text' => 'Elevation Smooth',
+			'class' => 'gpx_row',
+			'custom_data' => 'custom2',
+			'type' => 'number',
+			'values' => 4, // default value
+			'default' => 4,
+			'min' => 1,
+			'max' => 50,
+			'description' => 'Min. Elevation between Track Points in Meters. Used for Statistics Calc only. Best is 4.',
+			'shortcode' => '',
+		],
+		'param3' => [ // general
+			'label' => 'gpx_overwrite', 
+			'text' => 'Overwrite GPX-File',
+			'class' => 'gpx_row',
+			'custom_data' => 'custom3',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Overwrite existing GPX-File',
+			'shortcode' => '',
+		],
+	];
+	
 	private $commonClass;
 	private $commonSettings = [
 		'pre' => 'common', //
@@ -632,7 +691,7 @@ final class FotoramaElevationAdmin {
 	// add params tab at the end. Tab 'Show' will be omitted at the end. Here are our tabs TODO: Generate this from array
 
 	public function __construct() {
-		$this->gpxClass = new GpxSettingsPage();
+		$this->gpxClass = new GpxAdminSettings( $this->gpxSettings );
 		//add_action( 'admin_init', array( $this, 'fotorama_elevation_page_init' ) );
 		add_action( 'admin_menu', array( $this, 'fotorama_elevation_add_plugin_page' ) );
 
@@ -687,23 +746,13 @@ final class FotoramaElevationAdmin {
 			<div class="tab-content">
     		<?php switch($tab):
 			// TODO: generate this in loop from $tabs
-			case 'leaflet':?>
-				<!-- all Settings in one section -->
-				<form method="post" action="options.php">
-					<?php
-						$this->leafletClass->show_options_page_html();
-					?>
-				</form>
-				<?php break;
+			case 'leaflet':
+				$this->leafletClass->show_options_page_html();
+				break;
 
-			case 'general':?>
-				<!-- all Settings in one section -->
-				<form method="post" action="options.php">
-					<?php
-						$this->commonClass->show_options_page_html();
-					?>
-				</form>
-				<?php break;
+			case 'general':
+				$this->commonClass->show_options_page_html();
+				break;
 
 			// this one will be removed
 			case 'fotorama_leaflet':?>
@@ -718,24 +767,15 @@ final class FotoramaElevationAdmin {
 				</form>
 				<?php break;
 
-			case 'fotorama':?>
-				<!-- all Settings in one section -->
-				<form method="post" action="options.php">
-					<?php
-						$this->fotoramaClass->show_options_page_html();
-					?>
-				</form>
-				<?php break;	
+			case 'fotorama':
+				$this->fotoramaClass->show_options_page_html();
+				break;	
 
-			case 'swiper':?>
-				<!-- all Settings in one section -->
-				<form method="post" action="options.php">
-					<?php
-						$this->swiperClass->show_options_page_html();
-					?>
-				</form>
-				<?php break;
-			// this one will be removed
+			case 'swiper':
+				$this->swiperClass->show_options_page_html();
+				break;
+			
+				// this one will be removed
 			case 'leaflet':?>
 				<!-- all Settings in one section -->
 				<form method="post" action="options.php">
@@ -959,12 +999,9 @@ final class FotoramaElevationAdmin {
 				?><pre><?php print_r($options);?></pre><?php
 				break;
 
-			default:?>
-				<!-- all Settings in one section -->
-				<?php
-					$this->gpxClass->show_options_page_html();
-				?>
-				<?php break;
+			default:
+				$this->gpxClass->show_options_page_html();
+				break;
 				
 			endswitch; ?>
 

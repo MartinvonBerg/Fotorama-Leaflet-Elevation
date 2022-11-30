@@ -11,7 +11,7 @@
 
 namespace mvbplugins\fotoramamulti;
 
-final class AdminSettingsPage {
+class AdminSettingsPage {
 	
 	private $up_dir = '';
 	

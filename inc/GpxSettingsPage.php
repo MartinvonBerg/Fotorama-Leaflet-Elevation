@@ -7,6 +7,7 @@
 
 namespace mvbplugins\fotoramamulti;
 
+$path = plugin_dir_path(__FILE__);
 require_once $path . 'custom_mime_types.php'; 
 require_once $path . 'parseGPX.php'; 
 
