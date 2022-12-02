@@ -4,40 +4,40 @@
  *  by Martin von Berg
  * todo
  */
-// TODO: add swiper parameters to html table
+
 // TODO: use the options for the slider
-// TODO: translation i18n
-// TODO: Tabelle aus settings generieren.
+// !!! TODO: Tabelle aus settings generieren.
+// TODO: update functions for activation, deactivation and uninstall of settings
 
 namespace mvbplugins\fotoramamulti;
 
 class AdminSettingsPage {
 	
-	private $up_dir = '';
+	private $uploadDirectory = '';
 	private $hasFileInput = false;
 	
 	/**
-	 * TODO
+	 * load settings and hook on 'admin_init' to register settings, sections and fields. Init the Database with settings.
 	 *
 	 * @param  array $settings to generate on admin page
 	 */
 	public function __construct( array $settings ) {
 		$this->settings = $settings;
-		$this->up_dir = wp_get_upload_dir()['basedir']; // upload_dir
+		$this->uploadDirectory = wp_get_upload_dir()['basedir']; // upload_dir
 
 		// check if settings contains a file_input field
 		if (array_search('file_input', array_column($settings, 'type')) !== false) $this->hasFileInput = true;
 
 		/**
-		 * Register our swiper_settings_init to the admin_init action hook.
+		 * Register our initSettingsSectionsFields to the admin_init action hook.
 		 */
-		add_action( 'admin_init', array( $this, 'swiper_settings_init') );
+		add_action( 'admin_init', array( $this, 'initSettingsSectionsFields') );
 	}
 
 	/**
-	 * init the option and settings
+	 * init the option and settings. See constructor.
 	 */
-	public function swiper_settings_init() {
+	public function initSettingsSectionsFields() {
 		// init the option_name
 		$this->initOptionInDb();
 
@@ -57,7 +57,6 @@ class AdminSettingsPage {
 
 		// Get all settings from the array and register all new fields in the section, inside the page.
 		foreach($this->settings as $key => $param) {
-			
 			if ( \gettype($param) === 'array') {
 				add_settings_field(
 					$this->settings[$key]['label'], // As of WP 4.6 this value is used only internally. // Use $args' label_for to populate the id inside the callback.
@@ -104,10 +103,13 @@ class AdminSettingsPage {
 	 */
 	function options_sanitizer( array $args ) {
 		foreach($this->settings as $key => $param) {
+
 			if ( \gettype($param) === 'array' && $param['type'] === 'checkbox') {
+
 				if ( isset($args[ $param['label'] ]) ) { // ist immer gesetzt, egal ob true oder false key ist da und (true oder on)
                 //if ( \array_key_exists( $param['label'], $args) && ( $args[ $param['label'] ] === 'true' || $args[ $param['label'] ] === 'on') ) {
 					$args[$param['label']] = 'true';
+
 				} else {
 					$args[$param['label']] = 'false';
 				}
@@ -118,6 +120,7 @@ class AdminSettingsPage {
 			} else if ( \gettype($param) === 'array' && $param['type'] === 'text') {
 				if ( $param['label'] === 'autoplay') {
 					$args[$param['label']] = $this->my_sanitize_autoplay( $args[$param['label']], array('false', 'true', array('integer', 0, 5000) ) );
+
 				} else {
 					$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] );
 				}
@@ -215,7 +218,7 @@ class AdminSettingsPage {
 		if ($this->settings[ $args['param']]['type'] === 'path' || ($this->settings[ $args['param']]['type'] === 'text') ) {
 			
 			$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
-			$path = $this->settings[ $args['param']]['type'] === 'path' ? $path = $this->up_dir . '/' . $options[ $args['label_for'] ]: '';
+			$path = $this->settings[ $args['param']]['type'] === 'path' ? $path = $this->uploadDirectory . '/' . $options[ $args['label_for'] ]: '';
 			$label = $this->settings[ $args['param']]['type'] === 'text' ? $this->settings[ $args['param']]['description'] : '';
 			
 			?>
@@ -421,32 +424,37 @@ class AdminSettingsPage {
 		
 		// get and generate file names and upload directory if not exists
 		$file = $_FILES['uploadedfile']['name'];
-		$path = $this->up_dir . '/' . $option['path_to_gpx_files_2']; 
+		$path = $this->uploadDirectory . '/' . $option['path_to_gpx_files_2']; 
 		$complete = $path . '/' . $file;
 		if( ! is_dir($path) ) { mkdir($path , 0777); }
 
-		// store gpx-file
-		if( ($file !== '') && (! is_file($complete) || ($overwrite) ) ) {
-			$name_file = $_FILES['uploadedfile']['name'];
-			$tmp_name = $_FILES['uploadedfile']['tmp_name']; 
+		// store gpx-file. The mime-type for the gpx-file is not checked here. Any text-file would be accepted. Mime-types are not consistent.
+		if ($file !== '') {
 
-			if ($parsegpxfile) { 
-				$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth);
-				$result = strpos($values, 'Skip') == false;
-			} else {
-				$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
-				$values = __('File not touched!');
-			}
+			if (! is_file($complete) || ($overwrite) ) {
+				$name_file = $_FILES['uploadedfile']['name'];
+				$tmp_name = $_FILES['uploadedfile']['tmp_name']; 
 
-			if( $result )  {
-				$temp = ' of "'. $name_file . '" successful! </br> With: ' . $values;
-			} else {
-				$temp = ". " . __('The file was not uploaded. ') . $values;
-			}
-		} 
-		
-		if ($file === '') { $temp = __('No Filename given!') ;}
-		elseif ( is_file($complete) &&  ! $overwrite ) { $temp = __("File alread exists!"); }
+				if ($parsegpxfile) { 
+					$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth);
+					$result = strpos($values, 'Skip') == false;
+					$result = \is_numeric( $result);
+				} else {
+					$values = __('File not touched!');
+					$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
+				}
+
+				if( $result )  {
+					$temp = ' of "'. $name_file . '" successful! </br> With: ' . $values;
+				} else {
+					$temp = ". " . __('Error during File processing!. ') . $values;
+				}
+
+			} else { $temp = __("File alread exists!"); }
+
+		} else { 
+			$temp = __('No Filename given!') ;
+		}
 
 		$option['gpxfile'] = $temp;
 		return $option;

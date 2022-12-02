@@ -49,7 +49,7 @@ final class FotoramaElevationAdmin {
 			'type' => 'file_input',
 			'accept' => '.gpx',
 			'values' => '',
-			'default' => '',
+			'default' => 'test.gpx',
 			'description' => 'GPX-File : Reduce with Settings below and add Track Statistics (Track length and difference in altitude).',
 			'shortcode' => 'gpxfile',
 		],
@@ -121,7 +121,7 @@ final class FotoramaElevationAdmin {
 			'type' => 'select',
 			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'],
 			'default' => 'fotorama',
-			'description' => '',
+			'description' => 'Select the Slider to show the Images. Swiper works with Fotos and Videos.',
 			'shortcode' => 'slider',
 		],
 		'param6' => [ // general
@@ -132,7 +132,7 @@ final class FotoramaElevationAdmin {
 			'type' => 'select',
 			'values' => ['contain' => 'Contain', 'cover' => 'Cover', 'scaledown' => 'Scaledown', 'none' => 'None'],
 			'default' => 'contain',
-			'description' => '',
+			'description' => 'Define the scaling of Fotos for the Fotorama Slider',
 			'shortcode' => 'fit',
 		],
 		'param7' => [ // general
@@ -146,7 +146,7 @@ final class FotoramaElevationAdmin {
 			'min' => 0.1,
 			'max' => 5,
 			'step' => 0.01,
-			'description' => '',
+			'description' => 'Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now',
 			'shortcode' => 'ratio',
 		],
 		'param8' => [ // general
@@ -157,7 +157,7 @@ final class FotoramaElevationAdmin {
 			'type' => 'color',
 			'values' => 'red',
 			'default' => 'red',
-			'description' => '',
+			'description' => 'Background color of the slider defined by a valid CSS name',
 			'shortcode' => 'background',
 		],
 		'param0' => [ // general
@@ -168,8 +168,8 @@ final class FotoramaElevationAdmin {
 			'type' => 'path',
 			'required' => '',
 			'values' => '',
-			'default' => '',
-			'description' => 'Define path without leading and trailing slashes',
+			'default' => 'Bilder',
+			'description' => 'Define path to images without leading and trailing slashes',
 			'shortcode' => 'imgpath',
 		],
 		'param1' => [ // general
@@ -447,7 +447,7 @@ final class FotoramaElevationAdmin {
 			'class' => 'swiper_row',
 			'custom_data' => 'custom3',
 			'type' => 'select',
-			'values' => ['active' => 'Brightness', 'active_animation' => 'Shake', 'active_border' => 'Border'],
+			'values' => ['active_border' => 'Border','active' => 'Brightness', 'active_animation' => 'Shake', ],
 			'default' => 'active_border',
 			'description' => '',
 			'shortcode' => 'sw_activetype',
@@ -701,6 +701,8 @@ final class FotoramaElevationAdmin {
 		],
 	];
 
+	private $allSettings = [];
+
 
 	public function __construct() {
 		
@@ -721,6 +723,8 @@ final class FotoramaElevationAdmin {
 		$this->fotoramaClass = new AdminSettingsPage( $this->fotoramaSettings );
 		$this->leafletClass = new AdminSettingsPage( $this->leafletSettings );
 		$this->commonClass = new AdminSettingsPage( $this->commonSettings );
+
+		$this->allSettings = [ $this->commonSettings, $this->gpxSettings, $this->leafletSettings, $this->fotoramaSettings, $this->swiperSettings ];
 	}
 
 	public function fotorama_elevation_add_plugin_page() {
@@ -793,12 +797,59 @@ final class FotoramaElevationAdmin {
 
 				<table class="tg">
 					<thead>
-					<tr>
-						<th class="tg-dncm">Shortcode</th>
-						<th class="tg-dncm">Value (Default first)</th>
-						<th class="tg-dncm">Example</th>
-						<th class="tg-dncm">Description</th>
-					</tr>
+						<tr>
+							<th class="tg-dncm">Shortcode</th>
+							<th class="tg-dncm">Value (Default first)</th>
+							<th class="tg-dncm">Example</th>
+							<th class="tg-dncm">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php 
+						// loop through settings
+						foreach($this->allSettings as $setArr) {
+							// create the header 
+							?>
+							<tr>
+								<td class="tg-0pky" colspan="4"><strong><?php echo($setArr['sectionsText'])?></strong></td>
+							</tr>
+							<?php
+							foreach($setArr as $single) {
+
+								// create the single parameter line
+								if ( \gettype($single) === 'array' && $single['shortcode'] !== '') {
+									if ($single['type'] === 'number') {
+										$value = strval($single['default']) . ' / ' . strval($single['min']) . '..' . strval($single['max']);
+									} elseif ($single['type'] === 'select') {
+										$value = implode(' / ',array_keys( $single['values']));
+									} elseif ($single['type'] === 'checkbox') {
+										if ($single['default'] === 'true') $value = 'true / false';
+										else $value = 'false / true';
+									}
+									else { $value = strval($single['default']);}
+									?>
+									<tr>
+										<td class="tg-0pky"><?php echo($single['shortcode'])?></td>
+										<td class="tg-0pky" style="max-width:480px;"><?php echo($value)?></td>
+										<td class="tg-0pky"><?php echo($single['shortcode'] .'="'. $single['default'] . '"')?></td>
+										<td class="tg-0pky"><?php echo($single['description'])?></td>
+									</tr>
+									<?php
+								}
+							}
+						}
+						?>
+					</tbody>
+				</table>
+
+				<table class="tg">
+					<thead>
+						<tr>
+							<th class="tg-dncm">Shortcode</th>
+							<th class="tg-dncm">Value (Default first)</th>
+							<th class="tg-dncm">Example</th>
+							<th class="tg-dncm">Description</th>
+						</tr>
 					</thead>
 					<tbody>
 					<tr>
@@ -886,7 +937,7 @@ final class FotoramaElevationAdmin {
 						<td class="tg-0pky">Tooltip text for the marker that is shown at mouse over. There is no admin-setting for this option.</td>
 					</tr>
 					<tr>
-					<td class="tg-0pky"><strong>Fotorama Settings</strong></td><td></td><td></td><td></td>
+						<td class="tg-0pky"><strong>Fotorama Settings</strong></td><td></td><td></td><td></td>
 					</tr>
 					<tr>
 						<td class="tg-0pky">imgpath</td>
