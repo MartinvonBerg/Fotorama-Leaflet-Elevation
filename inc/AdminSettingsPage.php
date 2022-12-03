@@ -2,11 +2,8 @@
 
 /**
  *  by Martin von Berg
- * todo
+ * Almost general Class to create an Admin Settings Page (in Tabs) from given Settings in an Array.
  */
-
-// TODO: use the options for the slider
-// TODO: update functions for activation, deactivation and uninstall of settings
 
 namespace mvbplugins\fotoramamulti;
 
@@ -418,8 +415,8 @@ class AdminSettingsPage {
 		// convert options to boolean variables
 		$parsegpxfile = $option["gpx_reduce"] == 'true';
 		$overwrite = $option["gpx_overwrite"] == 'true';
-		$smooth = $option['gpx_smooth'];
-		$elesmooth = $option['gpx_elesmooth'];
+		$smooth = intval($option['gpx_smooth']);
+		$elesmooth = intval($option['gpx_elesmooth']);
 		
 		// get and generate file names and upload directory if not exists
 		$file = $_FILES['uploadedfile']['name'];
@@ -436,8 +433,7 @@ class AdminSettingsPage {
 
 				if ($parsegpxfile) { 
 					$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth);
-					$result = strpos($values, 'Skip') == false;
-					$result = \is_numeric( $result);
+					$result = strpos($values, 'Skip') === false;
 				} else {
 					$values = __('File not touched!');
 					$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );

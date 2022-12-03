@@ -22,14 +22,14 @@
 // 			PHP: filter für Bild mit Dateinamen aus Standard WP-Ordner. mehrere Ordner mit Komma getrennt. Filter mit Komma getrennt?
 // --- Swiper
 //			preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
-// 			Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem!
+// 			Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! DAher nicht nutzen
 // 			object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
 // 			als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
 //			lighthouse : passive event listener bei swiper der Fall. stimmt auch, wird nach event unterschieden. Das erste Event ist richtigerweise "false".
 // --- Karte
 // 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 // 			anderen Icon-Satz verwenden? Neue Icons skalieren.
-//			lighthouse: Änderung addEventlistener bei d3.js führt zu Fehlern. Ist also nicht änderbar. muss akzeptiert werden.
+//			Hinweis lighthouse: Änderung addEventlistener bei d3.js führt zu Fehlern. Ist also nicht änderbar. muss akzeptiert werden.
 
 namespace mvbplugins\fotoramamulti;
 
@@ -42,7 +42,7 @@ const THUMBSDIR = 'thumbs';
 
 // init the database settings for the admin panel on first activation of the plugin. Does not overwrite
 require_once __DIR__ . '/inc/init_database.php';
-register_activation_hook( plugin_basename( __FILE__ ) ,   '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
+//register_activation_hook( plugin_basename( __FILE__ ) ,   '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
 register_deactivation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_deactivate' );
 
 // load all functions
@@ -56,9 +56,9 @@ require_once __DIR__ . '/inc/gtb_blocks.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin_settings.php';
 	$fotorama_elevation = new FotoramaElevationAdmin();
-	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' );
+	$fotorama_elevation_options = get_option( 'fm_leaflet_options' );
 	$fotorama_elevation->checkHtaccess() ? $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'true' : $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'false';
-	update_option( 'fotorama_elevation_option_name', $fotorama_elevation_options );
+	update_option( 'fm_leaflet_options', $fotorama_elevation_options );
 	
 	// do the check for activated plugins that may conflict with leaflet.js
 	/*
@@ -91,9 +91,7 @@ function showmulti($attr, $content = null)
 	global $post_state_draft_2_pub;
 	$pub_2_draft = $post_state_pub_2_draft ?? false;
 	$draft_2_pub = $post_state_draft_2_pub ?? false;
-	$setCustomFields = get_option( 'fotorama_elevation_option_name' )['setCustomFields_15'] == 'true'; // liefert 'true'
-	$addPermalink = get_option( 'fotorama_elevation_option_name')['useCDN_13'] == 'true'; // re-used for addPermalink now!
-	
+		
 	// --- Variables -----------------------------------
 	$postid = get_the_ID();
 	$htmlstring = ''; 
@@ -107,7 +105,10 @@ function showmulti($attr, $content = null)
 	$sw_options = [];
 		
  	// Get Values from Admin settings page
- 	$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
+ 	//$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
+	$fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
+	$setCustomFields = $fotorama_elevation_options['setCustomFields_15'] == 'true'; // liefert 'true'
+	$addPermalink = $fotorama_elevation_options['useCDN_13'] == 'true'; // re-used for addPermalink now!
  	
 	// Extract shortcode-Parameters and set Default-Values
 	extract ( shortcode_atts ( array (
@@ -151,19 +152,19 @@ function showmulti($attr, $content = null)
 		'shadows' 			=> $fotorama_elevation_options['shadows'] ?? 'true', // true or false
 		'shortcaption'		=> $fotorama_elevation_options['short_caption'] ?? 'false', // true or false
 		'mapselector'       => $fotorama_elevation_options['mapselector'] ?? 'OpenTopoMap',
-		'slider'			=> 'fotorama', // 'fotorama' or 'swiper' : secret shortcode
-		'sw_effect'			=> 'slide', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
-		'sw_zoom'			=> 'true',
-		'sw_fslightbox'		=> 'true',
-		'sw_pagination'		=> 'false', // unused
-		'sw_slides_per_view'=> 10,
-		'sw_transition_duration'=> 300,
-		'sw_mousewheel'		=> 'true',
-		'sw_hashnavigation' => 'true',
-		'sw_max_zoom_ratio'	=> 3,
-		'sw_thumbbartype'	=> 'special',
-		'sw_bar_margin_top'	=> 5,
-		'sw_activetype'	 	=> 'active_border',
+		'slider'			=> $fotorama_elevation_options['slider'], // 'fotorama' or 'swiper' : secret shortcode
+		'sw_effect'			=> $fotorama_elevation_options['sw_effect'], // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
+		'sw_zoom'			=> $fotorama_elevation_options['sw_zoom'], //
+		'sw_fslightbox'		=> $fotorama_elevation_options['sw_fslightbox'], //'true',
+		'sw_pagination'		=> 'false', // unused and no admin setting
+		'sw_slides_per_view'=> 10, // unused and no admin setting
+		'sw_transition_duration'=> intval($fotorama_elevation_options['transitionduration']) ?? 300,
+		'sw_mousewheel'		=> $fotorama_elevation_options['sw_mousewheel'], //'true'
+		'sw_hashnavigation' => $fotorama_elevation_options['sw_hashnavigation'], //'true'
+		'sw_max_zoom_ratio'	=> $fotorama_elevation_options['sw_max_zoom_ratio'], //3
+		'sw_thumbbartype'	=> $fotorama_elevation_options['sw_thumbbartype'], //'special'
+		'sw_bar_margin_top'	=> $fotorama_elevation_options['sw_bar_margin_top'], //5,
+		'sw_activetype'	 	=> $fotorama_elevation_options['sw_activetype'], //'active_border',
 
 	), $attr));
 	$mapcenter = explode(',',$mapcenter);
@@ -444,7 +445,8 @@ EOF;
 		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'],
 		'sw_options'	=> $sw_options
  	);
-	 $plugin_url = plugins_url('/', __FILE__);
+
+	$plugin_url = plugins_url('/', __FILE__);
 	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.13.1', true);
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	

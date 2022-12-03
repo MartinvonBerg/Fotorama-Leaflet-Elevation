@@ -39,10 +39,14 @@ delete_option($option_name);
 $option_name = 'fm_fotorama_options';
 delete_option($option_name);
 
+$option_name = 'fm_gpx_options';
+delete_option($option_name);
+
 delete_custom_field( 'lat' );
 delete_custom_field( 'lon' );
 delete_custom_field( 'geoadress' );
 delete_custom_field( 'fm_header_link' );
+// Note: 'postimg' is deleted at deactivation, so no need to delete it here.
 
 /**
  * On Uninstall of the Plugin: Delete the custom-fields lat, lon, geoadress, fm_header_link for all pages and posts as this option is no longer required.

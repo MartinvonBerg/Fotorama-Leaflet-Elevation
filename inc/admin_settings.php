@@ -54,7 +54,7 @@ final class FotoramaElevationAdmin
 			'default' => 'test.gpx',
 			'description' => 'GPX-File : Reduce with Settings below and add Track Statistics (Track length and difference in altitude).',
 			'shortcode' => 'gpxfile',
-			'info' => 'File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: "f1.gpx, f2.gpx, f3.gpx"',
+			'info' => 'Used for uploading only. Define the file in your shortcode, too!. File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: "f1.gpx, f2.gpx, f3.gpx"',
 		],
 		'param2' => [ // general
 			'label' => 'gpx_reduce',
@@ -755,6 +755,40 @@ final class FotoramaElevationAdmin
 		],
 	];
 
+	private $no_admin_settings = [
+		'sectionsText' => 'Parameters without Admin Settings but Shortcode',
+		'param0' => [
+			'shortcode' => 'showalltracks',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'false',
+			'info' => 'Show all Tracks from List of GPX-Files at once on the Map.'
+		],
+		'param1' => [
+			'shortcode' => 'mapcenter',
+			'type' => 'text',
+			'values' => '0.0, 0.0',
+			'default' => '0.0, 0.0',
+			'info' => 'Define the Map center for the Map that shows a Marker only.'
+		],
+		'param2' => [
+			'shortcode' => 'zoom',
+			'type' => 'number',
+			'values' => 8,
+			'default' => 8,
+			'min' => 1,
+			'max' => 19,
+			'info' => 'Define the Zoom Level for the Map that shows a Marker only.'
+		],
+		'param3' => [
+			'shortcode' => 'markertext',
+			'type' => 'text',
+			'values' => 'Home address',
+			'default' => 'Home address',
+			'info' => 'Define the Marker Text for the Map that shows a Marker only.'
+		]
+	];
+
 	private $allSettings = [];
 
 
@@ -779,7 +813,7 @@ final class FotoramaElevationAdmin
 		$this->leafletClass = new AdminSettingsPage($this->leafletSettings);
 		$this->commonClass = new AdminSettingsPage($this->commonSettings);
 
-		$this->allSettings = [$this->commonSettings, $this->gpxSettings, $this->leafletSettings, $this->fotoramaSettings, $this->swiperSettings];
+		$this->allSettings = [$this->commonSettings, $this->gpxSettings, $this->leafletSettings, $this->fotoramaSettings, $this->swiperSettings, $this->no_admin_settings];
 	}
 
 	public function admin_add_plugin_page_to_menu()
@@ -946,33 +980,33 @@ final class FotoramaElevationAdmin
 						<h3>Show all Parameters</h3>
 						<h4>Array-Diff</h4>
 						<?php
-						$new = \array_merge(get_option('fm_fotorama_options'), get_option('fm_leaflet_options'));
+						$new = \array_merge(get_option('fm_fotorama_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
 						$options = get_option('fotorama_elevation_option_name');
 						$result = array_diff($options, $new);
 						print_r($result);
 						?>
 
 						<h4>Swiper Settings:</h4><?php
-													$this->swiperClass->show_settings();
+						$this->swiperClass->show_settings();
 
-													?><h4>Fotorama Settings:</h4><?php
-												$this->fotoramaClass->show_settings();
+						?><h4>Fotorama Settings:</h4><?php
+						$this->fotoramaClass->show_settings();
 
-												?><h4>Leaflet Settings:</h4><?php
-											$this->leafletClass->show_settings();
+						?><h4>Leaflet Settings:</h4><?php
+						$this->leafletClass->show_settings();
 
-											?><h4>Fotorama-Leaflet Settings:</h4><?php
-														$options = get_option('fotorama_elevation_option_name');
-														//$string =\var_export($options);
-														?>
+						?><h4>Fotorama-Leaflet Settings:</h4><?php
+						$options = get_option('fotorama_elevation_option_name');
+						//$string =\var_export($options);
+						?>
 						<pre><?php print_r($options); ?></pre><?php
-																break;
+						break;
 
-															default:
-																$this->gpxClass->show_options_page_html();
-																break;
+					default:
+						$this->gpxClass->show_options_page_html();
+						break;
 
-														endswitch; ?>
+				endswitch; ?>
 
 			</div>
 		<?php

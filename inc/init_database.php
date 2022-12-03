@@ -9,7 +9,7 @@ namespace mvbplugins\fotoramamulti;
  * @return void none
  */
 function fotoramamulti_activate() {
-	
+	/*
 	$option_name = 'fotorama_option2';
 	$opt = get_option($option_name);
 	if ( ! $opt ) {
@@ -80,7 +80,7 @@ function fotoramamulti_activate() {
 		$opts = '. No Filename given!';
 		update_option($option_name, $opts);
 	}
-
+	*/
 	$option_name = 'fm_plugins_checker';
 	$opt = get_option($option_name);
 	if ( ! $opt ) {
@@ -100,6 +100,17 @@ function fotoramamulti_activate() {
 		);
 	update_option($option_name, $opts);	
 	}
+
+	// delete the old options from previous versions of this plugin on activation after install.
+	$option_name = 'fotorama_option2';
+	delete_option($option_name);
+
+	$option_name = 'fotorama_elevation_option_name';
+	delete_option($option_name);
+
+	$option_name = 'gpx-file';
+	delete_option($option_name);
+
 }
 
 /**
