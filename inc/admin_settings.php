@@ -16,7 +16,41 @@ require_once $path . 'AdminSettingsPage.php';
 
 final class FotoramaElevationAdmin
 {
-
+	// organize all settings and page info in tabs and give base page information
+	private $tabs = [ 
+		'page_title' => 'Fotorama-Elevation', // page_title
+		'menu_title' => 'Fotorama-Elevation', // menu_title
+		'slug' => 'fotorama-elevation', // menu_slug and page name
+		'namespace' => 'fotoramamulti',
+		'title' => 'Settings for Fotorama-Elevation Plugin',
+		'subtitle' => 'General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.',
+		'showParametersPage' => true,
+		'parametersTitle' => 'Info',
+		'tabs' => [
+			['slug' => 'general',
+			'title' => 'General',
+			'setting' => 'commonSettings'
+			],
+			['slug' => null,
+			'title' => 'GPX-File',
+			'setting' => 'gpxSettings',
+			'default' => true
+			],
+			['slug' => 'leaflet',
+			'title' => 'Map + Chart',
+			'setting' => 'leafletSettings',
+			],
+			['slug' => 'fotorama',
+			'title' => 'Fotorama',
+			'setting' => 'fotoramaSettings',
+			],
+			['slug' => 'swiper',
+			'title' => 'Swiper',
+			'setting' => 'swiperSettings',
+			],
+		],
+	];
+			
 	// this are the settings for the GPX-File Tab. This are very specific, not generic. The class is adopted to this settings.
 	private $gpxClass;
 	private $gpxSettings = [
@@ -96,7 +130,7 @@ final class FotoramaElevationAdmin
 			'shortcode' => '',
 			'info' => '',
 		],
-		'param5^^' => [ // general
+		'param5' => [ // general
 			'label' => 'gpx_overwrite',
 			'text' => 'Overwrite GPX-File',
 			'class' => 'gpx_row',
@@ -789,16 +823,16 @@ final class FotoramaElevationAdmin
 		]
 	];
 
+	private $allSettingsClasses = [];
 	private $allSettings = [];
 
 
 	public function __construct()
 	{
-
 		//add_action( 'admin_init', array( $this, 'fotorama_elevation_page_init' ) );
 		add_action('admin_menu', array($this, 'admin_add_plugin_page_to_menu'));
 
-		// check .htaccess and change info text accordingly
+		// check .htaccess and change info text accordingly. Special handling to be removed for a general class.
 		$hasWorkingHtaccess = $this->checkHtaccess();
 		if ($hasWorkingHtaccess) {
 			$infoText = __('Use a local Tile-Server to provide Map-Tiles (.htaccess checked and OK)', 'fotoramamulti');
@@ -807,22 +841,26 @@ final class FotoramaElevationAdmin
 		}
 		$this->leafletSettings['param5']['description'] = $infoText;
 
-		$this->gpxClass = new AdminSettingsPage($this->gpxSettings);
-		$this->swiperClass = new AdminSettingsPage($this->swiperSettings);
-		$this->fotoramaClass = new AdminSettingsPage($this->fotoramaSettings);
-		$this->leafletClass = new AdminSettingsPage($this->leafletSettings);
-		$this->commonClass = new AdminSettingsPage($this->commonSettings);
+		// init the classes and settings for the tab.
+		$i = 0;
+		foreach($this->tabs['tabs'] as $currentTab) {
+			$set = $this->{$currentTab['setting']};
+			$this->allSettingsClasses[ $i ] = new AdminSettingsPage( $set );
+			$this->allSettings[ $i ] = $set;
+			$i++;
+		}
 
-		$this->allSettings = [$this->commonSettings, $this->gpxSettings, $this->leafletSettings, $this->fotoramaSettings, $this->swiperSettings, $this->no_admin_settings];
+		// append $no_admin_settings to show in info page
+		$this->allSettings[ $i ] = $this->no_admin_settings;
 	}
 
 	public function admin_add_plugin_page_to_menu()
 	{
 		add_options_page(
-			'Fotorama-Elevation', // page_title
-			'Fotorama-Elevation', // menu_title
-			'manage_options', // capability
-			'fotorama-elevation', // menu_slug
+			$this->tabs['page_title'], // page_title
+			$this->tabs['menu_title'], // menu_title
+			'manage_options', // capability is fixed do not change
+			$this->tabs['slug'], // menu_slug
 			array($this, 'create_admin_page_with_tabs') // function
 		);
 	}
@@ -838,38 +876,47 @@ final class FotoramaElevationAdmin
 
 		?>
 		<div class="wrap">
-			<h2><?php esc_html_e('Settings for Fotorama-Elevation Plugin', 'fotoramamulti') ?></h2>
-			<h4><?php esc_html_e('General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.', 'fotoramamulti') ?></h4>
+			<h2><?php esc_html_e($this->tabs['title'], $this->tabs['namespace']) ?></h2>
+			<h4><?php esc_html_e($this->tabs['subtitle'], $this->tabs['namespace']) ?></h4>
 
 			<nav class="nav-tab-wrapper">
-				<a href="?page=fotorama-elevation&tab=general" class="nav-tab <?php if ($tab === 'general') : ?>nav-tab-active<?php endif; ?>">General</a>
-				<a href="?page=fotorama-elevation" class="nav-tab <?php if ($tab === null) : ?>nav-tab-active<?php endif; ?>">GPX-File</a>
-				<a href="?page=fotorama-elevation&tab=leaflet" class="nav-tab <?php if ($tab === 'leaflet') : ?>nav-tab-active<?php endif; ?>">Map + Chart</a>
-				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if ($tab === 'fotorama') : ?>nav-tab-active<?php endif; ?>">Fotorama</a>
-				<a href="?page=fotorama-elevation&tab=swiper" class="nav-tab <?php if ($tab === 'swiper') : ?>nav-tab-active<?php endif; ?>">Swiper</a>
-				<a href="?page=fotorama-elevation&tab=params" class="nav-tab <?php if ($tab === 'params') : ?>nav-tab-active<?php endif; ?>">Info</a>
+				<?php 
+				foreach($this->tabs['tabs'] as $currentTab) {
+					if (\array_key_exists('default', $currentTab)) {
+						$tabstring = "<a href=\"?page={$this->tabs['slug']}\" class=\"nav-tab";
+					} else {
+						$tabstring = "<a href=\"?page={$this->tabs['slug']}&tab={$currentTab['slug']}\" class=\"nav-tab";
+					}
+					($tab === $currentTab['slug']) ? $tabstring .= ' nav-tab-active"' : $tabstring .= '"';
+
+					$tabstring .= ">{$currentTab['title']}</a>";
+					echo( $tabstring);
+				}
+
+				if ( $this->tabs['showParametersPage'] ) {
+					$tabstring = "<a href=\"?page={$this->tabs['slug']}&tab=params\" class=\"nav-tab";
+					($tab === 'params') ? $tabstring .= ' nav-tab-active"' : $tabstring .= '"';
+					$tabstring .= ">{$this->tabs['parametersTitle']}</a>";
+					echo( $tabstring);
+				}
+				?>
 			</nav>
 
 			<div class="tab-content">
-				<?php switch ($tab):
-
-					case 'leaflet':
-						$this->leafletClass->show_options_page_html();
-						break;
-
-					case 'general':
-						$this->commonClass->show_options_page_html();
-						break;
-
-					case 'fotorama':
-						$this->fotoramaClass->show_options_page_html();
-						break;
-
-					case 'swiper':
-						$this->swiperClass->show_options_page_html();
-						break;
-
-					case 'params': ?>
+				<?php 
+					if ( $tab !== 'params' ) {
+						$i = 0;
+						foreach($this->tabs['tabs'] as $currentTab) {
+							if ( $tab === $currentTab['slug'] ) {
+								$this->allSettingsClasses[ $i ]->show_options_page_html();
+							}
+							$i++;
+						}
+						
+					} 
+					else 
+					{
+						?>
 						<!-- table with all shortcode Parameters -->
 						<h3>Table with shortcode Parameters</h3>
 
@@ -973,14 +1020,9 @@ final class FotoramaElevationAdmin
 								?>
 							</tbody>
 						</table>
-					<?php break;
-
-					default:
-						$this->gpxClass->show_options_page_html();
-						break;
-
-				endswitch; ?>
-
+						<?php 
+					};
+				?>
 			</div>
 		<?php
 	}
