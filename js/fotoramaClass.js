@@ -1,5 +1,5 @@
 /*!
-	FotoramaClass 0.13.1
+	FotoramaClass 0.14.0
 	license: GPL 2.0
 	Martin von Berg
 */

@@ -848,7 +848,6 @@ final class FotoramaElevationAdmin
 				<a href="?page=fotorama-elevation&tab=fotorama" class="nav-tab <?php if ($tab === 'fotorama') : ?>nav-tab-active<?php endif; ?>">Fotorama</a>
 				<a href="?page=fotorama-elevation&tab=swiper" class="nav-tab <?php if ($tab === 'swiper') : ?>nav-tab-active<?php endif; ?>">Swiper</a>
 				<a href="?page=fotorama-elevation&tab=params" class="nav-tab <?php if ($tab === 'params') : ?>nav-tab-active<?php endif; ?>">Info</a>
-				<a href="?page=fotorama-elevation&tab=show" class="nav-tab <?php if ($tab === 'show') : ?>nav-tab-active<?php endif; ?>">Show</a>
 			</nav>
 
 			<div class="tab-content">
@@ -975,32 +974,6 @@ final class FotoramaElevationAdmin
 							</tbody>
 						</table>
 					<?php break;
-
-					case 'show': ?>
-						<h3>Show all Parameters</h3>
-						<h4>Array-Diff</h4>
-						<?php
-						$new = \array_merge(get_option('fm_fotorama_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
-						$options = get_option('fotorama_elevation_option_name');
-						$result = array_diff($options, $new);
-						print_r($result);
-						?>
-
-						<h4>Swiper Settings:</h4><?php
-						$this->swiperClass->show_settings();
-
-						?><h4>Fotorama Settings:</h4><?php
-						$this->fotoramaClass->show_settings();
-
-						?><h4>Leaflet Settings:</h4><?php
-						$this->leafletClass->show_settings();
-
-						?><h4>Fotorama-Leaflet Settings:</h4><?php
-						$options = get_option('fotorama_elevation_option_name');
-						//$string =\var_export($options);
-						?>
-						<pre><?php print_r($options); ?></pre><?php
-						break;
 
 					default:
 						$this->gpxClass->show_options_page_html();

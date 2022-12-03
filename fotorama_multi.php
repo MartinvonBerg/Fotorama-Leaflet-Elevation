@@ -10,9 +10,9 @@
  * Plugin Name:       Fotorama_Multi
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Fotorama Slider and Leaflet Elevation integration
- * Version:           0.13.1
+ * Version:           0.14.0
  * Requires at least: 5.9
- * Requires PHP:      7.3
+ * Requires PHP:      7.4
  * Author:            Martin von Berg
  * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License:           GPL-2.0
@@ -447,7 +447,7 @@ EOF;
  	);
 
 	$plugin_url = plugins_url('/', __FILE__);
-	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.13.1', true);
+	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.14.0', true);
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
