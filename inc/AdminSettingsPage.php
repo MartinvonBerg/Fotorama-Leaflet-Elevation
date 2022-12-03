@@ -6,7 +6,6 @@
  */
 
 // TODO: use the options for the slider
-// !!! TODO: Tabelle aus settings generieren.
 // TODO: update functions for activation, deactivation and uninstall of settings
 
 namespace mvbplugins\fotoramamulti;
@@ -39,7 +38,7 @@ class AdminSettingsPage {
 	 */
 	public function initSettingsSectionsFields() {
 		// init the option_name
-		$this->initOptionInDb();
+		$this->initOptionsinDatabase();
 
 		// Register a new setting for "swiper" page.
 		register_setting( 
@@ -80,7 +79,7 @@ class AdminSettingsPage {
 	 *
 	 * @return boolean result of the initialization process so the update_option
 	 */
-	function initOptionInDb() {
+	function initOptionsinDatabase() {
 		$options = get_option( $this->settings['options'] );
 		if ( $options === false || $options === '') $options = [];
 
