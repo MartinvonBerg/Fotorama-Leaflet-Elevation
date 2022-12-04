@@ -417,6 +417,7 @@ class AdminSettingsPage {
 		$overwrite = $option["gpx_overwrite"] == 'true';
 		$smooth = intval($option['gpx_smooth']);
 		$elesmooth = intval($option['gpx_elesmooth']);
+		$ignoreZeroElev = $option["gpx_ignore_zero_elev"] === "true";
 		
 		// get and generate file names and upload directory if not exists
 		$file = $_FILES['uploadedfile']['name'];
@@ -432,7 +433,7 @@ class AdminSettingsPage {
 				$tmp_name = $_FILES['uploadedfile']['tmp_name']; 
 
 				if ($parsegpxfile) { 
-					$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth);
+					$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth, $ignoreZeroElev);
 					$result = strpos($values, 'Skip') === false;
 				} else {
 					$values = __('File not touched!');

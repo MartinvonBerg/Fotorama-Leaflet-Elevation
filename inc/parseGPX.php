@@ -13,7 +13,7 @@ use phpGPX\Models\Track;
 use phpGPX\Models\Bounds;
 
 /**
- * Parse GPX-track and write it to destination directory
+ * Parse (reduce) GPX-track and write it to destination directory
  *
  * @param string $infile path to inputfile in PHP tmp Directory
  * @param string $path destination path for GPX-Track
@@ -23,7 +23,7 @@ use phpGPX\Models\Bounds;
  *
  * @return string description with simple stats as written to metadata of gpx-track
  */
-function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
+function parsegpx($infile, $path, $newfile, $smooth, $elesmooth, $ignoreZeroElev) {
 
     // metdata for track
     $desc = '';
@@ -32,7 +32,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
     $ascent = 0;
     $descent = 0;
     $dist = 0;
-    $reducetrack = true;
+    $reducetrack = true; // always true because we are here if we want to reduce the track.
     $sizebefore = filesize( $infile ) / 1024;
     $sizeafter = 0;
     $pointsbefore = 0;
@@ -40,8 +40,10 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
 
     $gpx = new phpGPX();  
     $gpx::$ELEVATION_SMOOTHING_THRESHOLD = $elesmooth ?? 4;
-    $gpx::$APPLY_DISTANCE_SMOOTHING = true;
-    $gpx::$APPLY_ELEVATION_SMOOTHING = true;
+    //$gpx::$DISTANCE_SMOOTHING_THRESHOLD = $smooth ?? 25; is not used here because smoothing is done in seperate function.
+    $gpx::$APPLY_DISTANCE_SMOOTHING = true; // always true because we are if we want to reduce the track.
+    $gpx::$APPLY_ELEVATION_SMOOTHING = true; // always true because we are if we want to reduce the track.
+    $gpx::$IGNORE_ELEVATION_0 = $ignoreZeroElev; 
 
     $file = $gpx->load($infile);
 
@@ -54,7 +56,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
             $ascent = $ascent + $segment->stats->cumulativeElevationGain;
             $descent = $descent + $segment->stats->cumulativeElevationLoss;
             $dist = $dist + $segment->stats->distance;
-            $bounds = getBounds($segment, $reducetrack, $smooth);
+            $bounds = getBounds($segment, $reducetrack, $ignoreZeroElev);
         } else {
             $desc = 'No elevation data in route of GPX-File. Skipped';
             return $desc;
@@ -83,7 +85,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
             $ascent = $ascent + $segment->stats->cumulativeElevationGain;
             $descent = $descent + $segment->stats->cumulativeElevationLoss;
             $dist = $dist + $segment->stats->distance;
-            $bounds = getBounds($segment, $reducetrack, $smooth);
+            $bounds = getBounds($segment, $reducetrack, $smooth, $ignoreZeroElev);
         
             // check lastbounds and set new maxmin values
             if ( \sizeof( $lastbounds ) > 0) {
@@ -95,6 +97,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
         }
     }
     
+    // create the new track and store it to the file.
     if ( sizeof($bounds)>0 )  {
         $ascent = intval($ascent);
         $descent = intval($descent);
@@ -145,15 +148,16 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth) {
 }
 
 /**
- * get bounds of track-segment
+ * get bounds of track-segment and reduce track segment (apply distance smoothing)
  *
  * @param object $segment phpGPX track segment 
  * @param bool $reduce reduce track or not
  * @param float $smooth value for track smoothing in meters
+ * @param bool $ignoreZeroElev with true points with zero Elevation will be skipped
  *
  * @return array<mixed> bounds of track and segment 
  */
-function getBounds($segment, $reduce, $smooth) {
+function getBounds($segment, $reduce, $smooth, $ignoreZeroElev) {
     $minlat = 180;
     $maxlat = -180;
     $minlon = 180;
@@ -176,7 +180,7 @@ function getBounds($segment, $reduce, $smooth) {
         ($lon > $maxlon) ? $maxlon = $lon : '';
         ($lon < $minlon) ? $minlon = $lon : '';
 
-        if ($ele > 0.1) { // skip points with no height information
+        if ( ($ele > 0.1) || ! $ignoreZeroElev ) { // skip points with no height information.
             if ($reduce) {
                 $newdist = distance($lastlat, $lastlon, $lat, $lon);
                 if ( abs($newdist) > $smooth) {

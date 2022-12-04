@@ -22,16 +22,17 @@ final class FotoramaElevationAdmin
 		'menu_title' => 'Fotorama-Elevation', // menu_title
 		'slug' => 'fotorama-elevation', // menu_slug and page name
 		'namespace' => 'fotoramamulti',
-		'title' => 'Settings for Fotorama-Elevation Plugin',
-		'subtitle' => 'General Settings for the Fotorama Elevation Plugin that are used for every page or post where the Plugin is used. All settings can be overwritten by parameters of the shortcode.',
-		'showParametersPage' => true,
-		'parametersTitle' => 'Info',
+		'title' => 'Settings for Fotorama-Elevation Plugin', // the Top page title
+		'subtitle' => 'General Settings for the Slider Elevation Plugin that are used for every page or post where the Plugin is used. (Almost) All settings can be overwritten by parameters of the shortcode.',
+		'showParametersPage' => true, 
+		'parametersTitle' => 'Parameters', // Name of the Tab for the Overview page with all Parameters
+		// subarray for Tabs. Will be shown in that order
 		'tabs' => [
-			['slug' => 'general',
-			'title' => 'General',
-			'setting' => 'commonSettings'
+			['slug' => 'general', // the Slug of the Tab
+			'title' => 'General', // the Title of the Tab
+			'setting' => 'commonSettings' // define the array with settings for this tab
 			],
-			['slug' => null,
+			['slug' => null, // the default Tab
 			'title' => 'GPX-File',
 			'setting' => 'gpxSettings',
 			'default' => true
@@ -52,7 +53,6 @@ final class FotoramaElevationAdmin
 	];
 			
 	// this are the settings for the GPX-File Tab. This are very specific, not generic. The class is adopted to this settings.
-	private $gpxClass;
 	private $gpxSettings = [
 		'pre' => 'gpx',
 		'options' => 'fm_gpx_options',
@@ -102,6 +102,18 @@ final class FotoramaElevationAdmin
 			'shortcode' => '',
 			'info' => '',
 		],
+		'param5' => [ 
+			'label' => 'gpx_ignore_zero_elev',
+			'text' => 'Ignore Track Points with Zero Elevation.',
+			'class' => 'gpx_row',
+			'custom_data' => 'custom5',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'GPX-File : Ignore Track Points with Zero Elevation. Necessary for some devices, because they write "0" as Elevation Data if GPX accuracy is not sufficient',
+			'shortcode' => '',
+			'info' => '',
+		],
 		'param3' => [
 			'label' => 'gpx_smooth',
 			'text' => 'Distance Smooth',
@@ -130,11 +142,11 @@ final class FotoramaElevationAdmin
 			'shortcode' => '',
 			'info' => '',
 		],
-		'param5' => [ // general
+		'param6' => [ 
 			'label' => 'gpx_overwrite',
 			'text' => 'Overwrite GPX-File',
 			'class' => 'gpx_row',
-			'custom_data' => 'custom3',
+			'custom_data' => 'custom6',
 			'type' => 'checkbox',
 			'values' => '',
 			'default' => 'false',
@@ -144,27 +156,26 @@ final class FotoramaElevationAdmin
 		],
 	];
 
-	private $commonClass;
 	private $commonSettings = [
-		'pre' => 'common', //
-		'options' => 'fm_common_options', //
-		'sanitizer' => 'options_sanitizer', // do not change!
-		'section' => 'common_section', //
-		'sectionsText' => 'General and Common Settings',
+		'pre' => 'common', // Prefix for the usage of this settings.
+		'options' => 'fm_common_options', // name for the options in the WP Database.
+		'sanitizer' => 'options_sanitizer', // do not change! This is the general sanitizer.
+		'section' => 'common_section', // Name for the Section on the page in Tab.
+		'sectionsText' => 'General and Common Settings', // Title to show under the Tab.
 		'namespace' => 'fotoramamulti',
-		'subTitle' => 'Common Setttings and Settings used for both Sliders',
-		//'shortcode_no_admin' => [], // none!
+		'subTitle' => 'Common Setttings and Settings used for both Sliders', // Sub-Title to show under the Tab.
+		// All Parameters for this option. Will be shown in that order on the Page under the Tab.
 		'param5' => [ // general!
 			'label' => 'slider', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
-			'text' => 'Slider Type',
-			'class' => 'common_row',
-			'custom_data' => 'custom5',
-			'type' => 'select',
-			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'],
+			'text' => 'Slider Type', // Text before the input Field.
+			'class' => 'common_row', // The class of the input Field. Unused.
+			'custom_data' => 'custom5', // unused.
+			'type' => 'select', // The type of the input field. Callback function must exist with name: <type>_callback.
+			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'], // all foreseen values.
 			'default' => 'fotorama',
-			'description' => 'Select the Slider to show the Images. Swiper works with Fotos and Videos.',
-			'shortcode' => 'slider',
-			'info' => 'Select the Image Slider. Swiper works with Fotos and Videos. Fotorama with Images only.',
+			'description' => 'Select the Slider to show the Images. Swiper works with Fotos and Videos.', // Text after the input field.
+			'shortcode' => 'slider', // shortcode Parameter that will be used.
+			'info' => 'Select the Image Slider. Swiper works with Fotos and Videos. Fotorama with Images only.', // Text for the Overview Parameter Table shown under a seperate Tab.
 		],
 		'param6' => [ // general
 			'label' => 'fit',
@@ -426,7 +437,6 @@ final class FotoramaElevationAdmin
 		],
 	];
 
-	private $swiperClass;
 	private $swiperSettings = [
 		'pre' => 'swiper', // change
 		'options' => 'fm_swiper_options', // change
@@ -565,7 +575,6 @@ final class FotoramaElevationAdmin
 		//'sw_keyboard'			=> 'true', // fixed to this setting
 	];
 
-	private $fotoramaClass;
 	private $fotoramaSettings = [
 		'pre' => 'fotorama', //
 		'options' => 'fm_fotorama_options', //
@@ -640,7 +649,6 @@ final class FotoramaElevationAdmin
 		],
 	];
 
-	private $leafletClass;
 	private $leafletSettings = [
 		'pre' => 'leaflet', //
 		'options' => 'fm_leaflet_options', //
