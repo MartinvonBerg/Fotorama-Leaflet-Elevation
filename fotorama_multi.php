@@ -431,6 +431,7 @@ EOF;
 		'imgdata' => $phpimgdata ?? [],
 		'tracks' => $tracks,
 		'eletheme' => $eletheme,
+		'ignorezeroes' => $fotorama_elevation_options['gpx_ignore_zero_elev'],
 		'mapheight' => $mapheight,
 		'mapaspect' => $mapaspect,
 		'chartheight' => $chartheight,

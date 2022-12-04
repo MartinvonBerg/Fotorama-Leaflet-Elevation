@@ -110,9 +110,9 @@ final class FotoramaElevationAdmin
 			'type' => 'checkbox',
 			'values' => '',
 			'default' => 'true',
-			'description' => 'GPX-File : Ignore Track Points with Zero Elevation. Necessary for some devices, because they write "0" as Elevation Data if GPX accuracy is not sufficient',
-			'shortcode' => '',
-			'info' => '',
+			'description' => 'Upload GPX-File : Ignore Track Points with Zero Elevation. Necessary for some devices, because they write "0" as Elevation Data if GPX accuracy is not sufficient',
+			'shortcode' => 'ignorezeroes',
+			'info' => 'Ignore Track Points with Zero Elevation in Chart. Necessary for some devices, because they write "0" as Elevation Data if GPX accuracy is not sufficient',
 		],
 		'param3' => [
 			'label' => 'gpx_smooth',

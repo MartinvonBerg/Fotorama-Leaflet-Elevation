@@ -173,6 +173,9 @@ function getBounds($segment, $reduce, $smooth, $ignoreZeroElev) {
         $lat = $spoint->latitude;
         $lon = $spoint->longitude;
         $ele = $spoint->elevation;
+        if ( abs(intval($ele) - $ele) < 0.0001 ) {
+            $ele += 0.01;
+        }
 
         ($lat > $maxlat) ? $maxlat = $lat : '';
         ($lat < $minlat) ? $minlat = $lat : '';
@@ -190,7 +193,7 @@ function getBounds($segment, $reduce, $smooth, $ignoreZeroElev) {
                     $newpoint = new Point(Point::TRACKPOINT);
                     $newpoint->latitude 			= $lat;
                     $newpoint->longitude 			= $lon;
-                    $newpoint->elevation 			= $spoint->elevation;
+                    $newpoint->elevation 			= $ele;
                     $newsegment->points[] 			= $newpoint;
                 }
             } else {
@@ -198,7 +201,7 @@ function getBounds($segment, $reduce, $smooth, $ignoreZeroElev) {
                 $newpoint = new Point(Point::TRACKPOINT);
                 $newpoint->latitude 			= $lat;
                 $newpoint->longitude 			= $lon;
-                $newpoint->elevation 			= $spoint->elevation;
+                $newpoint->elevation 			= $ele;
                 $newsegment->points[] 			= $newpoint;
             }
         }

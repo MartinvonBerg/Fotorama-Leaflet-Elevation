@@ -112,7 +112,7 @@ class LeafletElevation extends LeafletMap {
                     autofitBounds: true,
                     legend: true,
                     followMarker: false,
-                    skipNullZCoords: true,
+                    skipNullZCoords: this.pageVariables.ignorezeroes === 'true', 
                     height: this.pageVariables.chartheight,
                     handlers: ["Distance", "Altitude"],
                     //lazyLoadJS: true, // set the lazyLoadJS option to false to avoid automatically including missing javascript dependencies (i.e. not detected in the global scope).
