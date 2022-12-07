@@ -295,13 +295,12 @@ class ThumbnailSlider implements thumbnailClassInterface {
    * set the active thumbnail of the bar and trigger an event that this happened.
    * @param number number active thumbnail number
    */
-  public setActiveThumb (number : number) : void {
+  public setActiveThumb (number : number, caller = '') : void {
     // remove active class
     // @ts-ignore
     this.ele.childNodes[this.currentActive].classList.remove(this.activeClass) // TODO
     // set active class and number
     this.thumbnails[number].classList.add(this.activeClass)
-    this.currentActive = number
 
     // scroll into viewport of parent div.
     const parentWidth : number = this.ele.offsetWidth
@@ -333,7 +332,11 @@ class ThumbnailSlider implements thumbnailClassInterface {
         slider: this.number
       }
     })
-    this.ele.parentElement.dispatchEvent(changed)
+
+    if (this.currentActive !== number && caller !== 'slideChange') {
+      this.ele.parentElement.dispatchEvent(changed)
+    }
+    this.currentActive = number
   }
 
   /**

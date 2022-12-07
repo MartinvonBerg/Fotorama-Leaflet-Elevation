@@ -327,9 +327,9 @@ class SliderSwiper {
             event.el.dispatchEvent(changed);
 
             // move the thumbnail
-        if (classThis.#pageVariables.sw_options.thumbbartype === 'special') {
-            classThis.thumbs.setActiveThumb( event.realIndex)
-        }
+            if (classThis.#pageVariables.sw_options.thumbbartype === 'special') {
+                classThis.thumbs.setActiveThumb( event.realIndex, 'slideChange')
+            }
         });
      };
 
