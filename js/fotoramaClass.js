@@ -85,7 +85,7 @@ class SliderFotorama {
         // Define width for responsive devices
         this.width = this.sliderDiv[0].parentElement.clientWidth;
         let height = this.sliderDiv[0].parentElement.clientHeight;
-        let ratio = this.width / height;
+        //let ratio = this.width / height;
         //if (ratio > 1.0) this.width = this.width / 2;
         /*
         if (this.#isMobile) {
@@ -97,7 +97,8 @@ class SliderFotorama {
         // do and define all handles
         let newdata2 = this.#replaceImageData( this.width, this.olddata, this.newimages);
         if (newdata2) {this.sliderData.load(newdata2);}
-
+        
+        this.updateCSS();
         this.disableRightClick(true);
         this.#listenEventSliderShowend();
         this.#listenEventSliderLoaded();
@@ -112,6 +113,27 @@ class SliderFotorama {
      */
     setSliderIndex(index) {
         this.sliderData.show(index);
+    }
+
+    /**
+    * update CSS rules that are used according to the options and client
+    */
+    updateCSS() {
+        // add inline CSS for fotorama CSS settings
+	
+	    const style = document.createElement('style');
+        style.innerHTML = `
+            .fotorama__stage {
+                background-color: ${ this.#pageVariables.sw_options.background };
+            }
+            .fotorama__thumb-border { 
+                border-color: ${ this.#pageVariables.sw_options.active_border_color }; }
+            `;
+
+        if ( this.#pageVariables.sw_options.shortcaption === 'true') {
+                style.innerHTML += ".fotorama__caption__wrap { display: none; }";
+        }
+        document.head.appendChild(style);
     }
 
     /**

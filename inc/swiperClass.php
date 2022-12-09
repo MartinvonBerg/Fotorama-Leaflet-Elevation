@@ -362,7 +362,7 @@ final class SwiperClass
                 //$img->setAttribute('loading', 'lazy');
                 $img->setAttribute('class', 'swiper-lazy');
                 $img->setAttribute('alt', $alttext);
-                $img->setAttribute('object-fit', "{$this->options['slide_fit']}"); //has no effect!
+                //$img->setAttribute('object-fit', "{$this->options['slide_fit']}"); //has no effect!
                 $img->setAttribute('data-src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
 
                 if ( $data['thumbinsubdir'] ) {

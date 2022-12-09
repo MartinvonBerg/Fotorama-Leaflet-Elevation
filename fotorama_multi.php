@@ -59,25 +59,7 @@ if ( is_admin() ) {
 	$fotorama_elevation_options = get_option( 'fm_leaflet_options' );
 	$fotorama_elevation->checkHtaccess() ? $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'true' : $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'false';
 	update_option( 'fm_leaflet_options', $fotorama_elevation_options );
-	
-	// do the check for activated plugins that may conflict with leaflet.js
-	/*
-	$wp_act_pis = get_option('active_plugins');
-	$wp_act_pis = \implode(', ',$wp_act_pis);
-	$fm_act_pis = \get_option('fm_plugins_checker');
-	if ( $wp_act_pis != $fm_act_pis['active_plugins']) {
-		$fm_act_pis['active_plugins'] = $wp_act_pis;
-		$fm_act_pis['plugins_changed'] = 'true';
-		update_option('fm_plugins_checker', $fm_act_pis);
-	}
-
-	// show notice if not resetted by shutdown hook function.
-	if ( 'true' == $fm_act_pis['show_admin_message'] ) {
-		add_action( 'all_admin_notices', '\mvbplugins\fotoramamulti\fm_error_notice' ); // all_admin_notices for multisite
-	}
-	*/
 }
-//add_action( 'shutdown', '\mvbplugins\fotoramamulti\action_shutdown', 10, 0 );
 
 // ------------------ shortcode function ------------------------------------------
 // define the shortcode to generate the image-slider with map
@@ -176,18 +158,6 @@ function showmulti($attr, $content = null)
 		$lang = 'en';
 	}
 
-	// add inline CSS for fotorama CSS settings
-	$custom_css1 = ".fotorama__stage { background-color: {$background}; }";
-    wp_add_inline_style( 'fotorama_css', $custom_css1 );
-				  
-	$custom_css2 = ".fotorama__thumb-border { border-color: {$thumbbordercolor}; }";
-	wp_add_inline_style( 'fotorama3_css', $custom_css2 );
-
-	if ( $showcaption === 'false') {
-		$custom_css3 = ".fotorama__caption__wrap { display: none; }";
-		wp_add_inline_style( 'fotorama3_css', $custom_css3 );
-	}
-	
 	// Define path and url variables
 	$up_url = gpxview_get_upload_dir('baseurl');  // upload_url
 	$up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
@@ -271,6 +241,40 @@ function showmulti($attr, $content = null)
 		
 	// Generate html for Slider images for javascript-rendering
 	if ($imageNumber > 0) {
+
+		$sw_options = [
+			'addPermalink' 			=> $addPermalink, 
+			'allImgInWPLibrary' 	=> $allImgInWPLibrary,
+			'sw_effect'				=> $sw_effect,
+			'sw_zoom'				=> $sw_zoom,
+			'sw_fslightbox'			=> $sw_fslightbox,
+			'sw_pagination'			=> $sw_pagination,
+			'sw_slides_per_view' 	=> $sw_slides_per_view, // unused with martins thumbnails
+			'sw_transition_duration'=> $sw_transition_duration,
+			'sw_mousewheel'			=> $sw_mousewheel,
+			'sw_hashnavigation'  	=> $sw_hashnavigation,
+			'sw_max_zoom_ratio'		=> $sw_max_zoom_ratio,
+			'showcaption'			=> $showcaption,
+			'shortcaption'			=> $shortcaption,
+			'imgpath'				=> $imgpath,
+			'slide_fit'				=> $fit,
+			'sw_aspect_ratio'		=> $ratio,
+			'sw_keyboard'			=> 'true', // fixed to this setting
+			'background'			=> $background,
+			// thumbnails settings
+			'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
+			'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
+			'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful. for future change.
+			'bar_margin_top'     	=> $sw_bar_margin_top . 'px', // top margin of thumbnail bar in px
+			'bar_min_height'		=> $f_thumbheight . 'px', // now two values for the height!
+			'bar_rel_height'		=> '1%', // Does not work.height of thumbnail bar in percent. Use 1% to have a fixed height. for future change.
+			'nail_margin_side' 		=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
+			'nail_activeClass'		=> $sw_activetype, // available params: active, active_animation, active_border
+			// only for active_border  
+			'active_border_width'	=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
+			'active_border_color'	=> $thumbbordercolor, // '#ea0000', 
+			'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused. for future change.
+		];
 				
 		if ( $slider === 'fotorama') {
 			// load the scripts for fotorama here
@@ -286,39 +290,6 @@ function showmulti($attr, $content = null)
 			$swiperCounter++;
 			require_once __DIR__ . '/inc/swiperClass.php';
 		
-			$sw_options = [
-				'addPermalink' 			=> $addPermalink, 
-				'allImgInWPLibrary' 	=> $allImgInWPLibrary,
-				'sw_effect'				=> $sw_effect,
-				'sw_zoom'				=> $sw_zoom,
-				'sw_fslightbox'			=> $sw_fslightbox,
-				'sw_pagination'			=> $sw_pagination,
-				'sw_slides_per_view' 	=> $sw_slides_per_view, // unused with martins thumbnails
-				'sw_transition_duration'=> $sw_transition_duration,
-				'sw_mousewheel'			=> $sw_mousewheel,
-				'sw_hashnavigation'  	=> $sw_hashnavigation,
-				'sw_max_zoom_ratio'		=> $sw_max_zoom_ratio,
-				'showcaption'			=> $showcaption,
-				'shortcaption'			=> $shortcaption,
-				'imgpath'				=> $imgpath,
-				'slide_fit'				=> $fit,
-				'sw_aspect_ratio'		=> $ratio,
-				'sw_keyboard'			=> 'true', // fixed to this setting
-				// thumbnails settings
-				'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
-				'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
-				'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful. for future change.
-				'bar_margin_top'     	=> $sw_bar_margin_top . 'px', // top margin of thumbnail bar in px
-				'bar_min_height'		=> $f_thumbheight . 'px', // now two values for the height!
-				'bar_rel_height'		=> '1%', // Does not work.height of thumbnail bar in percent. Use 1% to have a fixed height. for future change.
-				'nail_margin_side' 		=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
-				'nail_activeClass'		=> $sw_activetype, // available params: active, active_animation, active_border
-				// only for active_border  
-				'active_border_width'	=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
-				'active_border_color'	=> $thumbbordercolor, // '#ea0000', 
-				'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused. for future change.
-			];
-			
 			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options); // Attention: Inconsistent constructor!
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();

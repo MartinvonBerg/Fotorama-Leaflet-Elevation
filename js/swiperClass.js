@@ -96,6 +96,7 @@ class SliderSwiper {
                 watchState: this.#pageVariables.sw_options.sw_hashnavigation === 'true', 
             },  
             grabCursor: true,
+            speed: this.#pageVariables.sw_options.sw_transition_duration,
             effect: this.#pageVariables.sw_options.sw_effect, // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
             zoom:
             {
@@ -128,6 +129,7 @@ class SliderSwiper {
                 
         // generate the swiper slider on the new html 
         this.swiper = new Swiper('#'+this.elementOnPage, this.sw_options);
+        this.updateCSS();
         this.scrollToHash();
         this.#listenEventSliderShowend();
         ((this.#pageVariables.sw_options.sw_fslightbox === 'true') && (typeof(fsLightboxInstances) !== 'undefined')) ? window.addEventListener('load', this.lightbox(this.number), false ) : null;
@@ -187,6 +189,26 @@ class SliderSwiper {
         }, options);
     }
 
+    /**
+    * update CSS rules that are used according to the options and client
+    */
+    updateCSS() {
+        
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .myswiper .swiper-slide {
+                background: ${ this.#pageVariables.sw_options.background };
+            }
+            .myswiper {
+                background: ${ this.#pageVariables.sw_options.background };
+            }
+            .myswiper .swiper-slide img {
+                object-fit: ${ this.#pageVariables.sw_options.slide_fit };
+            }`;
+        document.head.appendChild(style);
+    }
+
+    // --------------- Class methods for fslightbox -------------------------
     lightbox(m) {
         // pass option to the js-script to switch fullscreen of browser off, when lightbox is closed. 
         // This option does not work. because it causes 'Failed to execute 'exitFullscreen' on 'Document': Document not active...'
@@ -248,17 +270,6 @@ class SliderSwiper {
         //fsLightboxInstances['swiper'+m].props.showThumbsOnMount = true;
     }
     
-    // --------------- Class API method definitions -------------------------
-    /**
-     * Set Slider to index
-     * @param {int} index 
-     */
-    setSliderIndex(index) {
-        // mind swiper starts with index = 0
-        this.swiper.slideTo(index+1, this.#pageVariables.sw_options.sw_transition_duration, true);
-    }
-
-    // --------------- Class method for fslightbox -------------------------
     // source: https://github.com/matthewroysl/fslightbox-thumb-captions
     removeCustomCaptions() {
         document
@@ -293,6 +304,16 @@ class SliderSwiper {
         if (typeof(fsLightbox) === 'object' && fsLightbox.data.isThumbing) {
             this.createCustCaption(fsLightbox);
         }
+    }
+    
+    // --------------- Class API method definitions -------------------------
+    /**
+     * Set Slider to index
+     * @param {int} index 
+     */
+    setSliderIndex(index) {
+        // mind swiper starts with index = 0
+        this.swiper.slideTo(index+1, this.#pageVariables.sw_options.sw_transition_duration, true);
     }
 
     // --------------- Generate Class Events -----------------------------------

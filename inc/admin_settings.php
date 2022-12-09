@@ -183,7 +183,7 @@ final class FotoramaElevationAdmin
 			'class' => 'common_row',
 			'custom_data' => 'custom6',
 			'type' => 'select',
-			'values' => ['contain' => 'Contain', 'cover' => 'Cover', 'scaledown' => 'Scaledown', 'none' => 'None'],
+			'values' => ['contain' => 'Contain', 'cover' => 'Cover', 'fill' => 'Fill', 'inherit' => 'Inherit'],
 			'default' => 'contain',
 			'description' => 'Define the scaling of Fotos for the Fotorama Slider',
 			'shortcode' => 'fit',
@@ -277,7 +277,7 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'ignoresort',
 			'info' => 'Ignore custom sort even if provided by Wordpress. If checked sort by date ascending',
 		],
-		'param24' => [ // general setting!
+		'param24' => [ // general
 			'label' => 'max_width_of_container_12',
 			'text' => 'Max Width of Container in px',
 			'class' => 'common_row',
@@ -291,7 +291,7 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'maxwidth',
 			'info' => 'Maximum width of the whole container with slider and map',
 		],
-		'param25' => [ // general setting!
+		'param25' => [ // general
 			'label' => 'min_width_css_grid_row_14',
 			'text' => 'Min Width of one CSS-grid Row in px',
 			'class' => 'common_row',
@@ -386,18 +386,6 @@ final class FotoramaElevationAdmin
 			'description' => '',
 			'shortcode' => 'transitionduration',
 			'info' => 'Duration of Slide transition in ms',
-		],
-		'param18' => [ // general
-			'label' => 'loop',
-			'text' => 'Loop through Slides',
-			'class' => 'common_row',
-			'custom_data' => 'custom18',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'true',
-			'description' => 'loop',
-			'shortcode' => 'loop',
-			'info' => 'Loop through images (proceed with first once the reached the las) true or false',
 		],
 		'param21' => [ // general
 			'label' => 'useCDN_13',  // label was used before for that
@@ -608,6 +596,18 @@ final class FotoramaElevationAdmin
 			'description' => 'Values: false, true, or integer value in milliseconds',
 			'shortcode' => 'autoplay',
 			'info' => 'Autoplay or loop the slider. On with "true" or any numeric interval in milliseconds. Of with "false"',
+		],
+		'param18' => [ // general
+			'label' => 'loop',
+			'text' => 'Loop through Slides',
+			'class' => 'common_row',
+			'custom_data' => 'custom18',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'loop',
+			'shortcode' => 'loop',
+			'info' => 'Loop through images (proceed with first slide after reaching the last one)',
 		],
 		'param20' => [
 			'label' => 'arrows',
