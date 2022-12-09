@@ -80,7 +80,8 @@ final class FotoramaClass
 	
 
         // Get Values from Admin settings page
- 	    $fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
+        $fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
+	
         
         // Extract shortcode-Parameters and set Default-Values
         extract ( shortcode_atts ( array (
