@@ -204,6 +204,9 @@ class SliderSwiper {
             }
             .myswiper .swiper-slide img {
                 object-fit: ${ this.#pageVariables.sw_options.slide_fit };
+            }
+            .swiper-button-prev, .swiper-button-next {
+                color: ${ this.#pageVariables.sw_options.sw_button_color};
             }`;
         document.head.appendChild(style);
     }

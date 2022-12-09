@@ -118,6 +118,7 @@ function showmulti($attr, $content = null)
 		'fit' 				=> $fotorama_elevation_options['fit'] ?? 'cover', // 'contain' Default, 'cover', 'scaledown', 'none'
 		'ratio' 			=> $fotorama_elevation_options['ratio'] ?? '1.5',
 		'background' 		=> $fotorama_elevation_options['background'] ?? 'darkgrey', // background color in CSS name
+		'sw_button_color'	=> $fotorama_elevation_options['sw_button_color'] ?? 'white', // swiper button color in CSS name or value
 		//'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', 'false' // funktioniert nicht: andere Werte als thums zeigen nicht alle Bilder im Slider!
 		'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
 		'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
@@ -261,6 +262,7 @@ function showmulti($attr, $content = null)
 			'sw_aspect_ratio'		=> $ratio,
 			'sw_keyboard'			=> 'true', // fixed to this setting
 			'background'			=> $background,
+			'sw_button_color'		=> $sw_button_color,
 			// thumbnails settings
 			'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
 			'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'

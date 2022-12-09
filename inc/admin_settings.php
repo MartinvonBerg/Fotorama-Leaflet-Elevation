@@ -177,7 +177,7 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'slider', // shortcode Parameter that will be used.
 			'info' => 'Select the Image Slider. Swiper works with Fotos and Videos. Fotorama with Images only.', // Text for the Overview Parameter Table shown under a seperate Tab.
 		],
-		'param6' => [ // general
+		'param6' => [ // 
 			'label' => 'fit',
 			'text' => 'How to fit the images in Slider',
 			'class' => 'common_row',
@@ -444,6 +444,18 @@ final class FotoramaElevationAdmin
 			'description' => '',
 			'shortcode' => 'sw_effect',
 			'info' => 'Swiper Slide Change Effect. Cube works but is reduced in funtionality (no-zoom and lightbox)',
+		],
+		'param11' => [ // general
+			'label' => 'sw_button_color',
+			'text' => 'Arrow Colour',
+			'class' => 'common_row',
+			'custom_data' => 'custom11',
+			'type' => 'color',
+			'values' => 'white',
+			'default' => 'white',
+			'description' => 'Color of the Arrow on Slider to change Slide.',
+			'shortcode' => 'sw_button_color',
+			'info' => 'Color of the Arrow on Slider to change Slide.',
 		],
 		'param7' => [
 			'label' => 'sw_mousewheel',
