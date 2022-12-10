@@ -403,6 +403,7 @@ This plugin uses the great work from:
 
 = 0.14.0 =
 3.12.2022: Admin Settings Page and option handling revised. Minimum PHP Version = 7.4 now! Please update your server. Start using of TypeScript and webpack handling.
+10.12.2022: Admin Settings for swiper and Elevation chart updated with colour options. Bug fix in GPX-file parsing for small elevations and in ThumbnailClass for loop mode.
 
 = 0.13.1 =
 1.11.2022: Swiper Slider added. Fotos and Videos are now possible. Own development of thumbnail bar with shortocde parameters. No gutenberg or admin settings at the moment.
