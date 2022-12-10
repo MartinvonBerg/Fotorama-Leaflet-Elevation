@@ -88,10 +88,30 @@ class LeafletElevation extends LeafletMap {
     }
 
     /**
+    * update CSS rules that are used according to the options and client
+    */
+    updateCSS() {
+        
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .elevation-control .area {
+                fill: ${ this.pageVariables.sw_options.chart_fill_color };
+            }
+            .elevation-control .background {
+                background-color: ${ this.pageVariables.sw_options.chart_background_color };
+            }`;
+        document.head.appendChild(style);
+    }
+
+    /**
      * 
      * @param {int} m the current number of the chart = shortcode on the page
      */
     setChartOptions(m) {
+        if (this.pageVariables.eletheme === 'custom-theme') {
+            this.updateCSS();
+        }
+
         this.eleopts = { // Kartenoptionen definieren : können für alle Karten gleich sein
             elevationControl: {
                 options: {

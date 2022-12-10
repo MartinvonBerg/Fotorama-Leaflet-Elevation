@@ -445,7 +445,7 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'sw_effect',
 			'info' => 'Swiper Slide Change Effect. Cube works but is reduced in funtionality (no-zoom and lightbox)',
 		],
-		'param11' => [ // general
+		'param11' => [
 			'label' => 'sw_button_color',
 			'text' => 'Arrow Colour',
 			'class' => 'common_row',
@@ -684,12 +684,37 @@ final class FotoramaElevationAdmin
 				'yellow-theme' => 'Yellow',
 				'red-theme' => 'Red',
 				'magenta-theme' => 'Magenta',
-				'lightblue-theme' => 'Lightblue'
+				'lightblue-theme' => 'Lightblue',
+				'custom-theme' => 'Custom'
 			],
 			'default' => 'martin-theme',
 			'description' => '',
 			'shortcode' => 'eletheme',
-			'info' => 'Theme for leaflet elevation Chart. Martin-theme is my special theme.',
+			'info' => 'Theme for leaflet elevation Chart. Martin-theme is my special theme. Custom theme is customizable in Colours.',
+		],
+		'param11' => [
+			'label' => 'chart_fill_color',
+			'text' => 'Chart fill Colour',
+			'class' => 'common_row',
+			'custom_data' => 'custom11',
+			'type' => 'color',
+			'values' => 'black',
+			'default' => 'black',
+			'description' => 'Colour to fill the area under the Elevation profile',
+			'shortcode' => 'chart_fill_color',
+			'info' => 'Colour to fill the area under the Elevation profile',
+		],
+		'param10' => [
+			'label' => 'chart_background_color',
+			'text' => 'Chart background Colour',
+			'class' => 'common_row',
+			'custom_data' => 'custom10',
+			'type' => 'color',
+			'values' => 'black',
+			'default' => 'black',
+			'description' => 'Background Colour for the Elevation Chart',
+			'shortcode' => 'chart_background_color',
+			'info' => 'Background Colour for the Elevation Chart',
 		],
 		'param9' => [
 			'label' => 'height_of_chart_11',

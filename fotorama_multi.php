@@ -84,7 +84,7 @@ function showmulti($attr, $content = null)
 	static $fotoramaCounter = 0;
 	static $swiperCounter = 0;
 	static $pageVarsForJs = [];
-	$sw_options = [];
+	$page_options = [];
 		
  	// Get Values from Admin settings page
  	//$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
@@ -119,6 +119,8 @@ function showmulti($attr, $content = null)
 		'ratio' 			=> $fotorama_elevation_options['ratio'] ?? '1.5',
 		'background' 		=> $fotorama_elevation_options['background'] ?? 'darkgrey', // background color in CSS name
 		'sw_button_color'	=> $fotorama_elevation_options['sw_button_color'] ?? 'white', // swiper button color in CSS name or value
+		'chart_fill_color'		=> $fotorama_elevation_options['chart_fill_color'] ?? 'white',
+		'chart_background_color'=> $fotorama_elevation_options['chart_background_color'] ?? 'gray',
 		//'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', 'false' // funktioniert nicht: andere Werte als thums zeigen nicht alle Bilder im Slider!
 		'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
 		'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
@@ -243,7 +245,8 @@ function showmulti($attr, $content = null)
 	// Generate html for Slider images for javascript-rendering
 	if ($imageNumber > 0) {
 
-		$sw_options = [
+		// used for all Elements on the page, not only the swiper. 
+		$page_options = [
 			'addPermalink' 			=> $addPermalink, 
 			'allImgInWPLibrary' 	=> $allImgInWPLibrary,
 			'sw_effect'				=> $sw_effect,
@@ -276,6 +279,9 @@ function showmulti($attr, $content = null)
 			'active_border_width'	=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
 			'active_border_color'	=> $thumbbordercolor, // '#ea0000', 
 			'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused. for future change.
+			// for elevation chart
+			'chart_fill_color'		=> $chart_fill_color,
+			'chart_background_color'=> $chart_background_color,
 		];
 				
 		if ( $slider === 'fotorama') {
@@ -292,7 +298,7 @@ function showmulti($attr, $content = null)
 			$swiperCounter++;
 			require_once __DIR__ . '/inc/swiperClass.php';
 		
-			$fClass = new SwiperClass( $shortcodecounter, $data2, $sw_options); // Attention: Inconsistent constructor!
+			$fClass = new SwiperClass( $shortcodecounter, $data2, $page_options); // Attention: Inconsistent constructor!
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
@@ -417,7 +423,7 @@ EOF;
 		'useTileServer' => $fotorama_elevation_options['use_tile_server'],
 		'convertTilesToWebp' => $fotorama_elevation_options['convert_tiles_to_webp'],
 		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'],
-		'sw_options'	=> $sw_options
+		'sw_options'	=> $page_options // keep old name here for javascript.
  	);
 
 	$plugin_url = plugins_url('/', __FILE__);
