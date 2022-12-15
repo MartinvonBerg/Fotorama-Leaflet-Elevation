@@ -396,8 +396,8 @@ This plugin uses the great work from:
 10.12.2022: Admin Settings for swiper and Elevation chart updated with colour options. Bug fix in GPX-file parsing for small elevations and in ThumbnailClass for loop mode.
 
 = 0.13.1 =
-1.11.2022: Swiper Slider added. Fotos and Videos are now possible. Own development of thumbnail bar with shortocde parameters. No gutenberg or admin settings at the moment.
-            Fsllight box form another plugin from me is used as lightbox for swiper.
+1.11.2022: Swiper Slider added. Fotos and Videos are now possible. Own development of thumbnail bar with shortcode parameters. No gutenberg or admin settings at the moment.
+            Fslight box form another plugin from me is used as lightbox for Swiper.
             Webpack dynamic bundling of JS-files, so simplified script loading in WordPress (get out off the dependency hell)
 2.11.2022: Test with WP 6.1. Works!. Minor CSS update.
 
@@ -428,7 +428,7 @@ This plugin uses the great work from:
 29.03.2022: PHP Error Correction in ExtractMetadata.php. 
 
 = 0.8.3 =
-01.03.2022: Start implementation of unit tests with PHPunit und BrainMonkey. Minor changes in already tested function to improve code coverage or testatbility.
+01.03.2022: Start implementation of unit tests with PHPunit and BrainMonkey. Minor changes in already tested function to improve code coverage or testability.
 
 = 0.8.2 =
 20.02.2022: Bug removal in ExtractMetadata for webp-files. Correction of caption-text for webp-files.
@@ -438,7 +438,7 @@ This plugin uses the great work from:
 
 = 0.8.0 =
 03.02.2022: Changes for images that were added to the WP media library. Not relevant if you do not add your images to the WP Media Library.
-    - Set the Post (parent) that uses the image, if it is in the WP media library and at Post status transition from draft to published. Does not work in Quick-Edit. Reset the parent if the post-status is changed from publishedd to draft. In WP only ONE parent is possible, not more. So this relationship is unique.
+    - Set the Post (parent) that uses the image, if it is in the WP media library and at Post status transition from draft to published. Does not work in Quick-Edit. Reset the parent if the post-status is changed from published to draft. In WP only ONE parent is possible, not more. So this relationship is unique.
     - Add a CODE-option to add the permalink of the image to the YOAST sitemap. Admin option is Add Permalink. If unset the link to the image-file is added.
     - Same Admin option is used to add an icon to fotorama-slider at the top left to link to the attachment page of the image.
 
@@ -471,7 +471,7 @@ This plugin uses the great work from:
 
 = 0.5.0 =
 20.11.2021:
-    - fixed the setting for showcaption. Caption is now hidden with dispaly:none in CSS if parameter = false. That works.
+    - fixed the setting for showcaption. Caption is now hidden with display:none in CSS if parameter = false. That works.
     - added a parameter to show a shortened caption only: do this with shortcaption=true. No Admin Panel setting for that.
     - fixed size of leaflet marker popups
 
@@ -501,7 +501,7 @@ Update of Readme after Performance Optimization.
 21.07.2021: Minor change (rounding of GPS-Values for google link)
 
 = 0.3.2 =
-21.07.2021: Major code-rework and removal of Bugfixes. Curly Braces in PHP! Arghh.
+21.07.2021: Major code-rework and removal of Bugfixes. 
 
 = 0.3.1 =
 19.07.2021: Bugfixes due to non-standard usecase testing in PHP and JS.
