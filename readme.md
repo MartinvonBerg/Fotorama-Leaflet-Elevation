@@ -22,19 +22,19 @@
 
 # Description 
 
-This is a WordPress-Plugin to show a responsive image-slider with JPG- or WEBP-images located in a seperate FOLDER on your server. A thumbnail bar could be shown under the image slider. The images are taken from a folder in the WordPress upload-directory. Fotorama is used for the slider and the useful settings are available. The slider works only with JPG- or WEBP-Files an not with videos.
+WordPress-Plugin to show a responsive Image Slider with JPG- or WEBP-images located in a separate FOLDER on your server or even in the WordPress Media Library. A thumbnail bar could be shown under the image slider. The images are taken from a folder in the WordPress upload-directory. Fotorama or Swiper is used for the slider. The Fotorama slider only works with JPG- or WEBP-Files an not with videos. Swiper works with Videos, too.
 
-Optionally a Leaflet map is shown. This map shows the GPS-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation is used for that). The map moves synchronously to the slider, e.g. it is centered to the GPS-Position of the currently shown image. Under the map a height-chart of the GPX-track with its statistics is shown. The image slider may be used more than once per page. 
+Optionally a Leaflet map is shown. This map shows the GPS-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation is used for that). The map moves synchronously to the slider, e.g. it is centred to the GPS-Position of the currently shown image. Under the map a height-chart of the GPX-track with its statistics is shown. The image slider may be used more than once per page. 
 
-The Plugin is fully responsive (lazy loading) and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode (desktops only). It is deactivated for mobile devices.
+The Plugin is fully responsive (lazy loading, srcset) and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode for Fotorama (desktop only) and in the slider for Swiper.
 
 If resized images and thumbnails are available in the folder, the responsive image srcset is used. If the images were added to WP-Media-Library the WordPress-information of the Media-Library is used for the title and the alt-tag.  
 
-The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where the slider is ues. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point. Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work.
+The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where the slider is used. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point. Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work.
 
 The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation. 
-**NEW:Settings may be done with a Gutenberg Block** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh teh page on the frontend. Attention: If the Gutenberg block is used more then once on the page the second height-chart is sometimes not correctly drawn. I can't finde the error for that.
-**It runs with WordPress 5.9 and PHP 7.2 - 8.0.1**
+**NEW:Settings may be done with a Gutenberg Block** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
+**It runs from WordPress 5.9 - 6.1 and PHP 7.4 - 8.1.12**
 
 </br>
 
@@ -56,33 +56,21 @@ If you like this plugin buy me a coffee or a beer:
 
 # Live Example or Demo
 See under https://www.berg-reise-foto.de/tourenbericht-skitour/skitour-auf-den-sextner-stein-in-sudtirol/
+or any other travel or tour report on my page.
 
 ## Screenshot
 
 ![screenshot_live_site](./fotorama1.png)
 
 # Performance
-It is possible to reach a Google lighthouse Performance and SEO result of 100! It depends on the selected WordPress theme whether you reach 100 for the other values. It is still pending to add ARIA descriptions to the active elements of Fotorama. I'm working on that.
+It is possible to reach a Google lighthouse Performance and SEO result of 100! It depends on the selected WordPress theme and server whether you reach 100 for the other values. It is still pending to add ARIA descriptions to the active elements of Fotorama. Swiper is much better concerning ARIA.
 
 ![screenshot_lighthouse](./fotorama_multi_performance.jpg)
 
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.6 - 6.1 and PHP 7.4.2 - 8.0.1
-- The plugin was tested with other Plugins using leaflet Map:
-- It works together with:
-    - Leaflet Map (uses the same script-handle 'leaflet_js')
-    - Geo Mashup
-    - Google Maps Easy
-- It causes Javascript-Errors in browser with:    	
-    - GEO my WordPress 
-    - MapPress Maps for WordPress
-    - Leaflet Maps Marker 	 
-    - Ultimate Maps by Supsystic  
-    - WP GPX maps	
-
-The new "Plugin-Checker" shows you an error message if one of the above plugins is used together with fotorama_multi.
+- The plugin was tested with wordpress versions 5.9 - 6.1.1 and PHP 7.4.2 - 8.0.1
 
 # Installation
 
@@ -90,7 +78,7 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 1. **! Important !** Download the plugin as **Release** from github to a local *.zip - file.
 2. Install the zipped Plugin to the WordPress-Plugin-Page (Upload zip in Admin-Backend). 
 3. Activate the plugin through the 'Plugins' menu in Admin-Area of WordPress
-4. The Admin settings are initialised with reasonable values. Change the settings in the "Fotorama-Elevatione" page for preferred settings.
+4. The Admin settings are initialised with reasonable values. Change the settings in the "Fotorama-Elevation" page for preferred settings.
 5. Done!
 
 # Update or De-Installation
@@ -101,14 +89,14 @@ The new "Plugin-Checker" shows you an error message if one of the above plugins 
 
 # Upgrade Notice 
 
-Upgrade to WordPress 5.9 and PHP 7.4+ is highly recommended! PHP 8.0.x is even better!
-Due to the error corrections it is highly recommended to upgrade the Plugin to 0.9.0! Thank's for your patience.
+Upgrade to WordPress 5.9 and PHP 7.4+ is highly recommended! PHP 8.1.x is even better!
+Due to the error corrections it is highly recommended to upgrade the Plugin to 0.14.x! Thank's for your patience. With version update to 0.14.1 the settings have to be done once again. Sorry for that!
 
 </br>
 
 # Usage
 
-- Image and GPX-track preparation: see below
+- Image and GPX-track preparation: see below, but mind that it is not completely up to date.
 - Shortcode:  `[gpxview]`   **Use the shortcode as often you want per page or post! No interference between shortcodes.**
 - Parameters of the shortcode: <em>Parameter="Value"</em>. See the table below for the parameters. Separate the parameters by at least one space in between.
 - NOTE: It is NOT required to provide ALL parameters listed hereafter! You only have to provide parameters that should be different to the admin settings, or where no admin setting is available.
@@ -177,6 +165,7 @@ Due to the error corrections it is highly recommended to upgrade the Plugin to 0
 ### Explanation in the order of appearance:
 - GPX-File: Select a GPX-File from your disk you want to upload. The GPX-Path `gpxpath` of the Settings panel is used as folder for storage on the server.
 - GPX-Parsing: If checked the file will be reduced to the absolute minimum that is necessary to show a track in the leaflet map. Useful to reduce network load and speed up the page.
+- Ignore Track Points with Zero Elevation: Uncheck, to parse tracks which are taken on sea level, or close to it.
 - Distance Smooth: Add the track point only if it is XX meters away from the last track point (here 25m).
 - Elevation Smooth: Min. Elevation between Track-Points in Meters. Used in Statistics Calc only. Best is 4.
 - Overwrite GPX-Track: Well, self explanatory.
@@ -195,7 +184,7 @@ Process and save the file with the Button at the bottom.
     If you do not provide thumbnails the full-scaled images will be used. This will increase load time significantly.
 
 2. Convert JPGs to WEBPs (optional) 
-    To drastically reduce disk-space and download times you may use webp files. I do that converson locally on my computer and do NOT used WP for that. I use Imagemagick for that with the following powershell commands:
+    To drastically reduce disk-space and download times you may use webp files. I do that conversion locally on my computer and do NOT used WP for that. I use Imagemagick for that with the following powershell commands:
 
     ```bat
     $files = Get-ChildItem ./*.jpg
@@ -239,7 +228,7 @@ Process and save the file with the Button at the bottom.
 
     The CSS is set in 'fotorama_multi.css' and 'fotorama3.css'. Further Fotorama-options are to find under : https://fotorama.io/docs/4/options/ or in fotorama.dev.js starting at line 880 under "OPTIONS = {..."
 
-    If you know what you do you migth change the code or CSS to whatever you like. Have fun!
+    If you know what you do, you might change the code or CSS to whatever you like. Have fun!
     
 6. TODO & Bugs w.r.t to FOTORAMA
     - mixture of images with and without GPS-data and the option showmap="true" and requiregps="false" causes JS-errors. No standard use case. User should set showmap="false" for that case.
@@ -252,7 +241,7 @@ Process and save the file with the Button at the bottom.
     ```bat
     FOR %%i In (*.gpx) do GPSBabel -i gpx -f %%~i -x simplify,count=100 -o GPX -F %%~ni.gpx 
     ```
-    The number of trackpoints is set by count (My File: GPS_Babel_GPX_Reducet.bat)
+    The number of trackpoints is set by count (My File: GPS_Babel_GPX_Reduce.bat)
     
 
 2. Upload GPX-Tracks
@@ -277,7 +266,7 @@ Process and save the file with the Button at the bottom.
       - parameter 'showalltracks' : Check why the file has to be uploaded with GPX-Uploader and metadata has to be written to the GPX-file.    
 
 # Tile Server for Leaflet Map Tiles
-Since version 0.12.0, it is also possible to cache the leaflet tiles locally on your own server. This procedure conforms to the guidelines of the osmfoundation (https://operations.osmfoundation.org/policies/tiles/). There is no bulk download and the maps are stored locally. The Http referer of the current request is used as the Http referer. 
+Since version 0.12.0, it is also possible to cache the leaflet tiles locally on your own server. This procedure conforms to the guidelines of the osmfoundation (https://operations.osmfoundation.org/policies/tiles/). There is no bulk download and the maps are stored locally. The Http referrer of the current request is used as the Http referrer. 
 In addition the visitor's IP is NOT forwarded to the map server. This ensures that the use of maps from OpenStreeMap complies with the General Data Protection Regulation EC 2016/679. Therefore, no notice is required in the privacy policy of the website. This option can be set via the admin panel. Furthermore, the conversion of the tiles into webp file format can be selected in order to meet Google Pagespeed requirements.
 Note: The file .htacces has to be changed for the correct path and the admin panel will show if the Redirection by the .htaccess is successful:
 ```PHP
@@ -355,6 +344,7 @@ This plugin uses the great work from:
 - OpenStreetMaps, OpentTopoMaps  are great services.
 - Nominatim for reverse geo-coding: https://nominatim.org/release-docs/develop/api/Reverse/
 - MediaWiki for the PHP-Code to extract EXIF-Meta from Webp images (https://doc.wikimedia.org/mediawiki-core/1.27.3/php/WebP_8php_source.html)
+- Swiper.js Slider: Great! Thank you for that: https://swiperjs.com/
 
 # Note for Developers
 - unit tests
