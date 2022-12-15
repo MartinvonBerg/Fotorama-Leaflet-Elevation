@@ -163,7 +163,7 @@ final class FotoramaElevationAdmin
 		'section' => 'common_section', // Name for the Section on the page in Tab.
 		'sectionsText' => 'General and Common Settings', // Title to show under the Tab.
 		'namespace' => 'fotoramamulti',
-		'subTitle' => 'Common Setttings and Settings used for both Sliders', // Sub-Title to show under the Tab.
+		'subTitle' => 'Common Settings and Settings used for both Sliders', // Sub-Title to show under the Tab.
 		// All Parameters for this option. Will be shown in that order on the Page under the Tab.
 		'param5' => [ // general!
 			'label' => 'slider', // Transition effect. Can be 'slide', 'fade', 'cube', 'coverflow', 'flip' or ('creative')
@@ -175,7 +175,7 @@ final class FotoramaElevationAdmin
 			'default' => 'fotorama',
 			'description' => 'Select the Slider to show the Images. Swiper works with Fotos and Videos.', // Text after the input field.
 			'shortcode' => 'slider', // shortcode Parameter that will be used.
-			'info' => 'Select the Image Slider. Swiper works with Fotos and Videos. Fotorama with Images only.', // Text for the Overview Parameter Table shown under a seperate Tab.
+			'info' => 'Select the Image Slider. Swiper works with Fotos and Videos. Fotorama with Images only.', // Text for the Overview Parameter Table shown under a separate Tab.
 		],
 		'param6' => [ // 
 			'label' => 'fit',
@@ -443,7 +443,7 @@ final class FotoramaElevationAdmin
 			'default' => 'slide',
 			'description' => '',
 			'shortcode' => 'sw_effect',
-			'info' => 'Swiper Slide Change Effect. Cube works but is reduced in funtionality (no-zoom and lightbox)',
+			'info' => 'Swiper Slide Change Effect. Cube works but is reduced in functionality (no-zoom and lightbox)',
 		],
 		'param11' => [
 			'label' => 'sw_button_color',
@@ -752,7 +752,7 @@ final class FotoramaElevationAdmin
 			'default' => 'true',
 			'description' => 'Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)',
 			'shortcode' => 'showadress',
-			'info' => 'Show start adress of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image.',
+			'info' => 'Show start address of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image.',
 		],
 		'param3' => [
 			'label' => 'text_for_start_address_8',
