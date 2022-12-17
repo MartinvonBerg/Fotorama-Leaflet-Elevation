@@ -18,12 +18,12 @@ final class FotoramaElevationAdmin
 {
 	// organize all settings and page info in tabs and give base page information
 	private $tabs = [ 
-		'page_title' => 'Fotorama-Elevation', // page_title
-		'menu_title' => 'Fotorama-Elevation', // menu_title
-		'slug' => 'fotorama-elevation', // menu_slug and page name
+		'page_title' => 'Slider-Map-Chart', // page_title
+		'menu_title' => 'Slider-Map-Chart', // menu_title
+		'slug' => 'slider-map-chart', // menu_slug and page name
 		'namespace' => 'fotoramamulti',
-		'title' => 'Settings for Fotorama-Elevation Plugin', // the Top page title
-		'subtitle' => 'General Settings for the Slider Elevation Plugin that are used for every page or post where the Plugin is used. (Almost) All settings can be overwritten by parameters of the shortcode.',
+		'title' => 'Settings for Slider + Leaflet-Map + Chart Plugin', // the Top page title
+		'subtitle' => 'Settings for the Slider + Leaflet-Map + Chart Plugin that are used for every page or post where the Plugin is used. (Almost) All settings can be overwritten by parameters of the shortcode.',
 		'showParametersPage' => true, 
 		'parametersTitle' => 'Parameters', // Name of the Tab for the Overview page with all Parameters
 		// subarray for Tabs. Will be shown in that order

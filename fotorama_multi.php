@@ -7,9 +7,9 @@
  * @package           fotorama_multi
  *
  * @wordpress-plugin
- * Plugin Name:       Fotorama_Multi
+ * Plugin Name:       Slider + Leaflet-Map + Chart
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
- * Description:       Fotorama Slider and Leaflet Elevation integration
+ * Description:       Image and Video Slider, Leaflet Map and Elevation Chart Integration. Shows images from any directory in your upload folder. Uses Fotorama or Swiper for the Slider.
  * Version:           0.14.0
  * Requires at least: 5.9
  * Requires PHP:      7.4
