@@ -63,9 +63,9 @@ or any other travel or tour report on my page.
 ![screenshot_live_site](./fotorama1.png)
 
 # Performance
-It is possible to reach a Google lighthouse Performance and SEO result of 100! It depends on the selected WordPress theme and server whether you reach 100 for the other values. It is still pending to add ARIA descriptions to the active elements of Fotorama. Swiper is much better concerning ARIA.
+It is possible to reach a Google lighthouse Performance of 99 and 100 for the other values (Swiper only)! All values depend on the selected WordPress theme and server performance, too.
 
-![screenshot_lighthouse](./fotorama_multi_performance.jpg)
+![screenshot_lighthouse](./swiper-leaflet-perf.jpg)
 
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
