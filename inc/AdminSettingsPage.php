@@ -11,6 +11,7 @@ class AdminSettingsPage {
 	
 	private $uploadDirectory = '';
 	private $hasFileInput = false;
+	private $settings = [];
 	
 	/**
 	 * load settings and hook on 'admin_init' to register settings, sections and fields. Init the Database with settings.

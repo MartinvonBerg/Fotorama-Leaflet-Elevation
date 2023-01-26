@@ -912,8 +912,8 @@ final class FotoramaElevationAdmin
 
 	public function create_admin_page_with_tabs()
 	{
-		$this->fotorama_elevation_options = get_option('fotorama_elevation_option_name');
-		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
+		//$this->fotorama_elevation_options = get_option('fotorama_elevation_option_name');
+		//$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
 
 		//Get the active tab from the $_GET param
 		$default_tab = null;

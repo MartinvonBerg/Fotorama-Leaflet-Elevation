@@ -35,9 +35,10 @@ class fotoramaSitemaps
 	{
 
 		// Get Values from Admin settings page and global Constant
-		$this->doSitemap  = get_option('fotorama_elevation_option_name')['doYoastXmlSitemap_16'] == 'true';
-		$this->requiregps = get_option('fotorama_elevation_option_name')['images_with_gps_required_5'];
-		$this->addPermalink = get_option( 'fotorama_elevation_option_name')['useCDN_13'] == 'true';
+		$fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
+        $this->doSitemap  = $fotorama_elevation_options['doYoastXmlSitemap_16'] == 'true';
+		$this->requiregps = $fotorama_elevation_options['images_with_gps_required_5'];
+		$this->addPermalink = $fotorama_elevation_options['useCDN_13'] == 'true';
 		$this->thumbs = THUMBSDIR;
 
 		// Define path and url variables

@@ -391,8 +391,12 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.14.1 =
+25.01.2023: PHP code correction for new Admin settings finalized.
+
+
 = 0.14.0 =
-3.12.2022: Admin Settings Page and option handling revised. Minimum PHP Version = 7.4 now! Please update your server. Start using of TypeScript and webpack handling.
+3.12.2022: Admin Settings Page and option handling revised. Minimum PHP Version = 7.3 now! Please update your server. Start using of TypeScript and webpack handling.
 10.12.2022: Admin Settings for swiper and Elevation chart updated with colour options. Bug fix in GPX-file parsing for small elevations and in ThumbnailClass for loop mode.
 
 = 0.13.1 =

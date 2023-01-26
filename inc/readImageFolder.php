@@ -98,8 +98,9 @@ final class ReadImageFolder
         $this->ignoresort = $ignoresort;
 
         // settings for the slider thumbnail
-        $this->CssThumbHeight = get_option( 'fotorama_elevation_option_name')['f_thumbheight'];
-        $this->CssThumbWidth =  get_option( 'fotorama_elevation_option_name')['f_thumbwidth'];
+        $fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
+        $this->CssThumbHeight = $fotorama_elevation_options['f_thumbheight'];
+        $this->CssThumbWidth =  $fotorama_elevation_options['f_thumbwidth'];
         $this->CssThumbRatio = $this->CssThumbWidth / $this->CssThumbHeight;
         $this->sizes = $this->get_best_image_subsize();
 

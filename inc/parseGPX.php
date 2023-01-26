@@ -56,7 +56,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth, $ignoreZeroElev
             $ascent = $ascent + $segment->stats->cumulativeElevationGain;
             $descent = $descent + $segment->stats->cumulativeElevationLoss;
             $dist = $dist + $segment->stats->distance;
-            $bounds = getBounds($segment, $reducetrack, $ignoreZeroElev);
+            $bounds = getBounds($segment, $reducetrack, $smooth, $ignoreZeroElev);
         } else {
             $desc = 'No elevation data in route of GPX-File. Skipped';
             return $desc;
@@ -152,7 +152,7 @@ function parsegpx($infile, $path, $newfile, $smooth, $elesmooth, $ignoreZeroElev
  *
  * @param object $segment phpGPX track segment 
  * @param bool $reduce reduce track or not
- * @param float $smooth value for track smoothing in meters
+ * @param float $smooth distance smooth value for track smoothing in meters
  * @param bool $ignoreZeroElev with true points with zero Elevation will be skipped
  *
  * @return array<mixed> bounds of track and segment 

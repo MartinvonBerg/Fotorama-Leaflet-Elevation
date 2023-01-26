@@ -10,7 +10,7 @@
  * Plugin Name:       Slider + Leaflet-Map + Chart
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Image and Video Slider, Leaflet Map and Elevation Chart Integration. Shows images from any directory in your upload folder. Uses Fotorama or Swiper for the Slider.
- * Version:           0.14.0
+ * Version:           0.14.1
  * Requires at least: 5.9
  * Requires PHP:      7.4
  * Author:            Martin von Berg
@@ -41,8 +41,7 @@ const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_im
 const THUMBSDIR = 'thumbs';
 
 // init the database settings for the admin panel on first activation of the plugin. Does not overwrite
-require_once __DIR__ . '/inc/init_database.php';
-//register_activation_hook( plugin_basename( __FILE__ ) ,   '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
+require_once __DIR__ . '/inc/deactivate.php';
 register_deactivation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_deactivate' );
 
 // load all functions
@@ -427,7 +426,7 @@ EOF;
  	);
 
 	$plugin_url = plugins_url('/', __FILE__);
-	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.14.0', true);
+	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.14.1', true);
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
