@@ -6,6 +6,8 @@
  * at http://jeremyhixon.com/wp-tools/option-page/
  */
 
+// TODO: add settings to parameter - table that do not have shortcode. search with: 'shortcode' => ''
+
 namespace mvbplugins\fotoramamulti;
 
 $path = plugin_dir_path(__FILE__);
@@ -52,7 +54,7 @@ final class FotoramaElevationAdmin
 		],
 	];
 			
-	// this are the settings for the GPX-File Tab. This are very specific, not generic. The class is adopted to this settings.
+	// this are the settings for the GPX-File Tab. These are very specific, not generic. The class is adopted to this settings.
 	private $gpxSettings = [
 		'pre' => 'gpx',
 		'options' => 'fm_gpx_options',
@@ -61,7 +63,7 @@ final class FotoramaElevationAdmin
 		'sectionsText' => 'GPX-File settings + upload',
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Hint: GPX-routes without elevation data should be converted to tracks with www.gpsvisualizer.com.
-						Trackdata without elevation will be skipped. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.
+						Trackdata without elevation will be skipped on demand. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename.
 						Button Save GPX-File underneath will save settings and / or GPX-File.',
 		//'shortcode_no_admin' => [], // none!
 		'param0' => [
@@ -123,8 +125,8 @@ final class FotoramaElevationAdmin
 			'values' => 25, // default value
 			'default' => 25,
 			'min' => 1,
-			'max' => 50,
-			'description' => 'Min. Distance of Track Points in Meters',
+			'max' => 10000,
+			'description' => 'Min. Distance of Track Points in Meters (25m best for mountaineering of any kind',
 			'shortcode' => '',
 			'info' => '',
 		],

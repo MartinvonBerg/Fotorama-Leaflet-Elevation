@@ -422,7 +422,7 @@ EOF;
 		'useTileServer' => $fotorama_elevation_options['use_tile_server'],
 		'convertTilesToWebp' => $fotorama_elevation_options['convert_tiles_to_webp'],
 		'htaccessTileServerIsOK' => $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'],
-		'sw_options'	=> $page_options // keep old name here for javascript.
+		'sw_options' => $page_options // keep old name of php-variable here for javascript.
  	);
 
 	$plugin_url = plugins_url('/', __FILE__);
