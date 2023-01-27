@@ -6,7 +6,6 @@
  * at http://jeremyhixon.com/wp-tools/option-page/
  */
 
-// TODO: add settings to parameter - table that do not have shortcode. search with: 'shortcode' => ''
 
 namespace mvbplugins\fotoramamulti;
 
@@ -126,7 +125,7 @@ final class FotoramaElevationAdmin
 			'default' => 25,
 			'min' => 1,
 			'max' => 10000,
-			'description' => 'Min. Distance of Track Points in Meters (25m best for mountaineering of any kind',
+			'description' => 'Min. Distance of Track Points in Meters (25m best for mountaineering of any kind)',
 			'shortcode' => '',
 			'info' => '',
 		],
@@ -1041,8 +1040,8 @@ final class FotoramaElevationAdmin
 									<?php
 									foreach ($setArr as $single) {
 
-										// create the single parameter line
-										if (\gettype($single) === 'array' && $single['shortcode'] !== '') {
+										// define the value for the single parameter line
+										if ( \gettype($single) === 'array' ) {
 											if ($single['type'] === 'number') {
 												$value = strval($single['default']) . ' / ' . strval($single['min']) . '..' . strval($single['max']);
 											} elseif ($single['type'] === 'select') {
@@ -1053,14 +1052,26 @@ final class FotoramaElevationAdmin
 											} else {
 												$value = strval($single['default']);
 											}
-										?>
-											<tr>
-												<td class="tg-0pky"><?php echo ($single['shortcode']) ?></td>
-												<td class="tg-0pky" style="max-width:480px;"><?php echo ($value) ?></td>
-												<td class="tg-0pky"><?php echo ($single['shortcode'] . '="' . $single['default'] . '"') ?></td>
-												<td class="tg-0pky"><?php echo ($single['info']) ?></td>
-											</tr>
-										<?php
+
+											if ( $single['shortcode'] !== '' ) {
+												?>
+													<tr>
+														<td class="tg-0pky"><?php echo ($single['shortcode']) ?></td>
+														<td class="tg-0pky" style="max-width:480px;"><?php echo ($value) ?></td>
+														<td class="tg-0pky"><?php echo ($single['shortcode'] . '="' . $single['default'] . '"') ?></td>
+														<td class="tg-0pky"><?php echo ($single['info']) ?></td>
+													</tr>
+												<?php
+											} else {
+												?>
+													<tr>
+														<td class="tg-0pky"><?php echo ('no Shortode: </br>' . $single['text']) ?></td>
+														<td class="tg-0pky" style="max-width:480px;"><?php echo ($value) ?></td>
+														<td class="tg-0pky"><?php echo ('--') ?></td>
+														<td class="tg-0pky"><?php echo ($single['text'] .': '. $single['description']) ?></td>
+													</tr>
+												<?php
+											}
 										}
 									}
 								}

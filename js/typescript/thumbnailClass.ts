@@ -297,8 +297,8 @@ class ThumbnailSlider implements thumbnailClassInterface {
    */
   public setActiveThumb (number : number, caller = '') : void {
     // remove active class
-    // @ts-ignore
-    this.ele.childNodes[this.currentActive].classList.remove(this.activeClass) // TODO
+    // @ts-ignore // TODO
+    this.ele.childNodes[this.currentActive].classList.remove(this.activeClass)
     // set active class and number
     this.thumbnails[number].classList.add(this.activeClass)
 
