@@ -196,16 +196,16 @@ class SliderSwiper {
         
         const style = document.createElement('style');
         style.innerHTML = `
-            .myswiper .swiper-slide {
+            #swiper${this.number} .myswiper .swiper-slide {
                 background: ${ this.#pageVariables.sw_options.background };
             }
-            .myswiper {
+            #swiper${this.number} .myswiper {
                 background: ${ this.#pageVariables.sw_options.background };
             }
-            .myswiper .swiper-slide img {
+            #swiper${this.number} .myswiper .swiper-slide img {
                 object-fit: ${ this.#pageVariables.sw_options.slide_fit };
             }
-            .swiper-button-prev, .swiper-button-next {
+            #swiper${this.number} .swiper-button-prev, #swiper${this.number} .swiper-button-next {
                 color: ${ this.#pageVariables.sw_options.sw_button_color};
             }`;
         document.head.appendChild(style);

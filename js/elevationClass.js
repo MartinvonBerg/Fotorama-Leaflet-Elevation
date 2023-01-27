@@ -26,7 +26,7 @@ class LeafletElevation extends LeafletMap {
 
         import(/* webpackChunkName: "leaflet-elevation" */'./elevation/dist/leaflet-elevation.js').then( () => {
             // set options for elevation chart
-            this.setChartOptions(number);
+            this.setChartOptions(this.number);
 
             // create tracks
             if (parseInt( this.pageVariables.ngpxfiles) === 1) {
@@ -91,13 +91,12 @@ class LeafletElevation extends LeafletMap {
     * update CSS rules that are used according to the options and client
     */
     updateCSS() {
-        
         const style = document.createElement('style');
         style.innerHTML = `
-            .elevation-control .area {
+            #elevation-div${this.number} .elevation-control .area {
                 fill: ${ this.pageVariables.sw_options.chart_fill_color };
             }
-            .elevation-control .background {
+            #elevation-div${this.number} .elevation-control .background {
                 background-color: ${ this.pageVariables.sw_options.chart_background_color };
             }`;
         document.head.appendChild(style);

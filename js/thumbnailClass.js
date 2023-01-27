@@ -135,7 +135,7 @@ class ThumbnailSlider {
       */
       const style = document.createElement('style');
       style.innerHTML = `
-        .thumbnail_slide.active_border {
+        #thumb_inner_${this.number} .thumbnail_slide.active_border {
           z-index: 100;
           -webkit-filter: brightness(${this.options.active_brightness});
           filter: brightness(${this.options.active_brightness});
