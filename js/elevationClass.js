@@ -1,14 +1,12 @@
 /*!
-	ElevationClass 0.12.0
+	ElevationClass 0.14.1
 	license: GPL 2.0
 	Martin von Berg
 */
 
 import {LeafletMap} from './leafletMapClass';
-// webpack import information for bundling. localhost won't work with that.
 // local Styles for LEAFLET-ELEVATION 
 import './elevation/dist/leaflet-elevation.css';
-// register local Scripts - load dependencies first
 
 export {LeafletElevation};
 
@@ -134,11 +132,6 @@ class LeafletElevation extends LeafletMap {
                     skipNullZCoords: this.pageVariables.ignorezeroes === 'true', 
                     height: this.pageVariables.chartheight,
                     handlers: ["Distance", "Altitude"],
-                    //lazyLoadJS: true, // set the lazyLoadJS option to false to avoid automatically including missing javascript dependencies (i.e. not detected in the global scope).
-                    //loadData: { 
-                    //    defer: true,
-                    //    lazy: true,
-                    //}
                 }
             }
         }
@@ -176,6 +169,7 @@ class LeafletElevation extends LeafletMap {
             info = this.pageVariables.tracks.track_0.info;
             let key = Object.keys(event.layer._layers)[0];
             this.bounds = event.layer._layers[key]._bounds;
+            this.controlLayer.addOverlay(event.layer, event.name );
         }
         
         if (info) {info = info.split(' ')} else {info='';};
@@ -208,7 +202,7 @@ class LeafletElevation extends LeafletMap {
             }
         }
 
-        if (event.type !== 'legend_selected') this.controlLayer.addOverlay(event.layer, event.name );
+        //if (event.type !== 'legend_selected') this.controlLayer.addOverlay(event.layer, event.name );
     }
     
 }
