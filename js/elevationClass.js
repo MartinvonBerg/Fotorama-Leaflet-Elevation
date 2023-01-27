@@ -132,6 +132,7 @@ class LeafletElevation extends LeafletMap {
                     skipNullZCoords: this.pageVariables.ignorezeroes === 'true', 
                     height: this.pageVariables.chartheight,
                     handlers: ["Distance", "Altitude"],
+                    margins: { top: 20, right: 25, bottom: 0, left: 25 } // this is required for pages with several charts. Without it the single charts are shrinked in height.
                 }
             }
         }
