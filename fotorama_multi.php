@@ -92,6 +92,7 @@ function showmulti($attr, $content = null)
 		'ignoresort' 		=> $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', 
 		'showadress' 		=> $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
 		'showmap' 			=> 'true',
+		'showchart'			=> $fotorama_elevation_options['showchart'] ?? 'true',
 		'adresstext' 		=> $fotorama_elevation_options['text_for_start_address_8'] ?? 'Startadresse',
 		'requiregps' 		=> $fotorama_elevation_options['images_with_gps_required_5'] ?? 'true',
 		'maxwidth' 			=> $fotorama_elevation_options['max_width_of_container_12'] ?? '600', 
@@ -303,8 +304,10 @@ function showmulti($attr, $content = null)
 
 		// show Elevation-Chart and custom summary
 		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
+			$display = '';
+			if ( $showchart === 'false' ) $display = 'display:none';
 			$htmlstring .= <<<EOF
-		<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;"></div>
+		<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;{$display}"></div>
 		<div id="data-summary{$shortcodecounter}" class="data-summary">
 		<span class="totlen">
 		<span class="summarylabel"> </span>

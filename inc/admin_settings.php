@@ -669,6 +669,18 @@ final class FotoramaElevationAdmin
 		'namespace' => 'fotoramamulti',
 		'subTitle' => 'Settings for the Leaflet Map and Elevation Chart',
 		//'shortcode_no_admin' => ['gpxfile', 'showalltracks', 'mapcenter', 'zoom', 'markertext'],
+		'param13' => [
+			'label' => 'showchart',
+			'text' => 'Show Elevation Chart',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom13',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show the elevation Chart. Or not.',
+			'shortcode' => 'showchart',
+			'info' => 'Show the elevation Chart. Or not.',
+		],
 		'param12' => [
 			'label' => 'colour_theme_for_leaflet_elevation_1',
 			'text' => 'Colour Theme for Leaflet Elevation',
