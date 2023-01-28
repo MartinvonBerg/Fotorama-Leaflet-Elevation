@@ -9,7 +9,7 @@ namespace mvbplugins\fotoramamulti;
  * @return void none
  */
 function fotoramamulti_activate() {
-	
+
 	$option_name = 'fm_common_options';
 	$opt = get_option($option_name);
 	if ( ! $opt ) {
@@ -17,6 +17,7 @@ function fotoramamulti_activate() {
 				'doYoastXmlSitemap_16' =>  "false",
 				'images_with_gps_required_5' =>  "true",
 				'useCDN_13' =>  "false", // Add Permalink option!
+				'min_width_css_grid_row_14' => 0,
 			);
 		update_option($option_name, $opts);
 	}

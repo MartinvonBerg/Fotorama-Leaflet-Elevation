@@ -1,11 +1,10 @@
 <?php
+namespace mvbplugins\fotoramamulti;
 
 /**
  *  by Martin von Berg
  * Almost general Class to create an Admin Settings Page (in Tabs) from given Settings in an Array.
  */
-
-namespace mvbplugins\fotoramamulti;
 
 class AdminSettingsPage {
 	

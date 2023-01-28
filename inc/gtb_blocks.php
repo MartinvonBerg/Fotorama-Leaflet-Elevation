@@ -1,4 +1,5 @@
 <?php
+namespace mvbplugins\fotoramamulti;
 
 /**
  *
@@ -10,7 +11,6 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-namespace mvbplugins\fotoramamulti;
 
 // fallback for wordpress security
 if ( ! defined('ABSPATH' )) { die('Are you ok?'); }

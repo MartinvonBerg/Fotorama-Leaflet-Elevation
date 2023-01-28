@@ -1,4 +1,5 @@
 <?php
+namespace mvbplugins\fotoramamulti;
 
 /**
  *
@@ -18,20 +19,6 @@
  * License:           GPL-2.0
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
-// Ideen-liste
-// 			PHP: filter für Bild mit Dateinamen aus Standard WP-Ordner. mehrere Ordner mit Komma getrennt. Filter mit Komma getrennt?
-// --- Swiper
-//			preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
-// 			Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! DAher nicht nutzen
-// 			object-fit als CSS für die img im slider ergänzen. Im swiper-zoom-container ist bereits object-fit: contain. Bei cube ist das nicht.
-// 			als inline-script geht aber nicht, da das CSS im swiper_bundle ist. Einfachste Lösung: css nicht im bundle. Traditionell laden und inlince_script. Ergänzung im PHP funktioniert nicht.
-//			lighthouse : passive event listener bei swiper der Fall. stimmt auch, wird nach event unterschieden. Das erste Event ist richtigerweise "false".
-// --- Karte
-// 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
-// 			anderen Icon-Satz verwenden? Neue Icons skalieren.
-//			Hinweis lighthouse: Änderung addEventlistener bei d3.js führt zu Fehlern. Ist also nicht änderbar. muss akzeptiert werden.
-
-namespace mvbplugins\fotoramamulti;
 
 // fallback for wordpress security
 if ( ! defined('ABSPATH' )) die('Are you ok?');
@@ -314,7 +301,7 @@ function showmulti($attr, $content = null)
 		$htmlstring  .= "<div id=\"box{$mapid}\" class=\"boxmap\">";
 		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;aspect-ratio:{$mapaspect}\"></div>";
 
-		// Custom Summary
+		// show Elevation-Chart and custom summary
 		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
 			$htmlstring .= <<<EOF
 		<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;"></div>

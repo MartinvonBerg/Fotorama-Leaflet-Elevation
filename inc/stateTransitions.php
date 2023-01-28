@@ -1,9 +1,10 @@
 <?php
+namespace mvbplugins\fotoramamulti;
 
 // define globals for detection of status change of the post from published to draft and back
 // I don't like this, but I didn't find another solution.
 // This works only because the post is rendered at status transitions, otherwise not.
-namespace mvbplugins\fotoramamulti;
+
 
 global $post_state_pub_2_draft; 
 global $post_state_draft_2_pub;

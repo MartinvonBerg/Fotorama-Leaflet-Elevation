@@ -48,12 +48,14 @@ add_action('wp_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
  * @return void none
  */
 function fotorama_multi_styles( ) {
-	//$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
-	$fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
-	$stylestring  = '<style id="fotorama_multi_inline_css" type="text/css">';
-	$stylestring  .= '@media screen and (min-width: 480px) { .mfoto_grid { display: grid;';
-	$stylestring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} } </style>';  
-	echo $stylestring;
+	$fotorama_elevation_options = get_option( 'fm_common_options' ); // Array of All Options
+	//$fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
+	if ( $fotorama_elevation_options['min_width_css_grid_row_14'] > 0) {
+		$stylestring  = '<style id="fotorama_multi_inline_css" type="text/css">';
+		$stylestring  .= '@media screen and (min-width: 480px) { .mfoto_grid { display: grid;';
+		$stylestring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} } </style>';  
+		echo $stylestring;
+	}
 }
 
 // hook the function addLinkToHead the wp_head hook

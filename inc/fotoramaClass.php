@@ -1,4 +1,5 @@
 <?php
+namespace mvbplugins\fotoramamulti;
 
 /**
  * Class FotoramaClass to generate the html for the fotorama slider.
@@ -15,7 +16,6 @@
  * @version    0.14.1
  */
 
-namespace mvbplugins\fotoramamulti;
 
 /**
  * Class FotoramaClass to generate the html for the fotorama slider.

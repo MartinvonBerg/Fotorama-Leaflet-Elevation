@@ -1,4 +1,5 @@
 <?php
+namespace mvbplugins\fotoramamulti;
 
 /**
  * Class SwiperClass to generate the html for the swiper slider.
@@ -15,7 +16,6 @@
  * @version    0.14.1
  */
 
-namespace mvbplugins\fotoramamulti;
 
 use DOMDocument;
 

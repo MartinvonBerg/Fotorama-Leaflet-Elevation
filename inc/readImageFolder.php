@@ -1,4 +1,5 @@
 <?php
+namespace mvbplugins\fotoramamulti;
 
 /**
  * Class to readout all image files (jpg or webp) from the give directory on the server.
@@ -15,7 +16,6 @@
  * @param string $folder folder or directory on the server shall be analysed.
  */
 
-namespace mvbplugins\fotoramamulti;
 
 /**
  * Class ReadImageFolder to readout a given folder on the server.
