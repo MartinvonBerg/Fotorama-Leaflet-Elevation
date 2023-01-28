@@ -2,6 +2,27 @@
 namespace mvbplugins\fotoramamulti;
 
 /**
+ * init the database settings for yoastXmlSitemap.php on first activation of the plugin.
+ * Current settings will not be overwritten.
+ * Mind the 'register_activation_hook': The path and main-file of the plugin have to match!
+ *
+ * @return void none
+ */
+function fotoramamulti_activate() {
+	
+	$option_name = 'fm_common_options';
+	$opt = get_option($option_name);
+	if ( ! $opt ) {
+		$opts = array(
+				'doYoastXmlSitemap_16' =>  "false",
+				'images_with_gps_required_5' =>  "true",
+				'useCDN_13' =>  "false", // Add Permalink option!
+			);
+		update_option($option_name, $opts);
+	}
+}
+
+/**
  * On Deactivation of the Plugin: Delete the option 'postimg' for all pages and posts as this option is no longer required.
  *
  * @return void none

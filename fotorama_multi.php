@@ -41,7 +41,8 @@ const MAX_IMAGE_SIZE =  2560; // value for resize to ...-scaled.jpg TODO: big_im
 const THUMBSDIR = 'thumbs';
 
 // init the database settings for the admin panel on first activation of the plugin. Does not overwrite
-require_once __DIR__ . '/inc/deactivate.php';
+require_once __DIR__ . '/inc/init_database.php';
+register_activation_hook( plugin_basename( __FILE__ ) ,   '\mvbplugins\fotoramamulti\fotoramamulti_activate' );
 register_deactivation_hook( plugin_basename( __FILE__ ) , '\mvbplugins\fotoramamulti\fotoramamulti_deactivate' );
 
 // load all functions

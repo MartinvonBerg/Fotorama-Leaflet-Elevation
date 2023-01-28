@@ -13,10 +13,10 @@ namespace mvbplugins\fotoramamulti;
 class fotoramaSitemaps
 {
 	protected $thumbs;
-	protected $requiregps;
+	protected $requiregps = true;
 	protected $up_url;
 	protected $up_dir;
-	protected $doSitemap;
+	protected $doSitemap = false;
 	protected $addPermalink = false; 
 	
 	/* for PHP 7.4+
@@ -35,10 +35,10 @@ class fotoramaSitemaps
 	{
 
 		// Get Values from Admin settings page and global Constant
-		$fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
-        $this->doSitemap  = $fotorama_elevation_options['doYoastXmlSitemap_16'] == 'true';
-		$this->requiregps = $fotorama_elevation_options['images_with_gps_required_5'];
-		$this->addPermalink = $fotorama_elevation_options['useCDN_13'] == 'true';
+		$fotorama_elevation_options = get_option('fm_common_options');
+		$this->doSitemap  = $fotorama_elevation_options['doYoastXmlSitemap_16'] === 'true';
+		$this->requiregps = $fotorama_elevation_options['images_with_gps_required_5'] === 'true';
+		$this->addPermalink = $fotorama_elevation_options['useCDN_13'] === 'true';
 		$this->thumbs = THUMBSDIR;
 
 		// Define path and url variables
@@ -105,7 +105,7 @@ class fotoramaSitemaps
 					foreach ($folderImages as $item) {
 						
 						$newimage = [];
-						if ($item['wpid'] > 0 && $this->addPermalink == true) {
+						if ($item['wpid'] > 0 && $this->addPermalink === true) {
 							$newimage['src'] = \get_the_permalink( $item['wpid']);
 						} else {
 							$newimage['src'] = $imageurl . '/' . $item['file'] . $item['extension'];
