@@ -12,7 +12,7 @@
             "webRoot": "${workspaceFolder}",
         },
         {
-            "name": "Listen for XDebug",
+            "name": "Attach to XDebug",
             "type": "php",
             "request": "launch",
             "port": 9003,

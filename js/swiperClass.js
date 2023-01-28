@@ -194,7 +194,7 @@ class SliderSwiper {
     */
     updateCSS() {
         
-        const style = document.createElement('style');
+        const style = document.createElement('style'); // TODO: fit with swiper zoom
         style.innerHTML = `
             #swiper${this.number} .myswiper .swiper-slide {
                 background: ${ this.#pageVariables.sw_options.background };

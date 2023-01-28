@@ -378,9 +378,9 @@ final class FotoramaElevationAdmin
 			'class' => 'common_row',
 			'custom_data' => 'custom17',
 			'type' => 'number',
-			'values' => 0, // default value
-			'default' => 0,
-			'min' => 0,
+			'values' => 300, // default value
+			'default' => 300,
+			'min' => 1,
 			'max' => 2000,
 			'description' => '',
 			'shortcode' => 'transitionduration',
