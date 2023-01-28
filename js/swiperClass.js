@@ -194,7 +194,7 @@ class SliderSwiper {
     */
     updateCSS() {
         
-        const style = document.createElement('style'); // TODO: fit with swiper zoom
+        const style = document.createElement('style');
         style.innerHTML = `
             #swiper${this.number} .myswiper .swiper-slide {
                 background: ${ this.#pageVariables.sw_options.background };
@@ -203,6 +203,9 @@ class SliderSwiper {
                 background: ${ this.#pageVariables.sw_options.background };
             }
             #swiper${this.number} .myswiper .swiper-slide img {
+                object-fit: ${ this.#pageVariables.sw_options.slide_fit };
+            }
+            #swiper${this.number} .swiper-wrapper .swiper-zoom-container>img {
                 object-fit: ${ this.#pageVariables.sw_options.slide_fit };
             }
             #swiper${this.number} .swiper-button-prev, #swiper${this.number} .swiper-button-next {
