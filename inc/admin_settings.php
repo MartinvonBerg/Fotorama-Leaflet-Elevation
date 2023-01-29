@@ -29,7 +29,7 @@ final class FotoramaElevationAdmin
 		'tabs' => [
 			['slug' => 'general', // the Slug of the Tab
 			'title' => 'General', // the Title of the Tab
-			'setting' => 'commonSettings' // define the array with settings for this tab
+			'setting' => 'commonSettings' // define the array with settings for this tab. This array must be given in this class.
 			],
 			['slug' => null, // the default Tab
 			'title' => 'GPX-File',

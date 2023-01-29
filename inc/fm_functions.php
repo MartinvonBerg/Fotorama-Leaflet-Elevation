@@ -94,7 +94,7 @@ function addLinkToHead() {
  *
  * @return void
  */
-function action_shutdown( ) { 
+function action_shutdown() { 
     
 	$fm_act_pis = \get_option('fm_plugins_checker');
 
