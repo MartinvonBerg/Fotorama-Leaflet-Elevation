@@ -117,7 +117,7 @@ Due to the error corrections it is highly recommended to upgrade the Plugin to 0
 </br>
 
 ## Usage of the admin section 'GPX-File'
-![screenshot_gpx_section](./gpx_section.png)
+![screenshot_gpx_section](./gpx_section.PNG)
 ### Explanation in the order of appearance:
 - Path to GPX-Files: Set the path where you store your files. Recommended to set it once only
 - GPX-File: Select a GPX-File from your disk you want to upload.
