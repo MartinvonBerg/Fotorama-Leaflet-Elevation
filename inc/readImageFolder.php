@@ -40,6 +40,7 @@ final class ReadImageFolder
     public    $CssThumbWidth = 0;
     public    $CssThumbRatio = 0;
     public    $sizes = [];
+    protected $fileFilterSeparator = ',';
 
     // PHP 7.4 version
     /*
@@ -60,6 +61,7 @@ final class ReadImageFolder
     public    int $CssThumbWidth = 0;
     public    int $CssThumbRatio = 0;
     public    array $sizes = [];
+    protected string $fileFilterSeparator = ',';
     */
 
     /**
@@ -71,7 +73,7 @@ final class ReadImageFolder
      * @param string $gps whether gps is required or not
      * @param string $ignoresort whether to ignore the sorting or not
      */
-    public function __construct(string $folder, string $dir, string $url, string $gps, string $ignoresort, string $slider='fotorama')
+    public function __construct(string $folder, string $dir, string $url, string $gps, string $ignoresort, string $slider='fotorama', string $filefilter='')
     {
         $this->imageNumber = 0;
         $this->imagepath = $folder;
@@ -84,6 +86,21 @@ final class ReadImageFolder
             $sorted = preg_grep('/\.(jpe?g|webp)$/i', $files);
         } else if ($slider==='swiper') {
             $sorted = preg_grep('/\.(jpe?g|webp|mp4|m4v|webm|ogv|wmv|flv)$/i', $files);
+        }
+        // filter the files according to the given filter-list, seperated by ',' and ANDed.
+        if ( $filefilter !== '') {
+            $filters = explode( $this->fileFilterSeparator, $filefilter);
+
+            foreach ($filters as $currentfilter) {
+                $files = $sorted;
+                $filefilter = '/('.$currentfilter.')/i';
+                // switch off PHP error reporting and filter the array.
+                $ere = \error_reporting();
+                \error_reporting(0);
+                $sorted = preg_grep($filefilter, $files);
+                \error_reporting($ere);
+                if ( $sorted === false) $sorted = $files;
+            }
         }
 
         if ($sorted !== false) $this->allImageFiles = $sorted;
@@ -130,13 +147,42 @@ final class ReadImageFolder
     }
 
     /**
-     * Provide the result of the readFolder function as array.
+     * Provide the sorted result of the readFolder function as array.
      *
      * @return array<int, array<string, mixed>> array with all images in the folder and relevant information.
      */
-    public function getImagesForGallery()
+    public function getImagesForGallery( $sortorder )
     {
-        return $this->result;
+        $imgdata = $this->result;
+        $sortOrder = SORT_ASC;
+        $rowsum = $this->imageNumber * ($this->imageNumber + 1) / 2;
+
+        if ( $sortorder === 'desc') $sortOrder = \SORT_DESC;
+        elseif ( $sortorder === 'asc') $sortOrder = \SORT_ASC;
+        else $sortOrder = \SORT_ASC;
+
+        if ($this->imageNumber > 0) {
+            $csort = array_column($imgdata, 'sort'); // $customsort according to custom field 'gallery_sort'
+            $arraysum = array_sum($csort);
+
+            // sort_types: are 
+            //  gallery_sort : ignoresort === false : preferred way. only if gallery_sort entries are a correct list.
+            //  datesort     : ignoresort === true
+            //  filending    : ignoresort === fileending
+        
+            if ( ($rowsum != $arraysum) || $this->ignoresort==='true' || $this->ignoresort==='fileending' ) {
+                if ( $this->ignoresort==='true' ) {
+                    $csort = array_column($imgdata, 'datesort');
+                } else {
+                    $csort = array_column($imgdata, 'file');
+                }
+            }
+
+            // sort images
+            array_multisort($csort, $sortOrder, $imgdata); // ascending, descending, datesort, customsort, endingsort
+        }
+
+        return $imgdata;
     }
 
     /**

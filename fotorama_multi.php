@@ -20,6 +20,19 @@ namespace mvbplugins\fotoramamulti;
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
+// Ideen-liste
+// 		PHP: 
+//			--mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet. 
+// --- Swiper
+//			--preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
+// 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
+//			--lighthouse : passive event listener bei swiper der Fall. stimmt auch, wird nach event unterschieden. Das erste Event ist richtigerweise "false".
+// --- Karte
+// 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
+// 			anderen Icon-Satz verwenden? Neue Icons skalieren.
+//			--Hinweis lighthouse: Änderung addEventlistener bei d3.js führt zu Fehlern. Ist also nicht änderbar. muss akzeptiert werden.
+
+
 // fallback for wordpress security
 if ( ! defined('ABSPATH' )) die('Are you ok?');
 
@@ -87,9 +100,11 @@ function showmulti($attr, $content = null)
 		'mapaspect'			=> $fotorama_elevation_options['aspect_ratio_of_map'] ?? '1.50',
 		'chartheight' 		=> $fotorama_elevation_options['height_of_chart_11'] ?? '200',
 		'imgpath' 			=> $fotorama_elevation_options['path_to_images_for_fotorama_0'] ?? 'Bilder',
+		'filefilter'		=> '',
 		'dload' 			=> $fotorama_elevation_options['download_gpx_files_3'] ?? 'true', 
 		'alttext' 			=> $fotorama_elevation_options['general_text_for_the_fotorama_alt_9'] ?? '', 
-		'ignoresort' 		=> $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'false', 
+		'ignoresort' 		=> $fotorama_elevation_options['ignore_custom_sort_6'] ?? 'true', 
+		'sortorder'			=> $fotorama_elevation_options['sortorder'] ?? 'asc',
 		'showadress' 		=> $fotorama_elevation_options['show_address_of_start_7'] ?? 'true', 
 		'showmap' 			=> 'true',
 		'showchart'			=> $fotorama_elevation_options['showchart'] ?? 'true',
@@ -162,30 +177,15 @@ function showmulti($attr, $content = null)
 	
 	// Loop through all webp- and jpg-files in the given folder, and get the required data
 	require_once __DIR__ . '/inc/readImageFolder.php';
-	$folder = new ReadImageFolder( $imagepath, $thumbsdir, $imageurl, $requiregps, $ignoresort, $slider );
-	$data2 = $folder->getImagesForGallery();
+	$folder = new ReadImageFolder( $imagepath, $thumbsdir, $imageurl, $requiregps, $ignoresort, $slider, $filefilter );
+	$data2 = $folder->getImagesForGallery( $sortorder );
 	$imageNumber = $folder->getImageNumber();
 	$allImgInWPLibrary = $folder->areAllImgInWPLibrary();
 	$folder = null;
 
-	// check if customsort is possible, if yes sort ascending, if no sort with date taken and ascending
-	// Did not work to move it to the class for reading out images. So it is still here.
-	$rowsum = $imageNumber * ($imageNumber + 1) / 2;
-	if ($imageNumber > 0) {
-		$csort = array_column($data2, 'sort'); // $customsort
-		$arraysum = array_sum($csort);
-	
-		if ( ($rowsum != $arraysum) or ('true' === $ignoresort) ) {
-			$csort = array_column($data2, 'datesort');
-		}
-		// sort images asending with date-taken
-		array_multisort($csort, SORT_ASC, $data2);
-	}
-
 	// ------------- custom fields, move to admin and class
 	// On Status change from published to draft delete Custom-Fields 'lat' 'lon' and 'geoadress' from the post.
 	// But the update requires now a status transition from published to draft and back.
-	
 	if ($pub_2_draft) {
 		delete_post_meta($postid,'lat');
 		delete_post_meta($postid,'lon');
@@ -219,6 +219,7 @@ function showmulti($attr, $content = null)
 	
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
+	// TODO: the first image is taken, so sorting does change the starting point. One might see that as intentional.
 	if ( \current_user_can('edit_posts') && $setCustomFields && (0 === $shortcodecounter) && ( $imageNumber > 0)) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 	}
