@@ -987,8 +987,7 @@ final class FotoramaElevationAdmin
 								$this->allSettingsClasses[ $i ]->show_options_page_html();
 							}
 							$i++;
-						}
-						
+						}	
 					} 
 					else 
 					{

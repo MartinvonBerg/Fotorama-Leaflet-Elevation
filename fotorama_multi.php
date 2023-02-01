@@ -23,6 +23,8 @@ namespace mvbplugins\fotoramamulti;
 // Ideen-liste
 // 		PHP: 
 //			--mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet. 
+//			--settings: import / export settings aus DB auslesen und in json schreiben und umgekehrt
+//			-- custom fields der Posts / pages: wie bei settings
 // --- Swiper
 //			--preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
