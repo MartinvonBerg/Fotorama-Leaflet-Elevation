@@ -1,0 +1,70 @@
+{
+    "fm_common_options": {
+        "slider": "fotorama",
+        "fit": "cover",
+        "ratio": "1.77",
+        "background": "#d9d111",
+        "path_to_images_for_fotorama_0": "Bilder3",
+        "ignore_custom_sort_6": "false",
+        "sortorder": "asc",
+        "show_caption_4": "true",
+        "max_width_of_container_12": "999",
+        "min_width_css_grid_row_14": "333",
+        "f_thumbwidth": "77",
+        "f_thumbheight": "44",
+        "thumbmargin": "1",
+        "thumbborderwidth": "1",
+        "thumbbordercolor": "#ffc111",
+        "transitionduration": "111",
+        "short_caption": "false",
+        "images_with_gps_required_5": "false",
+        "useCDN_13": "false",
+        "setCustomFields_15": "false",
+        "doYoastXmlSitemap_16": "false"
+    },
+    "fm_gpx_options": {
+        "path_to_gpx_files_2": "gpx",
+        "gpx_smooth": "25",
+        "gpx_elesmooth": "4",
+        "gpx_reduce": "true",
+        "gpx_ignore_zero_elev": "true",
+        "gpx_overwrite": "true",
+        "gpxfile": ". Error during File processing!. No tracks in GPX-File. Skipped"
+    },
+    "fm_leaflet_options": {
+        "colour_theme_for_leaflet_elevation_1": "custom-theme",
+        "chart_fill_color": "#ffc800",
+        "chart_background_color": "#7ca0f3",
+        "height_of_chart_11": "200",
+        "text_for_start_address_8": "Startadresse",
+        "mapselector": "OpenTopoMap",
+        "height_of_map_10": "400",
+        "aspect_ratio_of_map": "1.5",
+        "showchart": "true",
+        "download_gpx_files_3": "true",
+        "show_address_of_start_7": "true",
+        "use_tile_server": "true",
+        "convert_tiles_to_webp": "true",
+        "htaccess_Tile_Server_Is_OK": "false"
+    },
+    "fm_fotorama_options": {
+        "transition": "slide",
+        "autoplay": "0",
+        "arrows": 0,
+        "navposition": "bottom",
+        "navwidth": "100",
+        "loop": "true"
+    },
+    "fm_swiper_options": {
+        "sw_effect": "flip",
+        "sw_button_color": "#ffc800",
+        "sw_max_zoom_ratio": "4",
+        "sw_thumbbartype": "special",
+        "sw_activetype": "active_border",
+        "sw_bar_margin_top": "5",
+        "sw_mousewheel": "true",
+        "sw_zoom": "true",
+        "sw_fslightbox": "true",
+        "sw_hashnavigation": "true"
+    }
+}

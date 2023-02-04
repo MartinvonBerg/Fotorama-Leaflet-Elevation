@@ -78,7 +78,7 @@ class AdminSettingsPage {
 	 */
 	function initOptionsinDatabase() {
 		$options = get_option( $this->settings['options'] );
-		if ( $options === false || $options === '') $options = [];
+		if ( $options === false || $options === '' || \gettype($options) !== 'array') $options = [];
 
 		// not at all = false, partly, completely
 		foreach($this->settings as $key => $param) {
@@ -102,8 +102,8 @@ class AdminSettingsPage {
 
 			if ( \gettype($param) === 'array' && $param['type'] === 'checkbox') {
 
-				if ( isset($args[ $param['label'] ]) ) { // ist immer gesetzt, egal ob true oder false key ist da und (true oder on)
-                //if ( \array_key_exists( $param['label'], $args) && ( $args[ $param['label'] ] === 'true' || $args[ $param['label'] ] === 'on') ) {
+				//if ( isset($args[ $param['label'] ]) ) { // ist immer gesetzt, egal ob true oder false key ist da und (true oder on)
+                if ( \array_key_exists( $param['label'], $args) && ( $args[ $param['label'] ] === 'true' || $args[ $param['label'] ] === 'on') ) {
 					$args[$param['label']] = 'true';
 
 				} else {
@@ -269,7 +269,27 @@ class AdminSettingsPage {
 					name="uploadedfile" style='width:400px;'
 					accept="<?php echo( $this->settings[ $args['param']]['accept'] );?>">
 			<?php 
-			echo ('</br>Upload: ' .  $optset );
+		}
+	}
+
+	function download_callback ( array $args) {
+		$options = get_option( $this->settings['options'] );
+		$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
+		$optset = html_entity_decode($optset);
+
+		$exportFileExists = false;
+		// Check if file exists
+		$path = $path = plugin_dir_path(__DIR__) . $optset;
+		$exportFileExists = \file_exists( $path);
+
+		if ( $exportFileExists && $path !== '') {
+			// if yes provide download link
+			$path = $path = plugin_dir_url(__DIR__) . $optset;
+			//<p>Herunterladen: <a download="Wanderung-Cascata-Marmarico.gpx" href="gpx">Wanderung-Cascata-Marmarico.gpx</a></p>
+			echo ('<a download="' .  $optset . '" href="'. $path .'">Download <strong>'. $optset .'</strong></a>');
+		} else {
+			// if no provide help text
+			echo ('File <strong>' .  $optset . '</strong> does not exist. </br>Leave Import File empty and press Save Button before.' );
 		}
 	}
 
@@ -454,5 +474,81 @@ class AdminSettingsPage {
 
 		$option['gpxfile'] = $temp;
 		return $option;
-	}	
+	}
+
+	public function handle_settings( $option) { 
+		// sanitize options
+		// is not required here. 
+		
+		// get and generate file names and upload directory if not exists
+		$file = $_FILES['uploadedfile']['name'];
+		$result = true;
+		
+		// generate export settings file
+		if ( $file === '') {
+			$options = get_option( $this->settings['options'] );
+			$optset = $options['export_settings_file'];
+			$path = plugin_dir_path(__DIR__) . $optset;
+			// write all settings to json file
+			$settings = [];
+			$allSettings = [
+				'fm_common_options',
+				'fm_gpx_options',
+				'fm_leaflet_options',
+				'fm_fotorama_options',
+				'fm_swiper_options'
+			];
+			foreach( $allSettings as $val) {
+				$cur = \get_option( $val);
+				$settings[$val] = $cur;
+			}
+			$prettyJsonString = json_encode($settings, JSON_PRETTY_PRINT);
+			$result = \file_put_contents( $path, $prettyJsonString);
+			if ($result > 0) {
+				add_settings_error(
+					'fotoramamulti_json_ok',
+					esc_attr( 'file_generated' ),
+					__('Settings File generated. Use Download link below', $this->settings['namespace'] ),
+					'success'
+				);
+				$result = true;
+			} else {
+				add_settings_error(
+					'fotoramamulti_json_nok',
+					esc_attr( 'file_failed' ),
+					__('Could not generate File!', $this->settings['namespace'] ),
+					'error'
+				);
+			}
+		} 
+		else 
+		{
+			// read tmp file to json
+			$prettyJsonString = \file_get_contents( $_FILES['uploadedfile']['tmp_name']);
+			$allSettings = \json_decode( $prettyJsonString, true );
+			$upd_result = [];
+
+			foreach( $allSettings as $key => $newval) {
+				$cur = \get_option( $key );
+				if ( $cur != $newval) {
+					$one_result = update_option( $key, $newval );
+					$updated = \get_option($key);
+					$upd_result[$key] = ($one_result || $updated == $newval) ? 'success' : 'failed';
+				} else {
+					$upd_result[$key] ="identical";
+				}
+			}
+
+			if ( \in_array('failed', $upd_result) ) {
+				add_settings_error(
+					'fotoramamulti_settingsupdate_nok',
+					esc_attr( 'settings_update_failed' ),
+					'Something Failed! Settings were not upated! ',
+					'error'
+				);
+			}
+		}
+	
+		return $result;
+	}
 }

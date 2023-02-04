@@ -48,6 +48,10 @@ final class FotoramaElevationAdmin
 			'title' => 'Swiper',
 			'setting' => 'swiperSettings',
 			],
+			['slug' => 'import-export',
+			'title' => 'Import / Export',
+			'setting' => 'import_export',
+			],
 		],
 	];
 			
@@ -899,6 +903,42 @@ final class FotoramaElevationAdmin
 		]
 	];
 
+	private $import_export = [
+		'pre' => 'impexp',
+		'options' => 'fm_impexp_options',
+		'sanitizer' => 'handle_settings', // this settings do only work together with this sanitizer function!
+		'section' => 'impexp_section',
+		'sectionsText' => 'Import or Export Settings to / from JSON-File.',
+		'namespace' => 'fotoramamulti',
+		'subTitle' => '',
+		'param1' => [ 
+			'label' => 'import_settings_file',
+			'text' => 'Load Settings from JSON-File',
+			'class' => 'impexp_row',
+			'custom_data' => 'custom1',
+			'type' => 'file_input',
+			'accept' => '.json',
+			'values' => '',
+			'default' => 'settings_import.json',
+			'description' => 'JSON-File : Contains all settings from the database',
+			'shortcode' => '',
+			'info' => 'JSON-File : Contains all settings from the database',
+		],
+		'param2' => [ 
+			'label' => 'export_settings_file',
+			'text' => 'Export Settings to JSON-File. ',
+			'class' => 'impexp_row',
+			'custom_data' => 'custom2',
+			'type' => 'download',
+			'required' => '',
+			'values' => 'settings_export.json',
+			'default' => 'settings_export.json',
+			'description' => 'Download settings',
+			'shortcode' => '',
+			'info' => 'Download settings',
+		]
+	];
+
 	private $allSettingsClasses = [];
 	private $allSettings = [];
 
@@ -930,6 +970,11 @@ final class FotoramaElevationAdmin
 		$this->allSettings[ $i ] = $this->no_admin_settings;
 	}
 
+	/**
+	 * Adds the settings menu to the Menu-Bar of WordPress Admin
+	 *
+	 * @return void
+	 */
 	public function admin_add_plugin_page_to_menu()
 	{
 		add_options_page(
@@ -941,11 +986,13 @@ final class FotoramaElevationAdmin
 		);
 	}
 
+	/**
+	 * Create the HTML-Code for all Tabs of the Admin page.
+	 *
+	 * @return void
+	 */
 	public function create_admin_page_with_tabs()
 	{
-		//$this->fotorama_elevation_options = get_option('fotorama_elevation_option_name');
-		//$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
-
 		//Get the active tab from the $_GET param
 		$default_tab = null;
 		$tab = isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
@@ -987,7 +1034,7 @@ final class FotoramaElevationAdmin
 								$this->allSettingsClasses[ $i ]->show_options_page_html();
 							}
 							$i++;
-						}	
+						}
 					} 
 					else 
 					{
