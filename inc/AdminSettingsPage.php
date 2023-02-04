@@ -100,28 +100,46 @@ class AdminSettingsPage {
 	function options_sanitizer( array $args ) {
 		foreach($this->settings as $key => $param) {
 
-			if ( \gettype($param) === 'array' && $param['type'] === 'checkbox') {
+			if ( \gettype($param) === 'array' ) {
 
-				//if ( isset($args[ $param['label'] ]) ) { // ist immer gesetzt, egal ob true oder false key ist da und (true oder on)
-                if ( \array_key_exists( $param['label'], $args) && ( $args[ $param['label'] ] === 'true' || $args[ $param['label'] ] === 'on') ) {
-					$args[$param['label']] = 'true';
+				switch ( $param['type'] ) {
+					case 'checkbox':
+						if ( \array_key_exists( $param['label'], $args) && ( $args[ $param['label'] ] === 'true' || $args[ $param['label'] ] === 'on') ) {
+							$args[$param['label']] = 'true';
+						} else {
+							$args[$param['label']] = 'false';
+						}
+						break;
 
-				} else {
-					$args[$param['label']] = 'false';
+					case 'path':
+						$args[$param['label']] = $this->my_sanitize_path( $args[$param['label']] );
+						break;
+
+					case 'text':
+						if ( $param['label'] === 'autoplay') {
+							$args[$param['label']] = $this->my_sanitize_autoplay( $args[$param['label']], array('false', 'true', array('integer', 0, 5000) ) );
+						} else {
+							$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] );
+						}
+						break;
+
+					case 'number':
+						$args[$param['label']] = \strval( filter_var( $args[$param['label']], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION ) );
+						break;
+
+					case 'select':
+						$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] );
+						break;
+
+					case 'color':
+						$args[$param['label']] = \sanitize_hex_color( $args[$param['label']]);
+						break;
 				}
+				if ( $args[$param['label']] === null || $args[$param['label']] === '') $args[$param['label']] = $param['default'];
 
-			} else if ( \gettype($param) === 'array' && $param['type'] === 'path') {
-				$args[$param['label']] = $this->my_sanitize_path( $args[$param['label']] );
-
-			} else if ( \gettype($param) === 'array' && $param['type'] === 'text') {
-				if ( $param['label'] === 'autoplay') {
-					$args[$param['label']] = $this->my_sanitize_autoplay( $args[$param['label']], array('false', 'true', array('integer', 0, 5000) ) );
-
-				} else {
-					$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] );
-				}
-			} 
+			}
 		}
+
 		return $args;
 	}
 
@@ -349,7 +367,7 @@ class AdminSettingsPage {
 	private static function my_sanitize_text ( string $inp) :string
 	{
 		$inp = sanitize_text_field( $inp);
-		$inp = filter_var($inp, FILTER_SANITIZE_STRING);
+		$inp = \htmlspecialchars($inp);
 		return $inp;
 	}
 
@@ -543,7 +561,7 @@ class AdminSettingsPage {
 				add_settings_error(
 					'fotoramamulti_settingsupdate_nok',
 					esc_attr( 'settings_update_failed' ),
-					'Something Failed! Settings were not upated! ',
+					'Something Failed! Settings were not upated! Or set to default values.',
 					'error'
 				);
 			}
