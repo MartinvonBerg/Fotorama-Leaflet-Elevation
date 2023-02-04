@@ -82,10 +82,10 @@ final class ReadImageFolder
         $files = glob($this->imagepath . '/*.*');
         if ($files === false) $files = [];
 
-        if ($slider==='fotorama') {
-            $sorted = preg_grep('/\.(jpe?g|webp)$/i', $files);
-        } else if ($slider==='swiper') {
+        if ($slider==='swiper') {
             $sorted = preg_grep('/\.(jpe?g|webp|mp4|m4v|webm|ogv|wmv|flv)$/i', $files);
+        } else {
+            $sorted = preg_grep('/\.(jpe?g|webp)$/i', $files);
         }
         // filter the files according to the given filter-list, seperated by ',' and ANDed.
         if ( $filefilter !== '') {

@@ -6,7 +6,8 @@
         let isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
         let hasFotorama = false;
         let hasSwiper = false;
-
+        let hasMasonry1 = false;
+        
         // slider variables
         let allSliders = [ numberOfBoxes-1 ];
                 
@@ -18,7 +19,8 @@
 
             //------------- Slider part --------------------------------------
             hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length === 1;
-            hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length === 1
+            hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length === 1;
+            hasMasonry1 = document.querySelectorAll('[id^=minimasonry'+m+']').length === 1;
             let sliderSel = '';
 
             //------------- leaflet - elevation part ---------------------------
@@ -50,7 +52,7 @@
                     allSliders[m] = new SliderSwiper.SliderSwiper(m, sliderSel + m );
                     allSliders[m].defSlider(); 
                 })
-
+            } else if ( hasMasonry1 ) {
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {

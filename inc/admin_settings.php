@@ -174,7 +174,7 @@ final class FotoramaElevationAdmin
 			'class' => 'common_row', // The class of the input Field. Unused.
 			'custom_data' => 'custom5', // unused.
 			'type' => 'select', // The type of the input field. Callback function must exist with name: <type>_callback.
-			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper'], // all foreseen values.
+			'values' => ['fotorama' => 'Fotorama', 'swiper' => 'Swiper', 'masonry1' => 'MiniMasonry'], // all foreseen values.
 			'default' => 'fotorama',
 			'description' => 'Select the Slider to show the Images. Swiper works with Fotos and Videos.', // Text after the input field.
 			'shortcode' => 'slider', // shortcode Parameter that will be used.

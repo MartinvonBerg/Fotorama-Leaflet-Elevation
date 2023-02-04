@@ -296,7 +296,12 @@ function showmulti($attr, $content = null)
 
 			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
 			\mvbplugins\fotoramamulti\enqueue_fslightbox();
-		} 
+		} else {
+			$showmap  = 'false';
+			$showadress = 'false';
+			$dload = 'false';
+			$htmlstring .= '<h2>Placeholder for MiniMasonry</h2><div id="minimasonry' . $shortcodecounter . '"</div>';
+		}
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div
