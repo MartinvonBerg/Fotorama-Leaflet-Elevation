@@ -468,6 +468,11 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		$data['DateTimeOriginal'] = $date;
 	}
 
+	// get width and height data
+	$sizeinfo = \wp_getimagesize( $file );
+	$data['height'] = $sizeinfo[1];
+	$data['width'] = $sizeinfo[0];
+
 	// get additional data from the wp database, if it is there
 	if ($wpid > 0) {
 		

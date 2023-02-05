@@ -1,0 +1,50 @@
+.fmmm_container {
+    position: relative;
+}
+
+.fmmm_container > .item > img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.masonry-title > p {
+    margin: 10px;
+    text-align: left;
+    font-size: 1.1em;
+}
+
+.masonry-title > .masonry-date {
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+.item {
+    position: absolute;
+    text-align: left;
+    color: black;
+    line-height: 1em;
+    border-radius: 3px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    background: rgb(218, 214, 214);
+    overflow: hidden;
+}
+
+.button-fslightbox {
+    content: url('../css/icon-fullscreen-white.png') !important;
+    z-index: 20;
+    position: absolute;
+    height: auto;
+    width: auto;
+    top: 1%;
+    right: 1%;
+    padding-left: 5px;
+    padding-right: 5px; 
+    background: #22222280;
+    border-radius: 4px;
+}
+  
+.button-fslightbox:hover, .swiper-attach-link:hover {
+  -webkit-box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68); 
+  box-shadow: 1px 3px 14px 0px rgba(0,0,0,0.68);
+  background: #22222285;
+}

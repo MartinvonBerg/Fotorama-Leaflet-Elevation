@@ -85,6 +85,7 @@ function showmulti($attr, $content = null)
 	static $gpxTrackCounter = 0;
 	static $fotoramaCounter = 0;
 	static $swiperCounter = 0;
+	static $masonryCounter = 0;
 	static $pageVarsForJs = [];
 	$page_options = [];
 		
@@ -273,6 +274,7 @@ function showmulti($attr, $content = null)
 			// for elevation chart
 			'chart_fill_color'		=> $chart_fill_color,
 			'chart_background_color'=> $chart_background_color,
+			'minrowwidth'			=> $minrowwidth
 		];
 				
 		if ( $slider === 'fotorama') {
@@ -296,11 +298,24 @@ function showmulti($attr, $content = null)
 
 			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
 			\mvbplugins\fotoramamulti\enqueue_fslightbox();
-		} else {
+
+		} elseif ( $slider === 'masonry1') {
+			$masonryCounter++;
+
+			// reset all leaflet and chart settings to prevent html output
 			$showmap  = 'false';
 			$showadress = 'false';
 			$dload = 'false';
-			$htmlstring .= '<h2>Placeholder for MiniMasonry</h2><div id="minimasonry' . $shortcodecounter . '"</div>';
+
+			// load the class for masonry here and generate html for masonry gallery
+			require_once __DIR__ . '/inc/miniMasonryClass.php';
+			$fClass = new MiniMasonryClass( $shortcodecounter, $data2, $page_options); // Attention: Inconsistent constructor!
+			$htmlstring .= $fClass->getSliderHtml( $attr);
+			$phpimgdata = $fClass->getImageDataForJS();
+			$fClass = null;
+
+			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
+			\mvbplugins\fotoramamulti\enqueue_fslightbox();
 		}
 	}
 

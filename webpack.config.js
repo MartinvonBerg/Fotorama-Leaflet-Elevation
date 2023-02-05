@@ -1,5 +1,5 @@
 const path = require('path');
-let _mode = 'production';
+let _mode = 'development';
 
 // create bundle for fotorama
 module.exports = [

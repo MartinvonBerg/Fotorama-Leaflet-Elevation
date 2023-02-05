@@ -53,6 +53,11 @@
                     allSliders[m].defSlider(); 
                 })
             } else if ( hasMasonry1 ) {
+                sliderSel = '#minimasonry';
+                import(/* webpackChunkName: "minimasonry" */'./miniMasonryClass.js').then( (MiniMasonryWrap) => {
+                    allSliders[m] = new MiniMasonryWrap.MiniMasonryWrap(m, sliderSel + m );
+                    //allSliders[m].defSlider();
+                })
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
