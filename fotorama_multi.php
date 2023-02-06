@@ -307,6 +307,8 @@ function showmulti($attr, $content = null)
 			$showadress = 'false';
 			$dload = 'false';
 
+			$htmlstring = "<div id=\"multifotobox{$shortcodecounter}\" style=\"max-width:{$maxwidth}px;\">";
+
 			// load the class for masonry here and generate html for masonry gallery
 			require_once __DIR__ . '/inc/miniMasonryClass.php';
 			$fClass = new MiniMasonryClass( $shortcodecounter, $data2, $page_options); // Attention: Inconsistent constructor!

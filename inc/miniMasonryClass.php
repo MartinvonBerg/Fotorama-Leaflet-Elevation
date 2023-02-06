@@ -133,6 +133,29 @@ final class MiniMasonryClass
     }
 
     /**
+     * get all currently registered image subsizes and sort them by squared weight w.r.t the desired size for the thumbnail bar in slider.
+     *
+     * @return array the sorted array of available subsizes
+     */
+    public function get_best_image_subsize( $wpid, $width) {
+        $sizes = wp_get_attachment_metadata( $wpid)['sizes'];
+
+        // sort array by weight
+        $csort = array_column($sizes, 'width');
+        array_multisort($csort, SORT_ASC, $sizes);
+        $src = false;
+      
+        foreach ($sizes as $key => $size) {
+            if ($size['width']  > $width) {
+               $src = $sizes[$key]['file'];
+                break;
+            }
+        }
+        
+        return $src;
+    }
+
+    /**
      * Generate the HTML code for the swiper based on DOMClass and on options.
      *
      * @return void no return value: just set the class attributes as result.
@@ -195,45 +218,53 @@ final class MiniMasonryClass
             {
                 // generate the caption for html and javascript
                 if ( $this->options['shortcaption'] === 'false') {
-                    //$caption = 'data-caption="' .$this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"] . ' </br> ' . $data['camera'] . ' </br> ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'] . '"';
-                    $caption = array (0 => $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"],
+                    $caption = array (0 => $data["title"],
                                     1 => $data['camera'],
                                     2 => $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal']);
                     $jscaption = $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"] . ' || ' . $data['camera'] . ' || ' . $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'] . ' / ' . $data['DateTimeOriginal'];	
                 } else {
-                    $caption = array( 0 => $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"]);
+                    $caption = array( 0 => $data["title"]);
                     $jscaption = $this->imgnr. ' / ' .$this->imageNumber . ': ' . $data["title"];
                 };
                
                 $slide = $root->appendElWithAttsDIV([['class', 'item']]);
                 // get width and height of image. get minrowwidth and calc correct height for image
                 //$asp = $data['width'] / $data['height'];
-                //$height = intval($this->options['minrowwidth'] / $asp);
+                //$height = 2*intval($this->options['minrowwidth'] / $asp);
                 //$slide->setAttribute('style', 'height:'.$height.'px;');
+                //$slide->setAttribute('style', 'height:254px;');
 
                 // create img
                 $img = $slide->appendElement('img');
                 // add further attributes to img
-                $img->setAttribute('loading', 'lazy');
+                if ( $this->imgnr>1 )$img->setAttribute('loading', 'lazy');
                 $img->setAttribute('alt', $alttext);
-                $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
+
                 if ( $data['thumbinsubdir'] ) {
                     //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
+                    $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
+
                 } elseif ( $data['thumbavail'] ) {
-                    $srcset = wp_get_attachment_image_srcset( $data['wpid']);
-                    if ( $srcset !== false) $img->setAttribute('srcset', wp_get_attachment_image_srcset( $data['wpid']));
+                    $srcset = $this->get_best_image_subsize( $data['wpid'], 2*$this->options['minrowwidth']);
+                    if ( $srcset !== false) {
+                        $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$srcset}");
+                    } else {
+                        $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
+                    }
                     // sizes is missing. but not required in examples.
                     //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}"); 
+
                 } else { 
                     // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
                     //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}"); 
+                    $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
                 };
 
                 // add the button to open fslightbox TODO as href over image
                 // todo add this as href for the item containger. remove button from css then
-                if ( $this->fslightbox ) {
+                if ( $this->fslightbox ) { // TODO: provide setting
                     $lightbox=$slide->appendElement('a');
-                    $lightbox->setAttribute('data-fslightbox', 'swiper' . $this->shortcodecounter); // rename this. use for masonry on page
+                    $lightbox->setAttribute('data-fslightbox', 'mmasonry' . $this->shortcodecounter); // TODO rename this. use for masonry on page
                     $lightbox->setAttribute('data-type','image');
                     $lightbox->setAttribute('data-caption', $alttext);
                     $lightbox->setAttribute('href',"{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
@@ -249,10 +280,10 @@ final class MiniMasonryClass
                     $title=$slide->appendElWithAttsDIV([['class', 'masonry-title']]);
 
                     foreach ($caption as $p) {
-                        $el=$doc->createElement('p',$p); // todo remove numbering from title
+                        $el=$doc->createElement('p',$p); 
                         $title->appendChild($el);
                     }
-                    $el=$doc->createElement('p', $data['datesort']); // todo create nice date format
+                    $el=$doc->createElement('p', wp_date( get_option( 'date_format' ), ( $data['created_timestamp'] ) )); 
                     $el->setAttribute('class', 'masonry-date');
                     $title->appendChild($el);
                     

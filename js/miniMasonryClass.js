@@ -1,5 +1,5 @@
 // import MiniMasonry JS
-import MiniMasonry from "minimasonry";
+import MiniMasonry from "./minimasonry.js";
 
 import "./miniMasonryClass.css";
 
@@ -31,7 +31,7 @@ class MiniMasonryWrap {
         this.#pageVariables = pageVarsForJs[number];
 
         // todo provide all masonry settings in admin tab
-
+        
         let masonry = new MiniMasonry({
             container: this.elementOnPage,
             baseWidth: 200, //Target width of elements.
@@ -40,8 +40,16 @@ class MiniMasonryWrap {
             minify: true, // Whether or not MiniMasonry place elements on shortest column or keep exact order of list.
             surroundingGutter: false, // Set left gutter on first column and right gutter on last.
             ultimateGutter:	5, //Gutter applied when only 1 column can be displayed.
-        }); 
+        });
+        
+        masonry.reset();
+        masonry.layout();
 
+        window.setTimeout( function() {
+            window.dispatchEvent(new Event('resize'));
+            console.log('resized');
+        }, 100);
+        
        
     }
 
