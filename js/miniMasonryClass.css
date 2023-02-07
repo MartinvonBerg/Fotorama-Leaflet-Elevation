@@ -8,9 +8,9 @@
 }
 
 .fmmm-masonry-image:hover {
-    filter: contrast(120%);
+    filter: contrast(130%) brightness(1.1);
     transition: all ease 0.5s; /*1s ease-in;*/
-    transform: scale(1.1);
+    transform: scale(1.03);
   }
 
 .masonry-title > p {

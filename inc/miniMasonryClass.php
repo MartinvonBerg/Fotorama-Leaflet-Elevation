@@ -54,30 +54,15 @@ class myDocument extends \DOMDocument {
  */
 final class MiniMasonryClass
 {
-    // PHP 7.3 version :: damit ist PHPstan und PHPInsights nicht erfolgreich, bzw. zu viele Fehlermeldungen
-    protected $sliderHtml = '';
-    protected $imgnr = 0;
-    protected $shortcodecounter = 0;
-    protected $imageData = [];
-    protected $imageNumber = 0;
-    protected $imageDataToPassToJavascript = [];
-    protected $fslightbox = false;
-    protected $options = [];
-
     // PHP 7.4 version
-    /*
     protected string $sliderHtml = '';
     protected int $imgnr = 0;
     protected int $shortcodecounter = 0;
     protected array $imageData = [];
+    protected int $imageNumber = 0;
     protected array $imageDataToPassToJavascript = [];
-    protected boolean $showpagination = true;
-    protected boolean $fslightbox = false;
-    protected boolean $zoom = true;
-    protected string $effect = 'slide';
-    protected boolean $showInfoButton = true;
+    protected bool $fslightbox = false;
     protected array $options = [];
-    */
 
     /**
      * constructor function for the class to do the initialization settings.
@@ -94,7 +79,7 @@ final class MiniMasonryClass
         $this->imageNumber = count($this->imageData);
         // set the options from shortcode or admin setting
         $this->options = $options;
-        $this->fslightbox = $options['sw_fslightbox'] === 'true';
+        $this->fslightbox = $options['mm_fslightbox'] === 'true';
     }
 
     /**
@@ -135,7 +120,7 @@ final class MiniMasonryClass
      * @param integer $width the minimum width to use return as image
      * @return string the sorted array of available subsizes
      */
-    public function get_best_image_subsize( $wpid, $width) {
+    public function get_best_image_subsize( int $wpid, int $width) {
         $sizes = wp_get_attachment_metadata( $wpid)['sizes'];
 
         // sort array by weight
@@ -156,8 +141,8 @@ final class MiniMasonryClass
     /**
      * Generate the HTML code for the swiper based on DOMClass and on options.
      * used parameters: 
-     *  general: shortcaption, showcaption, minrowwidth, imgpath, 
-     *  swiper : sw_fslightbox     TODO: setting in masonry tab
+     *  general: shortcaption, showcaption, minrowwidth, imgpath, JS: background, 
+     *  minimasonry : mm_fslightbox
      *
      * @return void no return value: just set the class attributes as result.
      */

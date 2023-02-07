@@ -91,7 +91,7 @@ function showmulti($attr, $content = null)
 		
  	// Get Values from Admin settings page
  	//$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
-	$fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
+	$fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'), \get_option('fm_masonry_options'));
 	$setCustomFields = $fotorama_elevation_options['setCustomFields_15'] == 'true'; // liefert 'true'
 	$addPermalink = $fotorama_elevation_options['useCDN_13'] == 'true'; // re-used for addPermalink now!
  	

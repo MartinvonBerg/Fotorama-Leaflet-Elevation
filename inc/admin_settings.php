@@ -48,6 +48,10 @@ final class FotoramaElevationAdmin
 			'title' => 'Swiper',
 			'setting' => 'swiperSettings',
 			],
+			['slug' => 'masonry',
+			'title' => 'Masonry',
+			'setting' => 'masonrySettings',
+			],
 			['slug' => 'import-export',
 			'title' => 'Import / Export',
 			'setting' => 'import_export',
@@ -937,6 +941,98 @@ final class FotoramaElevationAdmin
 			'shortcode' => '',
 			'info' => 'Download settings',
 		]
+	];
+
+	// minimasonry
+	/*
+		'mm_ultiGutter'		=> $fotorama_elevation_options['mm_ultiGutter'] ?? 5,
+	*/
+	private $masonrySettings = [
+		'pre' => 'masonry', // change
+		'options' => 'fm_masonry_options', // change
+		'sanitizer' => 'options_sanitizer', // don't change
+		'section' => 'masonry_section', // change
+		'sectionsText' => 'Mini Masonry Settings', // change
+		'namespace' => 'fotoramamulti', // change
+		'subTitle' => 'Settings for the MiniMasonry Gallery only. Used General settings: Slide Background Colour, Define File sorting, Define File sort Order, Show Caption, Short Caption, Images with GPS required, Max Width of Container in, Min Width of one CSS-grid Row',
+		'param0' => [
+			'label' => 'mm_fslightbox',
+			'text' => 'Use fslightbox for Fullscreen',
+			'class' => 'masonry_row',
+			'custom_data' => 'custom0',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Requires an additional Plugin!',
+			'shortcode' => 'mm_fslightbox',
+			'info' => 'Activate the fslightbox for Fullscreen Presentation. Mind: Requires the installation of another Plugin from me!',
+		],
+		'param1' => [
+			'label' => 'mm_minify',
+			'text' => 'Optimize Space needed for the Gallery',
+			'class' => 'masonry_row',
+			'custom_data' => 'custom1',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Minimizes the Space needed for the Gallery',
+			'shortcode' => 'mm_minify',
+			'info' => 'Minimizes the Space needed for the Gallery',
+		],
+		'param2' => [
+			'label' => 'mm_gutterx',
+			'text' => 'Horizontal Gutter-X in px',
+			'class' => 'masonry_row',
+			'custom_data' => 'custom2',
+			'type' => 'number',
+			'values' => 5, // default value
+			'default' => 5,
+			'min' => 0,
+			'max' => 100,
+			'description' => 'Horizontal or X Gutter (Space, Gap) between Images in px',
+			'shortcode' => 'mm_gutterx',
+			'info' => 'Horizontal or X Gutter (Space, Gap) between Images in px',
+		],
+		'param3' => [
+			'label' => 'mm_guttery',
+			'text' => 'Vertical Gutter-Y in px',
+			'class' => 'masonry_row',
+			'custom_data' => 'custom3',
+			'type' => 'number',
+			'values' => 5, // default value
+			'default' => 5,
+			'min' => 0,
+			'max' => 100,
+			'description' => 'Vertical or Y-Gutter (Space, Gap) between Images in px',
+			'shortcode' => 'mm_guttery',
+			'info' => 'Vertical or Y-Gutter (Space, Gap) between Images in px',
+		],
+		'param4' => [
+			'label' => 'mm_ultiGutter',
+			'text' => 'Vertical Gutter-Y in px if one Row is shown',
+			'class' => 'masonry_row',
+			'custom_data' => 'custom4',
+			'type' => 'number',
+			'values' => 5, // default value
+			'default' => 5,
+			'min' => 0,
+			'max' => 100,
+			'description' => 'Gutter-Y applied when only 1 column can be displayed in px',
+			'shortcode' => 'mm_ultiGutter',
+			'info' => 'Gutter-Y applied when only 1 column can be displayed in px',
+		],
+		'param5' => [
+			'label' => 'mm_surrGutter',
+			'text' => 'Use left and right Gutter',
+			'class' => 'masonry_row',
+			'custom_data' => 'custom5',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Use left gutter on first column and right gutter on last',
+			'shortcode' => 'mm_surrGutter',
+			'info' => 'Use left gutter on first column and right gutter on last',
+		],
 	];
 
 	private $allSettingsClasses = [];

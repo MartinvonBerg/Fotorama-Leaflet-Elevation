@@ -114,7 +114,7 @@ final class ReadImageFolder
         $this->requiregps = $gps;
         $this->ignoresort = $ignoresort;
 
-        // settings for the slider thumbnail
+        // settings for the slider thumbnail. fm_masonry_options not required here!
         $fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
         $this->CssThumbHeight = $fotorama_elevation_options['f_thumbheight'];
         $this->CssThumbWidth =  $fotorama_elevation_options['f_thumbwidth'];

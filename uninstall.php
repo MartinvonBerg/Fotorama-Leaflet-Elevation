@@ -45,6 +45,9 @@ delete_option($option_name);
 $option_name = 'fm_impexp_options';
 delete_option($option_name);
 
+$option_name = 'fm_masonry_options';
+delete_option($option_name);
+
 
 delete_custom_field( 'lat' );
 delete_custom_field( 'lon' );

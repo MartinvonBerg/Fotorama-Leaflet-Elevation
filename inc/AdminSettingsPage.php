@@ -514,7 +514,8 @@ class AdminSettingsPage {
 				'fm_gpx_options',
 				'fm_leaflet_options',
 				'fm_fotorama_options',
-				'fm_swiper_options'
+				'fm_swiper_options',
+				'fm_masonry_options',
 			];
 			foreach( $allSettings as $val) {
 				$cur = \get_option( $val);

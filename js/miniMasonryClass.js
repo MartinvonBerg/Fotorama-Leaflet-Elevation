@@ -44,8 +44,6 @@ class MiniMasonryWrap {
             window.dispatchEvent(new Event('resize'));
             console.log('resized');
         }, 100);
-        
-       
     }
 
     /**

@@ -79,8 +79,8 @@ final class FotoramaClass
         $thumbsdir = THUMBSDIR; // we use a fixed name for the subdir containing the thumbnails
 	
 
-        // Get Values from Admin settings page
-        $fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'));
+        // Get Values from Admin settings page. fm_masonry_options not required here!
+        $fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options') );
 	
         
         // Extract shortcode-Parameters and set Default-Values
