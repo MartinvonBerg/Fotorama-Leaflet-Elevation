@@ -155,6 +155,9 @@ final class MiniMasonryClass
 
     /**
      * Generate the HTML code for the swiper based on DOMClass and on options.
+     * used parameters: 
+     *  general: shortcaption, showcaption, minrowwidth, imgpath, 
+     *  swiper : sw_fslightbox     TODO: setting in masonry tab
      *
      * @return void no return value: just set the class attributes as result.
      */

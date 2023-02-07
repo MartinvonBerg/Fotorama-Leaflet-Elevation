@@ -156,8 +156,15 @@ function showmulti($attr, $content = null)
 		'sw_thumbbartype'	=> $fotorama_elevation_options['sw_thumbbartype'], //'special'
 		'sw_bar_margin_top'	=> $fotorama_elevation_options['sw_bar_margin_top'], //5,
 		'sw_activetype'	 	=> $fotorama_elevation_options['sw_activetype'], //'active_border',
-
+		// special parameters for masonry
+		'mm_fslightbox'		=> $fotorama_elevation_options['mm_fslightbox'] ?? 'true', //'true',
+		'mm_gutterx'		=> $fotorama_elevation_options['mm_gutterx'] ?? 5,
+		'mm_guttery'		=> $fotorama_elevation_options['mm_guttery'] ?? 5,
+		'mm_minify'			=> $fotorama_elevation_options['mm_minify'] ?? 'false',
+		'mm_surrGutter'		=> $fotorama_elevation_options['mm_surrGutter'] ?? 'false',
+		'mm_ultiGutter'		=> $fotorama_elevation_options['mm_ultiGutter'] ?? 5,
 	), $attr));
+
 	$mapcenter = explode(',',$mapcenter);
 
 	// Detect Language of the client request
@@ -274,7 +281,14 @@ function showmulti($attr, $content = null)
 			// for elevation chart
 			'chart_fill_color'		=> $chart_fill_color,
 			'chart_background_color'=> $chart_background_color,
-			'minrowwidth'			=> $minrowwidth
+			'minrowwidth'			=> $minrowwidth,
+			// special parameters for masonry
+			'mm_fslightbox'			=> $mm_fslightbox,
+			'mm_gutterX'			=> $mm_gutterx,
+			'mm_gutterY'			=> $mm_guttery,
+			'mm_minify'				=> $mm_minify,
+			'mm_surrGutter'			=> $mm_surrGutter,
+			'mm_ultiGutter'			=> $mm_ultiGutter,
 		];
 				
 		if ( $slider === 'fotorama') {

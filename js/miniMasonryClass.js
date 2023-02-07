@@ -12,13 +12,6 @@ class MiniMasonryWrap {
 
     // public attributes (fields). These can be set / get by dot-notation.
     number = 0;
-   
-    // swiper
-    swiper = {};
-    thumbs = {};
-    sw_options = {};
-    zoom = true;
-    space = 2;
 
     /**
      * Constructor Function
@@ -31,20 +24,22 @@ class MiniMasonryWrap {
         this.#pageVariables = pageVarsForJs[number];
 
         // todo provide all masonry settings in admin tab
+        this.updateCSS();
         
         let masonry = new MiniMasonry({
             container: this.elementOnPage,
-            baseWidth: 200, //Target width of elements.
-            gutterX: 5, // Width of gutter between elements. Need gutterY to works, fallback to "gutter".
-            gutterY: 10, // Width of gutter between elements. Need gutterX to works, fallback to "gutter".
-            minify: true, // Whether or not MiniMasonry place elements on shortest column or keep exact order of list.
-            surroundingGutter: false, // Set left gutter on first column and right gutter on last.
-            ultimateGutter:	5, //Gutter applied when only 1 column can be displayed.
+            baseWidth: parseInt(this.#pageVariables.sw_options.minrowwidth), //Target width of elements. ++
+            gutterX: parseInt(this.#pageVariables.sw_options.mm_gutterX), // Width of gutter between elements. Need gutterY to works, fallback to "gutter". ++
+            gutterY: parseInt(this.#pageVariables.sw_options.mm_gutterY), // Width of gutter between elements. Need gutterX to works, fallback to "gutter". ++
+            minify: this.#pageVariables.sw_options.mm_minify === 'true', // Whether or not MiniMasonry place elements on shortest column or keep exact order of list. ++
+            surroundingGutter: this.#pageVariables.sw_options.mm_surrGutter === 'true', // Set left gutter on first column and right gutter on last. ++
+            ultimateGutter:	parseInt(this.#pageVariables.sw_options.mm_ultiGutter), //Gutter applied when only 1 column can be displayed. ++
         });
         
         masonry.reset();
         masonry.layout();
 
+        // fire a resize event after the init and layout functions to show correctly
         window.setTimeout( function() {
             window.dispatchEvent(new Event('resize'));
             console.log('resized');
@@ -53,29 +48,13 @@ class MiniMasonryWrap {
        
     }
 
-    // TODO set masonry item background with slide background
     /**
     * update CSS rules that are used according to the options and client
     */
     updateCSS() {
-        
         const style = document.createElement('style');
         style.innerHTML = `
-            #swiper${this.number} .myswiper .swiper-slide {
-                background: ${ this.#pageVariables.sw_options.background };
-            }
-            #swiper${this.number} .myswiper {
-                background: ${ this.#pageVariables.sw_options.background };
-            }
-            #swiper${this.number} .myswiper .swiper-slide img {
-                object-fit: ${ this.#pageVariables.sw_options.slide_fit };
-            }
-            #swiper${this.number} .swiper-wrapper .swiper-zoom-container>img {
-                object-fit: ${ this.#pageVariables.sw_options.slide_fit };
-            }
-            #swiper${this.number} .swiper-button-prev, #swiper${this.number} .swiper-button-next {
-                color: ${ this.#pageVariables.sw_options.sw_button_color};
-            }`;
+            #minimasonry${this.number} .item { background: ${ this.#pageVariables.sw_options.background }; }`;
         document.head.appendChild(style);
     }
 }
