@@ -61,11 +61,7 @@ final class MiniMasonryClass
     protected $imageData = [];
     protected $imageNumber = 0;
     protected $imageDataToPassToJavascript = [];
-    protected $showpagination = false;
-    protected $fslightbox = true;
-    protected $zoom = true;
-    protected $effect = 'slide';
-    protected $showInfoButton = true;
+    protected $fslightbox = false;
     protected $options = [];
 
     // PHP 7.4 version
@@ -98,7 +94,7 @@ final class MiniMasonryClass
         $this->imageNumber = count($this->imageData);
         // set the options from shortcode or admin setting
         $this->options = $options;
-        $this->showInfoButton = $this->showInfoButton && $options['addPermalink'] && $options['allImgInWPLibrary'];
+        $this->fslightbox = $options['sw_fslightbox'] === 'true';
     }
 
     /**
@@ -133,9 +129,11 @@ final class MiniMasonryClass
     }
 
     /**
-     * get all currently registered image subsizes and sort them by squared weight w.r.t the desired size for the thumbnail bar in slider.
+     * get all currently image subsizes and return that one that is bigger than width.
      *
-     * @return array the sorted array of available subsizes
+     * @param integer $wpid the WordPress ID of the image
+     * @param integer $width the minimum width to use return as image
+     * @return string the sorted array of available subsizes
      */
     public function get_best_image_subsize( $wpid, $width) {
         $sizes = wp_get_attachment_metadata( $wpid)['sizes'];
@@ -147,7 +145,7 @@ final class MiniMasonryClass
       
         foreach ($sizes as $key => $size) {
             if ($size['width']  > $width) {
-               $src = $sizes[$key]['file'];
+                $src = $sizes[$key]['file'];
                 break;
             }
         }
@@ -174,7 +172,6 @@ final class MiniMasonryClass
         $root = $doc->setRoot('div');
         $root->setAttribute('id', 'minimasonry' . $this->shortcodecounter);
         $root->setAttribute('class', 'fmmm_container fmmm_container_'  . $this->shortcodecounter);
-        //$root->setAttribute('style', 'aspect-ratio:'. $this->options['sw_aspect_ratio']);
         
         foreach ($this->imageData as $data) {
             /*
@@ -203,9 +200,7 @@ final class MiniMasonryClass
 
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
-            // $up_url, $up_dir, $thumbsdir
-            // Mind: the srcset for video is wrong. It contains the video as image with big-image-size. But is not used for Video.
-			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $this->options['imgpath'], $thumbsdir );
+            $phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $this->options['imgpath'], $thumbsdir );
 			$phpimgdata[$this->imgnr-1]['id'] = $this->imgnr;
 			$phpimgdata[$this->imgnr-1]['title'] = $alttext; 
 			$phpimgdata[$this->imgnr-1]['coord'][0] = round( $data['lat'], 6 );
@@ -228,20 +223,27 @@ final class MiniMasonryClass
                 };
                
                 $slide = $root->appendElWithAttsDIV([['class', 'item']]);
-                // get width and height of image. get minrowwidth and calc correct height for image
-                //$asp = $data['width'] / $data['height'];
-                //$height = 2*intval($this->options['minrowwidth'] / $asp);
-                //$slide->setAttribute('style', 'height:'.$height.'px;');
-                //$slide->setAttribute('style', 'height:254px;');
 
+                // wrapper for fslightbox
+                if ( $this->fslightbox ) {
+                    $lightbox=$slide->appendElement('a');
+                    $lightbox->setAttribute('data-fslightbox', 'mmasonry' . $this->shortcodecounter);
+                    $lightbox->setAttribute('data-type','image');
+                    $lightbox->setAttribute('data-caption', $alttext);
+                    $lightbox->setAttribute('href',"{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
+                    $lightbox->setAttribute('aria-label','Open fullscreen lightbox with current image');
+                } else {
+                    $lightbox = $slide;
+                }
+                
                 // create img
-                $img = $slide->appendElement('img');
+                $img = $lightbox->appendElement('img');
                 // add further attributes to img
-                if ( $this->imgnr>1 )$img->setAttribute('loading', 'lazy');
+                if ( $this->imgnr>1 ) $img->setAttribute('loading', 'lazy');
                 $img->setAttribute('alt', $alttext);
+                $img->setAttribute('class', 'fmmm-masonry-image');
 
                 if ( $data['thumbinsubdir'] ) {
-                    //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
                     $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
 
                 } elseif ( $data['thumbavail'] ) {
@@ -251,46 +253,35 @@ final class MiniMasonryClass
                     } else {
                         $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
                     }
-                    // sizes is missing. but not required in examples.
-                    //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}"); 
 
                 } else { 
                     // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
-                    //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}"); 
                     $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
                 };
 
-                // add the button to open fslightbox TODO as href over image
-                // todo add this as href for the item containger. remove button from css then
-                if ( $this->fslightbox ) { // TODO: provide setting
-                    $lightbox=$slide->appendElement('a');
-                    $lightbox->setAttribute('data-fslightbox', 'mmasonry' . $this->shortcodecounter); // TODO rename this. use for masonry on page
-                    $lightbox->setAttribute('data-type','image');
-                    $lightbox->setAttribute('data-caption', $alttext);
-                    $lightbox->setAttribute('href',"{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
-                    $lightbox->setAttribute('aria-label','Open fullscreen lightbox with current image');
-                    $lbdiv=$lightbox->appendElement('div');
-                    $lbdiv->setAttribute('class', 'button-fslightbox');
-                }
-              
-                // update and change Caption. Add to html and array for js-script.
+                // update and change Caption. Add Caption and Date to html and array for js-script.
                 if ( $this->options['showcaption'] === 'false') {
                     $jscaption = '';
                 } else {
+                    // show the title
                     $title=$slide->appendElWithAttsDIV([['class', 'masonry-title']]);
-
                     foreach ($caption as $p) {
                         $el=$doc->createElement('p',$p); 
                         $title->appendChild($el);
                     }
-                    $el=$doc->createElement('p', wp_date( get_option( 'date_format' ), ( $data['created_timestamp'] ) )); 
-                    $el->setAttribute('class', 'masonry-date');
-                    $title->appendChild($el);
-                    
+                    // append the date
+                    if (\array_key_exists( 'created_timestamp', $data) ) {
+                        $el=$doc->createElement('p', wp_date( get_option( 'date_format' ), ( $data['created_timestamp'] ) )); 
+                        $el->setAttribute('class', 'masonry-date');
+                        $title->appendChild($el);
+                    } elseif (\array_key_exists( 'DateTimeOriginal', $data) ) {
+                        $el=$doc->createElement('p', $data['DateTimeOriginal'] ); 
+                        $el->setAttribute('class', 'masonry-date');
+                        $title->appendChild($el);
+                    }
                 }
-                
             // end HTML for image
-            } 
+            }
             // ----------- end HTML for one image or video. 
             $phpimgdata[$this->imgnr-1]['jscaption'] = $jscaption ?? '';
 
@@ -301,7 +292,7 @@ final class MiniMasonryClass
         $root->appendChild($comment);
         
         isset($phpimgdata) ? null : $phpimgdata = []; 
-        $this->imageDataToPassToJavascript = $phpimgdata;
+        $this->imageDataToPassToJavascript = []; //$phpimgdata; is currently unused here
         $this->sliderHtml = rtrim( $doc->saveHTML() );
     }
 }
