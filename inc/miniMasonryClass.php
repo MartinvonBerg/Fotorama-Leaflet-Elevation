@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 namespace mvbplugins\fotoramamulti;
 
 /**
@@ -88,7 +88,7 @@ final class MiniMasonryClass
      * @param  array $attributes All attributes passed from the shortcode.
      * @return string The generated html code as string.
      */
-    public function getSliderHtml()
+    public function getSliderHtml() : string
     {
         $this->generateDomHtml();
         return $this->sliderHtml;
@@ -99,7 +99,7 @@ final class MiniMasonryClass
      *
      * @return integer The number of images that are in the slider.
      */
-    public function getNumberImagesInHtml()
+    public function getNumberImagesInHtml() : int
     {
         return $this->imgnr;
     }
@@ -109,7 +109,8 @@ final class MiniMasonryClass
      *
      * @return array the array with all imageData required for further processing.
      */
-    public function getImageDataForJS () {
+    public function getImageDataForJS () : array
+    {
         return $this->imageDataToPassToJavascript;
     }
 
@@ -120,13 +121,14 @@ final class MiniMasonryClass
      * @param integer $width the minimum width to use return as image
      * @return string the sorted array of available subsizes
      */
-    public function get_best_image_subsize( int $wpid, int $width) {
+    public function get_best_image_subsize( int $wpid, int $width) : string
+    {
         $sizes = wp_get_attachment_metadata( $wpid)['sizes'];
 
         // sort array by weight
         $csort = array_column($sizes, 'width');
         array_multisort($csort, SORT_ASC, $sizes);
-        $src = false;
+        $src = '';
       
         foreach ($sizes as $key => $size) {
             if ($size['width']  > $width) {
@@ -134,7 +136,6 @@ final class MiniMasonryClass
                 break;
             }
         }
-        
         return $src;
     }
 
@@ -146,7 +147,8 @@ final class MiniMasonryClass
      *
      * @return void no return value: just set the class attributes as result.
      */
-    private function generateDomHtml() {
+    private function generateDomHtml() : void
+    {
         // Define path and url variables
 	    $up_url = gpxview_get_upload_dir('baseurl');  // upload_url
 	    $up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
@@ -236,7 +238,7 @@ final class MiniMasonryClass
 
                 } elseif ( $data['thumbavail'] ) {
                     $srcset = $this->get_best_image_subsize( $data['wpid'], 2*$this->options['minrowwidth']);
-                    if ( $srcset !== false) {
+                    if ( $srcset !== '') {
                         $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$srcset}");
                     } else {
                         $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
@@ -253,6 +255,7 @@ final class MiniMasonryClass
                 } else {
                     // show the title
                     $title=$slide->appendElWithAttsDIV([['class', 'masonry-title']]);
+
                     foreach ($caption as $p) {
                         $el=$doc->createElement('p',$p); 
                         $title->appendChild($el);
@@ -267,6 +270,33 @@ final class MiniMasonryClass
                         $el->setAttribute('class', 'masonry-date');
                         $title->appendChild($el);
                     }
+                    
+                    // Modal content
+                    $mod=$doc->createElement('div');
+                    $mod->setAttribute('class','modal-content');
+
+                    $span=$doc->createElement('span', \esc_html('&times;'));
+                    $span->setAttribute('class', 'close');
+
+                    $modtext=$doc->createElement('p', 'Some Image-Info tho show');
+
+                    $mod->appendChild($span);
+                    $mod->appendChild($modtext);
+
+                    $outermodal=$doc->createElement('div');
+                    $outermodal->setAttribute('class','modal');
+                    $outermodal->setAttribute('id','myModal');
+
+                    $outermodal->append($mod);
+
+                    $el->appendChild($outermodal);
+                    
+                    $but=$doc->createElement('button', 'info' ); 
+                    $but->setAttribute('class', 'masonry-dialog-link');
+                    $but->setAttribute('id', 'popup'. $this->imgnr);
+                    
+                    $title->appendChild($but);
+
                 }
             // end HTML for image
             }
