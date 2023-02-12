@@ -24,6 +24,8 @@
 
 WordPress-Plugin to show a responsive Image Slider with images located in a separate FOLDER on your server or even in the WordPress Media Library. A thumbnail bar could be shown together with the image slider. Fotorama or Swiper is used for the slider. The Fotorama slider only works with JPG- or WEBP-Files an not with videos. Swiper works with Videos, too.
 
+**NEW** Show a simple Masonry Gallery with your images from a dedicated Folder!
+
 Optionally a Leaflet map is shown. This map shows the GPS-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation is used for that). The map moves synchronously to the slider, e.g. it is centred to the GPS-Position of the currently shown image. Under the map a height-chart of the GPX-track with its statistics is shown. The image slider may be used more than once per page. 
 
 The Plugin is fully responsive (lazy loading, srcset if images are in WP-MediaLibrary) and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap (Currently not tested!) and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode for Fotorama (desktop only) and in the slider for Swiper. With Swiper Slider the images may be shown in fullscreen mode with **Simple Lightbox with fslight** (another plugin from me, available as WP-Plugin: https://de.wordpress.org/plugins/simple-lightbox-fslight/)
@@ -34,7 +36,7 @@ The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where
 
 The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation. 
 
-**NEW:Settings may be done with a Gutenberg Block. But Version 0.15.x not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
+**NEW:Settings may be done with a Gutenberg Block. But Version 0.16.x not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
 
 **The Plugin runs from WordPress 5.9 - 6.1 and PHP 7.4 - 8.2.0**
 
@@ -83,6 +85,9 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 5. Done!
 
 # Update or De-Installation
+
+## Save Settings
+**NEW** : Save your plugin-settings to a JSON File on your local machine for later use e.g. if you want to deinstall the plugin for testing purposes. After that:
 
 1. Deactivate the plugin in Admin-Area of WordPress.
 2. Optional if you use the Map-Tile-Server: save you .htaccess file from the plugin directory. Otherwise changes will be lost.
@@ -167,6 +172,7 @@ Process and save the file with the Button at the bottom.
     - Do not use 'thumb' or something like '4x5' or 200x150 or 150x150 (used regex: [0-9]x[0-9]) in the filename for the full-sized image. These files will be regarded as thumbnail and therefore ignored for the slider.
     
     Optionally:
+    - **NEW:** Give your images files set a unique filename like 'Great-holidays-Italy-*number*' where *number* is a sequential number. Upload images to your WordPress Media Library with Standard upload. User the filefilter parameter to filter these files from your WordPress Standard Folder : *folder="2023/02" filefilter="Great-holidays-Italy-"*
     - Add the images to the WordPress Media Library with my other plugin: https://wordpress.org/plugins/wp-wpcat-json-rest/ See there for the manual how to do that.
 
     - If the images were 
@@ -292,6 +298,7 @@ This plugin uses the great work from:
 - Nominatim for reverse geo-coding: https://nominatim.org/release-docs/develop/api/Reverse/
 - MediaWiki for the PHP-Code to extract EXIF-Meta from Webp images (https://doc.wikimedia.org/mediawiki-core/1.27.3/php/WebP_8php_source.html)
 - Swiper.js Slider: Great! Thank you for that: https://swiperjs.com/
+- MiniMasronry js Gallery: Simple, fast and good performance: https://github.com/Spope/MiniMasonry.js/
 
 # Note for Developers
 - unit tests
@@ -337,6 +344,11 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.16.0 =
+12.02.2023: Adding a filter filter based on filenames and improved sorting function.
+            Added am import / export function for plugin settings.
+            Added a simple Massonry Gallery to show images from a folder that works together with fslightbox.
 
 = 0.15.0 =
 29.01.2023: Bug-Fix of Admin Settings for clean activation process. Cleanup /inc directory. Added an option to hide the elevation chart. Swiper CSS settings corrected for object-fit. Added margin settings in elevationClass.js to get correct height of elevation charts. Clean-up elevationClass.js. Correction of CSS-selectors for updateCSS functions in JS. Admin parameter table: settings with no shortcode added to table.
