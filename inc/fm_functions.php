@@ -68,7 +68,7 @@ add_action('wp_head', '\mvbplugins\fotoramamulti\addLinkToHead', 2);
 function addLinkToHead() {
 	// detect request from mobile device. 
 	$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);
-	$isMobile = is_numeric(strpos($ua, "mobile"));
+	$isMobile = strpos($ua, "mobile") !== false;
 	// <link rel="preload" as="image" href="wolf.jpg" imagesrcset="wolf_400px.jpg 400w, wolf_800px.jpg 800w, wolf_1600px.jpg 1600w" imagesizes="50vw">
 	$link = '';
 	// get $postid

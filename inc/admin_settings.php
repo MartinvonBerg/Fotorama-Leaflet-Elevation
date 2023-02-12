@@ -1283,7 +1283,7 @@ final class FotoramaElevationAdmin
 				$code = $http_response_header[0];
 				$found = \strpos($code, '302');
 				fclose($test);
-				if ($found  > 0) return true;
+				if ($found  !== false) return true;
 			}
 		}
 		return false;

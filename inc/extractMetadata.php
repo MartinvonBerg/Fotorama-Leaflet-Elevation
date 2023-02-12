@@ -705,7 +705,7 @@ function get_gps_data( string $gpsbuffer, string $buffer, bool $isIntel )
 					$data = \str_replace('X','', $data);
 					$data = chr (hexdec ( $data ));
 					$found = strpos( ' NSEW', $data);
-					if ( ! $found ) $data = false;
+					if ( $found === false ) $data = false;
 				}
 
 				// special treatment of the Lat- / Long- / Alt-itude
