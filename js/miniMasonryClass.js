@@ -23,8 +23,8 @@ class MiniMasonryWrap {
         this.number = number; 
         this.elementOnPage = elementOnPage; 
         this.#pageVariables = pageVarsForJs[number];
-        this.fslightboxDownloadButton = false; //TODO: define this as admin setting
-        this.fslightboxInfo = true; //TODO: define this as admin setting
+        this.fslightboxDownloadButton = true; //TODO: define this as admin setting
+        this.fslightboxInfo = true && (this.#pageVariables.sw_options.showcaption === 'true'); //TODO: define this as admin setting.
 
         // todo provide all masonry settings in admin tab
         this.updateCSS();
@@ -54,41 +54,54 @@ class MiniMasonryWrap {
 
     }
 
+    /**
+     * show download and info button in bar of fsLightbox.
+     */
     handleFslightbox() {
+
+        let dlopt = {
+            viewBox: "0 0 16 16",
+            d:"M0 14h16v2h-16v-2z M8 13l5-5h-3v-8h-4v8h-3z",
+            width: "16px",
+            height: "16px",
+            title: "Download",
+            onClick: function(instance) {
+                var URL = instance.props.sources[instance.stageIndexes.current];
+                var a = document.createElement("a");
+                a.href = URL;
+                a.setAttribute("download", "");
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        };
+       
+        let fslbopt = {
+            viewBox: "0 0 24 24",
+            d:"M12,10a1,1,0,0,0-1,1v6a1,1,0,0,0,2,0V11A1,1,0,0,0,12,10Zm0-4a1.25,1.25,0,1,0,1.25,1.25A1.25,1.25,0,0,0,12,6Z",
+            width: "24px",
+            height: "24px",
+            title: "Info",
+            onClick: function(instance) {
+                let nr = instance.stageIndexes.current;
+                const modals = document.getElementsByClassName("modal-dialog");
+                modals[nr].showModal();
+            }
+        };
+
         // Download Button
-        if ( typeof(fsLightbox ) === 'object' && this.fslightboxDownloadButton) {
-            fsLightbox.props.customToolbarButtons = [{
-                viewBox: "0 0 16 16",
-                d:"M0 14h16v2h-16v-2z M8 13l5-5h-3v-8h-4v8h-3z",
-                width: "16px",
-                height: "16px",
-                title: "Download",
-                onClick: function(instance) {
-                    var URL = instance.props.sources[instance.stageIndexes.current];
-                    var a = document.createElement("a");
-                    a.href = URL;
-                    a.setAttribute("download", "");
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                }
-            }];
+        if ( typeof(fsLightbox ) === 'object' && this.fslightboxDownloadButton && ! this.fslightboxInfo) {
+            fsLightbox.props.customToolbarButtons = [dlopt];
         }
 
         // Info Button to open modal
-        if ( typeof(fsLightbox ) === 'object' && this.fslightboxInfo) {
-            fsLightbox.props.customToolbarButtons = [{
-                viewBox: "0 0 24 24",
-                d:"M12,10a1,1,0,0,0-1,1v6a1,1,0,0,0,2,0V11A1,1,0,0,0,12,10Zm0-4a1.25,1.25,0,1,0,1.25,1.25A1.25,1.25,0,0,0,12,6Z",
-                width: "24px",
-                height: "24px",
-                title: "Info",
-                onClick: function(instance) {
-                    let nr = instance.stageIndexes.current;
-                    const modals = document.getElementsByClassName("modal-dialog");
-                    modals[nr].showModal();
-                }
-            }];
+        if ( typeof(fsLightbox ) === 'object' && this.fslightboxInfo && ! this.fslightboxDownloadButton) {
+            fsLightbox.props.customToolbarButtons = [fslbopt];
+        }
+
+        // Download Button and Info Button to open modal
+        if ( typeof(fsLightbox ) === 'object' && this.fslightboxDownloadButton && this.fslightboxInfo) {
+            fsLightbox.props.customToolbarButtons = [fslbopt, dlopt];
         }
 
         // Close modal an slide change
