@@ -63,6 +63,8 @@ final class MiniMasonryClass
     protected array $imageDataToPassToJavascript = [];
     protected bool $fslightbox = false;
     protected array $options = [];
+    protected string $googleAPIkey = ''; //TODO: define google key as admin setting
+    protected string $modalHeader = 'h5'; //TODO: define header as admin setting
 
     /**
      * constructor function for the class to do the initialization settings.
@@ -256,10 +258,11 @@ final class MiniMasonryClass
                     // show the title
                     $title=$slide->appendElWithAttsDIV([['class', 'masonry-title']]);
 
-                    foreach ($caption as $p) {
-                        $el=$doc->createElement('p',$p); 
-                        $title->appendChild($el);
-                    }
+                    // append the title
+                    $p = $data["title"];
+                    $el=$doc->createElement('p',$p); 
+                    $title->appendChild($el);
+                    
                     // append the date
                     if (\array_key_exists( 'created_timestamp', $data) ) {
                         $el=$doc->createElement('p', wp_date( get_option( 'date_format' ), ( $data['created_timestamp'] ) )); 
@@ -272,30 +275,85 @@ final class MiniMasonryClass
                     }
                     
                     // Modal content
-                    $mod=$doc->createElement('div');
-                    $mod->setAttribute('class','modal-content');
+                    $mod=$doc->createElement('dialog', $p);
+                    $mod->setAttribute('class','modal-dialog');
+                    $mod->setAttribute('id','dialog'. $this->imgnr);
 
-                    $span=$doc->createElement('span', \esc_html('&times;'));
-                    $span->setAttribute('class', 'close');
-
-                    $modtext=$doc->createElement('p', 'Some Image-Info tho show');
-
+                    $span=$doc->createElement('button', 'X');
+                    $span->setAttribute('class', 'masonry-dialog-close');
                     $mod->appendChild($span);
-                    $mod->appendChild($modtext);
 
-                    $outermodal=$doc->createElement('div');
-                    $outermodal->setAttribute('class','modal');
-                    $outermodal->setAttribute('id','myModal');
+                    $meta=$doc->createElement($this->modalHeader, __('Details'));
+                    $mod->appendChild($meta);
 
-                    $outermodal->append($mod);
+                    $caption = array (0 => $data['camera'],
+                                1 => $data['focal_length_in_35mm'] . 'mm / f/' . $data['aperture'] . ' / ' . $data['exposure_time'] . 's / ISO' . $data['iso'],
+                                2 => $data['DateTimeOriginal']);
 
-                    $el->appendChild($outermodal);
-                    
+                    foreach ($caption as $p) {
+                        $subel=$doc->createElement('p',$p); 
+                        $mod->appendChild($subel);
+                    }
+
+                    // GPS coords 
+                    if (\key_exists('lat', $data) && \key_exists('lon', $data)) {
+                        $geo = number_format($data['lat'], 4, '.', '') . ',' . number_format($data['lon'], 4, '.', '');
+                        $key = $this->googleAPIkey; 
+                        $geotitle=$doc->createElement($this->modalHeader,__('Standort'));
+                        $mod->appendChild($geotitle);
+
+                        if ($geo !== '0.0000,0.0000' && $key !== '') { 
+                            $subgeo=$doc->createElement('a');
+                            $subgeo->setAttribute('href', 'https://www.google.com/maps/place/' . $geo );
+                            $subgeo->setAttribute('target', '_blank');
+                            $subgeo->setAttribute('rel','noopener');
+                            $geoimg=$doc->createElement('img');
+                            $geoimg->setAttribute('class', 'noLazy');
+                            $geoimg->setAttribute('src', "https://maps.googleapis.com/maps/api/staticmap?key=".$key."&size=320x240&zoom=10&scale=2&maptype=roadmap&markers=".$geo );
+                            $geoimg->setAttribute('alt', '');
+                            $geoimg->setAttribute('width', '320');
+                            $geoimg->setAttribute('height', '240');
+
+                            $subgeo->appendChild($geoimg);
+                            $mod->appendChild($subgeo);
+                        } else {
+                            $subgeo=$doc->createElement('div','No GPX-Data or empty Google-API-Key');
+                            $mod->appendChild($subgeo);
+                        } 
+                    }
+
+                    // tags
+                    // get the tags and add the link to the tag if available
+                    //$tags = implode(', ', $data['keywords']);
+                    $tags = '';
+                    if (key_exists('keywords', $data)){
+                        foreach ($data['keywords'] as $tagname) {
+                            $tag = get_term_by('name', $tagname, 'post_tag');
+                            if ( $tag != false) {
+                                $taglink = get_term_link($tag->term_id);
+                                $tags .= '<a href="' . $taglink . '"> ' . $tagname . ' </a>';
+                            } else {
+                                $tags .= ' ' . $tagname . ' ';
+                            }	
+                        }
+                    }
+
+                    if ( $tags !== '' ) {
+                        $subtags=$doc->createElement('div');
+                        $tagstitle=$doc->createElement($this->modalHeader,__('Stichwörter'));
+                        $subtags->appendChild($tagstitle);
+                        $template = $doc->createDocumentFragment();
+                        $template->appendXML($tags);
+                        $subtags->appendChild($template);
+                        $mod->appendChild($subtags);
+                    }
+
                     $but=$doc->createElement('button', 'info' ); 
-                    $but->setAttribute('class', 'masonry-dialog-link');
+                    $but->setAttribute('class', 'masonry-dialog-open');
                     $but->setAttribute('id', 'popup'. $this->imgnr);
                     
                     $title->appendChild($but);
+                    $title->appendChild($mod);
 
                 }
             // end HTML for image

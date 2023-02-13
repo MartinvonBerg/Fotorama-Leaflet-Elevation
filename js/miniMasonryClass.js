@@ -12,6 +12,7 @@ class MiniMasonryWrap {
 
     // public attributes (fields). These can be set / get by dot-notation.
     number = 0;
+    elementOnPage = {};
 
     /**
      * Constructor Function
@@ -22,6 +23,8 @@ class MiniMasonryWrap {
         this.number = number; 
         this.elementOnPage = elementOnPage; 
         this.#pageVariables = pageVarsForJs[number];
+        this.fslightboxDownloadButton = false; //TODO: define this as admin setting
+        this.fslightboxInfo = true; //TODO: define this as admin setting
 
         // todo provide all masonry settings in admin tab
         this.updateCSS();
@@ -45,34 +48,96 @@ class MiniMasonryWrap {
             console.log('resized');
         }, 100);
 
-        debugger;
-        // Get the modal
-        let modal = document.getElementById("myModal");
+        this.handleDialogBoxes();
 
-        // Get the button that opens the modal
-        let btn = document.getElementById("popup1");
+        this.handleFslightbox();
 
-        // Get the <span> element that closes the modal
-        let span = document.getElementsByClassName("close")[0];
-        
-        // When the user clicks on the button, open the modal
-        btn.onclick = function() {
-        modal.style.display = "block";
+    }
+
+    handleFslightbox() {
+        // Download Button
+        if ( typeof(fsLightbox ) === 'object' && this.fslightboxDownloadButton) {
+            fsLightbox.props.customToolbarButtons = [{
+                viewBox: "0 0 16 16",
+                d:"M0 14h16v2h-16v-2z M8 13l5-5h-3v-8h-4v8h-3z",
+                width: "16px",
+                height: "16px",
+                title: "Download",
+                onClick: function(instance) {
+                    var URL = instance.props.sources[instance.stageIndexes.current];
+                    var a = document.createElement("a");
+                    a.href = URL;
+                    a.setAttribute("download", "");
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+            }];
         }
 
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-        modal.style.display = "none";
+        // Info Button to open modal
+        if ( typeof(fsLightbox ) === 'object' && this.fslightboxInfo) {
+            fsLightbox.props.customToolbarButtons = [{
+                viewBox: "0 0 24 24",
+                d:"M12,10a1,1,0,0,0-1,1v6a1,1,0,0,0,2,0V11A1,1,0,0,0,12,10Zm0-4a1.25,1.25,0,1,0,1.25,1.25A1.25,1.25,0,0,0,12,6Z",
+                width: "24px",
+                height: "24px",
+                title: "Info",
+                onClick: function(instance) {
+                    let nr = instance.stageIndexes.current;
+                    const modals = document.getElementsByClassName("modal-dialog");
+                    modals[nr].showModal();
+                }
+            }];
+        }
+
+        // Close modal an slide change
+        if ( typeof(fsLightbox ) === 'object' ) {
+            fsLightbox.props.onSlideChange = function (instance) {
+                //console.log(instance);
+                const modals = document.getElementsByClassName("modal-dialog");
+                for (let item of modals) {
+                    if (item.attributes.open !== undefined) {
+                        item.close();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Define the handling (open, close) for the informative html dialogs or modals
+     */
+    handleDialogBoxes() {
+        const triggers = document.getElementsByClassName("masonry-dialog-open");
+        const triggerArray = Array.from(triggers).entries();
+        const modals = document.getElementsByClassName("modal-dialog");
+        const closeButtons = document.getElementsByClassName("masonry-dialog-close");
+
+        // Then use `for...of`-loop with the index of each item in `triggerArray` for listening to a click event which toggles each modal to open and close
+        for (let [index, trigger] of triggerArray) {
+            const toggleModal = () => {
+                if (modals[index].attributes.open == undefined) {
+                    modals[index].showModal();
+                } else {
+                    modals[index].close();
+                }
+            };
+            trigger.addEventListener("click", toggleModal );
+            closeButtons[index].addEventListener("click", toggleModal);
         }
 
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
+            if (event.target.className !== 'masonry-dialog-open' && event.target.className.baseVal !== '') {
+                const modals = document.getElementsByClassName("modal-dialog");
+                for (let item of modals) {
+                    if (item.attributes.open !== undefined) {
+                        item.close();
+                    }
+                }
+            }
         }
-        }
-        
-
     }
 
     /**
