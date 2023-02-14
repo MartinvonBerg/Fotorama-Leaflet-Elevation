@@ -345,6 +345,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.17.0 =
+14.02.2023: Improvement in MiniMasonry. Webpack set to production!
+
 = 0.16.0 =
 12.02.2023: Adding a filter filter based on filenames and improved sorting function.
             Added am import / export function for plugin settings.
