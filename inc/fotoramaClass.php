@@ -158,7 +158,7 @@ EOF;
 
         // loop through the data extracted from the images in folder and generate the div depending on the availability of thumbnails
 		foreach ($this->imageData as $data) {
-
+            /*
             // <link rel="preload" as="image" href="wolf.jpg" imagesrcset="wolf_400px.jpg 400w, wolf_800px.jpg 800w, wolf_1600px.jpg 1600w" imagesizes="50vw">
             if ( $this->imgnr===1 && $this->shortcodecounter===0 && \current_user_can('edit_posts') ) {
                 // generate the srcset and write to a custom field
@@ -174,7 +174,7 @@ EOF;
                     }
                 }
             }
-
+            */
 			// set the alt-tag and the title for SEO
 			if ( 'notitle' == $data['title'] ) {
 				$data['title'] = __('Galeriebild') . ' '. \strval( $this->imgnr );

@@ -296,7 +296,7 @@ final class SwiperClass
         $wrapper = $root->appendElWithAttsDIV([['class', 'swiper-wrapper']]);
 
         foreach ($this->imageData as $data) {
-
+            /*
             if ( $this->imgnr===1 && $this->shortcodecounter===0 && \current_user_can('edit_posts') ) {
                 // generate the srcset and write to a custom field
                 $postid = \get_the_ID();
@@ -311,7 +311,7 @@ final class SwiperClass
                     }
                 }
             }
-
+            */
             // set the alt-tag and the title for SEO
 			if ( $data['title'] === 'notitle' && $data['type'] === 'image' ) {
 				$data['title'] = __('Galeriebild') . ' '. \strval( $this->imgnr );
