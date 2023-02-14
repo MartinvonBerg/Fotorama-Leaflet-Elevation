@@ -13,18 +13,19 @@
     transform: scale(1.03);
   }
 
-.masonry-title > p {
+.masonry-caption > .masonry-title {
     margin: 10px;
     text-align: left;
     font-size: 1.1em;
 }
 
-.masonry-title > .masonry-date {
+.masonry-caption > .masonry-date {
+    margin-left: 10px;
     font-size: 0.9em;
     font-style: italic;
 }
 
-.item {
+.fmmm_container .item {
     position: absolute;
     text-align: left;
     color: black;

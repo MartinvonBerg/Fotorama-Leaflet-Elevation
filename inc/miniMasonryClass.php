@@ -4,7 +4,7 @@ namespace mvbplugins\fotoramamulti;
 /**
  * Class MiniMasonryClass to generate the html for the MiniMasonry Gallery.
  *
- * PHP version 7.3.0 - 8.0.x
+ * PHP version 7.4 - 8.1.x
  *
  * Summary     Class MiniMasonryClass to generate the html for the MiniMasonry Gallery.
  * Description This Class generates the html for the MiniMasonry Gallery.
@@ -13,7 +13,7 @@ namespace mvbplugins\fotoramamulti;
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * @since      0.16.0
- * @version    0.16.0
+ * @version    0.17.0
  */
 
 
@@ -50,7 +50,7 @@ class myDocument extends \DOMDocument {
 }
 
 /**
- * Class FotoramaClass to generate the html for the fotorama slider.
+ * Class MiniMasonryClass to generate the html for the MiniMasonry Gallery.
  */
 final class MiniMasonryClass
 {
@@ -63,15 +63,15 @@ final class MiniMasonryClass
     protected array $imageDataToPassToJavascript = [];
     protected bool $fslightbox = false;
     protected array $options = [];
-    protected string $googleAPIkey = ''; //TODO: define google key as admin setting
-    protected string $modalHeader = 'h5'; //TODO: define header as admin setting
+    public string $googleAPIkey = ''; //google key as admin setting. No shortcode
+    protected string $dialogHeader = 'h5'; //header as admin setting. shortcode
 
     /**
      * constructor function for the class to do the initialization settings.
      *
      * @param  integer $shortcodecounter The static number of shortcodes on the page / post.
      * @param  array   $imageData The array with all required imageData.
-     * @param  array  $options the options for the swiper slider.
+     * @param  array  $options the options for the html code generation.
      */
     public function __construct( int $shortcodecounter=0, array $imageData=[], array $options = [])
     {
@@ -82,6 +82,7 @@ final class MiniMasonryClass
         // set the options from shortcode or admin setting
         $this->options = $options;
         $this->fslightbox = $options['mm_fslightbox'] === 'true';
+        $this->dialogHeader = $options['mm_dialogHeader'];
     }
 
     /**
@@ -142,7 +143,7 @@ final class MiniMasonryClass
     }
 
     /**
-     * Generate the HTML code for the swiper based on DOMClass and on options.
+     * Generate the HTML code for the masonry gallery based on DOMClass and on options.
      * used parameters: 
      *  general: shortcaption, showcaption, minrowwidth, imgpath, JS: background, 
      *  minimasonry : mm_fslightbox
@@ -256,11 +257,12 @@ final class MiniMasonryClass
                     $jscaption = '';
                 } else {
                     // show the title
-                    $title=$slide->appendElWithAttsDIV([['class', 'masonry-title']]);
+                    $title=$slide->appendElWithAttsDIV([['class', 'masonry-caption']]);
 
                     // append the title
                     $p = $data["title"];
                     $el=$doc->createElement('p',$p); 
+                    $el->setAttribute('class', 'masonry-title');
                     $title->appendChild($el);
                     
                     // append the date
@@ -283,7 +285,7 @@ final class MiniMasonryClass
                     $span->setAttribute('class', 'masonry-dialog-close');
                     $mod->appendChild($span);
 
-                    $meta=$doc->createElement($this->modalHeader, __('Details'));
+                    $meta=$doc->createElement($this->dialogHeader, __('Details'));
                     $mod->appendChild($meta);
 
                     $caption = array (0 => $data['camera'],
@@ -299,7 +301,7 @@ final class MiniMasonryClass
                     if (\key_exists('lat', $data) && \key_exists('lon', $data)) {
                         $geo = number_format($data['lat'], 4, '.', '') . ',' . number_format($data['lon'], 4, '.', '');
                         $key = $this->googleAPIkey; 
-                        $geotitle=$doc->createElement($this->modalHeader,__('Standort'));
+                        $geotitle=$doc->createElement($this->dialogHeader,__('Standort'));
                         $mod->appendChild($geotitle);
 
                         if ($geo !== '0.0000,0.0000' && $key !== '') { 
@@ -340,7 +342,7 @@ final class MiniMasonryClass
 
                     if ( $tags !== '' ) {
                         $subtags=$doc->createElement('div');
-                        $tagstitle=$doc->createElement($this->modalHeader,__('Stichwörter'));
+                        $tagstitle=$doc->createElement($this->dialogHeader,__('Stichwörter'));
                         $subtags->appendChild($tagstitle);
                         $template = $doc->createDocumentFragment();
                         $template->appendXML($tags);

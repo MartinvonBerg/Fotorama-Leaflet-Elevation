@@ -11,7 +11,7 @@ namespace mvbplugins\fotoramamulti;
  * Plugin Name:       Slider + Leaflet-Map + Chart
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Image and Video Slider, Leaflet Map and Elevation Chart Integration. Shows images from any directory in your upload folder. Uses Fotorama or Swiper for the Slider.
- * Version:           0.16.0
+ * Version:           0.17.0
  * Requires at least: 5.9
  * Requires PHP:      7.4
  * Author:            Martin von Berg
@@ -26,7 +26,7 @@ namespace mvbplugins\fotoramamulti;
 //			--settings: import / export settings aus DB auslesen und in json schreiben und umgekehrt
 //			-- custom fields der Posts / pages: wie bei settings
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
-//			Typisierung: Methoden-Signater, classe attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
+//			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
 // --- Swiper
 //			--preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
@@ -165,6 +165,7 @@ function showmulti($attr, $content = null)
 		'mm_minify'			=> $fotorama_elevation_options['mm_minify'] ?? 'false',
 		'mm_surrGutter'		=> $fotorama_elevation_options['mm_surrGutter'] ?? 'false',
 		'mm_ultiGutter'		=> $fotorama_elevation_options['mm_ultiGutter'] ?? 5,
+		'mm_dialogHeader'	=> $fotorama_elevation_options['mm_dialogHeader'] ?? 'h5'
 	), $attr));
 
 	$mapcenter = explode(',',$mapcenter);
@@ -291,6 +292,7 @@ function showmulti($attr, $content = null)
 			'mm_minify'				=> $mm_minify,
 			'mm_surrGutter'			=> $mm_surrGutter,
 			'mm_ultiGutter'			=> $mm_ultiGutter,
+			'mm_dialogHeader'		=> $mm_dialogHeader,
 		];
 				
 		if ( $slider === 'fotorama') {
@@ -328,6 +330,7 @@ function showmulti($attr, $content = null)
 			// load the class for masonry here and generate html for masonry gallery
 			require_once __DIR__ . '/inc/miniMasonryClass.php';
 			$fClass = new MiniMasonryClass( $shortcodecounter, $data2, $page_options); // Attention: Inconsistent constructor!
+			$fClass->googleAPIkey = $fotorama_elevation_options['googleApiKey'];
 			$htmlstring .= $fClass->getSliderHtml( $attr);
 			$phpimgdata = $fClass->getImageDataForJS();
 			$fClass = null;
@@ -458,7 +461,7 @@ EOF;
  	);
 
 	$plugin_url = plugins_url('/', __FILE__);
-	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.16.0', true);
+	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.17.0', true);
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;

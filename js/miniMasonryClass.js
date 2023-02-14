@@ -15,7 +15,7 @@ class MiniMasonryWrap {
     elementOnPage = {};
 
     /**
-     * Constructor Function
+     * Constructor Function which instanciates and calls all methods.
      * @param {int} number current number of slider on page
      * @param {string} elementOnPage id of the div on the page that shall contain the slider
      */
@@ -23,10 +23,9 @@ class MiniMasonryWrap {
         this.number = number; 
         this.elementOnPage = elementOnPage; 
         this.#pageVariables = pageVarsForJs[number];
-        this.fslightboxDownloadButton = true; //TODO: define this as admin setting
-        this.fslightboxInfo = true && (this.#pageVariables.sw_options.showcaption === 'true'); //TODO: define this as admin setting.
+        this.fslightboxDownloadButton = false; //for future extension. Currently unused and set to false constantly.
+        this.fslightboxInfo = true && (this.#pageVariables.sw_options.showcaption === 'true'); //for future extension. Currently combined with showcaption.
 
-        // todo provide all masonry settings in admin tab
         this.updateCSS();
         
         let masonry = new MiniMasonry({
@@ -154,7 +153,7 @@ class MiniMasonryWrap {
     }
 
     /**
-    * update CSS rules that are used according to the options and client
+    * update CSS rules for the background colour of the caption.
     */
     updateCSS() {
         const style = document.createElement('style');

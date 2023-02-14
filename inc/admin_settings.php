@@ -268,7 +268,7 @@ final class FotoramaElevationAdmin
 			'type' => 'checkbox',
 			'values' => '',
 			'default' => 'true',
-			'description' => 'Show the caption in the fotorama slider',
+			'description' => 'Show the Caption in slider or masonry Gallery',
 			'shortcode' => 'showcaption',
 			'info' => 'Show the caption in the Slider',
 		],
@@ -943,10 +943,6 @@ final class FotoramaElevationAdmin
 		]
 	];
 
-	// minimasonry
-	/*
-		'mm_ultiGutter'		=> $fotorama_elevation_options['mm_ultiGutter'] ?? 5,
-	*/
 	private $masonrySettings = [
 		'pre' => 'masonry', // change
 		'options' => 'fm_masonry_options', // change
@@ -1032,6 +1028,37 @@ final class FotoramaElevationAdmin
 			'description' => 'Use left gutter on first column and right gutter on last',
 			'shortcode' => 'mm_surrGutter',
 			'info' => 'Use left gutter on first column and right gutter on last',
+		],
+		'param6' => [
+			'label' => 'mm_dialogHeader',
+			'text' => 'Header for Info Popup',
+			'class' => 'masonry_row',
+			'custom_data' => 'custom6',
+			'type' => 'select',
+			'values' => [
+				'h2' => 'H2',
+				'h3' => 'H3',
+				'h4' => 'H4',
+				'h5' => 'H5',
+				'h6' => 'H6'
+			],
+			'default' => 'h5',
+			'description' => 'Header for Info Popup',
+			'shortcode' => 'mm_dialogHeader',
+			'info' => 'Header for Info Popup',
+		],
+		'param7' => [
+			'label' => 'googleApiKey',
+			'text' => 'Google Maps API Key',
+			'class' => 'masonry_row',
+			'custom_data' => 'custom7',
+			'type' => 'text',
+			'required' => '',
+			'values' => '',
+			'default' => '',
+			'description' => 'Type the Google Maps API Key taken from the Google Cloud Platform page',
+			'shortcode' => '',
+			'info' => 'Type the Google Maps API Key taken from the Google Cloud Platform page',
 		],
 	];
 
