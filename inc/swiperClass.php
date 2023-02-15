@@ -353,7 +353,7 @@ final class SwiperClass
                 } else {
                     $slide= $wrapper->appendElWithAttsDIV([['class', 'swiper-slide']]);
                 }
-                
+                //$slide->setAttribute('oncontextmenu', 'return false;');
                 $this->zoom ? $zoom=$slide->appendElWithAttsDIV([['class', 'swiper-zoom-container']]) : $zoom=$slide;
 
                 // img and a href

@@ -20,7 +20,7 @@ function enqueue_fslightbox()
 
 		if (is_file($path)) {
 			$path = $slug . '/simple-lightbox-fslight/js/fslightbox-paid/fslightbox.js';
-			wp_enqueue_script('fslightbox', $path, [], '3.4.1', true);
+			wp_enqueue_script('fslightbox', $path, [], '3.4.6', true);
 		}
 
 		$path = $plugin_main_dir . '/simple-lightbox-fslight/js/fslightbox-basic/fslightbox.js';
@@ -29,7 +29,7 @@ function enqueue_fslightbox()
 		if (is_file($path)) {
 			$path = $slug . '/simple-lightbox-fslight/js/fslightbox-basic/fslightbox.js';
 			// This does not overload if both js-scripts are available because wp_enqueue_script does not overload.
-			wp_enqueue_script('fslightbox', $path, [], '3.3.1', true);
+			wp_enqueue_script('fslightbox', $path, [], '3.4.1', true);
 		}
 
 		// pass option to the js-script to switch fullscreen of browser off, when lightbox is closed.
