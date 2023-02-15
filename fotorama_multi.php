@@ -21,7 +21,7 @@ namespace mvbplugins\fotoramamulti;
  */
 
 // Ideen-liste
-// 		PHP: 
+// 		PHP: !!! TODO entferne das custom_field "fm_header_link" bringt nix für performance!
 //			--mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet. 
 //			-- custom fields der Posts / pages: wie bei settings
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
@@ -234,7 +234,7 @@ function showmulti($attr, $content = null)
 	
 	// preset Custom-Field 'lat' and 'lon' of the post with GPS-Data of the first image 
 	// Will be overwritten with the first trackpoint of the GPX-track, if there is one provided
-	// TODO: the first image is taken, so sorting does change the starting point. One might see that as intentional.
+	// TODO: the first image is taken, so sorting does change the starting point. One might regard that as intentional.
 	if ( \current_user_can('edit_posts') && $setCustomFields && (0 === $shortcodecounter) && ( $imageNumber > 0)) {
 			gpxview_setpostgps($postid, $data2[0]['lat'], $data2[0]['lon']);
 	}
