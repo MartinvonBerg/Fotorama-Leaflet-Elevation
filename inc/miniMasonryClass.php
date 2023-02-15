@@ -126,7 +126,14 @@ final class MiniMasonryClass
      */
     public function get_best_image_subsize( int $wpid, int $width) : string
     {
-        $sizes = wp_get_attachment_metadata( $wpid)['sizes'];
+        $src = '';
+        $sizes = wp_get_attachment_metadata( $wpid);
+        
+        if (( $sizes === null) || ($sizes === false)) {
+            return $src;
+        } else {
+            $sizes = $sizes['sizes'];
+        }
 
         // sort array by weight
         $csort = array_column($sizes, 'width');
@@ -345,6 +352,7 @@ final class MiniMasonryClass
                         $tagstitle=$doc->createElement($this->dialogHeader,__('Stichwörter'));
                         $subtags->appendChild($tagstitle);
                         $template = $doc->createDocumentFragment();
+                        $tags = \esc_html($tags);
                         $template->appendXML($tags);
                         $subtags->appendChild($template);
                         $mod->appendChild($subtags);
