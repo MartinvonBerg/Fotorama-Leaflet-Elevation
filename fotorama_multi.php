@@ -23,12 +23,10 @@ namespace mvbplugins\fotoramamulti;
 // Ideen-liste
 // 		PHP: 
 //			--mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet. 
-//			--settings: import / export settings aus DB auslesen und in json schreiben und umgekehrt
 //			-- custom fields der Posts / pages: wie bei settings
-//			srcset sizes ergänzen! 
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
 //			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
-//			Erinnerung: Meta-Data aus kleinen Bildern entfernen! Nicht für dieses Plugin
+//			Erinnerung: Meta-Data aus kleinen Bildern entfernen! Nicht für dieses Plugin, sondern allgemein!
 // --- Swiper
 //			--preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
@@ -37,6 +35,8 @@ namespace mvbplugins\fotoramamulti;
 // 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
 // 			anderen Icon-Satz verwenden? Neue Icons skalieren.
 //			--Hinweis lighthouse: Änderung addEventlistener bei d3.js führt zu Fehlern. Ist also nicht änderbar. muss akzeptiert werden.
+// --- Masonry
+//			-- info dialog oder modal popup overlay geht nur mit einem masonry pro Seite. Ids und Zähler u.s.w sind nicht richtig gesetzt.
 
 
 // fallback for wordpress security
@@ -295,6 +295,8 @@ function showmulti($attr, $content = null)
 			'mm_surrGutter'			=> $mm_surrGutter,
 			'mm_ultiGutter'			=> $mm_ultiGutter,
 			'mm_dialogHeader'		=> $mm_dialogHeader,
+			// responsive image sizes
+			'image_sizes'			=> $fotorama_elevation_options['image_sizes']
 		];
 				
 		if ( $slider === 'fotorama') {

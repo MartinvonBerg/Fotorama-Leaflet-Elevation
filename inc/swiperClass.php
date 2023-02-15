@@ -296,7 +296,7 @@ final class SwiperClass
         $wrapper = $root->appendElWithAttsDIV([['class', 'swiper-wrapper']]);
 
         foreach ($this->imageData as $data) {
-            /*
+            /* TODO: delete the fm_header_link in every post!
             if ( $this->imgnr===1 && $this->shortcodecounter===0 && \current_user_can('edit_posts') ) {
                 // generate the srcset and write to a custom field
                 $postid = \get_the_ID();
@@ -359,17 +359,19 @@ final class SwiperClass
                 // img and a href
                 $img=$zoom->appendElement('img');
                 // add further attributes to img
-                //$img->setAttribute('loading', 'lazy');
-                $img->setAttribute('class', 'swiper-lazy');
+                if ( $this->imgnr>1 && $this->shortcodecounter===0) $img->setAttribute('loading', 'lazy');
+                //$img->setAttribute('class', 'swiper-lazy');
                 $img->setAttribute('alt', $alttext);
                 //$img->setAttribute('object-fit', "{$this->options['slide_fit']}"); //has no effect!
-                $img->setAttribute('data-src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
+                $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
 
                 if ( $data['thumbinsubdir'] ) {
                     //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
                 } elseif ( $data['thumbavail'] ) {
-                    $img->setAttribute('data-srcset', wp_get_attachment_image_srcset( $data['wpid']));
+                    $img->setAttribute('srcset', wp_get_attachment_image_srcset( $data['wpid']));
                     // sizes is missing. but not required in examples.
+                    //  set according to options!
+                    if ( $this->options['image_sizes'] !== 'none') $img->setAttribute('sizes', $this->options['image_sizes']); // /\(max\-width:\s?[0-9]{3,5}px\)\s?[0-9]{1,3}vw,\s?[0-9]{1,3}vw/gm
                     //$img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}"); 
                 } else { 
                     // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset

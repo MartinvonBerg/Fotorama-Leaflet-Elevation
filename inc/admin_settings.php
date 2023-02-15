@@ -589,6 +589,21 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'sw_hashnavigation',
 			'info' => 'Use hashnavigation to directly jump to a dedicated Slider and Image.',
 		],
+		'param12' => [
+			'label' => 'image_sizes',
+			'text' => 'Define srcset for responsive images',
+			'class' => 'swiper_row',
+			'custom_data' => 'custom12',
+			'type' => 'text',
+			'required' => '',
+			//'pattern' => '^\(max\-width:\s?[0-9]{3,5}px\)\s?[0-9]{1,3}vw\,\s?[0-9]{1,3}vw', // Does not work!
+			'pattern' => '.{0,20}', // just set here to show the hint under the field. Currently unused!
+			'values' => '(max-width: 940px) 100vw, 50vw',
+			'default' => '(max-width: 940px) 100vw, 50vw',
+			'description' => "Define 'sizes' for responsive images. Type 'none' if you don't want to use it.",
+			'shortcode' => '',
+			'info' => 'Define srcset for responsive images',
+		],
 		//'sw_slides_per_view'=> 10, // unused
 		//'sw_transition_duration'=>300, // unused
 		//'sw_keyboard'			=> 'true', // fixed to this setting
@@ -950,7 +965,7 @@ final class FotoramaElevationAdmin
 		'section' => 'masonry_section', // change
 		'sectionsText' => 'Mini Masonry Settings', // change
 		'namespace' => 'fotoramamulti', // change
-		'subTitle' => 'Settings for the MiniMasonry Gallery only. Used General settings: Slide Background Colour, Define File sorting, Define File sort Order, Show Caption, Short Caption, Images with GPS required, Max Width of Container in, Min Width of one CSS-grid Row',
+		'subTitle' => 'Settings for the MiniMasonry Gallery only. Used General settings: Slide Background Colour, Define File Filter and sorting, Define File sort Order, Show Caption, Short Caption, Images with GPS required, Max Width of Container in, Min Width of one CSS-grid Row',
 		'param0' => [
 			'label' => 'mm_fslightbox',
 			'text' => 'Use fslightbox for Fullscreen',

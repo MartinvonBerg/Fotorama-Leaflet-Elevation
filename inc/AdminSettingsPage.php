@@ -235,6 +235,14 @@ class AdminSettingsPage {
 			$path = $this->settings[ $args['param']]['type'] === 'path' ? $path = $this->uploadDirectory . '/' . $options[ $args['label_for'] ]: '';
 			$label = $this->settings[ $args['param']]['type'] === 'text' ? $this->settings[ $args['param']]['description'] : '';
 			
+			if ( \key_exists('pattern',$this->settings[ $args['param']])) {
+				$pattern = 'pattern="'.$this->settings[ $args['param']]['pattern'].'"';
+				$pattern = '';
+				$path = 'Recommendation: (max-width: '.\number_format( (intval(get_option('fm_common_options')['min_width_css_grid_row_14']) * 2 + 5) * 1.15) .'px) 100vw, 50vw';
+			} else {
+				$pattern = '';
+			}
+			
 			?>
 			<input class="regular-text"
 					type="text"
@@ -242,7 +250,8 @@ class AdminSettingsPage {
 					placeholder="<?php echo esc_attr( $this->settings[ $args['param']]['description'] );?>" 
 					name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr( $args['label_for'] ); ?>]" 
 					id="<?php echo esc_attr( $args['label_for'] ); ?>" 
-					value="<?php echo($optset); ?>">
+					value="<?php echo($optset); ?>"
+					<?php if ($pattern!=='') echo($pattern); ?>>
 					<label><?php echo($label);?></label>
 					<p><?php echo($path);?></p>
 			<?php
@@ -364,7 +373,7 @@ class AdminSettingsPage {
 	 * @param  string $inp the input string to be sanitized
 	 * @return string sanitized string
 	 */	
-	private static function my_sanitize_text ( string $inp) :string
+	private function my_sanitize_text ( string $inp) :string
 	{
 		$inp = sanitize_text_field( $inp);
 		$inp = \htmlspecialchars($inp);
