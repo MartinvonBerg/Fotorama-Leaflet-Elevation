@@ -156,10 +156,9 @@
                         pageVarsForJs[m]['ratioMap'] = ratioMap;
                     }
                     
-                    let _group = new L.featureGroup( allMaps[m].mrk );
-        
                     // skip boundary setting for boxmap that doesn't have a map
                     if ( ! isNaN(ratioMap)) {
+                        let _group = allMaps[m].getFeatureGroup( allMaps[m].mrk );
                         allMaps[m].bounds = allMaps[m].setBoundsToMarkers(m, _group);
                     } 
                 }

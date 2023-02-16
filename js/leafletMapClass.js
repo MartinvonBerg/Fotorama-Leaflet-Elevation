@@ -8,15 +8,20 @@
 // only work with markers and controls in the first step.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-// webpack import information for bundling. localhost won't work with that.
+// webpack import bundling. 
 // local Styles
-
-import './leaflet/leaflet.css';
-import './fullscreen/Control.FullScreen.css';
+//import './leaflet/leaflet.css';
 // local Scripts
 //import './leaflet/leaflet.js'; // is loaded by Control.FullScreen.js
-import './leaflet-ui/leaflet-ui-short.js';
-import './fullscreen/Control.FullScreen.js';
+
+import * as L from "leaflet";
+const MyLL = L.noConflict();
+
+//import './leaflet-ui/leaflet-ui-short.js'; // translation works without this, too.
+
+import '../node_modules/leaflet/dist/leaflet.css';
+import './fullscreen/Control.FullScreen.css';
+
 
 export {LeafletMap};
 
@@ -85,6 +90,7 @@ class LeafletMap {
     useLocalTiles = true;
     useWebpTiles = true;
     static isHtaccessOK = false;
+    inMyLL = {};
    
     /**
      * Constructor Function
@@ -94,6 +100,7 @@ class LeafletMap {
      * @param {int} zoom the zoom factor to use for a map with center coords.
      */
     constructor(number, elementOnPage, center=null, zoom=null) {
+        this.inMyLL = MyLL;
         LeafletMap.count++; // update the number of instances on construct.
         this.number = number;
         this.elementOnPage = elementOnPage;
@@ -142,10 +149,16 @@ class LeafletMap {
         //------- Magnifying glass, fullscreen, Image-Marker und Base-Layer-Change handling --------------------------------
         // create scale control top left // for mobile: zoom deactivated. use fingers!
         this.setMapControls();
+        this.setFullscreenButton()
     }
 
     setBounds(bds) {
         this.bounds = bds;
+    }
+
+    getFeatureGroup( markers) {
+        let _group = new L.featureGroup( markers );
+        return _group;
     }
 
     /**
@@ -380,17 +393,6 @@ class LeafletMap {
             this.controlZoom.addTo(this.map);
         }
 
-        // create a fullscreen button and add it to the map
-        L.control.fullscreen({
-            position: 'topleft',
-            title: this.i18n('Show fullscreen'),
-            titleCancel: this.i18n('Exit fullscreen'),
-            content: null,
-            forceSeparateButton: true,
-            forcePseudoFullscreen: false,
-            fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
-        }).addTo(this.map);
-                        
         // Functions and Overlays for Show-all (Magnifying glass) in the top left corner
         L.Control.Watermark = L.Control.extend({
             onAdd: function () {
@@ -421,6 +423,25 @@ class LeafletMap {
         // create Map selector top right 
         this.controlLayer = L.control.layers(this.baseLayers, null, this.opts.layersControl.options);
         this.controlLayer.addTo(this.map);
+    }
+
+    setFullscreenButton() {
+        // create a fullscreen button and add it to the map
+        import(/* webpackChunkName: "ControlFullscreen" */ './fullscreen/Control.FullScreen.js').then( () => {
+            let locLL = {};
+            typeof(MyLL) === 'undefined' ? locLL = L : locLL = MyLL;
+
+            locLL.control.fullscreen({
+                position: 'topleft',
+                title: this.i18n('Show fullscreen'),
+                titleCancel: this.i18n('Exit fullscreen'),
+                content: null,
+                forceSeparateButton: true,
+                forcePseudoFullscreen: false,
+                fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
+            }).addTo(this.map);
+        });
+        
     }
 
     /**
