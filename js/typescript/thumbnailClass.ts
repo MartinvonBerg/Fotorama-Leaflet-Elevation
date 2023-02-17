@@ -296,9 +296,10 @@ class ThumbnailSlider implements thumbnailClassInterface {
    * @param number number active thumbnail number
    */
   public setActiveThumb (number : number, caller = '') : void {
-    // remove active class
+    // remove active class from every thumbnail.
+    const laC : string = this.activeClass
     // @ts-ignore // TODO
-    this.ele.childNodes[this.currentActive].classList.remove(this.activeClass)
+    this.ele.childNodes.forEach(function (node) { node.classList.remove(laC) })
     // set active class and number
     this.thumbnails[number].classList.add(this.activeClass)
 

@@ -244,8 +244,9 @@ class ThumbnailSlider {
    * @param {int} number active thumbnail number
    */
   setActiveThumb(number, caller='') {
-    // remove active class
-    this.ele.childNodes[this.currentActive].classList.remove(this.activeClass)
+    // remove active class from every thumbnail
+    const laC = this.activeClass
+    this.ele.childNodes.forEach(function (node) { node.classList.remove(laC) })
     // set active class and number
     this.thumbnails[number].classList.add(this.activeClass)
 
