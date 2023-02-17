@@ -3,7 +3,6 @@
 Leaflet.hotline, a Leaflet plugin for drawing gradients along polylines.
 https://github.com/iosphere/Leaflet.hotline/
 */
-import { MyLL } from '../../leafletMapClass.js';
 
 (function (root, plugin) {
     /**
@@ -22,9 +21,9 @@ import { MyLL } from '../../leafletMapClass.js';
     } else {
         plugin(root.L);
     }
-}(window, function () {
+}(window, function (L) {
     // Plugin is already added to Leaflet
-    let L = MyLL;
+    
     if (L.Hotline) {
         return L;
     }

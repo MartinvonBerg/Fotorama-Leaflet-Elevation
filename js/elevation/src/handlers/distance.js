@@ -1,7 +1,5 @@
-import { MyLL } from '../../../leafletMapClass.js'
-
 export function Distance() {
-	let L= MyLL;
+	
 	const _ = L.Control.Elevation.Utils;
 
 	let opts     = this.options;

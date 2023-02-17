@@ -1,7 +1,3 @@
-import { MyLL } from '../../../leafletMapClass.js'
-
-const L = MyLL;
-
 export const Area = ({
 	width,
 	height,

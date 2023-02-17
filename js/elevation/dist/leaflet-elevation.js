@@ -1,11 +1,8 @@
-import { MyLL } from '../../leafletMapClass.js';
-
 (function (factory) {
 	typeof define === 'function' && define.amd ? define(factory) :
 	factory();
 })((function () { 'use strict';
-	let L = MyLL;
-
+	
 	/**
 	 * TODO: exget computed styles of theese values from actual "CSS vars"
 	 **/

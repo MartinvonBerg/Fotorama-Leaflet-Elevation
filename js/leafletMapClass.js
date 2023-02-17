@@ -215,10 +215,10 @@ class LeafletMap {
         } 
 
         const attribs = [
-            'XXMapData &copy; <a href="https://www.openstreetmap.org/copyright">Proxy-OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-            'XXMapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            'XXMapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            'XXTiles &copy; Esri &mdash; Source: Esri User Community'
+            'MapData &copy; <a href="https://www.openstreetmap.org/copyright">Proxy-OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+            'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            'Tiles &copy; Esri &mdash; Source: Esri User Community'
         ]
 
         // define map layers

@@ -26,7 +26,6 @@ class LeafletElevation extends LeafletMap {
     }
 
     createElevationChart() {
-        console.log('f entered');
 
         import(/* webpackChunkName: "leaflet-elevation" */'./elevation/dist/leaflet-elevation.js').then( () => {
             // set options for elevation chart

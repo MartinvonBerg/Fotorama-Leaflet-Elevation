@@ -1,8 +1,5 @@
-import { MyLL } from '../../../leafletMapClass.js';
-
 export function Altitude() {
-	let L = MyLL;
-
+	
 	const _  = L.Control.Elevation.Utils;
 
 	let opts       = this.options;

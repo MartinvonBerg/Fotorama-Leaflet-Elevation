@@ -4,13 +4,11 @@
 */
 // from: https://unpkg.com/leaflet-geometryutil@0.10.1/src/leaflet.geometryutil.js 
 //current as of 20.08.2022
-import { MyLL } from '../../leafletMapClass.js'
 
-const L = MyLL;
 
 // Packaging/modules magic dance.
 (function (factory) {
-    //var L;
+    var L;
     if (typeof define === 'function' && define.amd) {
         // AMD
         define(['leaflet'], factory);
