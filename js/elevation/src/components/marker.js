@@ -1,5 +1,7 @@
 import * as D3 from './d3.js';
+import { MyLL } from '../../../leafletMapClass.js'
 
+const L = MyLL;
 const _ = L.Control.Elevation.Utils;
 
 export var Marker = L.Class.extend({

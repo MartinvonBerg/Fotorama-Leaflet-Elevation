@@ -23,6 +23,7 @@ import './fullscreen/Control.FullScreen.css';
 
 
 export {LeafletMap};
+export {MyLL};
 
 class LeafletMap {
     // static attributes (fields)
@@ -89,6 +90,9 @@ class LeafletMap {
     useLocalTiles = true;
     useWebpTiles = true;
     static isHtaccessOK = false;
+
+    // leaflet to local
+    MyLL = {};
    
     /**
      * Constructor Function
@@ -114,7 +118,8 @@ class LeafletMap {
             LeafletMap.numberOfMaps = document.querySelectorAll('[id^=boxmap]').length;
         }
         
-        // Icons definieren
+        // Leaflet Icons definieren
+        this.MyLL = MyLL;
         this.myIcon1 = this.setIcon(this.pageVariables.imagepath, 'photo.png', 'shadow.png');
         this.myIcon2 = this.setIcon(this.pageVariables.imagepath, 'marker-icon.png', 'marker-shadow.png', [25,41]);
         this.myIcon3 = this.setIcon(this.pageVariables.imagepath, 'active.png', 'shadow.png');
@@ -210,10 +215,10 @@ class LeafletMap {
         } 
 
         const attribs = [
-            'MapData &copy; <a href="https://www.openstreetmap.org/copyright">Proxy-OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-            'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            'MapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            'Tiles &copy; Esri &mdash; Source: Esri User Community'
+            'XXMapData &copy; <a href="https://www.openstreetmap.org/copyright">Proxy-OSM</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | MapStyle:&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+            'XXMapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            'XXMapData &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            'XXTiles &copy; Esri &mdash; Source: Esri User Community'
         ]
 
         // define map layers
@@ -426,10 +431,10 @@ class LeafletMap {
         // create a fullscreen button and add it to the map
         import(/* webpackChunkName: "ControlFullscreen" */ './fullscreen/Control.FullScreen.js').then( () => {
             // the next two lines are here for testing
-            //let locLL = {};
-            //typeof(MyLL) === 'undefined' ? locLL = L : locLL = MyLL;
+            let locLL = {};
+            typeof(MyLL) === 'undefined' ? locLL = L : locLL = MyLL;
 
-            MyLL.control.fullscreen({
+            locLL.control.fullscreen({
                 position: 'topleft',
                 title: this.i18n('Show fullscreen'),
                 titleCancel: this.i18n('Exit fullscreen'),

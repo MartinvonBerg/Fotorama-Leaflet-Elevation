@@ -1,3 +1,6 @@
+import { MyLL } from '../../../leafletMapClass.js'
+
+const L = MyLL;
 const _ = L.Control.Elevation.Utils;
 
 export var Summary = L.Class.extend({
