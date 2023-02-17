@@ -14,11 +14,10 @@
 // local Scripts
 //import './leaflet/leaflet.js'; // is loaded by Control.FullScreen.js
 
-import * as L from "leaflet";
+import * as L from "leaflet"; // This grabs all the exports available inside leaflet.js, and makes them available as members of an object "L", effectively giving it its own namespace.
 const MyLL = L.noConflict();
 
 //import './leaflet-ui/leaflet-ui-short.js'; // translation works without this, too.
-
 import '../node_modules/leaflet/dist/leaflet.css';
 import './fullscreen/Control.FullScreen.css';
 
@@ -90,7 +89,6 @@ class LeafletMap {
     useLocalTiles = true;
     useWebpTiles = true;
     static isHtaccessOK = false;
-    inMyLL = {};
    
     /**
      * Constructor Function
@@ -100,7 +98,6 @@ class LeafletMap {
      * @param {int} zoom the zoom factor to use for a map with center coords.
      */
     constructor(number, elementOnPage, center=null, zoom=null) {
-        this.inMyLL = MyLL;
         LeafletMap.count++; // update the number of instances on construct.
         this.number = number;
         this.elementOnPage = elementOnPage;
@@ -428,10 +425,11 @@ class LeafletMap {
     setFullscreenButton() {
         // create a fullscreen button and add it to the map
         import(/* webpackChunkName: "ControlFullscreen" */ './fullscreen/Control.FullScreen.js').then( () => {
-            let locLL = {};
-            typeof(MyLL) === 'undefined' ? locLL = L : locLL = MyLL;
+            // the next two lines are here for testing
+            //let locLL = {};
+            //typeof(MyLL) === 'undefined' ? locLL = L : locLL = MyLL;
 
-            locLL.control.fullscreen({
+            MyLL.control.fullscreen({
                 position: 'topleft',
                 title: this.i18n('Show fullscreen'),
                 titleCancel: this.i18n('Exit fullscreen'),
