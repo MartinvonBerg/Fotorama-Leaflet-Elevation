@@ -14,16 +14,15 @@
 // local Scripts
 //import './leaflet/leaflet.js'; // is loaded by Control.FullScreen.js
 
-import * as L from "leaflet"; // This grabs all the exports available inside leaflet.js, and makes them available as members of an object "L", effectively giving it its own namespace.
-const MyLL = L.noConflict();
+import "leaflet"; // This grabs all the exports available inside leaflet.js, and makes them available as members of an object "L", effectively giving it its own namespace.
+//const MyLL = L.noConflict();
 
-//import './leaflet-ui/leaflet-ui-short.js'; // translation works without this, too.
+import './leaflet-ui/leaflet-ui-short.js'; // translation works without this, too.
 import '../node_modules/leaflet/dist/leaflet.css';
 import './fullscreen/Control.FullScreen.css';
 
 
 export {LeafletMap};
-export {MyLL};
 
 class LeafletMap {
     // static attributes (fields)
@@ -90,9 +89,6 @@ class LeafletMap {
     useLocalTiles = true;
     useWebpTiles = true;
     static isHtaccessOK = false;
-
-    // leaflet to local
-    MyLL = {};
    
     /**
      * Constructor Function
@@ -119,7 +115,6 @@ class LeafletMap {
         }
         
         // Leaflet Icons definieren
-        this.MyLL = MyLL;
         this.myIcon1 = this.setIcon(this.pageVariables.imagepath, 'photo.png', 'shadow.png');
         this.myIcon2 = this.setIcon(this.pageVariables.imagepath, 'marker-icon.png', 'marker-shadow.png', [25,41]);
         this.myIcon3 = this.setIcon(this.pageVariables.imagepath, 'active.png', 'shadow.png');

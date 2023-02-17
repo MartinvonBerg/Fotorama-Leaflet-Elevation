@@ -261,7 +261,7 @@
 			this.link.setAttribute('role', 'button');
 			this.link.setAttribute('aria-label', title);
 
-			leaflet.DomEvent.disableClickPropagation(container);
+			L.DomEvent.disableClickPropagation(container);
 
 			leaflet.DomEvent
 				.on(this.link, 'click', leaflet.DomEvent.stop)
@@ -308,7 +308,7 @@
 
 		_toggleState: function () {
 			this.link.title = this._map._isFullscreen ? this.options.title : this.options.titleCancel;
-			this._map._isFullscreen ? leaflet.DomUtil.removeClass(this.link, 'leaflet-fullscreen-on') : leaflet.DomUtil.addClass(this.link, 'leaflet-fullscreen-on');
+			this._map._isFullscreen ? L.DomUtil.removeClass(this.link, 'leaflet-fullscreen-on') : L.DomUtil.addClass(this.link, 'leaflet-fullscreen-on');
 		},
 
 		_handleFullscreenChange: function () {
