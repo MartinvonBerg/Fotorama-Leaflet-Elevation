@@ -26,10 +26,12 @@ class LeafletElevation extends LeafletMap {
     }
 
     createElevationChart() {
-        
+    
         import(/* webpackChunkName: "leaflet-elevation" */'./elevation/dist/leaflet-elevation.js').then( () => {
             // set options for elevation chart
             //leafele.leafele(L);
+            // Das folgende zu aktivieren bringt nichts, da leaflet-elevation damit nicht korrekt funktioniert
+            //L = globalThis.L; // switch-map: active: L in local var, ele not working completely
             this.setChartOptions(this.number);
 
             // create tracks

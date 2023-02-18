@@ -14,7 +14,8 @@
 // local Scripts
 //import './leaflet/leaflet.js'; // is loaded by Control.FullScreen.js
 
-import "leaflet"; // This grabs all the exports available inside leaflet.js, and makes them available as members of an object "L", effectively giving it its own namespace.
+//import "leaflet"; // switch-map: active: L in local var, ele not working completely. Deaktiviere, um L in der lokalen Variable OHNE leaflet-elevation zu laden.
+// import * as L from "leaflet";  This grabs all the exports available inside leaflet.js, and makes them available as members of an object "L", effectively giving it its own namespace.
 //const MyLL = L.noConflict();
 
 import './leaflet-ui/leaflet-ui-short.js'; // translation works without this, too.
@@ -577,7 +578,7 @@ class LeafletMap {
             }
         }
 
-        if ( _bounds.length !== 0) {
+        if ( (_bounds.length !== 0) && (_bounds instanceof L.LatLngBounds) ) {
             this.map.fitBounds(_bounds);
             // set the max zoom level for markers exactly on the same postion
             let curzoom = this.map.getZoom();

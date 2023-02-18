@@ -2,6 +2,8 @@
 	typeof define === 'function' && define.amd ? define(factory) :
 	factory();
 })((function () { 'use strict';
+	// Das hier zu aktivieren bringt nichts, da leaflet-elevation damit nicht korrekt funktioniert
+	//globalThis.L = L; // switch-map: active: L in local var, ele not working completely
 	
 	/**
 	 * TODO: exget computed styles of theese values from actual "CSS vars"
