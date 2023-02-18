@@ -11,11 +11,11 @@ let plugin_name = plugin.name.replace("@raruto/", "");
 
 let input = plugin.module;
 let output = {
-	file: "dist/" + plugin_name + ".js",
-	format: "umd",
+	file: "dist/" + plugin_name + "2.js",
+	format: "iife",
 	sourcemap: true,
 	name: plugin_name,
-
+	extend: true
 };
 
 let plugins = [

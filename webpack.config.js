@@ -1,16 +1,10 @@
-//const webpack = require('webpack');
+const webpack = require('webpack');
 const path = require('path');
 let _mode = 'development';
 
 // create bundle for fotorama
 module.exports = [
 {
-  /*
-  plugins: [new webpack.ProvidePlugin({ 
-    L: 'leaflet', 
-    'window.L': 'leaflet',
-    'root.L' : 'leaflet' })],
-  */
   target: ['web','es2017'],
   entry: ['./js/fotorama-multi-reduced.js'],
   output: {
@@ -18,6 +12,13 @@ module.exports = [
     chunkFilename: 'fm_[name].js',
     path: path.resolve(__dirname, 'build/fm_bundle'),
   },
+  
+  plugins: [new webpack.ProvidePlugin({ 
+    L: 'leaflet', 
+    'window.L': 'leaflet',
+    'root.L' : 'leaflet' })
+  ],
+  
   mode: _mode, 
   module: {
     rules: [

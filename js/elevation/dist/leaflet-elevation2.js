@@ -1,4 +1,5 @@
-export function leafele (theL) {
+var theL = L;
+(function (theL) {
 	'use strict';
 	let L = theL;
 
@@ -290,7 +291,7 @@ export function leafele (theL) {
 	}
 
 	// Prevent CORS issues for relative locations (dynamic import)
-	const baseURL = ((document.currentScript && document.currentScript.src) || (({ url: (document.currentScript && document.currentScript.src || new URL('leaflet-elevation2.js', document.baseURI).href) }) && (document.currentScript && document.currentScript.src || new URL('leaflet-elevation2.js', document.baseURI).href))).split("/").slice(0,-1).join("/") + '/';
+	const baseURL = ((document.currentScript && document.currentScript.src) || (({ url: (typeof document === 'undefined' && typeof location === 'undefined' ? new (require('u' + 'rl').URL)('file:' + __filename).href : typeof document === 'undefined' ? location.href : (document.currentScript && document.currentScript.src || new URL('leaflet-elevation.js', document.baseURI).href)) }) && (typeof document === 'undefined' && typeof location === 'undefined' ? new (require('u' + 'rl').URL)('file:' + __filename).href : typeof document === 'undefined' ? location.href : (document.currentScript && document.currentScript.src || new URL('leaflet-elevation.js', document.baseURI).href)))).split("/").slice(0,-1).join("/") + '/';
 
 	const Elevation = L.Control.Elevation = L.Control.extend({
 
@@ -315,7 +316,7 @@ export function leafele (theL) {
 		 * Add data to the diagram either from GPX or GeoJSON and update the axis domain and data
 		 */
 		addData: function(d, layer) {
-			this.import(this.__D3)
+			import('./d3.min.js')
 				.then(() => {
 					if (this._modulesLoaded) {
 						layer = layer ?? (d.on && d);
@@ -683,8 +684,10 @@ export function leafele (theL) {
 		 */
 		_initAlmostOverHandler: function(map, layer) {
 			return (map && this.options.almostOver && !L.Browser.mobile) ? Promise.all([
-				this.import(this.__LGEOMUTIL),
-				this.import(this.__LALMOSTOVER)
+				//this.import(this.__LGEOMUTIL),
+				import('./leaflet.geometryutil.js'),
+				//this.import(this.__LALMOSTOVER)
+				import('./leaflet.almostover.js')
 			]).then(() => {
 				map.addHandler('almostOver', L.Handler.AlmostOver);
 				if (L.GeometryUtil && map.almostOver && map.almostOver.enabled()) {
@@ -700,12 +703,12 @@ export function leafele (theL) {
 		 * Initialize "L.DistanceMarkers" integration
 		 */
 		_initDistanceMarkers: function() {
-			return this.options.distanceMarkers ? Promise.all([this.import(this.__LGEOMUTIL), this.import(this.__LDISTANCEM)]) : Promise.resolve();
+			return this.options.distanceMarkers ? Promise.all([import('./leaflet.geometryutil.js'), import('../libs/leaflet-distance-marker.js')]) : Promise.resolve();
 		},
 
 		_initHotLine: function(layer) {
 			let prop = typeof this.options.hotline == 'string' ? this.options.hotline : 'elevation';
-			return this.options.hotline ? this.import(this.__LHOTLINE)
+			return this.options.hotline ? import('../libs/leaflet-hotline.js') //this.import(this.__LHOTLINE)
 				.then(() => {
 					layer.eachLayer((trkseg) => {
 						if(trkseg.feature.geometry.type != "Point") {
@@ -719,7 +722,7 @@ export function leafele (theL) {
 									0.5: '#ffff00',
 									1.0: '#ff0000'
 								},
-								weight: 5,
+								weight: trkseg.options.weight ?? 5, // Martin
 								outlineColor: '#000000',
 								outlineWidth: 1
 							}).addTo(this._hotline);
@@ -883,8 +886,8 @@ export function leafele (theL) {
 			}
 
 			Promise.all([
-				this.import(this.__D3),
-				this.import(this.__LCHART)
+				import('./d3.min.js'),
+				import('../src/components/chart.js')
 			]).then((m) => {
 
 				let chart = this._chart = new (m[1] || Elevation).Chart(opts, this);
@@ -954,8 +957,8 @@ export function leafele (theL) {
 			this._renderer               = L.svg({ pane: "elevationPane" }).addTo(this._map); // default leaflet svg renderer
 
 			Promise.all([
-				this.import(this.__D3),
-				this.import(this.__LMARKER)
+				import('./d3.min.js'),
+				import('../src/components/marker.js')
 			]).then((m) => {
 				this._marker             = new (m[1] || Elevation).Marker(this.options, this);
 				this.fire("elechart_marker");
@@ -988,7 +991,7 @@ export function leafele (theL) {
 		},
 
 		_initSummary: function(container) {
-			this.import(this.__LSUMMARY).then((m)=>{
+			import('../src/components/summary.js').then((m)=>{
 				this._summary = new (m || Elevation).Summary({ summary: this.options.summary }, this);
 
 				this.on('elechart_init', () => {
@@ -1017,7 +1020,17 @@ export function leafele (theL) {
 			// First map known classnames (eg. "Altitude" --> L.Control.Elevation.Altitude)
 			handlers = handlers.map((h) => typeof h === 'string' && typeof Elevation[h] !== "undefined" ? Elevation[h] : h);
 			// Then load optional classes and custom imports (eg. "Cadence" --> import('../src/handlers/cadence.js'))
-			let modules = handlers.map(file => (typeof file === 'string' && this.import(this.__modulesFolder + file.toLowerCase() + '.js')) || (file instanceof Promise && file) || Promise.resolve());
+			let modules = [];
+			for (let i = 0; i < handlers.length; i++) {
+				let file = handlers[i];
+				if (file === 'Distance') {
+					modules[i] = import('../src/handlers/distance.js');
+				}
+				if (file === 'Altitude') {
+					modules[i] = import('../src/handlers/altitude.js');
+				}
+			}
+			
 			return Promise.all(modules).then((m) => {
 				each(m, (exported, i) => {
 					let fn = exported && Object.keys(exported)[0];
@@ -1072,7 +1085,7 @@ export function leafele (theL) {
 				onEachFeature: (feature, layer) => feature.geometry && feature.geometry.type != 'Point' && this.addData(feature, layer),
 			});
 
-			this.import(this.__D3).then(() => {
+			import('./d3.min.js').then(() => {
 				this._initMapIntegrations(layer);
 				this._fireEvt("eledata_loaded", { data: geojson, layer: layer, name: this.track_info.name, track_info: this.track_info });
 			});
@@ -1196,7 +1209,8 @@ export function leafele (theL) {
 		 */
 		_parseFromString: function(data) {
 			return new Promise(resolve =>
-				this.import(this.__TOGEOJSON).then(() => {
+				//this.import(this.__TOGEOJSON).then(() => {
+				import('./togeojson.umd.js').then(() => {
 					let geojson;
 					try {
 						geojson = this._parseFromXMLString(data.trim());
@@ -1634,5 +1648,6 @@ export function leafele (theL) {
 
 	L.control.elevation = (options) => new Elevation(options);
 
-};
+
+})(theL);
 //# sourceMappingURL=leaflet-elevation2.js.map

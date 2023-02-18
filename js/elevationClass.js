@@ -26,9 +26,10 @@ class LeafletElevation extends LeafletMap {
     }
 
     createElevationChart() {
-
+        
         import(/* webpackChunkName: "leaflet-elevation" */'./elevation/dist/leaflet-elevation.js').then( () => {
             // set options for elevation chart
+            //leafele.leafele(L);
             this.setChartOptions(this.number);
 
             // create tracks
