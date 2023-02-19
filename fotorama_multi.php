@@ -32,9 +32,8 @@ namespace mvbplugins\fotoramamulti;
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
 //			--lighthouse : passive event listener bei swiper der Fall. stimmt auch, wird nach event unterschieden. Das erste Event ist richtigerweise "false".
 // --- Karte
-// 			Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
-// 			anderen Icon-Satz verwenden? Neue Icons skalieren.
-//			--Hinweis lighthouse: Änderung addEventlistener bei d3.js führt zu Fehlern. Ist also nicht änderbar. muss akzeptiert werden.
+// 			--Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
+// 			--anderen Icon-Satz verwenden? Neue Icons skalieren.
 // --- Masonry
 //			-- info dialog oder modal popup overlay geht nur mit einem masonry pro Seite. Ids und Zähler u.s.w sind nicht richtig gesetzt.
 
