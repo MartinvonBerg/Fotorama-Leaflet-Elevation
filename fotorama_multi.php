@@ -130,6 +130,7 @@ function showmulti($attr, $content = null)
 		'sw_button_color'	=> $fotorama_elevation_options['sw_button_color'] ?? 'white', // swiper button color in CSS name or value
 		'chart_fill_color'		=> $fotorama_elevation_options['chart_fill_color'] ?? 'white',
 		'chart_background_color'=> $fotorama_elevation_options['chart_background_color'] ?? 'gray',
+		'charttype'			=> 'ele',
 		//'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', 'false' // funktioniert nicht: andere Werte als thums zeigen nicht alle Bilder im Slider!
 		'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
 		'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
@@ -464,7 +465,13 @@ EOF;
  	);
 
 	$plugin_url = plugins_url('/', __FILE__);
-	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.17.0', true);
+
+	if ( isset($charttype) && $charttype === 'chartjs') {
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.17.0', true);
+	} else {
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.17.0', true);
+	}
+
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;

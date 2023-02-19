@@ -9,12 +9,10 @@
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 //import "leaflet"; // switch-map: active: L in local var, ele not working completely. Deaktiviere, um L in der lokalen Variable OHNE leaflet-elevation zu laden.
-// import * as L from "leaflet";  This grabs all the exports available inside leaflet.js, and makes them available as members of an object "L", effectively giving it its own namespace.
-//const MyLL = L.noConflict();
 
 import './leaflet-ui/leaflet-ui-short.js'; // translation works without this, too.
-import '../node_modules/leaflet/dist/leaflet.css'; // always use the original file
-import './leafletMapClass.css';
+import '../node_modules/leaflet/dist/leaflet.css'; // always use the original file. path could be simplified.
+import './leafletMapClass.css'; // load my overwrites for the popup
 import './fullscreen/Control.FullScreen.css';
 
 export {LeafletMap};

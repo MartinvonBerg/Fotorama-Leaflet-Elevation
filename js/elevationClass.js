@@ -1,8 +1,12 @@
 /*!
-	ElevationClass 0.14.1
+	ElevationClass 0.17.0
 	license: GPL 2.0
 	Martin von Berg
 */
+
+import "leaflet"; // switch-map: active: L in local var, ele not working completely. Deaktiviere, um L in der lokalen Variable OHNE leaflet-elevation zu laden.
+// import * as L from "leaflet";  This grabs all the exports available inside leaflet.js, and makes them available as members of an object "L", effectively giving it its own namespace.
+//const MyLL = L.noConflict();
 
 import {LeafletMap} from './leafletMapClass';
 // local Styles for LEAFLET-ELEVATION 

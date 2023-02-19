@@ -15,6 +15,7 @@ npm run build
 
 # create all js files 
 npx webpack --config .\webpack.config.js
+npx webpack --config .\webpack.chartjs-config.js
 
 # create swiper bundle
 #npx webpack --config .\webpack.swiper.js
