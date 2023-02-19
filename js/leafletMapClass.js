@@ -1,5 +1,5 @@
 /*!
-	LeafletMapClass v 0.12.0
+	LeafletMapClass V 0.17.0
 	license: GPL 2.0
 	Martin von Berg
 */
@@ -8,20 +8,14 @@
 // only work with markers and controls in the first step.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-// webpack import bundling. 
-// local Styles
-//import './leaflet/leaflet.css';
-// local Scripts
-//import './leaflet/leaflet.js'; // is loaded by Control.FullScreen.js
-
 //import "leaflet"; // switch-map: active: L in local var, ele not working completely. Deaktiviere, um L in der lokalen Variable OHNE leaflet-elevation zu laden.
 // import * as L from "leaflet";  This grabs all the exports available inside leaflet.js, and makes them available as members of an object "L", effectively giving it its own namespace.
 //const MyLL = L.noConflict();
 
 import './leaflet-ui/leaflet-ui-short.js'; // translation works without this, too.
-import '../node_modules/leaflet/dist/leaflet.css';
+import '../node_modules/leaflet/dist/leaflet.css'; // always use the original file
+import './leafletMapClass.css';
 import './fullscreen/Control.FullScreen.css';
-
 
 export {LeafletMap};
 
