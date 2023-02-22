@@ -382,7 +382,6 @@ class SliderSwiper {
                 slider: m
             }
         });
-        setTimeout( function () {
-            event.el.dispatchEvent(changed)},500);
+        setTimeout( function () { event.el.dispatchEvent(changed)},500);
     }
 }

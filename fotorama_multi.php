@@ -352,23 +352,42 @@ function showmulti($attr, $content = null)
 
 		// show Elevation-Chart and custom summary
 		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
-			$display = '';
-			if ( $showchart === 'false' ) $display = 'display:none';
-			$htmlstring .= <<<EOF
-		<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;{$display}"></div>
-		<div id="data-summary{$shortcodecounter}" class="data-summary">
-		<span class="totlen">
-		<span class="summarylabel"> </span>
-		<span class="summaryvalue">0</span></span>
-		<span class="gain">
-		<span class="summarylabel"> </span>
-		<span class="summaryvalue">0</span></span> 
-		<span class="loss">
-		<span class="summarylabel"> </span>
-		<span class="summaryvalue">0</span></span></div>
+			
+			if ( $charttype !== 'chartjs' ) {
+				$display = '';
+				if ( $showchart === 'false' ) $display = 'display:none';
+
+				$htmlstring .= <<<EOF
+				<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;{$display}"></div>
+				<div id="data-summary{$shortcodecounter}" class="data-summary">
+				<span class="totlen">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span>
+				<span class="gain">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span> 
+				<span class="loss">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span></div>
 EOF;
-		} 
-	}
+			// generate div and cancas for chartjs if chart should be shown
+			} elseif ( $showchart !== 'false' ) {
+				$htmlstring .= "<div class=\"chartjs-profile-container\" id=\"chartjs-profile-container{$shortcodecounter}\" style=\"height:{$chartheight}px;\"><canvas id=\"route-elevation-chart{$shortcodecounter}\" style=\"width:100%;height:100%\"></canvas></div>";
+				$htmlstring .= <<<EOF
+				<div id="data-summary{$shortcodecounter}" class="data-summary">
+				<span class="totlen">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span>
+				<span class="gain">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span> 
+				<span class="loss">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span></div>
+EOF;
+			}
+		} // endif showchart with n gpx-files > 0
+	} // endif showmap
 	
 	// ----------------------------------------------------
 	if ( ('true' === $showadress) || (('true' === $dload ) && ($i > 0)) )  {
@@ -440,6 +459,7 @@ EOF;
 
 	// close all html-divs
 	$htmlstring  .= '</div><!--div id=multifotobox'.$shortcodecounter.'-->';
+	// ------------ END HTML -----------------------------
 	
 	// pass php variables to javascript-file for fotorama
 	$pageVarsForJs[ $shortcodecounter] = array(

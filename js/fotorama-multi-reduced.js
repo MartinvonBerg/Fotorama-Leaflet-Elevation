@@ -7,6 +7,7 @@
         let hasFotorama = false;
         let hasSwiper = false;
         let hasMasonry1 = false;
+        let hasChartJS = false;
         
         // slider variables
         let allSliders = [ numberOfBoxes-1 ];
@@ -21,6 +22,8 @@
             hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length === 1;
             hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length === 1;
             hasMasonry1 = document.querySelectorAll('[id^=minimasonry'+m+']').length === 1;
+            hasChartJS = document.querySelectorAll('[id^=chartjs-profile-container'+m+']').length === 1;
+
             let sliderSel = '';
 
             //------------- leaflet - elevation part ---------------------------
@@ -89,13 +92,21 @@
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
                     })
-                } else {
+
+                } else if ( ! hasChartJS ) {
                     import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
                     })
                     
+                } else {
+                    import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
+                        allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
+                        // create the markers on the map
+                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+                    })
+
                 }
 
                 // update markers on the map if the active image changes
