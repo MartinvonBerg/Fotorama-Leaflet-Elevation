@@ -4,7 +4,7 @@
 	Martin von Berg
 */
 // load gpx tracks and provide data, name and statistics
-import 'leaflet-gpx'
+import './gpx.js'
 
 export {gpxTrackClass};
 
@@ -64,7 +64,7 @@ class gpxTrackClass {
         "Elevation Loss " + eleLoss + " m"
         )
 
-        this.gpxTracks.getLayers()[0].bindTooltip('test')
+        //this.gpxTracks.getLayers()[0].bindTooltip('test')
      
     }
 
