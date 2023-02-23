@@ -13,6 +13,7 @@ import {gpxTrackClass} from './gpxTrackClass.js';
 import {chartJsClass} from './chartJsClass.js';
 
 // local Styles  
+import './leafletChartJsClass.css'
 
 
 export {LeafletChartJs};
@@ -20,12 +21,15 @@ export {LeafletChartJs};
 class LeafletChartJs extends LeafletMap {
 
     static showalltracks = false;
+    coords = [];
+    theMarker = {};
 
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
 
         // load and show first track on map 
         const track = new gpxTrackClass( number, this.map, this.pageVariables.tracks );
+        this.coords = track.coords;
               
         // set i18n for chart (map is done in parent class 'leafletMapClass')
         // set the CSS, styling for the chart 
@@ -36,8 +40,41 @@ class LeafletChartJs extends LeafletMap {
         let div = 'route-elevation-chart'+number; // TODO : change the ids and classnames of chart different to example!
         const chart = new chartJsClass( div, track.elev_data, {} );
 
+        // update the slider if the marker on the map was clicked
+        this.catchChartEvent(div);
+
+        this.group = L.layerGroup();
+
+        chart.triggerTooltip(100);
         
+    }
+
+    /**
+     * Create a single marker on the map with myIcon2.
+     * @param {string} markertext text to show on hover over marker.
+     * @param {array} pos [50.505, 30.57] 
+     */
+    createSingleMarker(pos, markertext) {
+        if (this.theMarker != undefined) {
+            this.map.removeLayer(this.theMarker);
+        };
+
+        let myDivIcon = L.divIcon({className: 'div-icon-height', html: markertext, bgPos: [0, 40]});
+        //L.marker(pos, { icon: myDivIcon, pane: 'heightmarker', autoPanOnFocus: false } ).addTo(this.map);
+        this.theMarker = L.marker(pos, { icon: myDivIcon, autoPanOnFocus: false } ).addTo(this.map);
+    }
+
+    catchChartEvent(div) {
+        let classThis = this;
+
+        document.getElementById(div).addEventListener('hoverchart', function charthover(e) {
+            let x= e.detail.index;
+            let xval = classThis.coords[x];
+            //console.log(xval);
+            // update the marker on the map
+            classThis.createSingleMarker([xval.lat, xval.lng], ' '+xval.meta.ele+'m')
         
+        });
     }
 
     // internal code for interaction between chart and tracks

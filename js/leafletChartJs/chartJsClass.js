@@ -14,17 +14,21 @@ class chartJsClass {
 
   elevationData = {};
   chart = {};
+  elementDiv = ''
+  elementOnPage = '';
 
   constructor(divID, linedata = [], options = {}) {
     //const ctx = document.getElementById(divID);
+    this.elementDiv = divID;
+    this.elementOnPage = document.getElementById(divID);
 
     this.elevationData = this.filterGPXTrackdata(linedata);
 
     this.drawElevationProfile2(divID);
 
-    this.triggerTooltip(this.chart, 100);
+    //this.triggerTooltip(this.chart, 100);
 
-    this.triggerTooltip(this.chart, 300);
+    //this.triggerTooltip(this.chart, 300);
 
     /*
     const myChart = new Chart(ctx, {
@@ -66,7 +70,6 @@ class chartJsClass {
     let data = [];
 
     gpxdata.forEach((point, index) => {
-
       labels.push(point[0]);
       data.push(point[1]);
     });
@@ -77,8 +80,8 @@ class chartJsClass {
     }
   }
 
-  drawElevationProfile2(divID) {
-    const ctx = document.getElementById(divID).getContext("2d");
+  drawElevationProfile2() {
+    const ctx = this.elementOnPage.getContext("2d");
 
     const chartData = {
       labels: this.elevationData.labels,
@@ -190,11 +193,23 @@ class chartJsClass {
       let xval = chart.data.labels[ind];
       //console.log(xval);
       // DispatchEvent mit Blockierung für xx ms.
+      const changed = new CustomEvent('hoverchart', {
+        detail: {
+        name: 'hoverchart',
+        xposition: xval,
+        index: ind,
+        chart: chart.canvas.id
+        }
+      });
+
+      chart.canvas.dispatchEvent(changed);
+
     } return;
 
   }
 
-  triggerTooltip(chart, pos) {
+  triggerTooltip(pos) {
+    let chart = this.chart;
 
     const tooltip = chart.tooltip;
 

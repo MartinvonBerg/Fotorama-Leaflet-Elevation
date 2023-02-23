@@ -328,7 +328,7 @@ L.GPX = L.FeatureGroup.extend({
 
   _parse_gpx_data: function(xml, options) {
     var i, t, l, el, layers = [];
-    debugger;
+
     var name = xml.getElementsByTagName('name');
     if (name.length > 0) {
       this._info.name = name[0].textContent;
@@ -464,7 +464,7 @@ L.GPX = L.FeatureGroup.extend({
   _parse_segment: function(line, options, polyline_options, tag) {
     var el = line.getElementsByTagName(tag);
     if (!el.length) return [];
-    debugger;
+
     var coords = [];
     var markers = [];
     var layers = [];

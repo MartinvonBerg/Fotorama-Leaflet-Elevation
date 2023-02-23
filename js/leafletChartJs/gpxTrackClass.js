@@ -12,6 +12,7 @@ class gpxTrackClass {
     trackname = '';
     trackdescr = '';
     trackbounds = {};
+    coords = [];
     ascent = 0;
     descent = 0;
     tracklen = 0;
@@ -48,6 +49,7 @@ class gpxTrackClass {
         this.trackdescr = this.gpxTracks.get_desc();
         this.elev_data = this.gpxTracks.get_elevation_data(); // no function here to get the gpx data
         this.trackbounds = this.gpxTracks.getBounds();
+        this.coords = this.gpxTracks.get_coords();
 
         // this.gpxTracks.getLayers()[0].bindPopup('test')
         // https://meggsimum.de/webkarte-mit-gps-track-vom-sport/
