@@ -10,3 +10,7 @@
     z-index: 1000 !important;
     width: unset;
 }
+
+.leaflet-overlay-pane svg {
+    pointer-events: auto !important;
+}

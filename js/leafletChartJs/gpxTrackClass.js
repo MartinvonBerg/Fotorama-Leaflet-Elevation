@@ -21,12 +21,14 @@ class gpxTrackClass {
     tracks = [];
     gpxTracks = {}
     asyncLoading = false;
+    number = -1;
 
     constructor( number, mapobject, tracks, options=null) {
         this.tracks = tracks;
         this.options = options;
         this.trackurl = tracks.track_0.url;
         this.pageVariables = pageVarsForJs[number];
+        this.number = number;
 
         this.gpxTracks = new L.GPX(this.trackurl, {
             async: this.asyncLoading,
@@ -38,8 +40,10 @@ class gpxTrackClass {
                 endIconUrl: this.pageVariables.imagepath +'/pin-icon-end.png',
                 shadowUrl: this.pageVariables.imagepath +'/pin-shadow.png'
             }
+
         }).on('loaded', function(e) {
             mapobject.fitBounds(e.target.getBounds());
+
         }).addTo(mapobject);
         
         this.tracklen = this.gpxTracks.get_distance();
@@ -67,7 +71,69 @@ class gpxTrackClass {
         )
 
         //this.gpxTracks.getLayers()[0].bindTooltip('test')
+        let classThis = this;
+        this.gpxTracks.on('mouseover', function(e) {
+            if ( e.type === 'mouseover' ) {
+                //let thecoords = e.propagatedFrom.latlngs;
+                // get id in coords. triggerEvent
+                const changed = new CustomEvent('mouseoverpath', {
+                    detail: {
+                        name: 'mouseoverpath',
+                        track: this._info.name,
+                        position: e.latlng,
+                        index: classThis.getIndexForCoords(e.latlng),
+                    }
+                  });
+            
+                  this._map._container.dispatchEvent(changed);
+            }
+
+        })
      
+    }
+
+    getIndexForCoords(point) {
+        let n = this.coords.length
+        let dist = 1e4;
+        let newdist = 1e5;
+        let index = -1;
+
+        //let startTime = performance.now();
+        for (let i = 0; i < n; i++) {
+            newdist = this.calcCrow(point.lat, point.lng, this.coords[i].lat, this.coords[i].lng);
+
+            if (newdist < dist) {
+                index = i;
+                dist = newdist;
+            }
+        }
+        //let endTime = performance.now();
+        //console.log(`Call took ${endTime - startTime} milliseconds`);
+
+        return index;
+    }
+
+    // https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
+    //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
+    calcCrow(lat1, lon1, lat2, lon2) 
+    {
+      var R = 6371; // km
+      var dLat = this.toRad(lat2-lat1);
+      var dLon = this.toRad(lon2-lon1);
+      var lat1 = this.toRad(lat1);
+      var lat2 = this.toRad(lat2);
+
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+      var d = R * c;
+      return d;
+    }
+
+    // Converts numeric degrees to radians
+    toRad(Value) 
+    {
+        return Value * Math.PI / 180;
     }
 
 }

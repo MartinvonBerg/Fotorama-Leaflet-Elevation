@@ -16,53 +16,21 @@ class chartJsClass {
   chart = {};
   elementDiv = ''
   elementOnPage = '';
+  this
 
-  constructor(divID, linedata = [], options = {}) {
+  constructor(number, divID, linedata = [], options = {}) {
     //const ctx = document.getElementById(divID);
     this.elementDiv = divID;
     this.elementOnPage = document.getElementById(divID);
+    this.pageVariables = pageVarsForJs[number];
 
     this.elevationData = this.filterGPXTrackdata(linedata);
 
+    // update CSS before init of Chart
+    this.updateCSS();
+
     this.drawElevationProfile2(divID);
 
-    //this.triggerTooltip(this.chart, 100);
-
-    //this.triggerTooltip(this.chart, 300);
-
-    /*
-    const myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            datasets: [{
-                data:this.elevationData.data
-        }],
-            labels: this.elevationData.labels
-          },
-        options: {
-            scales: {
-                y: {
-                beginAtZero: false
-                }
-            },
-            elements: {
-                point: {
-                    radius: 1,
-                    hoverRadius: 1,
-                }},
-            plugins: {
-                legend: {
-                    display: false,
-                    position: 'bottom',
-                    title: {
-                        text: 'Höhe',
-                        display: false,
-                    }
-                }
-            }
-        }
-    });
-    */
   }
 
   filterGPXTrackdata(gpxdata) {
@@ -80,31 +48,55 @@ class chartJsClass {
     }
   }
 
+  /**
+    * update CSS rules that are used according to the options and client
+    */
+  updateCSS() {
+    const style = document.createElement('style');
+     // background-color: ${ this.pageVariables.sw_options.chart_background_color };
+    style.innerHTML = `
+        #${this.elementDiv} {
+            
+           background: linear-gradient(0deg, rgba(58, 120, 255, 0.15) 40%, rgba(58, 120, 255, 0.87) 100%);
+        }`;
+    document.head.appendChild(style);
+}
+
   drawElevationProfile2() {
     const ctx = this.elementOnPage.getContext("2d");
+
+    /*** Gradient http://jsfiddle.net/4vobe59a/***/ 
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(212,100,14,1)');   
+    gradient.addColorStop(1, 'rgba(212,100,14,0.50)');
+    // https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9
+    const gradientFill = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0.6)");
+    gradientFill.addColorStop(1, "rgba(244, 144, 128, 0.6)");
+    /***************/
 
     const chartData = {
       labels: this.elevationData.labels,
       datasets: [{
         data: this.elevationData.data,
         fill: true,
-        borderColor: '#000000',
+        borderColor: '#000000', // theme
         borderWidth: 1,
-        backgroundColor: '#d4640e33',
+        backgroundColor: '#d4640eE0', //this.pageVariables.sw_options.chart_fill_color + 'E0', // todo define opacity // theme
+        //backgroundColor: gradientFill, // theme
         tension: 0.1,
         pointRadius: 0,
         spanGaps: true
       }]
     };
 
-    // funktioniert ist aber einfacher mit CSS3 zu setzen
     const plugin = {
       id: 'customCanvasBackgroundColor',
       beforeDraw: (chart, args, options) => {
         const {ctx} = chart;
         ctx.save();
         ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = options.color || '#000000';
+        ctx.fillStyle = options.color || '#FFFFFF00'; // theme
         ctx.fillRect(0, 0, chart.width, chart.height);
         ctx.restore();
       }
@@ -119,15 +111,15 @@ class chartJsClass {
 
           chart.options.scales.x.min = Math.min(...chart.data.labels);
           chart.options.scales.x.max = Math.max(...chart.data.labels);
-          chart.options.scales.y.max = maxHeight + Math.round(maxHeight * 0.2);
-          chart.options.scales.y1.max = maxHeight + Math.round(maxHeight * 0.2);
+          chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
+          //chart.options.scales.y1.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
         }},
         plugin
       ],
       options: {
         //onHover: function (e, item) { // add hover here!!! },
         onHover: this.handleChartHover,
-        animation: false,
+        animation: true,
         maintainAspectRatio: false,
         interaction: {
           intersect: false,
@@ -136,45 +128,53 @@ class chartJsClass {
         tooltip: {
           position: 'nearest'
         },
+        responsive : true,
         scales: {
           x: {
-            type: 'linear'
+            type: 'linear',
+            grid: {
+              color: 'black' // theme
+            },
           },
+       
+          /*
           y: {
             type: 'linear',
-            beginAtZero: true
+            beginAtZero: false
           },
-          y1: {
+          */
+          y: {
             type: 'linear',
             display: true,
-            position: 'right',
-            beginAtZero: true,
+            position: 'left',
+            beginAtZero: false,
             // grid line settings
             grid: {
-              drawOnChartArea: false, // only want the grid lines for one axis to show up
+            //  drawOnChartArea: false, // only want the grid lines for one axis to show up
+                color: 'black' // theme
             },
           },
         },
         plugins: {
           title: {
-            align: "end",
+            align: "left",
             display: true,
-            text: "Distance, m / Elevation, km"
+            text: "Distance, km / Elevation, m"
           },
           legend: {
             display: false
           },
           customCanvasBackgroundColor: {
-            color: 'white',
+            //color: this.pageVariables.sw_options.chart_background_color , // TODO nur für Custom theme
           },
           tooltip: {
             displayColors: false,
             callbacks: {
-              title: (tooltipItems) => {
+              label: (tooltipItems) => {
                 //return "Distance: " + tooltipItems[0].label + ' km'
                 return "Distance: " + tooltipItems[0].parsed.x.toFixed(2) + ' km'
               },
-              label: (tooltipItem) => {
+              title: (tooltipItem) => {
                 return "Elevation: " + tooltipItem.raw + ' m'
               },
             }
@@ -182,7 +182,7 @@ class chartJsClass {
         }
       }
     };
-
+    Chart.defaults.color = '#000000'; // theme
     this.chart = new Chart(ctx, config);
   }
 
