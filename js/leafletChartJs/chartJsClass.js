@@ -13,26 +13,51 @@ export { chartJsClass };
 class chartJsClass {
 
   elevationData = {};
+  ctx = {};
   chart = {};
   elementDiv = ''
   elementOnPage = '';
-  this
+  background = '';
+  customCanvasBackgroundColor = '#FFFFFF00'; // white transparent
+  CssBackgroundColor = ''; // extern gesetzt durch: pageVariables.sw_options.chart_background_color
+  gradient = {};
+  tooltipBackgroundColor = 'black';
+  tooltipTitleColor = 'white'
 
-  constructor(number, divID, linedata = [], options = {}) {
-    //const ctx = document.getElementById(divID);
-    this.elementDiv = divID;
-    this.elementOnPage = document.getElementById(divID);
-    this.pageVariables = pageVarsForJs[number];
+  /**
+   * 
+   * @param {*} number 
+   * @param {*} divID 
+   * @param {*} linedata 
+   * @param {*} options 
+   */
+  constructor(linedata, options) {
+      
+    this.elementDiv = options.divID;
+    this.elementOnPage = document.getElementById(options.divID);
+    this.ctx = this.elementOnPage.getContext("2d");
+    this.pageVariables = options.pageVariables; 
+
+    // theme color options
+    this.CssBackgroundColor = options.CssBackgroundColor;
+    this.diagrFillColor = options.chart_fill_color; // this.pageVariables.sw_options.chart_fill_color
+    this.theme = options.theme
 
     this.elevationData = this.filterGPXTrackdata(linedata);
+    this.setTheme(this.theme);
 
     // update CSS before init of Chart
-    this.updateCSS();
+    //this.updateCSS();
 
-    this.drawElevationProfile2(divID);
+    this.drawElevationProfile2(options.divID);
 
   }
 
+  /**
+   * no use of this.
+   * @param {array} gpxdata 
+   * @returns {object} the sorted data
+   */
   filterGPXTrackdata(gpxdata) {
     let labels = [];
     let data = [];
@@ -48,42 +73,99 @@ class chartJsClass {
     }
   }
 
+  setTheme (theme) {
+    let textLineColor = '';
+
+    switch (theme) {
+      case 'martin-theme':
+        this.CssBackgroundColor = 'background: linear-gradient(0deg, rgba(58, 120, 255, 0.15) 40%, rgba(58, 114, 255, 0.87) 100%)';
+        this.updateCSS();
+        
+        this.setGradient();
+        this.diagrFillColor = this.gradient;
+
+        textLineColor = 'black';
+        this.diagrBorderColor = textLineColor; 
+        this.scaleColor = textLineColor;
+        this.chartDefaultColor = textLineColor; 
+        Chart.defaults.color = this.chartDefaultColor;
+        break;
+
+      case 'custom-theme':
+        // calc best contrast color for background
+        textLineColor = this.getBestContrastTextColor(this.CssBackgroundColor);
+
+        this.CssBackgroundColor = 'background-color:' + this.CssBackgroundColor;
+        this.updateCSS();
+        
+        this.diagrFillColor = this.diagrFillColor + 'E0'; // add transparency to the color. Hex #00 - #FF
+                
+        this.diagrBorderColor = textLineColor; 
+        this.scaleColor = textLineColor;
+        this.chartDefaultColor = textLineColor; 
+        Chart.defaults.color = this.chartDefaultColor;
+        
+        // change tooltip colors if background is dark
+        if (textLineColor === '#ffffff') {
+          this.tooltipBackgroundColor = 'white';
+          this.tooltipTitleColor = 'black'
+        }
+        break;
+
+      default:
+        this.diagrFillColor = ''; // unset to default
+        break;
+    }
+
+  }
+
   /**
+    * uses this.pageVariables.sw_options.chart_background_color
+    *      this.elementDiv
     * update CSS rules that are used according to the options and client
     */
   updateCSS() {
     const style = document.createElement('style');
-     // background-color: ${ this.pageVariables.sw_options.chart_background_color };
-    style.innerHTML = `
-        #${this.elementDiv} {
-            
-           background: linear-gradient(0deg, rgba(58, 120, 255, 0.15) 40%, rgba(58, 120, 255, 0.87) 100%);
-        }`;
+     // theme-custom background-color: ${ this.pageVariables.sw_options.chart_background_color };
+     // theme-martin background: linear-gradient(0deg, rgba(58, 120, 255, 0.15) 40%, rgba(58, 114, 255, 0.87) 100%);
+    style.innerHTML = `#${this.elementDiv} { ${this.CssBackgroundColor}; }`;
     document.head.appendChild(style);
-}
+  }
 
-  drawElevationProfile2() {
-    const ctx = this.elementOnPage.getContext("2d");
-
+  /**
+   * uses: this.ctx, this.gradient
+   */
+  setGradient() {
     /*** Gradient http://jsfiddle.net/4vobe59a/***/ 
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(212,100,14,1)');   
-    gradient.addColorStop(1, 'rgba(212,100,14,0.50)');
-    // https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9
-    const gradientFill = ctx.createLinearGradient(500, 0, 100, 0);
-    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0.6)");
-    gradientFill.addColorStop(1, "rgba(244, 144, 128, 0.6)");
-    /***************/
+    this.gradient = this.ctx.createLinearGradient(0, 0, 0, 200); // top-x, top-y, bottom-x, bottom-y : should be height
+    this.gradient.addColorStop(0.0, 'rgba(235,234,235,0.98)'); // top 0 : start of gradient
+    this.gradient.addColorStop(0.3, 'rgba(235,234,235,0.98)'); 
+    this.gradient.addColorStop(0.4, 'rgba(212,100,14,0.95)'); 
+    this.gradient.addColorStop(1, 'rgba(212,100,14,0.95)'); // bottom 1 : end of gradient
 
+    // https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9
+    //const gradientFill = ctx.createLinearGradient(0, 0, 0, 200);
+    //gradientFill.addColorStop(0, "rgba(128, 182, 244, 0.6)");
+    //gradientFill.addColorStop(1, "rgba(244, 144, 128, 0.6)");
+    /***************/
+  }
+
+  /**
+   * uses: this.elementOnPage, this.elevationData
+   * neu: this.gradient -> theme, this.ctx, diagrBorderColor, diagrFillColor, chartBackgroundColor, chartDefaultColor
+   * customCanvasBackgroundColor,
+   * 
+   */
+  drawElevationProfile2() {
+    
     const chartData = {
       labels: this.elevationData.labels,
       datasets: [{
         data: this.elevationData.data,
         fill: true,
-        borderColor: '#000000', // theme
+        borderColor: this.diagrBorderColor,
         borderWidth: 1,
-        backgroundColor: '#d4640eE0', //this.pageVariables.sw_options.chart_fill_color + 'E0', // todo define opacity // theme
-        //backgroundColor: gradientFill, // theme
+        backgroundColor: this.diagrFillColor, 
         tension: 0.1,
         pointRadius: 0,
         spanGaps: true
@@ -96,7 +178,7 @@ class chartJsClass {
         const {ctx} = chart;
         ctx.save();
         ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = options.color || '#FFFFFF00'; // theme
+        ctx.fillStyle = options.color || '#FFFFFF00'; 
         ctx.fillRect(0, 0, chart.width, chart.height);
         ctx.restore();
       }
@@ -108,16 +190,14 @@ class chartJsClass {
       plugins: [{
         beforeInit: (chart, args, options) => {
           const maxHeight = Math.max(...chart.data.datasets[0].data);
-
           chart.options.scales.x.min = Math.min(...chart.data.labels);
           chart.options.scales.x.max = Math.max(...chart.data.labels);
           chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
           //chart.options.scales.y1.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
         }},
-        plugin
+        //plugin
       ],
       options: {
-        //onHover: function (e, item) { // add hover here!!! },
         onHover: this.handleChartHover,
         animation: true,
         maintainAspectRatio: false,
@@ -126,17 +206,17 @@ class chartJsClass {
           mode: 'index',
         },
         tooltip: {
-          position: 'nearest'
+          position: 'nearest',
         },
         responsive : true,
+        maintainAspectRatio: true,
         scales: {
           x: {
             type: 'linear',
             grid: {
-              color: 'black' // theme
+              color: this.scaleColor
             },
           },
-       
           /*
           y: {
             type: 'linear',
@@ -151,7 +231,7 @@ class chartJsClass {
             // grid line settings
             grid: {
             //  drawOnChartArea: false, // only want the grid lines for one axis to show up
-                color: 'black' // theme
+                color: this.scaleColor
             },
           },
         },
@@ -159,35 +239,47 @@ class chartJsClass {
           title: {
             align: "left",
             display: true,
-            text: "Distance, km / Elevation, m"
+            text: "Distance / km, Elevation / m" // TOOD: i18n
           },
           legend: {
             display: false
           },
           customCanvasBackgroundColor: {
-            //color: this.pageVariables.sw_options.chart_background_color , // TODO nur für Custom theme
+            color: this.customCanvasBackgroundColor,
           },
           tooltip: {
             displayColors: false,
+            backgroundColor: this.tooltipBackgroundColor,
+            titleColor: this.tooltipTitleColor,
+            bodyColor: this.tooltipTitleColor,
             callbacks: {
               label: (tooltipItems) => {
                 //return "Distance: " + tooltipItems[0].label + ' km'
-                return "Distance: " + tooltipItems[0].parsed.x.toFixed(2) + ' km'
+                return "Distance: " + tooltipItems.parsed.x.toFixed(2) + ' km' // TODO i18n
               },
               title: (tooltipItem) => {
-                return "Elevation: " + tooltipItem.raw + ' m'
+                return "Elevation: " + tooltipItem[0].formattedValue + ' m' // TODO i18n
               },
             }
           }
         }
       }
     };
-    Chart.defaults.color = '#000000'; // theme
-    this.chart = new Chart(ctx, config);
+    
+    //Chart.defaults.color = this.chartDefaultColor; 
+    this.chart = new Chart(this.ctx, config);
   }
 
-  // https://developers.arcgis.com/esri-leaflet/samples/dynamic-chart/
+  /**
+   * chart is passed by value. No use of this.
+   * @param {*} event 
+   * @param {*} elements 
+   * @param {*} chart 
+   * @returns 
+   */
   handleChartHover(event, elements, chart) {
+    // https://developers.arcgis.com/esri-leaflet/samples/dynamic-chart/
+
     if (elements.length === 1) {
       let ind = elements[0].index;
       let xval = chart.data.labels[ind];
@@ -208,16 +300,19 @@ class chartJsClass {
 
   }
 
+  /**
+   * uses this.chart
+   * @param {int} pos 
+   */
   triggerTooltip(pos) {
     let chart = this.chart;
-
     const tooltip = chart.tooltip;
+    const chartArea = chart.chartArea;
 
     if (tooltip.getActiveElements().length > 0) {
       tooltip.setActiveElements([], {x: 0, y: 0});
     }
-
-    const chartArea = chart.chartArea;
+    
     tooltip.setActiveElements([
       {
         datasetIndex: 0,
@@ -231,5 +326,44 @@ class chartJsClass {
     
     chart.update();
   }
+
+  getBestContrastTextColor(hex){
+    // source: https://codepen.io/davidhalford/pen/AbKBNr
+		// TODO: checker
+    /*
+    From this W3C document: http://www.webmasterworld.com/r.cgi?f=88&d=9769&url=http://www.w3.org/TR/AERT#color-contrast
+    
+    Color brightness is determined by the following formula: 
+    ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
+    
+    I know this could be more compact, but I think this is easier to read/explain.
+    
+    */
+    if (hex.indexOf('#') === 0) {
+      hex = hex.slice(1);
+    }
+    // convert 3-digit hex to 6-digits.
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length !== 6) {
+        throw new Error('Invalid HEX color.');
+    }
+    
+    let threshold = 130; /* about half of 256. Lower threshold equals more dark text on dark background  */
+    
+    let hRed = hexToR(hex);
+    let hGreen = hexToG(hex);
+    let hBlue = hexToB(hex);
+    
+    
+    function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+    function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+    function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+    function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+
+    let cBrightness = ((hRed * 299) + (hGreen * 587) + (hBlue * 114)) / 1000;
+      if (cBrightness > threshold){return "#000000";} else { return "#ffffff";}	
+    }
 
 }

@@ -38,7 +38,17 @@ class LeafletChartJs extends LeafletMap {
 
         // show line chart with first track. example: https://jsfiddle.net/Geoapify/2pjhyves/
         let div = 'route-elevation-chart'+number; // TODO : change the ids and classnames of chart different to example!
-        const chart = new chartJsClass( number, div, track.elev_data, {} );
+        let chartOptions = {
+            number : number,
+            divID : div,
+            // theme color options
+            theme : pageVarsForJs[number].eletheme,
+            CssBackgroundColor : pageVarsForJs[number].sw_options.chart_background_color,
+            chart_fill_color :  pageVarsForJs[number].sw_options.chart_fill_color,
+            chartHeight : pageVarsForJs[number].chartheight,
+            pageVariables : pageVarsForJs[number],
+        }
+        const chart = new chartJsClass( track.elev_data, chartOptions );
 
         // update the slider if the marker on the map was clicked
         this.catchChartEvent(div);
