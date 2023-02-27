@@ -23,6 +23,7 @@ class LeafletChartJs extends LeafletMap {
     static showalltracks = false;
     coords = [];
     theMarker = {};
+    elev_data = [];
 
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
@@ -66,6 +67,26 @@ class LeafletChartJs extends LeafletMap {
             chart.triggerTooltip(e.detail.index);
             classThis.createSingleMarker(e.detail.position, classThis.coords[e.detail.index].meta.ele+'m')
         });
+
+        // 1 second delay
+        setTimeout(function(){
+            console.log("Executed after 1 second");
+            track.showTrack(1);
+            this.coords = track.coords;
+            this.elev_data = track.elev_data;
+            chart.showElevationProfile(this.elev_data, 1);
+        }, 1000);
+
+         // 1 second delay
+         setTimeout(function(){
+            console.log("Executed after 1 second");
+            track.showTrack(2);
+            this.coords = track.coords;
+            this.elev_data = track.elev_data;
+            chart.showElevationProfile(this.elev_data, 2);
+        }, 3000);
+
+        
 
         
     }

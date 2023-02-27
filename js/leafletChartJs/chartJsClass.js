@@ -6,7 +6,8 @@
 // links: https://developers.arcgis.com/esri-leaflet/samples/dynamic-chart/
 //  https://dzone.com/articles/chartjs-line-chart-for-route-elevations-graph
 // load gpx tracks and provide data, name and statistics
-import Chart from 'chart.js/auto';
+//import {Chart} from 'chart.js/auto';
+import {ChartJS as Chart} from './chartJSwrapper.js';
 import './ChartJsClass.css';
 
 export { chartJsClass };
@@ -30,6 +31,7 @@ class chartJsClass {
   ascent = '';
   descent = '';
   options = {};
+  chartData = {};
 
   /**
    * 
@@ -39,7 +41,7 @@ class chartJsClass {
    * @param {*} options 
    */
   constructor(linedata, options) {
-      
+
     this.options = options;
     this.elementDiv = options.divID;
     this.elementOnPage = document.getElementById(options.divID);
@@ -52,17 +54,60 @@ class chartJsClass {
 
     // theme color options
     this.ctx = this.elementOnPage.getContext("2d");
+    
     this.CssBackgroundColor = options.CssBackgroundColor;
     this.diagrFillColor = options.chart_fill_color; // this.pageVariables.sw_options.chart_fill_color
-    this.theme = options.theme
-    this.setTheme(this.theme);
+    this.setTheme(options.theme);
 
+    // allways show first track on load
     this.elevationData = this.filterGPXTrackdata(linedata);
+    this.setChartData();
 
-    this.drawElevationProfile2(options.divID);
+    this.drawElevationProfile();
 
   }
 
+  /**
+   * show chart number n with new elevation data
+   * @param {array} elevdata 
+   * @param {int} trackNumber 
+   */
+  showElevationProfile( elevdata, trackNumber ) {
+      // remap new data
+      this.elevationData = this.filterGPXTrackdata(elevdata);
+      // add data to config
+      this.chart.data.labels = [];
+      this.chart.data.datasets[0].data = [];
+      this.chart.data.labels = this.elevationData.labels;
+      this.chart.data.datasets[0].data = this.elevationData.data;
+      this.setChartData();
+      // set acxes
+      let maxHeight = Math.max(...this.chart.data.datasets[0].data);
+      this.chart.options.scales.x.min = Math.min(...this.chart.data.labels);
+      this.chart.options.scales.x.max = Math.max(...this.chart.data.labels);
+      this.chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
+      // updata chart and statistics
+      this.chart.update();
+      this.trackNumber = trackNumber;
+      this.setTrackStatistics();
+  }
+  
+  setChartData() {
+    this.chartData = {
+      labels: this.elevationData.labels,
+      datasets: [{
+        data: this.elevationData.data,
+        fill: true,
+        borderColor: this.diagrBorderColor,
+        borderWidth: 1,
+        backgroundColor: this.diagrFillColor, 
+        tension: 0.1,
+        pointRadius: 0,
+        spanGaps: true
+      }]
+    };
+  }
+  
   /**
    * no use of this.
    * @param {array} gpxdata 
@@ -83,8 +128,197 @@ class chartJsClass {
     }
   }
 
-  // ------------ start theme functions -------------------
+  /**
+   * uses: this.elementOnPage, this.elevationData
+   * neu: this.gradient -> theme, this.ctx, diagrBorderColor, diagrFillColor, chartBackgroundColor, chartDefaultColor
+   * customCanvasBackgroundColor,
+   * 
+   */
+  drawElevationProfile() {
+        
+    const chartData = this.chartData;
 
+    const plugin = {
+      id: 'customCanvasBackgroundColor',
+      beforeDraw: (chart, args, options) => {
+        const {ctx} = chart;
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = options.color || '#FFFFFF00'; 
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+      }
+    };
+
+    const config = {
+      type: 'line',
+      data: chartData,
+      
+      plugins: [{
+        beforeInit: (chart, args, options) => {
+          let maxHeight = Math.max(...chart.data.datasets[0].data);
+          chart.options.scales.x.min = Math.min(...chart.data.labels);
+          chart.options.scales.x.max = Math.max(...chart.data.labels);
+          chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
+          //chart.options.scales.y1.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
+        }},
+        //plugin
+      ],
+      
+      options: {
+        onHover: this.handleChartHover,
+        animation: true, // option?
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        tooltip: {
+          position: 'nearest',
+        },
+        responsive : this.options.responsive,
+        maintainAspectRatio: this.options.responsive,
+        scales: {
+          x: {
+            type: 'linear',
+            grid: { color: this.scaleColor },
+            distribution: 'linear',
+          },
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            beginAtZero: false,
+            // grid line settings
+            grid: { color: this.scaleColor },
+          },
+        },
+        plugins: {
+          title: {
+            align: "left",
+            display: true,
+            text: this.i18n('Distance')+ ' / km, '+ this.i18n('Altitude')+ ' / m',
+          },
+          legend: {
+            display: false
+          },
+          customCanvasBackgroundColor: {
+            color: this.customCanvasBackgroundColor,
+          },
+          tooltip: {
+            displayColors: false,
+            backgroundColor: this.tooltipBackgroundColor,
+            titleColor: this.tooltipTitleColor,
+            bodyColor: this.tooltipTitleColor,
+            callbacks: {
+              label: (tooltipItems) => {
+                //return "Distance: " + tooltipItems[0].label + ' km'
+                return this.i18n('Distance')+': '+ tooltipItems.parsed.x.toFixed(2) + ' km';
+              },
+              title: (tooltipItem) => {
+                return this.i18n('Altitude') +': ' + tooltipItem[0].formattedValue + ' m' ;
+              },
+            }
+          }
+        }
+      }
+    };
+    
+    //Chart.defaults.color = this.chartDefaultColor; 
+    this.chart = new Chart(this.ctx, config);
+
+    // set statistics
+    this.setTrackStatistics()
+  }
+
+  /** 
+     * set the i18n values for the leaflet map.
+     * @returns {string|null} the string value for the locale or null, if none available.
+     */
+  i18n(text) {
+    let de = {
+        'Distance' : "Strecke",
+        "Ascent"   : "Anstieg",
+        "Descent"  : "Abstieg",
+        "Altitude" : "Höhe", 
+        "y: "				: "Höhe: ",
+        "x: "				: "Strecke: ",
+    };
+
+    let it = {
+        'Distance' : "Distanza",
+        "Ascent"   : "Salita",
+        "Descent"  : "Discesa",
+        "Altitude" : "Altitudine", 
+        "y: "				: "Altitudine: ",
+        "x: "				: "Distanza: ",
+    };
+
+    let fr = {
+        'Distance' : "Distance",
+        "Ascent"   : "Ascente",
+        "Descent"  : "Descente",
+        "Altitude" : "Altitude", 
+        "y: "				: "Altitude: ",
+        "x: "				: "Distance: ",
+    };
+
+    let es = {
+        'Distance' : "Distancia",
+        "Ascent"   : "Ascenso",
+        "Descent"  : "Descenso",
+        "Altitude" : "Altura", 
+        "y: "				: "Altura: ",
+        "x: "				: "Distancia: ",
+    };
+
+    let langs = {'de': de, 'it':it, 'fr':fr, 'es':es};
+
+    let lang = navigator.language;
+    lang = lang.split('-')[0];
+    
+    if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
+        return langs[lang][text];
+    } 
+    else {
+        return text;
+    }
+  };
+
+  /**
+     * Write the track statistics data to the dom element when the elevation data was loaded
+     * @param {Event} event the leaflet control elevation event
+     */
+  setTrackStatistics() {
+    // get the trace info from the gpx-file
+    // track info in description of gpx track
+    let info = this.pageVariables.tracks['track_'+ this.trackNumber.toString() ].info;
+
+    if (info) {info = info.split(' ')} else {info='';};
+
+    if (info[0]=='Dist:' && info[1] && info[4] && info[7]) {
+      this.tracklen = info[1];
+      this.ascent = info[4];
+      this.descent = info[7];
+    }
+    
+    let q = document.querySelector.bind(document);
+    let m = this.number;
+     
+    q('#data-summary'+m+' .totlen .summarylabel').innerHTML = this.i18n('Distance') + ': ';
+    q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = parseFloat(this.tracklen.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
+
+    q('#data-summary'+m+' .gain .summarylabel').innerHTML   = this.i18n('Ascent') + ': ' ;
+    q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = parseFloat(this.ascent.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+
+    q('#data-summary'+m+' .loss .summarylabel').innerHTML   = this.i18n('Descent') + ': ';
+    q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = parseFloat(this.descent.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+  }
+
+  // ------------ start theme functions -------------------
+  /**
+   * 
+   * 
+   */
   setAspRatioParentDiv() {
     if ( ! this.options.responsive) {
       return
@@ -204,171 +438,6 @@ class chartJsClass {
   }
   // ------------ end theme functions -------------------
 
-  /**
-   * uses: this.elementOnPage, this.elevationData
-   * neu: this.gradient -> theme, this.ctx, diagrBorderColor, diagrFillColor, chartBackgroundColor, chartDefaultColor
-   * customCanvasBackgroundColor,
-   * 
-   */
-  drawElevationProfile2() {
-    
-    const chartData = {
-      labels: this.elevationData.labels,
-      datasets: [{
-        data: this.elevationData.data,
-        fill: true,
-        borderColor: this.diagrBorderColor,
-        borderWidth: 1,
-        backgroundColor: this.diagrFillColor, 
-        tension: 0.1,
-        pointRadius: 0,
-        spanGaps: true
-      }]
-    };
-
-    const plugin = {
-      id: 'customCanvasBackgroundColor',
-      beforeDraw: (chart, args, options) => {
-        const {ctx} = chart;
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = options.color || '#FFFFFF00'; 
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-      }
-    };
-
-    const config = {
-      type: 'line',
-      data: chartData,
-      plugins: [{
-        beforeInit: (chart, args, options) => {
-          const maxHeight = Math.max(...chart.data.datasets[0].data);
-          chart.options.scales.x.min = Math.min(...chart.data.labels);
-          chart.options.scales.x.max = Math.max(...chart.data.labels);
-          chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
-          //chart.options.scales.y1.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
-        }},
-        //plugin
-      ],
-      options: {
-        onHover: this.handleChartHover,
-        animation: true, // option?
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        tooltip: {
-          position: 'nearest',
-        },
-        responsive : this.options.responsive,
-        maintainAspectRatio: this.options.responsive,
-        scales: {
-          x: {
-            type: 'linear',
-            grid: { color: this.scaleColor },
-            distribution: 'linear',
-          },
-          y: {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            beginAtZero: false,
-            // grid line settings
-            grid: { color: this.scaleColor },
-          },
-        },
-        plugins: {
-          title: {
-            align: "left",
-            display: true,
-            text: this.i18n('Distance')+ ' / km, '+ this.i18n('Altitude')+ ' / m',
-          },
-          legend: {
-            display: false
-          },
-          customCanvasBackgroundColor: {
-            color: this.customCanvasBackgroundColor,
-          },
-          tooltip: {
-            displayColors: false,
-            backgroundColor: this.tooltipBackgroundColor,
-            titleColor: this.tooltipTitleColor,
-            bodyColor: this.tooltipTitleColor,
-            callbacks: {
-              label: (tooltipItems) => {
-                //return "Distance: " + tooltipItems[0].label + ' km'
-                return this.i18n('Distance')+': '+ tooltipItems.parsed.x.toFixed(2) + ' km';
-              },
-              title: (tooltipItem) => {
-                return this.i18n('Altitude') +': ' + tooltipItem[0].formattedValue + ' m' ;
-              },
-            }
-          }
-        }
-      }
-    };
-    
-    //Chart.defaults.color = this.chartDefaultColor; 
-    this.chart = new Chart(this.ctx, config);
-
-    // set statistics
-    this.setTrackStatistics()
-  }
-
-  /** 
-     * set the i18n values for the leaflet map.
-     * @returns {string|null} the string value for the locale or null, if none available.
-     */
-  i18n(text) {
-    let de = {
-        'Distance' : "Strecke",
-        "Ascent"   : "Anstieg",
-        "Descent"  : "Abstieg",
-        "Altitude" : "Höhe", 
-        "y: "				: "Höhe: ",
-        "x: "				: "Strecke: ",
-    };
-
-    let it = {
-        'Distance' : "Distanza",
-        "Ascent"   : "Salita",
-        "Descent"  : "Discesa",
-        "Altitude" : "Altitudine", 
-        "y: "				: "Altitudine: ",
-        "x: "				: "Distanza: ",
-    };
-
-    let fr = {
-        'Distance' : "Distance",
-        "Ascent"   : "Ascente",
-        "Descent"  : "Descente",
-        "Altitude" : "Altitude", 
-        "y: "				: "Altitude: ",
-        "x: "				: "Distance: ",
-    };
-
-    let es = {
-        'Distance' : "Distancia",
-        "Ascent"   : "Ascenso",
-        "Descent"  : "Descenso",
-        "Altitude" : "Altura", 
-        "y: "				: "Altura: ",
-        "x: "				: "Distancia: ",
-    };
-
-    let langs = {'de': de, 'it':it, 'fr':fr, 'es':es};
-
-    let lang = navigator.language;
-    lang = lang.split('-')[0];
-    
-    if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
-        return langs[lang][text];
-    } 
-    else {
-        return text;
-    }
-}; 
 
   // ------------ start Event Handlers -------------------
   /**
@@ -427,37 +496,6 @@ class chartJsClass {
     
     chart.update();
   }
-
-  /**
-     * Write the track statistics data to the dom element when the elevation data was loaded
-     * @param {Event} event the leaflet control elevation event
-     */
-  setTrackStatistics() {
-    // get the trace info from the gpx-file
-    // track info in description of gpx track
-    let info = this.pageVariables.tracks['track_'+ this.trackNumber.toString() ].info;
-
-    if (info) {info = info.split(' ')} else {info='';};
-
-    if (info[0]=='Dist:' && info[1] && info[4] && info[7]) {
-      this.tracklen = info[1];
-      this.ascent = info[4];
-      this.descent = info[7];
-    }
-    
-    let q = document.querySelector.bind(document);
-    let m = this.number;
-     
-    q('#data-summary'+m+' .totlen .summarylabel').innerHTML = this.i18n('Distance') + ': ';
-    q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = parseFloat(this.tracklen.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
-
-    q('#data-summary'+m+' .gain .summarylabel').innerHTML   = this.i18n('Ascent') + ': ' ;
-    q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = parseFloat(this.ascent.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
-
-    q('#data-summary'+m+' .loss .summarylabel').innerHTML   = this.i18n('Descent') + ': ';
-    q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = parseFloat(this.descent.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
-  }
-
-// ------------ end Event Handlers ------------------
+  // ------------ end Event Handlers ------------------
 
 }

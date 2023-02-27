@@ -27,14 +27,20 @@ class gpxTrackClass {
     distSmoothing = 25;
     doTrackCalc = true;
     trackNumber = 0;
+    mapobject = {};
 
     constructor( number, mapobject, tracks, options=null) {
         this.tracks = tracks;
-        this.options = options;
-        this.trackurl = tracks.track_0.url;
         this.pageVariables = pageVarsForJs[number];
-        this.number = number;
+        this.mapobject = mapobject;
 
+        this.showTrack(0);     
+    }
+
+    showTrack( trackNumber) {
+        this.trackurl = this.tracks['track_'+ trackNumber.toString() ].url; // TODO
+
+        // show first track on map
         this.gpxTracks = new L.GPX(this.trackurl, {
             async: this.asyncLoading,
             polyline_options: {
@@ -47,33 +53,12 @@ class gpxTrackClass {
             }
 
         }).on('loaded', function(e) {
-            mapobject.fitBounds(e.target.getBounds());
+            this.mapobject.fitBounds(e.target.getBounds());
 
-        }).addTo(mapobject);
+        }).addTo(this.mapobject);
         
-        this.tracklen = this.gpxTracks.get_distance();
-        this.trackname = this.gpxTracks.get_name();
-        this.ascent = this.gpxTracks.get_elevation_gain();
-        this.descent = this.gpxTracks.get_elevation_loss();
-        this.trackdescr = this.gpxTracks.get_desc();
         this.elev_data = this.gpxTracks.get_elevation_data(); // no function here to get the gpx data
-        this.trackbounds = this.gpxTracks.getBounds();
         this.coords = this.gpxTracks.get_coords();
-
-        // this.gpxTracks.getLayers()[0].bindPopup('test')
-        // https://meggsimum.de/webkarte-mit-gps-track-vom-sport/
-        let distM = this.gpxTracks.get_distance();
-        let distKm = distM / 1000;
-        let distKmRnd = distKm.toFixed(1);
-        let eleGain = this.gpxTracks.get_elevation_gain().toFixed(3);
-        let eleLoss = this.gpxTracks.get_elevation_loss().toFixed(3);
-
-        // register popup on click
-        this.gpxTracks.getLayers()[0].bindPopup(
-        "Distance " + distKmRnd + " km </br>" +
-        "Elevation Gain " + eleGain + " m </br>" +
-        "Elevation Loss " + eleLoss + " m"
-        )
 
         // set info
         this.setTrackInfo();
@@ -97,7 +82,6 @@ class gpxTrackClass {
             }
 
         })
-     
     }
 
     setTrackInfo() {
@@ -161,7 +145,7 @@ class gpxTrackClass {
    * @param {array} gpxdata 
    * @returns {object} the sorted data
    */
-  calcGpxTrackdata() {
+    calcGpxTrackdata() {
     let info = '';
     //elevation
     let cumulativeElevationGain = 0;
@@ -210,7 +194,6 @@ class gpxTrackClass {
     }
 
     return info;
-  }
-
+    }
 
 }
