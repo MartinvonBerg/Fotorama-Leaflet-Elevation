@@ -18,7 +18,6 @@ class chartJsClass {
   chart = {};
   elementDiv = ''
   elementOnPage = '';
-  background = '';
   customCanvasBackgroundColor = '#FFFFFF00'; // white transparent
   CssBackgroundColor = ''; // extern gesetzt durch: pageVariables.sw_options.chart_background_color
   gradient = {};
@@ -30,6 +29,7 @@ class chartJsClass {
   tracklen = '';
   ascent = '';
   descent = '';
+  options = {};
 
   /**
    * 
@@ -40,21 +40,26 @@ class chartJsClass {
    */
   constructor(linedata, options) {
       
+    this.options = options;
     this.elementDiv = options.divID;
     this.elementOnPage = document.getElementById(options.divID);
-    this.ctx = this.elementOnPage.getContext("2d");
     this.pageVariables = options.pageVariables; 
     this.number = options.number;
 
+    // set parent aspRatio if responsive is set
+    // get parent and replace size in style by aspRatio
+    this.setAspRatioParentDiv();
+
     // theme color options
+    this.ctx = this.elementOnPage.getContext("2d");
     this.CssBackgroundColor = options.CssBackgroundColor;
     this.diagrFillColor = options.chart_fill_color; // this.pageVariables.sw_options.chart_fill_color
     this.theme = options.theme
-
-    this.elevationData = this.filterGPXTrackdata(linedata);
     this.setTheme(this.theme);
 
-   this.drawElevationProfile2(options.divID);
+    this.elevationData = this.filterGPXTrackdata(linedata);
+
+    this.drawElevationProfile2(options.divID);
 
   }
 
@@ -79,6 +84,18 @@ class chartJsClass {
   }
 
   // ------------ start theme functions -------------------
+
+  setAspRatioParentDiv() {
+    if ( ! this.options.responsive) {
+      return
+    } else {
+      let parent = this.elementOnPage.parentElement;
+      let aspRatio = this.options.aspRatio.toFixed(2);
+      parent.removeAttribute('style');
+      parent.style.aspectRatio = aspRatio; 
+    }
+  }
+
   /**
    * 
    * @param {*} theme 
@@ -236,8 +253,7 @@ class chartJsClass {
       ],
       options: {
         onHover: this.handleChartHover,
-        animation: true,
-        maintainAspectRatio: false,
+        animation: true, // option?
         interaction: {
           intersect: false,
           mode: 'index',
@@ -245,23 +261,13 @@ class chartJsClass {
         tooltip: {
           position: 'nearest',
         },
-        responsive : true,
-        maintainAspectRatio: true,
+        responsive : this.options.responsive,
+        maintainAspectRatio: this.options.responsive,
         scales: {
           x: {
             type: 'linear',
             grid: { color: this.scaleColor },
             distribution: 'linear',
-            /*
-            ticks: {
-              //minRotation: 10,
-              //maxRotation: 90,
-              //autoSkip: false,
-              stepSize: 2.0,
-              //count: 8,
-              //includeBounds: true
-            },
-            */
           },
           y: {
             type: 'linear',
@@ -269,10 +275,7 @@ class chartJsClass {
             position: 'left',
             beginAtZero: false,
             // grid line settings
-            grid: {
-            //  drawOnChartArea: false, // only want the grid lines for one axis to show up
-                color: this.scaleColor
-            },
+            grid: { color: this.scaleColor },
           },
         },
         plugins: {
