@@ -7,6 +7,7 @@
 //  https://dzone.com/articles/chartjs-line-chart-for-route-elevations-graph
 // load gpx tracks and provide data, name and statistics
 import Chart from 'chart.js/auto';
+import './ChartJsClass.css';
 
 export { chartJsClass };
 
@@ -22,7 +23,13 @@ class chartJsClass {
   CssBackgroundColor = ''; // extern gesetzt durch: pageVariables.sw_options.chart_background_color
   gradient = {};
   tooltipBackgroundColor = 'black';
-  tooltipTitleColor = 'white'
+  tooltipTitleColor = 'white';
+  number = 0;
+  // for track info
+  trackNumber = 0;
+  tracklen = '';
+  ascent = '';
+  descent = '';
 
   /**
    * 
@@ -37,6 +44,7 @@ class chartJsClass {
     this.elementOnPage = document.getElementById(options.divID);
     this.ctx = this.elementOnPage.getContext("2d");
     this.pageVariables = options.pageVariables; 
+    this.number = options.number;
 
     // theme color options
     this.CssBackgroundColor = options.CssBackgroundColor;
@@ -46,10 +54,7 @@ class chartJsClass {
     this.elevationData = this.filterGPXTrackdata(linedata);
     this.setTheme(this.theme);
 
-    // update CSS before init of Chart
-    //this.updateCSS();
-
-    this.drawElevationProfile2(options.divID);
+   this.drawElevationProfile2(options.divID);
 
   }
 
@@ -73,6 +78,11 @@ class chartJsClass {
     }
   }
 
+  // ------------ start theme functions -------------------
+  /**
+   * 
+   * @param {*} theme 
+   */
   setTheme (theme) {
     let textLineColor = '';
 
@@ -120,16 +130,48 @@ class chartJsClass {
   }
 
   /**
-    * uses this.pageVariables.sw_options.chart_background_color
-    *      this.elementDiv
+    * uses this.CssBackgroundColor, this.elementDiv
     * update CSS rules that are used according to the options and client
     */
   updateCSS() {
     const style = document.createElement('style');
-     // theme-custom background-color: ${ this.pageVariables.sw_options.chart_background_color };
-     // theme-martin background: linear-gradient(0deg, rgba(58, 120, 255, 0.15) 40%, rgba(58, 114, 255, 0.87) 100%);
     style.innerHTML = `#${this.elementDiv} { ${this.CssBackgroundColor}; }`;
     document.head.appendChild(style);
+  }
+
+  /**
+   * 
+   * @param {*} hex 
+   * @returns 
+   */
+  getBestContrastTextColor(hex){
+    // source: https://codepen.io/davidhalford/pen/AbKBNr
+   
+    if (hex.indexOf('#') === 0) {
+      hex = hex.slice(1);
+    }
+    // convert 3-digit hex to 6-digits.
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length !== 6) {
+        throw new Error('Invalid HEX color.');
+    }
+    
+    let threshold = 130; /* about half of 256. Lower threshold equals more dark text on dark background  */
+    
+    let hRed = hexToR(hex);
+    let hGreen = hexToG(hex);
+    let hBlue = hexToB(hex);
+    
+    
+    function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+    function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+    function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+    function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+
+    let cBrightness = ((hRed * 299) + (hGreen * 587) + (hBlue * 114)) / 1000;
+      if (cBrightness > threshold){return "#000000";} else { return "#ffffff";}	
   }
 
   /**
@@ -142,13 +184,8 @@ class chartJsClass {
     this.gradient.addColorStop(0.3, 'rgba(235,234,235,0.98)'); 
     this.gradient.addColorStop(0.4, 'rgba(212,100,14,0.95)'); 
     this.gradient.addColorStop(1, 'rgba(212,100,14,0.95)'); // bottom 1 : end of gradient
-
-    // https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9
-    //const gradientFill = ctx.createLinearGradient(0, 0, 0, 200);
-    //gradientFill.addColorStop(0, "rgba(128, 182, 244, 0.6)");
-    //gradientFill.addColorStop(1, "rgba(244, 144, 128, 0.6)");
-    /***************/
   }
+  // ------------ end theme functions -------------------
 
   /**
    * uses: this.elementOnPage, this.elevationData
@@ -213,16 +250,19 @@ class chartJsClass {
         scales: {
           x: {
             type: 'linear',
-            grid: {
-              color: this.scaleColor
+            grid: { color: this.scaleColor },
+            distribution: 'linear',
+            /*
+            ticks: {
+              //minRotation: 10,
+              //maxRotation: 90,
+              //autoSkip: false,
+              stepSize: 2.0,
+              //count: 8,
+              //includeBounds: true
             },
+            */
           },
-          /*
-          y: {
-            type: 'linear',
-            beginAtZero: false
-          },
-          */
           y: {
             type: 'linear',
             display: true,
@@ -239,7 +279,7 @@ class chartJsClass {
           title: {
             align: "left",
             display: true,
-            text: "Distance / km, Elevation / m" // TOOD: i18n
+            text: this.i18n('Distance')+ ' / km, '+ this.i18n('Altitude')+ ' / m',
           },
           legend: {
             display: false
@@ -255,10 +295,10 @@ class chartJsClass {
             callbacks: {
               label: (tooltipItems) => {
                 //return "Distance: " + tooltipItems[0].label + ' km'
-                return "Distance: " + tooltipItems.parsed.x.toFixed(2) + ' km' // TODO i18n
+                return this.i18n('Distance')+': '+ tooltipItems.parsed.x.toFixed(2) + ' km';
               },
               title: (tooltipItem) => {
-                return "Elevation: " + tooltipItem[0].formattedValue + ' m' // TODO i18n
+                return this.i18n('Altitude') +': ' + tooltipItem[0].formattedValue + ' m' ;
               },
             }
           }
@@ -268,8 +308,66 @@ class chartJsClass {
     
     //Chart.defaults.color = this.chartDefaultColor; 
     this.chart = new Chart(this.ctx, config);
+
+    // set statistics
+    this.setTrackStatistics()
   }
 
+  /** 
+     * set the i18n values for the leaflet map.
+     * @returns {string|null} the string value for the locale or null, if none available.
+     */
+  i18n(text) {
+    let de = {
+        'Distance' : "Strecke",
+        "Ascent"   : "Anstieg",
+        "Descent"  : "Abstieg",
+        "Altitude" : "Höhe", 
+        "y: "				: "Höhe: ",
+        "x: "				: "Strecke: ",
+    };
+
+    let it = {
+        'Distance' : "Distanza",
+        "Ascent"   : "Salita",
+        "Descent"  : "Discesa",
+        "Altitude" : "Altitudine", 
+        "y: "				: "Altitudine: ",
+        "x: "				: "Distanza: ",
+    };
+
+    let fr = {
+        'Distance' : "Distance",
+        "Ascent"   : "Ascente",
+        "Descent"  : "Descente",
+        "Altitude" : "Altitude", 
+        "y: "				: "Altitude: ",
+        "x: "				: "Distance: ",
+    };
+
+    let es = {
+        'Distance' : "Distancia",
+        "Ascent"   : "Ascenso",
+        "Descent"  : "Descenso",
+        "Altitude" : "Altura", 
+        "y: "				: "Altura: ",
+        "x: "				: "Distancia: ",
+    };
+
+    let langs = {'de': de, 'it':it, 'fr':fr, 'es':es};
+
+    let lang = navigator.language;
+    lang = lang.split('-')[0];
+    
+    if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
+        return langs[lang][text];
+    } 
+    else {
+        return text;
+    }
+}; 
+
+  // ------------ start Event Handlers -------------------
   /**
    * chart is passed by value. No use of this.
    * @param {*} event 
@@ -299,7 +397,7 @@ class chartJsClass {
     } return;
 
   }
-
+  
   /**
    * uses this.chart
    * @param {int} pos 
@@ -327,43 +425,36 @@ class chartJsClass {
     chart.update();
   }
 
-  getBestContrastTextColor(hex){
-    // source: https://codepen.io/davidhalford/pen/AbKBNr
-		// TODO: checker
-    /*
-    From this W3C document: http://www.webmasterworld.com/r.cgi?f=88&d=9769&url=http://www.w3.org/TR/AERT#color-contrast
-    
-    Color brightness is determined by the following formula: 
-    ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
-    
-    I know this could be more compact, but I think this is easier to read/explain.
-    
-    */
-    if (hex.indexOf('#') === 0) {
-      hex = hex.slice(1);
-    }
-    // convert 3-digit hex to 6-digits.
-    if (hex.length === 3) {
-        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-    }
-    if (hex.length !== 6) {
-        throw new Error('Invalid HEX color.');
-    }
-    
-    let threshold = 130; /* about half of 256. Lower threshold equals more dark text on dark background  */
-    
-    let hRed = hexToR(hex);
-    let hGreen = hexToG(hex);
-    let hBlue = hexToB(hex);
-    
-    
-    function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
-    function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
-    function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
-    function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+  /**
+     * Write the track statistics data to the dom element when the elevation data was loaded
+     * @param {Event} event the leaflet control elevation event
+     */
+  setTrackStatistics() {
+    // get the trace info from the gpx-file
+    // track info in description of gpx track
+    let info = this.pageVariables.tracks['track_'+ this.trackNumber.toString() ].info;
 
-    let cBrightness = ((hRed * 299) + (hGreen * 587) + (hBlue * 114)) / 1000;
-      if (cBrightness > threshold){return "#000000";} else { return "#ffffff";}	
+    if (info) {info = info.split(' ')} else {info='';};
+
+    if (info[0]=='Dist:' && info[1] && info[4] && info[7]) {
+      this.tracklen = info[1];
+      this.ascent = info[4];
+      this.descent = info[7];
     }
+    
+    let q = document.querySelector.bind(document);
+    let m = this.number;
+     
+    q('#data-summary'+m+' .totlen .summarylabel').innerHTML = this.i18n('Distance') + ': ';
+    q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = parseFloat(this.tracklen.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
+
+    q('#data-summary'+m+' .gain .summarylabel').innerHTML   = this.i18n('Ascent') + ': ' ;
+    q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = parseFloat(this.ascent.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+
+    q('#data-summary'+m+' .loss .summarylabel').innerHTML   = this.i18n('Descent') + ': ';
+    q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = parseFloat(this.descent.replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+  }
+
+// ------------ end Event Handlers ------------------
 
 }

@@ -4,6 +4,7 @@
 	Martin von Berg
 */
 // load gpx tracks and provide data, name and statistics
+import { createUnparsedSourceFile } from 'typescript';
 import './gpx.js'
 
 export {gpxTrackClass};
@@ -22,6 +23,10 @@ class gpxTrackClass {
     gpxTracks = {}
     asyncLoading = false;
     number = -1;
+    eleSmoothing = 2; // value in meters
+    distSmoothing = 25;
+    doTrackCalc = true;
+    trackNumber = 0;
 
     constructor( number, mapobject, tracks, options=null) {
         this.tracks = tracks;
@@ -70,6 +75,9 @@ class gpxTrackClass {
         "Elevation Loss " + eleLoss + " m"
         )
 
+        // set info
+        this.setTrackInfo();
+
         //this.gpxTracks.getLayers()[0].bindTooltip('test')
         let classThis = this;
         this.gpxTracks.on('mouseover', function(e) {
@@ -90,6 +98,19 @@ class gpxTrackClass {
 
         })
      
+    }
+
+    setTrackInfo() {
+        let info = this.gpxTracks._info.desc;
+        if (info) {info = info.split(' ')} else {info='';};
+        //info = '' // TODO : remove this line
+
+        if (info[0]=='Dist:' && info[1] && info[4] && info[7]) {
+            return;
+        } else {
+            this.pageVariables.tracks['track_'+ this.trackNumber.toString() ].info = this.calcGpxTrackdata();
+        }
+
     }
 
     getIndexForCoords(point) {
@@ -123,8 +144,7 @@ class gpxTrackClass {
       var lat1 = this.toRad(lat1);
       var lat2 = this.toRad(lat2);
 
-      var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
       var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
       var d = R * c;
       return d;
@@ -135,5 +155,62 @@ class gpxTrackClass {
     {
         return Value * Math.PI / 180;
     }
+
+    /**
+   * no use of this.
+   * @param {array} gpxdata 
+   * @returns {object} the sorted data
+   */
+  calcGpxTrackdata() {
+    let info = '';
+    //elevation
+    let cumulativeElevationGain = 0;
+    let cumulativeElevationLoss = 0;
+    let curElevation = 0;
+    let lastConsideredElevation = this.coords[0].meta.ele;
+    let elevationDelta = 0;
+    // distance
+    let lastPoint = [this.coords[0].lat, this.coords[0].lng];
+    let curPoint = [0,0];
+    let curDist = 0;
+    let cumulativeDistance = 0;
+    
+
+    if ( this.doTrackCalc) {
+        this.coords.forEach((point, index) => {
+            curElevation = point.meta.ele;
+            
+            if ( typeof(curElevation === 'number') && curElevation > 1){ // filter elevation data
+            elevationDelta = curElevation - lastConsideredElevation;
+
+            if ( Math.abs( elevationDelta) > this.eleSmoothing ) {
+                elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
+                elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
+            }
+            lastConsideredElevation = curElevation;
+
+            // distance calc // TODO calc the tracklength corrently. The formula is wrong
+            curPoint = [point.lat, point.lng];
+            curDist = 1000 * this.calcCrow(lastPoint[0], lastPoint[1], curPoint[0], curPoint[1]);
+            if ( Math.abs(curDist) > this.distSmoothing) {}
+                cumulativeDistance += curDist;
+            }
+        });
+        this.tracklen = cumulativeDistance.toString(); 
+        this.ascent = cumulativeElevationGain.toString();
+        this.descent = cumulativeElevationLoss.toString();
+        info = 'Dist: '+ 0.00 +' km, Gain: '+ cumulativeElevationGain +' Hm, Loss: '+ cumulativeElevationLoss+' Hm';  
+
+    } else {
+        let distKm = this.gpxTracks.get_distance() / 1000;
+        let distKmRnd = distKm.toFixed(1);
+        let eleGain = this.gpxTracks.get_elevation_gain().toFixed(1);
+        let eleLoss = this.gpxTracks.get_elevation_loss().toFixed(1);
+        info = 'Dist: '+distKmRnd+' km, Gain: '+ eleGain+' Hm, Loss: '+eleLoss+' Hm';   
+    }
+
+    return info;
+  }
+
 
 }
