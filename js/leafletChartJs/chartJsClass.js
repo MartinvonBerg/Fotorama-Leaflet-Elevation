@@ -13,7 +13,7 @@ import './ChartJsClass.css';
 export { chartJsClass };
 
 class chartJsClass {
-
+  "use strict";
   elevationData = {};
   ctx = {};
   chart = {};
@@ -35,19 +35,32 @@ class chartJsClass {
 
   /**
    * 
-   * @param {*} number 
-   * @param {*} divID 
-   * @param {*} linedata 
-   * @param {*} options 
+   * init the class with first track in linedata and the options
+   * @param {object} linedata linedata from gpxTrackClass
+   * @param {object} options the options as array
+   * @param {int} options.number the number of the chart on the page
+   * @param {string} options.divID the ID of the DIV or canvas to draw the chart in
+   * @param {string} options.theme
+   * @param {string}options.CssBackgroundColor
+   * @param {string} options.chart_fill_color
+   * @param {int} options.chartHeight
+   * @param {array} options.pageVariables the array of pageVariables passed by php
+   * @param {boolean} options.responsive
+   * @param {number} options.aspRatio
+   * @param {boolean} options.chartAnimation animate the elevation chart, or not.
+   * @param {boolean} options.showChartHeader
    */
   constructor(linedata, options) {
 
     this.options = options;
-    this.elementDiv = options.divID;
-    this.elementOnPage = document.getElementById(options.divID);
-    this.pageVariables = options.pageVariables; 
-    this.number = options.number;
-
+    this.number = options.number || 0;
+    // check these
+    this.elementDiv = options.divID || '';
+    this.elementOnPage = document.getElementById(options.divID) || {};
+    this.pageVariables = options.pageVariables || [];
+    
+    if ( (this.elementDiv ==='') || (this.elementOnPage === {}) || (this.pageVariables === [])) return undefined;
+    
     // set parent aspRatio if responsive is set
     // get parent and replace size in style by aspRatio
     this.setAspRatioParentDiv();
@@ -55,16 +68,17 @@ class chartJsClass {
     // theme color options
     this.ctx = this.elementOnPage.getContext("2d");
     
-    this.CssBackgroundColor = options.CssBackgroundColor;
-    this.diagrFillColor = options.chart_fill_color; // this.pageVariables.sw_options.chart_fill_color
-    this.setTheme(options.theme);
+    this.CssBackgroundColor = options.CssBackgroundColor || '#ffffff';
+    this.diagrFillColor = options.chart_fill_color || '#96cced';
+    this.setTheme(options.theme || 'none');
+    this.chartAnimation = options.chartAnimation === true;
+    this.options.showChartHeader = options.showChartHeader === true;
 
     // allways show first track on load
     this.elevationData = this.filterGPXTrackdata(linedata);
     this.setChartData();
 
     this.drawElevationProfile();
-
   }
 
   /**
@@ -81,17 +95,17 @@ class chartJsClass {
       this.chart.data.labels = this.elevationData.labels;
       this.chart.data.datasets[0].data = this.elevationData.data;
       this.setChartData();
-      // set acxes
-      let maxHeight = Math.max(...this.chart.data.datasets[0].data);
-      this.chart.options.scales.x.min = Math.min(...this.chart.data.labels);
-      this.chart.options.scales.x.max = Math.max(...this.chart.data.labels);
-      this.chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
+      // set axes
+      this.setAxesMinMax(this.chart);
       // updata chart and statistics
       this.chart.update();
       this.trackNumber = trackNumber;
       this.setTrackStatistics();
   }
   
+  /**
+   * set the chart data to show in elevation profile
+   */
   setChartData() {
     this.chartData = {
       labels: this.elevationData.labels,
@@ -107,11 +121,20 @@ class chartJsClass {
       }]
     };
   }
+
+  setAxesMinMax(chart) {
+    let maxHeight = Math.max(...chart.data.datasets[0].data);
+    let minHeight = Math.min(...chart.data.datasets[0].data);
+    chart.options.scales.x.min = Math.min(...chart.data.labels);
+    chart.options.scales.x.max = Math.max(...chart.data.labels);
+    chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; 
+    chart.options.scales.y.min = Math.floor(minHeight/100)*100;
+  }
   
   /**
-   * no use of this.
+   * reformat the input data to a format that is compatible to chart.js. Which is two arrays with labels and data.
    * @param {array} gpxdata 
-   * @returns {object} the sorted data
+   * @returns {object{array,array}} labels and data in two array
    */
   filterGPXTrackdata(gpxdata) {
     let labels = [];
@@ -129,45 +152,26 @@ class chartJsClass {
   }
 
   /**
+   * configure, initi and show the elevation profile as line chart using chart.js
    * uses: this.elementOnPage, this.elevationData
-   * neu: this.gradient -> theme, this.ctx, diagrBorderColor, diagrFillColor, chartBackgroundColor, chartDefaultColor
-   * customCanvasBackgroundColor,
+   * neu: this.gradient -> theme, this.ctx, diagrBorderColor, diagrFillColor, chartBackgroundColor, chartDefaultColor, customCanvasBackgroundColor.
    * 
    */
   drawElevationProfile() {
         
     const chartData = this.chartData;
-
-    const plugin = {
-      id: 'customCanvasBackgroundColor',
-      beforeDraw: (chart, args, options) => {
-        const {ctx} = chart;
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = options.color || '#FFFFFF00'; 
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-      }
-    };
-
+   
     const config = {
       type: 'line',
       data: chartData,
       
       plugins: [{
-        beforeInit: (chart, args, options) => {
-          let maxHeight = Math.max(...chart.data.datasets[0].data);
-          chart.options.scales.x.min = Math.min(...chart.data.labels);
-          chart.options.scales.x.max = Math.max(...chart.data.labels);
-          chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
-          //chart.options.scales.y1.max = Math.ceil(maxHeight/100)*100; //maxHeight + Math.round(maxHeight * 0.2);
-        }},
-        //plugin
+        beforeInit: (chart) => this.setAxesMinMax(chart)},
       ],
       
       options: {
         onHover: this.handleChartHover,
-        animation: true, // option?
+        animation: this.chartAnimation,
         interaction: {
           intersect: false,
           mode: 'index',
@@ -195,14 +199,11 @@ class chartJsClass {
         plugins: {
           title: {
             align: "left",
-            display: true,
+            display: this.options.showChartHeader,
             text: this.i18n('Distance')+ ' / km, '+ this.i18n('Altitude')+ ' / m',
           },
           legend: {
             display: false
-          },
-          customCanvasBackgroundColor: {
-            color: this.customCanvasBackgroundColor,
           },
           tooltip: {
             displayColors: false,
@@ -211,7 +212,6 @@ class chartJsClass {
             bodyColor: this.tooltipTitleColor,
             callbacks: {
               label: (tooltipItems) => {
-                //return "Distance: " + tooltipItems[0].label + ' km'
                 return this.i18n('Distance')+': '+ tooltipItems.parsed.x.toFixed(2) + ' km';
               },
               title: (tooltipItem) => {
@@ -223,7 +223,6 @@ class chartJsClass {
       }
     };
     
-    //Chart.defaults.color = this.chartDefaultColor; 
     this.chart = new Chart(this.ctx, config);
 
     // set statistics
@@ -231,9 +230,10 @@ class chartJsClass {
   }
 
   /** 
-     * set the i18n values for the leaflet map.
-     * @returns {string|null} the string value for the locale or null, if none available.
-     */
+    * translate text for chart.js.
+    * @param {string} text to translate
+    * @returns {string} the string value for the locale or the original text if translation not available.
+    */
   i18n(text) {
     let de = {
         'Distance' : "Strecke",
@@ -430,10 +430,13 @@ class chartJsClass {
    */
   setGradient() {
     /*** Gradient http://jsfiddle.net/4vobe59a/***/ 
-    this.gradient = this.ctx.createLinearGradient(0, 0, 0, 200); // top-x, top-y, bottom-x, bottom-y : should be height
+    let colorChangePercentage = this.options.showChartHeader ? 0.4 : 0.3;
+    let currentHeight = this.elementOnPage.offsetHeight;
+
+    this.gradient = this.ctx.createLinearGradient(0, 0, 0, currentHeight); // top-x, top-y, bottom-x, bottom-y
     this.gradient.addColorStop(0.0, 'rgba(235,234,235,0.98)'); // top 0 : start of gradient
-    this.gradient.addColorStop(0.3, 'rgba(235,234,235,0.98)'); 
-    this.gradient.addColorStop(0.4, 'rgba(212,100,14,0.95)'); 
+    this.gradient.addColorStop(colorChangePercentage, 'rgba(235,234,235,0.98)'); 
+    this.gradient.addColorStop(colorChangePercentage+0.1, 'rgba(212,100,14,0.95)'); 
     this.gradient.addColorStop(1, 'rgba(212,100,14,0.95)'); // bottom 1 : end of gradient
   }
   // ------------ end theme functions -------------------

@@ -4,8 +4,6 @@
 	Martin von Berg
 */
 // imports
-
-
 import {LeafletMap} from '../leafletMapClass';
 // import class for track on map for one or multiple tracks
 import {gpxTrackClass} from './gpxTrackClass.js';
@@ -52,6 +50,8 @@ class LeafletChartJs extends LeafletMap {
             // responsive
             responsive : true,
             aspRatio : pageVarsForJs[number].mapaspect * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
+            chartAnimation : true,
+            showChartHeader : false
         }
 
         // show chart with the first track

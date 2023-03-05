@@ -1,3 +1,8 @@
+/*!
+  Wrapper for chartJs 0.17.0
+  license: GPL 2.0
+  Martin von Berg
+*/
 // source: https://react-chartjs-2.js.org/examples/line-chart
 
 import {
@@ -25,4 +30,4 @@ import {
     //Legend
   );
 
-  export {ChartJS};
+export {ChartJS};

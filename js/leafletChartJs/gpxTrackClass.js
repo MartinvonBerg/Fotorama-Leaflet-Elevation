@@ -4,7 +4,6 @@
 	Martin von Berg
 */
 // load gpx tracks and provide data, name and statistics
-import { createUnparsedSourceFile } from 'typescript';
 import './gpx.js'
 
 export {gpxTrackClass};
