@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 let _mode = 'production';
 
 // create bundle for fotorama
@@ -17,9 +18,16 @@ module.exports = [
   // wenn das Plugin de-aktiviert ist (mit import leaflet aktiv), dann geht zwar leaflet, aber L ist nicht lokal und es gibt Probleme mit anderen Plugins!
   
   plugins: [new webpack.ProvidePlugin({ 
-    L: 'leaflet', 
-    'window.L': 'leaflet',
-    'root.L' : 'leaflet' }),
+      L: 'leaflet', 
+      'window.L': 'leaflet',
+      'root.L' : 'leaflet' 
+    }),
+    //new webpack.IgnorePlugin({
+    //  resourceRegExp: /^\.\/locale$/,
+    //  contextRegExp: /moment$/,
+    //}),
+    //new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /de/),
+    //new BundleAnalyzerPlugin()
   ],
   // ---------- bis hierher -----------------
   mode: _mode, 

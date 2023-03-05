@@ -348,8 +348,8 @@ class chartJsClass {
         textLineColor = 'black';
         this.diagrBorderColor = textLineColor; 
         this.scaleColor = textLineColor;
-        this.chartDefaultColor = textLineColor; 
-        Chart.defaults.color = this.chartDefaultColor;
+        //this.chartDefaultColor = textLineColor; 
+        Chart.defaults.color = textLineColor;
         break;
 
       case 'custom-theme':
@@ -363,8 +363,8 @@ class chartJsClass {
                 
         this.diagrBorderColor = textLineColor; 
         this.scaleColor = textLineColor;
-        this.chartDefaultColor = textLineColor; 
-        Chart.defaults.color = this.chartDefaultColor;
+        //this.chartDefaultColor = textLineColor; 
+        Chart.defaults.color = textLineColor;
         
         // change tooltip colors if background is dark
         if (textLineColor === '#ffffff') {
