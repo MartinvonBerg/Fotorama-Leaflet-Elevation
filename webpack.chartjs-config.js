@@ -1,12 +1,12 @@
 const webpack = require('webpack');
 const path = require('path');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 let _mode = 'production';
 
 // create bundle for fotorama
 module.exports = [
 {
-  target: ['web','es2017'],
+  target: ['web','es2022'],
   entry: ['./js/fotorama-multi-reduced.js'],
   output: {
     filename: 'fm_[name].js',
