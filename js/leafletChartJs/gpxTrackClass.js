@@ -26,6 +26,7 @@ class gpxTrackClass {
     distSmoothing = 25;
     doTrackCalc = true;
     trackNumber = 0;
+    pageVariables = [];
     mapobject = {};
 
     constructor( number, mapobject, tracks, options=null) {
@@ -33,11 +34,11 @@ class gpxTrackClass {
         this.pageVariables = pageVarsForJs[number];
         this.mapobject = mapobject;
 
-        this.showTrack(0);     
+        this.showTrack(0);
     }
 
     showTrack( trackNumber) {
-        this.trackurl = this.tracks['track_'+ trackNumber.toString() ].url; // TODO
+        this.trackurl = this.tracks['track_'+ trackNumber.toString() ].url;
 
         // show first track on map
         this.gpxTracks = new L.GPX(this.trackurl, {
@@ -62,7 +63,6 @@ class gpxTrackClass {
         // set info
         this.setTrackInfo();
 
-        //this.gpxTracks.getLayers()[0].bindTooltip('test')
         let classThis = this;
         this.gpxTracks.on('mouseover', function(e) {
             if ( e.type === 'mouseover' ) {
@@ -86,7 +86,6 @@ class gpxTrackClass {
     setTrackInfo() {
         let info = this.gpxTracks._info.desc;
         if (info) {info = info.split(' ')} else {info='';};
-        //info = '' // TODO : remove this line
 
         if (info[0]=='Dist:' && info[1] && info[4] && info[7]) {
             return;
@@ -164,21 +163,24 @@ class gpxTrackClass {
             curElevation = point.meta.ele;
             
             if ( typeof(curElevation === 'number') && curElevation > 1){ // filter elevation data
-            elevationDelta = curElevation - lastConsideredElevation;
+                elevationDelta = curElevation - lastConsideredElevation;
 
-            if ( Math.abs( elevationDelta) > this.eleSmoothing ) {
-                elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
-                elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
-            }
-            lastConsideredElevation = curElevation;
+                if ( Math.abs( elevationDelta) > this.eleSmoothing ) {
+                    elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
+                    elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
+                }
+                lastConsideredElevation = curElevation;
 
-            // distance calc // TODO calc the tracklength corrently. The formula is wrong
-            curPoint = [point.lat, point.lng];
-            curDist = 1000 * this.calcCrow(lastPoint[0], lastPoint[1], curPoint[0], curPoint[1]);
-            if ( Math.abs(curDist) > this.distSmoothing) {}
-                cumulativeDistance += curDist;
+                // distance calc // TODO calc the tracklength corrently. The formula is wrong
+                curPoint = [point.lat, point.lng];
+                curDist = 1000 * this.calcCrow(lastPoint[0], lastPoint[1], curPoint[0], curPoint[1]);
+                if ( Math.abs(curDist) > this.distSmoothing) {
+                    cumulativeDistance += curDist;
+                }
+                lastPoint = curPoint;
             }
         });
+
         this.tracklen = cumulativeDistance.toString(); 
         this.ascent = cumulativeElevationGain.toString();
         this.descent = cumulativeElevationLoss.toString();

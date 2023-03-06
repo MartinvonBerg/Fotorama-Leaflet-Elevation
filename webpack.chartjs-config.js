@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 //const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-let _mode = 'production';
+let _mode = 'development';
 
 // create bundle for fotorama
 module.exports = [
