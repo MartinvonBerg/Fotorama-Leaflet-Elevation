@@ -7,7 +7,7 @@
 //  https://dzone.com/articles/chartjs-line-chart-for-route-elevations-graph
 // load gpx tracks and provide data, name and statistics
 //import {Chart} from 'chart.js/auto';
-import {ChartJS as Chart} from './chartJSwrapper.js';
+import {ChartJS as Chart} from './chartJSwrapper.js'; // this is 15.6 kB or 31.8% smaller (compressed download size)
 import './ChartJsClass.css';
 
 export { chartJsClass };
@@ -18,9 +18,8 @@ class chartJsClass {
   ctx = {};
   chart = {};
   elementDiv = ''
-  elementOnPage = '';
-  customCanvasBackgroundColor = '#FFFFFF00'; // white transparent
-  CssBackgroundColor = ''; // extern gesetzt durch: pageVariables.sw_options.chart_background_color
+  elementOnPage = {};
+  CssBackgroundColor = ''; 
   gradient = {};
   tooltipBackgroundColor = 'black';
   tooltipTitleColor = 'white';
@@ -49,33 +48,32 @@ class chartJsClass {
    * @param {number} options.aspRatio
    * @param {boolean} options.chartAnimation animate the elevation chart, or not.
    * @param {boolean} options.showChartHeader
+   * @return {void|undefined} return undefined if init fails.
    */
   constructor(linedata, options) {
 
     this.options = options;
     this.number = options.number || 0;
-    // check these
     this.elementDiv = options.divID || '';
     this.elementOnPage = document.getElementById(options.divID) || {};
     this.pageVariables = options.pageVariables || [];
     
+    // stop the constructor and return undefined if options is not set sufficiently.
     if ( (this.elementDiv ==='') || (this.elementOnPage === {}) || (this.pageVariables === [])) return undefined;
     
-    // set parent aspRatio if responsive is set
-    // get parent and replace size in style by aspRatio
+    // set parent aspRatio if responsive is set. get parent and replace size in style by aspRatio.
     this.setAspRatioParentDiv();
 
-    // theme color options
+    // set theme color options and other theme options.
     this.ctx = this.elementOnPage.getContext("2d");
-    
     this.CssBackgroundColor = options.CssBackgroundColor || '#ffffff';
     this.diagrFillColor = options.chart_fill_color || '#96cced';
     this.setTheme(options.theme || 'none');
     this.chartAnimation = options.chartAnimation === true;
     this.options.showChartHeader = options.showChartHeader === true;
 
-    // allways show first track on load
-    this.elevationData = this.filterGPXTrackdata(linedata);
+    // always show first track on load
+    this.elevationData = this.prepareChartData(linedata);
     this.setChartData();
 
     this.drawElevationProfile();
@@ -88,7 +86,7 @@ class chartJsClass {
    */
   showElevationProfile( elevdata, trackNumber ) {
       // remap new data
-      this.elevationData = this.filterGPXTrackdata(elevdata);
+      this.elevationData = this.prepareChartData(elevdata);
       // add data to config
       this.chart.data.labels = [];
       this.chart.data.datasets[0].data = [];
@@ -136,7 +134,7 @@ class chartJsClass {
    * @param {array} gpxdata 
    * @returns {object{array,array}} labels and data in two array
    */
-  filterGPXTrackdata(gpxdata) {
+  prepareChartData(gpxdata) {
     let labels = [];
     let data = [];
 
@@ -154,7 +152,7 @@ class chartJsClass {
   /**
    * configure, initi and show the elevation profile as line chart using chart.js
    * uses: this.elementOnPage, this.elevationData
-   * neu: this.gradient -> theme, this.ctx, diagrBorderColor, diagrFillColor, chartBackgroundColor, chartDefaultColor, customCanvasBackgroundColor.
+   * neu: this.gradient -> theme, this.ctx, diagrBorderColor, diagrFillColor, chartBackgroundColor, chartDefaultColor.
    * 
    */
   drawElevationProfile() {
