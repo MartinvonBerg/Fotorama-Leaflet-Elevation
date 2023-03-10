@@ -53,15 +53,18 @@ class gpxTrackClass {
             }
 
         }).on('loaded', function(e) {
-            this.mapobject.fitBounds(e.target.getBounds());
+            this.mapobject.map.fitBounds(e.target.getBounds());
 
-        }).addTo(this.mapobject);
+        }).addTo(this.mapobject.map);
         
         this.elev_data = this.gpxTracks.get_elevation_data(); // no function here to get the gpx data
         this.coords = this.gpxTracks.get_coords();
 
         // set info
         this.setTrackInfo();
+
+        this.gpxTracks.on('loaded', function(e) {
+            this.mapobject.map.fitBounds(e.target.getBounds());})
 
         let classThis = this;
         this.gpxTracks.on('mouseover', function(e) {
@@ -79,7 +82,6 @@ class gpxTrackClass {
             
                   this._map._container.dispatchEvent(changed);
             }
-
         })
     }
 

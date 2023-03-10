@@ -18,7 +18,6 @@ export {LeafletChartJs};
 
 class LeafletChartJs extends LeafletMap {
 
-    static showalltracks = false;
     coords = [];
     theMarker = {};
     elev_data = [];
@@ -26,8 +25,10 @@ class LeafletChartJs extends LeafletMap {
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
 
-        // load and show first track on map 
-        const track = new gpxTrackClass( number, this.map, this.pageVariables.tracks );
+        // load and show first track on map
+        let mapthis = {};
+        mapthis = this; 
+        const track = new gpxTrackClass( number, mapthis, this.pageVariables.tracks );
         this.coords = track.coords;
               
         // set i18n for chart (map is done in parent class 'leafletMapClass')
@@ -67,7 +68,7 @@ class LeafletChartJs extends LeafletMap {
             chart.triggerTooltip(e.detail.index);
             classThis.createSingleMarker(e.detail.position, classThis.coords[e.detail.index].meta.ele+'m')
         });
-
+        /*
         // 1 second delay
         setTimeout(function(){
             console.log("Executed after 1 second");
@@ -85,10 +86,7 @@ class LeafletChartJs extends LeafletMap {
             this.elev_data = track.elev_data;
             chart.showElevationProfile(this.elev_data, 2);
         }, 3000);
-
-        
-
-        
+        */
     }
 
     /**
@@ -124,9 +122,4 @@ class LeafletChartJs extends LeafletMap {
     //    - hover over chart -> show marker, indication on map to track. Hint: 
     //    - Hover over track -> show tooltip in chart
     //    - show image markers on chart and update with track
-
-    
-
-    
-    
 }
