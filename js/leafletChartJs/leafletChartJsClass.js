@@ -49,10 +49,10 @@ class LeafletChartJs extends LeafletMap {
             chartHeight : pageVarsForJs[number].chartheight,
             pageVariables : pageVarsForJs[number],
             // responsive
-            responsive : true,
+            responsive : true, // TODO: setting
             aspRatio : pageVarsForJs[number].mapaspect * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
-            chartAnimation : true,
-            showChartHeader : false
+            chartAnimation : true, // TODO: setting
+            showChartHeader : false // TODO: setting
         }
 
         // show chart with the first track
@@ -66,7 +66,7 @@ class LeafletChartJs extends LeafletMap {
         let classThis = this;
         document.getElementById('map'+number).addEventListener('mouseoverpath', function charthover(e) {
             chart.triggerTooltip(e.detail.index);
-            classThis.createSingleMarker(e.detail.position, classThis.coords[e.detail.index].meta.ele+'m')
+            classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele + " m</p>");
         });
         /*
         // 1 second delay
@@ -112,7 +112,7 @@ class LeafletChartJs extends LeafletMap {
             let xval = classThis.coords[x];
             //console.log(xval);
             // update the marker on the map
-            classThis.createSingleMarker([xval.lat, xval.lng], ' '+xval.meta.ele+'m')
+            classThis.createSingleMarker([xval.lat, xval.lng], "<p>" + xval.meta.ele + " m</p>")
         
         });
     }

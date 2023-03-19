@@ -452,7 +452,7 @@ class LeafletMap {
         this.mrk = marker;
         this.controlLayer.addOverlay(this.group1, this.i18n('Images') + ' (' + j + ')');
         this.group1.addTo(this.map); 
-        this.bounds = undefined; // forces to set the markers to image-markers
+        //this.bounds = undefined; // forces to set the markers to image-markers
         this.bounds = this.setBoundsToMarkers(testgroup);
     }
 

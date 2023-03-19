@@ -9,9 +9,7 @@ import './gpx.js'
 export {gpxTrackClass};
 
 class gpxTrackClass {
-    trackname = '';
-    trackdescr = '';
-    trackbounds = {};
+   
     coords = [];
     ascent = 0;
     descent = 0;
@@ -40,20 +38,24 @@ class gpxTrackClass {
     showTrack( trackNumber) {
         this.trackurl = this.tracks['track_'+ trackNumber.toString() ].url;
 
-        // show first track on map
+        // show first track on map. track color, width, tooltip font color, background color
         this.gpxTracks = new L.GPX(this.trackurl, {
             async: this.asyncLoading,
             polyline_options: {
-                color: '#aa1111'
+                color: '#aa1111' // TODO: setting
             },
+            /*
             marker_options: {
                 startIconUrl: this.pageVariables.imagepath +'/pin-icon-start.png',
                 endIconUrl: this.pageVariables.imagepath +'/pin-icon-end.png',
                 shadowUrl: this.pageVariables.imagepath +'/pin-shadow.png'
             }
-
-        }).on('loaded', function(e) {
-            this.mapobject.map.fitBounds(e.target.getBounds());
+            */
+            marker_options: {
+                startIconUrl: '', // TODO: setting
+                endIconUrl: '',// TODO: setting 
+                shadowUrl: '' // TODO: setting
+            }
 
         }).addTo(this.mapobject.map);
         
@@ -62,9 +64,10 @@ class gpxTrackClass {
 
         // set info
         this.setTrackInfo();
-
-        this.gpxTracks.on('loaded', function(e) {
-            this.mapobject.map.fitBounds(e.target.getBounds());})
+      
+        this.mapobject.controlLayer.addOverlay(this.gpxTracks, this.gpxTracks._info.name);
+        this.mapobject.map.fitBounds(this.gpxTracks.getBounds(), {padding: [150, 150]});
+        this.mapobject.bounds = this.gpxTracks.getBounds();
 
         let classThis = this;
         this.gpxTracks.on('mouseover', function(e) {
@@ -120,6 +123,7 @@ class gpxTrackClass {
 
     // https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
     //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
+    // TODO: use method from gpx.js
     calcCrow(lat1, lon1, lat2, lon2) 
     {
       var R = 6371; // km
@@ -141,7 +145,7 @@ class gpxTrackClass {
     }
 
     /**
-   * no use of this.
+   * calc the distance and elevation data for the track. TODO: distance is wrong. use gpx.js.
    * @param {array} gpxdata 
    * @returns {object} the sorted data
    */
