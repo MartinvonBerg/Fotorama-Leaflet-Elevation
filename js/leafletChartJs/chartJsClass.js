@@ -37,17 +37,17 @@ class chartJsClass {
    * init the class with first track in linedata and the options
    * @param {object} linedata linedata from gpxTrackClass
    * @param {object} options the options as array
-   * @param {int} options.number the number of the chart on the page
-   * @param {string} options.divID the ID of the DIV or canvas to draw the chart in
-   * @param {string} options.theme
-   * @param {string}options.CssBackgroundColor
-   * @param {string} options.chart_fill_color
-   * @param {int} options.chartHeight
-   * @param {array} options.pageVariables the array of pageVariables passed by php
-   * @param {boolean} options.responsive
-   * @param {number} options.aspRatio
-   * @param {boolean} options.chartAnimation animate the elevation chart, or not.
-   * @param {boolean} options.showChartHeader
+   *  @param {int} options.number the number of the chart on the page
+   *  @param {string} options.divID the ID of the DIV or canvas to draw the chart in
+   *  @param {string} options.theme
+   *  @param {string}options.CssBackgroundColor
+   *  @param {string} options.chart_fill_color
+   *  @param {int} options.chartHeight
+   *  @param {array} options.pageVariables the array of pageVariables passed by php
+   *  @param {boolean} options.responsive
+   *  @param {number} options.aspRatio
+   *  @param {boolean} options.chartAnimation animate the elevation chart, or not.
+   *  @param {boolean} options.showChartHeader
    * @return {void|undefined} return undefined if init fails.
    */
   constructor(linedata, options) {
@@ -120,6 +120,10 @@ class chartJsClass {
     };
   }
 
+  /**
+   * set the min max values for the chart axes
+   * @param {object} chart 
+   */
   setAxesMinMax(chart) {
     let maxHeight = Math.max(...chart.data.datasets[0].data);
     let minHeight = Math.min(...chart.data.datasets[0].data);
@@ -132,7 +136,7 @@ class chartJsClass {
   /**
    * reformat the input data to a format that is compatible to chart.js. Which is two arrays with labels and data.
    * @param {array} gpxdata 
-   * @returns {object{array,array}} labels and data in two array
+   * @returns {object{array,array}} labels and data in two arrays
    */
   prepareChartData(gpxdata) {
     let labels = [];
@@ -173,6 +177,14 @@ class chartJsClass {
         interaction: {
           intersect: false,
           mode: 'index',
+        },
+        layout: {
+          padding: {
+            left: this.options.padding,
+            top: 1.5*this.options.padding,
+            right: 2*this.options.padding,
+            bottom: this.options.padding,
+          }
         },
         tooltip: {
           position: 'nearest',
@@ -284,7 +296,6 @@ class chartJsClass {
 
   /**
      * Write the track statistics data to the dom element when the elevation data was loaded
-     * @param {Event} event the leaflet control elevation event
      */
   setTrackStatistics() {
     // get the trace info from the gpx-file
@@ -314,23 +325,24 @@ class chartJsClass {
 
   // ------------ start theme functions -------------------
   /**
-   * 
-   * 
+   * set the aspect ratio of the chart according to aspect ratio of parent div
+   * @returns boolean success of the setting or not
    */
   setAspRatioParentDiv() {
     if ( ! this.options.responsive) {
-      return
+      return false;
     } else {
       let parent = this.elementOnPage.parentElement;
       let aspRatio = this.options.aspRatio.toFixed(2);
       parent.removeAttribute('style');
-      parent.style.aspectRatio = aspRatio; 
+      parent.style.aspectRatio = aspRatio;
+      return true; 
     }
   }
 
   /**
-   * 
-   * @param {*} theme 
+   * set the colors and gradient, for the selected theme.
+   * @param {string} theme the selected theme
    */
   setTheme (theme) {
     let textLineColor = '';
@@ -376,11 +388,14 @@ class chartJsClass {
         break;
     }
 
+    // limit the padding to a useful value
+    if (this.options.padding > 20) this.options.padding = 20;
+
   }
 
   /**
-    * uses this.CssBackgroundColor, this.elementDiv
     * update CSS rules that are used according to the options and client
+    * uses this.CssBackgroundColor, this.elementDiv
     */
   updateCSS() {
     const style = document.createElement('style');
@@ -389,12 +404,12 @@ class chartJsClass {
   }
 
   /**
-   * 
-   * @param {*} hex 
+   * get the color with the best color contrast
+   * source: https://codepen.io/davidhalford/pen/AbKBNr
+   * @param {string} hex the hex color value
    * @returns 
    */
   getBestContrastTextColor(hex){
-    // source: https://codepen.io/davidhalford/pen/AbKBNr
    
     if (hex.indexOf('#') === 0) {
       hex = hex.slice(1);
@@ -424,6 +439,7 @@ class chartJsClass {
   }
 
   /**
+   * set the gradient for the elevation profile
    * uses: this.ctx, this.gradient
    */
   setGradient() {
@@ -442,11 +458,11 @@ class chartJsClass {
 
   // ------------ start Event Handlers -------------------
   /**
-   * chart is passed by value. No use of this.
-   * @param {*} event 
-   * @param {*} elements 
-   * @param {*} chart 
-   * @returns 
+   * dispatch event on chart hover. chart is passed by value. No use of this.
+   * @param {object} event 
+   * @param {object} elements 
+   * @param {object} chart 
+   * @returns void
    */
   handleChartHover(event, elements, chart) {
     // https://developers.arcgis.com/esri-leaflet/samples/dynamic-chart/
@@ -472,8 +488,8 @@ class chartJsClass {
   }
   
   /**
-   * uses this.chart
-   * @param {int} pos 
+   * show the tooltip on the chart.js 
+   * @param {int} pos the index of the lat-long value in the chart data.
    */
   triggerTooltip(pos) {
     let chart = this.chart;

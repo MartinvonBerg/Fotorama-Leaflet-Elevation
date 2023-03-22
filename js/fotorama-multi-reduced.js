@@ -62,7 +62,7 @@
                     //allSliders[m].defSlider();
                 })
             } else {
-                  // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
+                  // no slider, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
@@ -73,11 +73,15 @@
                         allMaps[m].createSingleMarker(text);
                     })                    
                     
-                } else {
-                    // no fotorama, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
+                } else if ( ! hasChartJS ) {
+                    // no slider, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
                     // initiate the leaflet map
                     import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
+                    })
+                } else {
+                    import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
+                        allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
                     })
                 }
             }

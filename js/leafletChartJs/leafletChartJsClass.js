@@ -13,7 +13,6 @@ import {chartJsClass} from './chartJsClass.js';
 // local Styles  
 import './leafletChartJsClass.css'
 
-
 export {LeafletChartJs};
 
 class LeafletChartJs extends LeafletMap {
@@ -26,6 +25,7 @@ class LeafletChartJs extends LeafletMap {
         super(number, elementOnPage, center=null, zoom=null);
 
         // load and show first track on map
+        // TODO: multitracks feature
         let mapthis = {};
         mapthis = this; 
         const track = new gpxTrackClass( number, mapthis, this.pageVariables.tracks );
@@ -52,7 +52,8 @@ class LeafletChartJs extends LeafletMap {
             responsive : true, // TODO: setting
             aspRatio : pageVarsForJs[number].mapaspect * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
             chartAnimation : true, // TODO: setting
-            showChartHeader : false // TODO: setting
+            showChartHeader : false, // TODO: setting
+            padding : 20 // TODO: setting, useful 0 ... 20 px
         }
 
         // show chart with the first track
@@ -66,7 +67,8 @@ class LeafletChartJs extends LeafletMap {
         let classThis = this;
         document.getElementById('map'+number).addEventListener('mouseoverpath', function charthover(e) {
             chart.triggerTooltip(e.detail.index);
-            classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele + " m</p>");
+            classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele.toFixed(1) + " m</p>");
+            //classThis.mapFlyTo(e.detail.position);
         });
         /*
         // 1 second delay
@@ -102,6 +104,7 @@ class LeafletChartJs extends LeafletMap {
         let myDivIcon = L.divIcon({className: 'div-icon-height', html: markertext, bgPos: [0, 40]});
         //L.marker(pos, { icon: myDivIcon, pane: 'heightmarker', autoPanOnFocus: false } ).addTo(this.map);
         this.theMarker = L.marker(pos, { icon: myDivIcon, autoPanOnFocus: false } ).addTo(this.map);
+        //this.mapFlyTo(pos);
     }
 
     catchChartEvent(div) {
@@ -112,7 +115,7 @@ class LeafletChartJs extends LeafletMap {
             let xval = classThis.coords[x];
             //console.log(xval);
             // update the marker on the map
-            classThis.createSingleMarker([xval.lat, xval.lng], "<p>" + xval.meta.ele + " m</p>")
+            classThis.createSingleMarker([xval.lat, xval.lng], "<p>" + xval.meta.ele.toFixed(1) + " m</p>")
         
         });
     }
