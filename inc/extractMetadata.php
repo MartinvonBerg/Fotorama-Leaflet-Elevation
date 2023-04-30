@@ -195,7 +195,7 @@ function extractMetadataFromChunks( array $chunks, string $filename ) :array
 				$exif2 = file_get_contents( $filename, false, null, $chunk['start'], $chunk['start']+$chunk['size'] );
 				$meta = get_exif_meta( $exif2 );
 				if ( isset( $meta['copyright'] ) ) $meta['credit'] = $meta['copyright'];
-				$meta['camera'] = $meta['camera'] . ' + ' . $meta['lens'];
+				if ( isset( $meta['camera']) && isset( $meta['lens']) ) {$meta['camera'] = $meta['camera'] . ' + ' . $meta['lens'];} // TODO: changed from stripmetadata. test it!
 				break;
 			case 'XMP ':
 				$xmp2 = file_get_contents( $filename, false, null, $chunk['start']+8, $chunk['start']+$chunk['size'] );

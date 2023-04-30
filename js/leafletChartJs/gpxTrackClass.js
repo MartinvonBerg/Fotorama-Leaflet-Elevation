@@ -20,9 +20,9 @@ class gpxTrackClass {
     gpxTracks = {}
     asyncLoading = false;
     number = -1;
-    eleSmoothing = 2; // value in meters
-    distSmoothing = 25;
-    doTrackCalc = true;
+    eleSmoothing = 1.25; // value in meters // TODO: setting
+    distSmoothing = 25; // TODO: setting
+    doTrackCalc = true; // TODO: setting
     trackNumber = 0;
     pageVariables = [];
     mapobject = {};
@@ -109,6 +109,10 @@ class gpxTrackClass {
         //let startTime = performance.now();
         for (let i = 0; i < n; i++) {
             newdist = this.calcCrow(point.lat, point.lng, this.coords[i].lat, this.coords[i].lng);
+            //console.log(newdist);
+            // the method from gpx.js leads to identical results. So the calc is correct.
+            //newdist = 1e-3*this.gpxTracks._dist2d({lat:point.lat,lng:point.lng},{lat:this.coords[i].lat,lng:this.coords[i].lng}); 
+            //console.log(newdist);
 
             if (newdist < dist) {
                 index = i;
@@ -123,7 +127,6 @@ class gpxTrackClass {
 
     // https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
     //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
-    // TODO: use method from gpx.js
     calcCrow(lat1, lon1, lat2, lon2) 
     {
       var R = 6371; // km
@@ -145,7 +148,7 @@ class gpxTrackClass {
     }
 
     /**
-   * calc the distance and elevation data for the track. TODO: distance is wrong. use gpx.js.
+   * calc the distance and elevation data for the track.
    * @param {array} gpxdata 
    * @returns {object} the sorted data
    */
@@ -168,7 +171,7 @@ class gpxTrackClass {
         this.coords.forEach((point, index) => {
             curElevation = point.meta.ele;
             
-            if ( typeof(curElevation === 'number') && curElevation > 1){ // filter elevation data
+            if ( typeof(curElevation === 'number') && curElevation > 0.1){ // filter elevation data // TODO: setting
                 elevationDelta = curElevation - lastConsideredElevation;
 
                 if ( Math.abs( elevationDelta) > this.eleSmoothing ) {
@@ -177,7 +180,7 @@ class gpxTrackClass {
                 }
                 lastConsideredElevation = curElevation;
 
-                // distance calc // TODO calc the tracklength corrently. The formula is wrong
+                // distance calc
                 curPoint = [point.lat, point.lng];
                 curDist = 1000 * this.calcCrow(lastPoint[0], lastPoint[1], curPoint[0], curPoint[1]);
                 if ( Math.abs(curDist) > this.distSmoothing) {
@@ -190,7 +193,7 @@ class gpxTrackClass {
         this.tracklen = cumulativeDistance.toString(); 
         this.ascent = cumulativeElevationGain.toString();
         this.descent = cumulativeElevationLoss.toString();
-        info = 'Dist: '+ 0.00 +' km, Gain: '+ cumulativeElevationGain +' Hm, Loss: '+ cumulativeElevationLoss+' Hm';  
+        info = 'Dist: '+ cumulativeDistance/1000 +' km, Gain: '+ cumulativeElevationGain +' Hm, Loss: '+ cumulativeElevationLoss+' Hm';  
 
     } else {
         let distKm = this.gpxTracks.get_distance() / 1000;
