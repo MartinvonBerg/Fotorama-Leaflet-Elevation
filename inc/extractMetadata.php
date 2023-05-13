@@ -1,8 +1,10 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
-// Extract Metadata from a Webp and JPG-file. 
-const BROKEN_FILE = false; // value to store in img_metadata if error extracting metadata.
+// Extract Metadata from both Webp and JPG-files. Note: The result array of the both main functions is structurally not identical.
+// Although identended this requirement was not reached. TODO for a future update. The requirement was: "The exif data a array similar to the JSON that is provided via the REST-API".
+
+const BROKEN_FILE = false; // value to store in img_metadata if error during extracting metadata.
 const MINIMUM_CHUNK_HEADER_LENGTH = 18;
 const WEBP_VERSION = '0.0.1';
 const VP8X_ICC = 32;
@@ -108,6 +110,8 @@ function getJpgMetadata( string $filename ) : array
 	$data['descr'] = $description; 
 	$data['alt'] = ''; 
 	$data['caption'] = ''; 
+	$data['copyright']  = $Exif["IFD0"]["Copyright"] ?? null;
+	$data['artist']  = $Exif["IFD0"]["Artist"] ?? null;
 	
 	return $data;
 }
@@ -195,7 +199,7 @@ function extractMetadataFromChunks( array $chunks, string $filename ) :array
 				$exif2 = file_get_contents( $filename, false, null, $chunk['start'], $chunk['start']+$chunk['size'] );
 				$meta = get_exif_meta( $exif2 );
 				if ( isset( $meta['copyright'] ) ) $meta['credit'] = $meta['copyright'];
-				$meta['camera'] = $meta['camera'] . ' + ' . $meta['lens'];
+				if ( isset( $meta['camera']) && isset( $meta['lens']) ) {$meta['camera'] = $meta['camera'] . ' + ' . $meta['lens'];}
 				break;
 			case 'XMP ':
 				$xmp2 = file_get_contents( $filename, false, null, $chunk['start']+8, $chunk['start']+$chunk['size'] );
@@ -430,6 +434,22 @@ function get_exif_meta( string $buffer )
 			'comps'=> 1, // Number of components per data-field 
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
 		), 
+		/*
+		'0x0131' => array(
+			'text' => 'software',
+			'type' => 2, // ascii string
+			'Byte' => 0, // Bytes per component: taken from data field
+			'comps'=> 1, // Number of components per data-field 
+			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
+		),
+		'0x013b' => array(
+			'text' => 'artist',
+			'type' => 2, // ascii string
+			'Byte' => 0, // Bytes per component: taken from data field
+			'comps'=> 1, // Number of components per data-field 
+			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
+		),
+		*/
 		'0x0112' => array(
 			'text' => 'orientation',
 			'type' => 3, // unsigned short
@@ -508,7 +528,30 @@ function get_exif_meta( string $buffer )
 			'Byte' => 2, // Bytes per component
 			'comps'=> 2, // Number of components per data-field 
 			'offs' => 0, // offset for type 2, 5, 10, 12
+		),
+		/*
+		'0xA431' => array(
+			'text' => 'serial',
+			'type' => 2, // ascii string
+			'Byte' => 0, // Bytes per component: taken from data field
+			'comps'=> 1, // Number of components per data-field 
+			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
 		), 
+		'0xA433' => array(
+			'text' => 'lensmake',
+			'type' => 2, // ascii string
+			'Byte' => 0, // Bytes per component: taken from data field
+			'comps'=> 1, // Number of components per data-field 
+			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
+		), 
+		'0xA434' => array(
+			'text' => 'lensmodel',
+			'type' => 2, // ascii string
+			'Byte' => 0, // Bytes per component: taken from data field
+			'comps'=> 1, // Number of components per data-field 
+			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
+		),
+		*/
 	);
 
 	$head = strtoupper( substr( $buffer, 0, 4) );

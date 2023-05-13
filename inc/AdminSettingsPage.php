@@ -296,6 +296,7 @@ class AdminSettingsPage {
 					name="uploadedfile" style='width:400px;'
 					accept="<?php echo( $this->settings[ $args['param']]['accept'] );?>">
 			<?php 
+			if (\array_key_exists( $args['label_for'], $options ) && $args['label_for'] === 'gpxfile') {echo ('</br>Upload: ' .  $optset );}
 		}
 	}
 
@@ -412,7 +413,7 @@ class AdminSettingsPage {
 	 */
 	private function my_sanitize_autoplay( string $inp, array $checks ) :string
 	{
-		$inp = $this::my_sanitize_text( $inp );
+		$inp = $this->my_sanitize_text( $inp );
 		
 		if ( strtolower ( $inp ) == 'false' ) { return 'false'; }
 		if ( strtolower ( $inp ) == 'true'  ) { return 'true'; }
@@ -557,7 +558,13 @@ class AdminSettingsPage {
 			$upd_result = [];
 
 			foreach( $allSettings as $key => $newval) {
-				$cur = \get_option( $key );
+				$cur = \get_option( $key ); // special treatment for key : gpxfile in fm_gpx_options required! Do not change it!
+				if ( $key === 'fm_gpx_options') {
+					//remove the key gpxfile in both arrays. Do not update and don not check.
+					unset( $cur['gpxfile'] );
+					unset( $newval['gpxfile']);
+				}
+
 				if ( $cur != $newval) {
 					$one_result = update_option( $key, $newval );
 					$updated = \get_option($key);
