@@ -138,14 +138,18 @@ Process and save the file with the Button at the bottom.
 
 </br>
 
-# Image Preparation and Usage of the Fotorama-Slider 
+# Image Preparation 
 1. Preparation of Images (optional)
     - Generate Thumbnails and rescale your Images.
     I used "ImageResizer for Windows" rescaled the former full-size images and generated thumbnails. The Thumbnails have to have '_thumb', '-thumb', '200x150' or '150x150' in their filename (e.g. image1-thumb.jpg). The minimum size should be 64 x 64px. Best is 150 x 150px.
     Optionally you can store the Thumbnails to a subfolder './thumbs' but that is not required.
     If you do not provide thumbnails the full-scaled images will be used. This will increase load time significantly.
 
-2. Convert JPGs to WEBPs (optional) 
+2. Preparation of Videos for Swiper
+    - Videos require a small preview image for the thumbnail bar. Prepare this like the other thumbnails. Name it "video-1_thumb.jpg" (Where "video-1" could be any name for your video file).
+    - Videos should have a "poster" to be shown as preview in the slider. It is required if you want to show the videos on the map. Prepare this poster with GPS-Data like you prepare other fotos for the slider. Name it "video-1_poster.jpg" (Where "video-1" could be any name for your video file).
+
+3. Convert JPGs to WEBPs (optional) 
     To drastically reduce disk-space and download times you may use webp files. I do that conversion locally on my computer and do NOT used WP for that. I use Imagemagick for that with the following powershell commands:
 
     ```bat
@@ -165,7 +169,7 @@ Process and save the file with the Button at the bottom.
     );
     ``` 
 
-3. Upload images with ftp (FileZilla) or even Lightroom!
+4. Upload images with ftp (FileZilla) or even Lightroom!
     - Upload the images from Step 1 to your WordPress site e.g. with Filezilla. Upload to the Sub-Folder `imgpath` (see table above) to 
 ./wp-content/uploads/. `imgpath` could be any allowed folder name. BUT: Do not use the WP-standard folders, like ./wp-content/uploads/2020/12 or ./wp-content/uploads/2021/Bilder_1 or so. This won't work.
         - Example:  ./wp-content/uploads/All_Albums/gallery1
@@ -183,17 +187,17 @@ Process and save the file with the Button at the bottom.
 
         ![folder_overview](./screen_folder1.png)
 
-4. Add the shortcode to your page or post (see above for the shortcode)
+5. Add the shortcode to your page or post (see above for the shortcode)
 
     If EXIF-Data for the caption is not provided it will be replaced by "--"   
 
-5. Further Fotorama Options
+6. Further Fotorama Options
 
     The CSS is set in 'fotorama_multi.css' and 'fotorama3.css'. Further Fotorama-options are to find under : https://fotorama.io/docs/4/options/ or in fotorama.dev.js starting at line 880 under "OPTIONS = {..."
 
     If you know what you do, you might change the code or CSS to whatever you like. Have fun!
     
-6. TODO & Bugs w.r.t to FOTORAMA
+7. TODO & Bugs w.r.t to FOTORAMA
     - mixture of images with and without GPS-data and the option showmap="true" and requiregps="false" causes JS-errors. No standard use case. User should set showmap="false" for that case.
     - for images without thumbnail the hover on the map is wrong, pointing to a non existing image. 
 
@@ -346,8 +350,11 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.18.0 =
+13.05.2023: Trial with chartjs removed and new branch created. Bugfix in extractMetadata.php. AdminSettings for gpx-file upload. Leaflet loaded globally. 
+            No update of Swiper.js. Used version is 9.0.5. With version 9.1.0 and higher the hashnavigation does no longer work. New features are not required and swiper runs without errors. Mind the readme is not up to date.
+
+= 0.18.0 =
 15.02.2023: Swiper.js updated to 9.0.5. Lazy loading changed. Responsive image sizes added including SIMPLE Admin setting. Minor Bugfix in MiniMasonryClass
-13.05.2023: Test with chartjs removed and new branch created. Bugfix in extractMetadata.php. AdminSettings for gpx-file upload. Leaflet loaded globally. 
 
 = 0.17.0 =
 14.02.2023: Improvement in MiniMasonry. Webpack set to production!

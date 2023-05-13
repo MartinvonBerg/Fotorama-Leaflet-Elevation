@@ -4,4 +4,11 @@
     "python.pythonPath": "C:\\Users\\Martin von Berg\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
     "print.colourScheme": "Atelier Dune",
     "phpcs.autoConfigSearch": false,
+    "cSpell.words": [
+        "Fotorama",
+        "GPX",
+        "Swiper",
+        "WEBP",
+        "Yoast"
+    ],
 }
