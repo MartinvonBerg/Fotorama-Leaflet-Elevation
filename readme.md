@@ -347,6 +347,7 @@ This plugin uses the great work from:
 
 = 0.18.0 =
 15.02.2023: Swiper.js updated to 9.0.5. Lazy loading changed. Responsive image sizes added including SIMPLE Admin setting. Minor Bugfix in MiniMasonryClass
+13.05.2023: Test with chartjs removed and new branch created. Bugfix in extractMetadata.php. AdminSettings for gpx-file upload. Leaflet loaded globally. 
 
 = 0.17.0 =
 14.02.2023: Improvement in MiniMasonry. Webpack set to production!

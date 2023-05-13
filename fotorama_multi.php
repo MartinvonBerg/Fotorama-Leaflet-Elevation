@@ -26,7 +26,6 @@ namespace mvbplugins\fotoramamulti;
 //			-- custom fields der Posts / pages: wie bei settings
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
 //			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
-//			Erinnerung: Meta-Data aus kleinen Bildern entfernen! Nicht für dieses Plugin, sondern allgemein!
 // --- Swiper
 //			--preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
