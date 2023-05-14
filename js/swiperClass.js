@@ -278,6 +278,7 @@ class SliderSwiper {
     }
     
     // source: https://github.com/matthewroysl/fslightbox-thumb-captions
+    /*
     removeCustomCaptions() {
         document
             .querySelectorAll(`div.cust-caption-removable`)
@@ -312,7 +313,8 @@ class SliderSwiper {
             this.createCustCaption(fsLightbox);
         }
     }
-    
+    */
+   
     // --------------- Class API method definitions -------------------------
     /**
      * Set Slider to index
