@@ -36,9 +36,9 @@ The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where
 
 The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation. 
 
-**NEW:Settings may be done with a Gutenberg Block. But Version 0.16.x not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
+**NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
 
-**The Plugin runs from WordPress 5.9 - 6.1 and PHP 7.4 - 8.2.0**
+**The Plugin runs from WordPress 5.9 - 6.2 and PHP 7.4 - 8.2.0**
 
 </br>
 
@@ -73,7 +73,7 @@ It is possible to reach a Google lighthouse Performance of 99 and 100 for the ot
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.9 - 6.1.1 and PHP 7.4.2 - 8.2.0
+- The plugin was tested with wordpress versions 5.9 - 6.2.0 and PHP 7.4.2 - 8.2.0
 
 # Installation
 
@@ -86,18 +86,17 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 
 # Update or De-Installation
 
-## Save Settings
 **NEW** : Save your plugin-settings to a JSON File on your local machine for later use e.g. if you want to deinstall the plugin for testing purposes. After that:
 
 1. Deactivate the plugin in Admin-Area of WordPress.
-2. Optional if you use the Map-Tile-Server: save you .htaccess file from the plugin directory. Otherwise changes will be lost.
+2. Optional if you use the Map-Tile-Server: save your .htaccess file from the plugin directory. Otherwise changes will be lost.
 3. Optional for clean Update: Delete the Plugin-in. Stop here for De-Installation. Hint: The WordPress-Database is cleaned upon de-installation. The Custom-Fields are removed from your database! So, all settings are lost!
 4. Do Installation with the new version. WordPress will provide you a message window wether you are sure. If you de-installed before, all settings have to be done again. Skip Step 3. and you don't have to do that. But mind to install in the same directory. This works only if you always install from a release OR the downloaded zip.
 
 # Upgrade Notice 
 
-Upgrade to WordPress 5.9 and PHP 7.4+ is highly recommended! PHP 8.1.x is even better!
-Due to the error corrections it is highly recommended to upgrade the Plugin to 0.15.x! Thank's for your patience. With version update to 0.15.x all settings have to be done once again. But only once. Sorry for that! This won't be the case for future updates!
+Upgrade to WordPress 6.2 and PHP 8.0+ is highly recommended! PHP 8.1.x is even better!
+Due to the error corrections it is highly recommended to upgrade the Plugin to 0.18.x! Thank's for your patience. With version update to 0.15.x all settings have to be done once again. But only once. Sorry for that! This won't be the case for future updates!
 
 </br>
 
@@ -117,7 +116,7 @@ Due to the error corrections it is highly recommended to upgrade the Plugin to 0
     - Generate Entries in Yoast XML-Sitemap for Fotorama Images: Generate the Entries for the Yoast XML-Sitemap with the images shown in the Fotorama-Slider. Used for SEO. Entries are stored in Custom field `postimg`. Currently not Tested! The custom field is only written if `Set Custom Fields` is checked (="true") and if the admin user is logged in. The status change is no longer required. Only usefull if you use Yoast SEO plugin. 
     
 
-- **ATTENTION** And there are shortcode parameters without Admin Settings: see the table above.
+- **ATTENTION** And there are shortcode parameters without Admin Settings, which is now only visible after Plugin installation in the parameters tab.
 
 </br>
 
@@ -188,16 +187,9 @@ Process and save the file with the Button at the bottom.
         ![folder_overview](./screen_folder1.png)
 
 5. Add the shortcode to your page or post (see above for the shortcode)
-
     If EXIF-Data for the caption is not provided it will be replaced by "--"   
-
-6. Further Fotorama Options
-
-    The CSS is set in 'fotorama_multi.css' and 'fotorama3.css'. Further Fotorama-options are to find under : https://fotorama.io/docs/4/options/ or in fotorama.dev.js starting at line 880 under "OPTIONS = {..."
-
-    If you know what you do, you might change the code or CSS to whatever you like. Have fun!
     
-7. TODO & Bugs w.r.t to FOTORAMA
+6. TODO & Bugs w.r.t to FOTORAMA
     - mixture of images with and without GPS-data and the option showmap="true" and requiregps="false" causes JS-errors. No standard use case. User should set showmap="false" for that case.
     - for images without thumbnail the hover on the map is wrong, pointing to a non existing image. 
 
@@ -350,8 +342,11 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.18.0 =
+14.05.2023: Readme updated.
+
+= 0.18.0 =
 13.05.2023: Trial with chartjs removed and new branch created. Bugfix in extractMetadata.php. AdminSettings for gpx-file upload. Leaflet loaded globally. 
-            No update of Swiper.js. Used version is 9.0.5. With version 9.1.0 and higher the hashnavigation does no longer work. New features are not required and swiper runs without errors. Mind the readme is not up to date.
+            No update of Swiper.js. Used version is 9.0.5. With version 9.1.0 and higher the hashnavigation does no longer work. New features are not required and swiper runs without errors. 
 
 = 0.18.0 =
 15.02.2023: Swiper.js updated to 9.0.5. Lazy loading changed. Responsive image sizes added including SIMPLE Admin setting. Minor Bugfix in MiniMasonryClass
