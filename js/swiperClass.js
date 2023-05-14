@@ -224,13 +224,14 @@ class SliderSwiper {
         fsLightboxInstances['swiper' + m].props.UIFadeOutTime = 10000;
         //fsLightboxInstances['swiper' + m].props.slideDistance = 1.0;
         fsLightboxInstances['swiper' + m].props.loadOnlyCurrentSource = true;
+        fsLightboxInstances['swiper' + m].props.showThumbsWithCaptions = true;
 
         // slide Swiper synchronously to lightbox. This is ignored for the free version. Does not cause error messages.
         fsLightboxInstances['swiper' + m].props.onSlideChange = (fsLightbox) => {
             this.setSliderIndex(fsLightbox.stageIndexes.next-1);
-            this.#pageVariables.sw_options.showcaption === 'true' ? this.initCustomCaptions(fsLightbox) : null;
+            //this.#pageVariables.sw_options.showcaption === 'true' ? this.initCustomCaptions(fsLightbox) : null;
         }
-
+        /*
         if ( this.#pageVariables.sw_options.showcaption === 'true') {
             fsLightboxInstances['swiper' + m].props.onOpen = (fsLightbox) => {
                 this.initCustomCaptions(fsLightbox);
@@ -256,7 +257,7 @@ class SliderSwiper {
         
                     thumbBtn.classList.add(`thumb-btn-event-added`);
                 }
-                /*
+                
                 let el = document.getElementsByClassName("fslightbox-thumbs") 
                 el[0].addEventListener("wheel", function() {
                     if (event.deltaY>0)
@@ -268,10 +269,10 @@ class SliderSwiper {
                 document.getElementsByClassName("fslightbox-container").addEventListener("wheel", function() {
                     console.log('fs wheel');
                 });
-                */
+                
             };
         }
-        
+        */
         // this option increases the load time with many images. So it is not used.
         //fsLightboxInstances['swiper'+m].props.showThumbsOnMount = true;
     }
