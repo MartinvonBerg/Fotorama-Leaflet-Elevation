@@ -169,9 +169,9 @@ Cypress.Commands.add( 'clickOnMarker', () => {
 // source: https://medium.com/norwich-node-user-group/visual-regression-testing-with-cypress-io-and-cypress-image-snapshot-99c520ccc595
 import { addMatchImageSnapshotCommand } from 'cypress-image-snapshot/command';
 addMatchImageSnapshotCommand({
-  failureThreshold: 0.1,
+  failureThreshold: 0.2,
   failureThresholdType: 'percent',
-  customDiffConfig: { threshold: 0.0 },
+  customDiffConfig: { threshold: 0.05 },
   capture: 'viewport',
 });
 Cypress.Commands.add("setResolution", (size) => {

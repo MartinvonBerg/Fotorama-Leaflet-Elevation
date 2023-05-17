@@ -1,10 +1,10 @@
 describe('Test Click Tourenbericht', () => {
     it('clicks the first tourenbericht', () => {
-      cy.visit('https://www.berg-reise-foto.de/')
+      cy.visit('https://www.berg-reise-foto.de/tourenbericht-skitour/skitour-auf-den-sextner-stein-in-sudtirol/')
   
       // Should be on a new URL which includes the correct text
       cy.get('div.rps-blog-cart.slick-slide.slick-current.slick-active').click() //#post-72 > div > div.entry-content > div.rps-wrapper > div > div > div > div.rps-blog-cart.slick-slide.slick-current.slick-active
-      cy.url().should('include', 'tourenbericht-wanderung/kampenwand-panoramawanderung-im-chiemgau/')
+      cy.url().should('include', 'tourenbericht-skitour/skitour-auf-den-sextner-stein-in-sudtirol/')
     })
 })
 

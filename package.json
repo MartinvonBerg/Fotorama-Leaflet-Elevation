@@ -20,7 +20,7 @@
 		"@typescript-eslint/parser": "^5.43.0",
 		"@wordpress/scripts": "^22.3.0",
 		"css-loader": "^6.7.1",
-		"cypress": "x",
+		"cypress": "^12.12.0",
 		"cypress-audit": "x",
 		"cypress-image-snapshot": "x",
 		"eslint": "^8.27.0",

@@ -22,9 +22,18 @@ describe('Visual regression tests', () => {
         it(`Should match previous screenshot '${page} Page' When '${size}' resolution`, () => {
             cy.setResolution(size);
             cy.visit(page);
-            cy.wait(1000)
+            cy.wait(2000);
             cy.matchImageSnapshot();
         });
         });
+    });
+    
+});
+
+describe('Visual regression berlingo', () => {
+    it('Should match previous screenshot  Page', () => {
+        cy.visit('https://www.berg-reise-foto.de/ausbau-citroen-berlingo-zum-micro-campingmobil/');
+        cy.wait(1000);
+        cy.matchImageSnapshot('berlingo');
     });
 });

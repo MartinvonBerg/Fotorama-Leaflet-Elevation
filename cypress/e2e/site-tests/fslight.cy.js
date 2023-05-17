@@ -25,5 +25,19 @@ describe('Check some performance metrics', () => {
             }
             
           })
+        /* ==== Generated with Cypress Studio ==== */
+        cy.get('.thumbnail > a > .attachment-post-thumbnail').click();
+        cy.get('.uagb-toc__title > svg').scrollIntoView();
+        cy.get('.uagb-toc__title > svg').click();
+        cy.get('.uagb-toc__title > svg').click();
+         
+        cy.get('.wp-image-6764').scrollIntoView();
+        cy.get('.wp-image-6764').click();
+        cy.wait(500);
+        //cy.get('div').should('have.class','fslightbox-toolbar-button ').and('have.title','Close').click();
+        
+        cy.get('[title="Close"] > svg > .fslightbox-svg-path').click(); //<div class="fslightbox-toolbar-button fslightbox-flex-centered" title="Close">
+        //cy.get('#scroll > span').click();
+        /* ==== End Cypress Studio ==== */
     })    
 })
