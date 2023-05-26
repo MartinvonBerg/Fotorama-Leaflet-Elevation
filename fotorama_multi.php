@@ -339,7 +339,7 @@ function showmulti($attr, $content = null)
 
 			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
 			\mvbplugins\fotoramamulti\enqueue_fslightbox();
-		} else return '';
+		} else return ''; // return nothing if there are images but no slider defined. Fallback for wrong logic.
 	}
 
 	// show Map only with valid gpx-tracks and if so, generate the div

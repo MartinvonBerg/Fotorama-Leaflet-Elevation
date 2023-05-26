@@ -63,20 +63,13 @@ class SliderSwiper {
                 watchSlidesProgress: true
             });
         } else if (this.#pageVariables.sw_options.thumbbartype === 'special') {
-            // optional dynamic import of ThumbnailClass: Saves 1.3 kB only. Just for testing of async imports. 
-            // HashNavigation does not work with that, so not usable here.
+            // optional dynamic import of ThumbnailClass: Saves 1.3 kB only.  
             this.thumbs = new ThumbnailSlider(this.number, this.#pageVariables.sw_options)
         }
 
         this.sw_options = {
             // Default parameters
             modules: [Navigation, Mousewheel, Zoom, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectCube, EffectFade, Thumbs, Keyboard],
-            lazy: {
-                enabled:true,
-                checkInView:true,
-                loadOnTransitionStart:true,
-            },
-            preloadImages: false,
             slidesPerView: 1,
             spaceBetween: 10,
             centeredSlides: true, // bool : If true, then active slide will be centered, not always on the left side.
@@ -86,12 +79,6 @@ class SliderSwiper {
                 onlyInViewport: false,
                 pageUpDown: false
             },
-            /*
-            autoplay: {
-                delay: 2500, // TODO: param? No. Not used.
-                disableOnInteraction: true,
-              },
-            */
             hashNavigation: {
                 watchState: this.#pageVariables.sw_options.sw_hashnavigation === 'true', 
             },  
@@ -106,13 +93,7 @@ class SliderSwiper {
                 zoomedSlideClass: 'swiper-zoom-container'
             },
             roundLengths: true,
-            loop: true, 
-            /*
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
-            },
-            */
+            loop: true, // Mind : Change of loop mode will change the index of swiper!
             // Navigation arrows
             navigation: {
                 nextEl: '.swiper-button-next',
@@ -217,8 +198,7 @@ class SliderSwiper {
     // --------------- Class methods for fslightbox -------------------------
     lightbox(m) {
         // pass option to the js-script to switch fullscreen of browser off, when lightbox is closed. 
-        // This option does not work. because it causes 'Failed to execute 'exitFullscreen' on 'Document': Document not active...'
-        //fsLightboxInstances['swiper'+m].props.exitFullscreenOnClose = true; 
+        fsLightboxInstances['swiper'+m].props.exitFullscreenOnClose = true; 
         fsLightboxInstances['swiper' + m].props.zoomIncrement = 0.5;
         //fsLightboxInstances['swiper' + m].props.slideshowTime = 1000;
         fsLightboxInstances['swiper' + m].props.UIFadeOutTime = 10000;
@@ -227,102 +207,37 @@ class SliderSwiper {
         fsLightboxInstances['swiper' + m].props.showThumbsWithCaptions = true;
 
         // slide Swiper synchronously to lightbox. This is ignored for the free version. Does not cause error messages.
-        fsLightboxInstances['swiper' + m].props.onSlideChange = (fsLightbox) => {
-            this.setSliderIndex(fsLightbox.stageIndexes.next-1);
-            //this.#pageVariables.sw_options.showcaption === 'true' ? this.initCustomCaptions(fsLightbox) : null;
+        fsLightboxInstances['swiper' + m].props.onClose = (fsLightbox) => {
+            try {
+                this.setSliderIndex(fsLightbox.stageIndexes.current);
+            } catch(error) {
+                console.log('Could not slide on Close of fslightbox', error)
+            }
         }
-        /*
-        if ( this.#pageVariables.sw_options.showcaption === 'true') {
-            fsLightboxInstances['swiper' + m].props.onOpen = (fsLightbox) => {
-                this.initCustomCaptions(fsLightbox);
-        
-                const thumbBtn = document.querySelector(
-                    `div.fslightbox-toolbar-button[title="Thumbnails"]`
-                );
-                if (thumbBtn && !thumbBtn.classList.contains(`thumb-btn-event-added`)) {
-                    const thumbBtn_event = `click`;
-                    const thumbBtn_fn = () => {
-                        if (fsLightbox.data.isThumbing) {
-                            this.createCustCaption(fsLightbox);
-                        } else {
-                            this.removeCustomCaptions();
-                        }
-                    };
-        
-                    thumbBtn.attachEvent
-                        ? thumbBtn.attachEvent(`on` + thumbBtn_event, thumbBtn_fn)
-                        : thumbBtn.addEventListener(thumbBtn_event, thumbBtn_fn, {
-                            capture: false,
-                        });
-        
-                    thumbBtn.classList.add(`thumb-btn-event-added`);
-                }
-                
-                let el = document.getElementsByClassName("fslightbox-thumbs") 
-                el[0].addEventListener("wheel", function() {
-                    if (event.deltaY>0)
-                    console.log('pos fs wheel');
-                    else if (event.deltaY<0)
-                    console.log('neg fs wheel');
-                });
-                
-                document.getElementsByClassName("fslightbox-container").addEventListener("wheel", function() {
-                    console.log('fs wheel');
-                });
-                
-            };
-        }
-        */
-        // this option increases the load time with many images. So it is not used.
-        //fsLightboxInstances['swiper'+m].props.showThumbsOnMount = true;
     }
     
-    // source: https://github.com/matthewroysl/fslightbox-thumb-captions
-    /*
-    removeCustomCaptions() {
-        document
-            .querySelectorAll(`div.cust-caption-removable`)
-            .forEach((element) => element.remove());
-    }
-
-    createCustCaption(fsLightbox) {
-        const currentSlideDOM =
-            fsLightbox.elements.sourceMainWrappers[fsLightbox.stageIndexes.current];
-
-        let lastDiv_currentSlide_DOM = currentSlideDOM.lastElementChild;
-        while (lastDiv_currentSlide_DOM.hasChildNodes()) {
-            lastDiv_currentSlide_DOM = lastDiv_currentSlide_DOM.lastElementChild;
-        }
-
-        const newCaption = document.createElement(`div`);
-        newCaption.classList.add(
-            `cust-caption-removable`,
-            `fslightbox-flex-centered`,
-            `fslightbox-caption-inner`
-        );
-        newCaption.style = `max-width:100%!important;`;
-        newCaption.textContent =
-            fsLightbox.elements.captions[fsLightbox.stageIndexes.current].textContent;
-        lastDiv_currentSlide_DOM.parentNode.appendChild(newCaption); //fslightbox-fade-in
-    }
-
-    initCustomCaptions(fsLightbox) {
-        this.removeCustomCaptions();
-
-        if (typeof(fsLightbox) === 'object' && fsLightbox.data.isThumbing) {
-            this.createCustCaption(fsLightbox);
-        }
-    }
-    */
    
     // --------------- Class API method definitions -------------------------
     /**
      * Set Slider to index
-     * @param {int} index 
+     * @param {int} index Range is 0 .. N-1. Corrected for swiper to 1 ... N-1, 0 instead of N
      */
     setSliderIndex(index) {
-        // mind swiper starts with index = 0
-        this.swiper.slideTo(index+1, this.#pageVariables.sw_options.sw_transition_duration, true);
+        // mind swiper starts with index = 1 now! The indexes are different in loop-module:
+        // index in slideto | set index to
+        //     0            ->  last
+        //     1            ->  1
+        //     2            ->  2
+        //     last         ->  last -1 of false sometimes
+        let swiperIndex = index;
+
+        if (this.sw_options.loop) {
+            swiperIndex = index + 1;
+            let swiperLength = this.swiper.slides.length;
+            if (swiperIndex === swiperLength) swiperIndex = 0;
+        }
+
+        this.swiper.slideTo(swiperIndex, this.#pageVariables.sw_options.sw_transition_duration, true);
     }
 
     // --------------- Generate Class Events -----------------------------------

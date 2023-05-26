@@ -359,7 +359,14 @@ final class SwiperClass
                 // img and a href
                 $img=$zoom->appendElement('img');
                 // add further attributes to img
-                if ( $this->imgnr>1 && $this->shortcodecounter===0) $img->setAttribute('loading', 'lazy');
+                if ( !($this->imgnr===1 && $this->shortcodecounter===0) ) {
+                    $img->setAttribute('loading', 'lazy');
+                    //$img->setAttribute('style', 'display:none;width:100%');
+                    $img->setAttribute('style', 'width:100%');
+                } else {
+                    $img->setAttribute('style', 'width:100%');
+                }
+
                 //$img->setAttribute('class', 'swiper-lazy');
                 $img->setAttribute('alt', $alttext);
                 //$img->setAttribute('object-fit', "{$this->options['slide_fit']}"); //has no effect!

@@ -25,10 +25,10 @@
 }
 
 .myswiper .swiper-slide img {
-  display: block;
+  /*display: none;*/
   width: 100%;
   height: 100%;
-  /*object-fit: cover;  /*change to conatain or use parameter*/
+  /*object-fit: cover;  /*change to contain or use parameter*/
 }
 
 .myswiper .swiper-slide video {
