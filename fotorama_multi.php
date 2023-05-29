@@ -27,7 +27,7 @@ namespace mvbplugins\fotoramamulti;
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
 //			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
 // --- Swiper
-//			--preloadimages: +- 1 rechts und links von aktivem ergänzen. derzeit nicht, ändert die ladeperformance.
+//			-- TODO: lazy loading einbauen.
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
 //			--lighthouse : passive event listener bei swiper der Fall. stimmt auch, wird nach event unterschieden. Das erste Event ist richtigerweise "false".
 // --- Karte
@@ -425,7 +425,7 @@ EOF;
 	// ----------------------------------------------------
 	
 	// end for boxmap. div ends here to have fm-dload underneath the map
-	if ($showmap  == 'true') {
+	if ($showmap  === 'true') {
         $htmlstring  .= '</div>'; 
 	}
 	

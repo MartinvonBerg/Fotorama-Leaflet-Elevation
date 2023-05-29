@@ -134,6 +134,17 @@ class SliderFotorama {
                 style.innerHTML += ".fotorama__caption__wrap { display: none; }";
         }
         document.head.appendChild(style);
+
+        // add grid style for shortcode = 0 and if minrowwidth is set
+        if ( this.number === 0 && this.#pageVariables.sw_options.minrowwidth > 0) {
+            const style2 = document.createElement('style');
+            style2.innerHTML = `
+                @media screen and (min-width: 480px) { .mfoto_grid { 
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(${ this.#pageVariables.sw_options.minrowwidth}px, 1fr)); grid-gap: 5px;}
+                }`;
+            document.head.appendChild(style2);
+        }
     }
 
     /**
