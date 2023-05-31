@@ -532,7 +532,7 @@ final class FotoramaElevationAdmin
 			'class' => 'swiper_row',
 			'custom_data' => 'custom2',
 			'type' => 'select',
-			'values' => ['integrated' => 'Swiper Thumbbar', 'special' => 'Special Thumbbar'],
+			'values' => ['integrated' => 'Swiper', 'special' => 'Special', 'none' => 'none'],
 			'default' => 'special',
 			'description' => '',
 			'shortcode' => 'sw_thumbbartype',

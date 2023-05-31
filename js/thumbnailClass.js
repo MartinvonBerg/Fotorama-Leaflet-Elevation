@@ -247,8 +247,13 @@ class ThumbnailSlider {
     // remove active class from every thumbnail
     const laC = this.activeClass
     this.ele.childNodes.forEach(function (node) { node.classList.remove(laC) })
+
     // set active class and number
-    this.thumbnails[number].classList.add(this.activeClass)
+    try{
+      this.thumbnails[number].classList.add(this.activeClass)
+    } catch (event) {
+      console.log(event)
+    }
 
     // scroll into viewport of parent div.
     let parentWidth = this.ele.offsetWidth; 
@@ -283,7 +288,8 @@ class ThumbnailSlider {
     });
     
     if (this.currentActive !== number && caller !== 'slideChange') {
-      this.ele.parentElement.dispatchEvent(changed);      
+      this.ele.parentElement.dispatchEvent(changed);
+      //console.log('Thmb-Class thumbnailchange: ', number)
     }
     this.currentActive = number
   }

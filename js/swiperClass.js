@@ -5,8 +5,8 @@ import Swiper, {Navigation, Mousewheel, Zoom, A11y, HashNavigation, EffectFlip, 
 // import Swiper styles (Selection of CSS saves 0,6 kB only)
 import 'swiper/css/bundle';
 import "./swiperClass.css";
-//import {ThumbnailSlider} from "./thumbnailClass";
-import {ThumbnailSlider} from './typescript/thumbnailClass.ts'
+import {ThumbnailSlider} from "./thumbnailClass";
+//import {ThumbnailSlider} from './typescript/thumbnailClass.ts'
 
 export {SliderSwiper};
 
@@ -121,6 +121,7 @@ class SliderSwiper {
             let classThis = this;
             this.thumbs.ele.parentElement.addEventListener('thumbnailchange', function (event) {
                 if (event.detail.slider === classThis.number) classThis.setSliderIndex(event.detail.newslide);
+                //console.log('Swi-Class thumbnailchange: ', event.detail.newslide)
             });
         }
     }
@@ -208,6 +209,10 @@ class SliderSwiper {
     }
 
     // --------------- Class methods for fslightbox -------------------------
+    /**
+     * handle the fslightbox on open. show last slide of lightbox in swiper on close.
+     * @param {int} m number of swiper slider on page
+     */
     lightbox(m) {
         // pass option to the js-script to switch fullscreen of browser off, when lightbox is closed. 
         fsLightboxInstances['swiper'+m].props.exitFullscreenOnClose = true; 
@@ -221,7 +226,10 @@ class SliderSwiper {
         // slide Swiper synchronously to lightbox. This is ignored for the free version. Does not cause error messages.
         fsLightboxInstances['swiper' + m].props.onClose = (fsLightbox) => {
             try {
-                this.setSliderIndex(fsLightbox.stageIndexes.current);
+                if ( !this.sw_options.keyboard.enabled ) {
+                    this.setSliderIndex(fsLightbox.stageIndexes.current);
+                    //console.log('should slide to: ', fsLightbox.stageIndexes.current)
+                }
             } catch(error) {
                 console.log('Could not slide on Close of fslightbox', error)
             }
@@ -232,24 +240,14 @@ class SliderSwiper {
     // --------------- Class API method definitions -------------------------
     /**
      * Set Slider to index
-     * @param {int} index Range is 0 .. N-1. Corrected for swiper to 1 ... N-1, 0 instead of N
+     * @param {int} index Range is 0 .. N-1. Corrected for swiper in loop mode: Use the dedicated method from Swiper for that.
      */
     setSliderIndex(index) {
-        // mind swiper starts with index = 1 now! The indexes are different in loop-module:
-        // index in slideto | set index to
-        //     0            ->  last
-        //     1            ->  1
-        //     2            ->  2
-        //     last         ->  last -1 of false sometimes
-        let swiperIndex = index;
-
         if (this.sw_options.loop) {
-            swiperIndex = index + 1;
-            let swiperLength = this.swiper.slides.length;
-            if (swiperIndex === swiperLength) swiperIndex = 0;
+            this.swiper.slideToLoop(index, this.#pageVariables.sw_options.sw_transition_duration, true);
+        } else {
+            this.swiper.slideTo(index, this.#pageVariables.sw_options.sw_transition_duration, true);
         }
-
-        this.swiper.slideTo(swiperIndex, this.#pageVariables.sw_options.sw_transition_duration, true);
     }
 
     // --------------- Generate Class Events -----------------------------------
@@ -261,23 +259,23 @@ class SliderSwiper {
     #listenEventSliderShowend() {
         // create Event on swiper change
         let classThis = this;
+
         this.swiper.on('slideChange', function (event) {
-            // stop all videos
-            // https://stackoverflow.com/questions/72744073/stop-and-start-autoplay-in-swiper-container-based-on-the-video-play-and-pause-ev
+            // stop all videos. https://stackoverflow.com/questions/72744073/stop-and-start-autoplay-in-swiper-container-based-on-the-video-play-and-pause-ev
             let videos = document.querySelectorAll('video');
             Array.prototype.forEach.call(videos, function(video){
                 video.pause();
             });
 
             // use realIndex and mind swiper starts with index = 0
-            let nr = event.realIndex + 1;
+            //console.log('Swiper Real Index ', event.realIndex, 'Active Index: ', event.activeIndex);
             let m = parseInt(event.el.id.replace('swiper',''));
 
             // define the CustomEvent to be fired
             const changed = new CustomEvent('sliderchange', {
                 detail: {
                     name: 'sliderChange',
-                    newslide: nr,
+                    newslide: event.realIndex,
                     slider: m
                 }
             });

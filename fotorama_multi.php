@@ -20,12 +20,14 @@ namespace mvbplugins\fotoramamulti;
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-// Ideen-liste
+// Aufgaben-liste
 // 		PHP: !!! TODO entferne das custom_field "fm_header_link" bringt nix für performance!
 //			--mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet. 
 //			-- custom fields der Posts / pages: wie bei settings
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
 //			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
+// --- Fotorama
+//			-- TODO: Slider und Karte indizes passen nach Korrektur bei Swiper nicht mehr zusammen.
 // --- Swiper
 //			-- TODO: lazy loading einbauen.
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.

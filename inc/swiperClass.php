@@ -436,12 +436,15 @@ final class SwiperClass
         $root->appendElWithAttsDIV([['class', 'swiper-button-next']]);
 
         // append the thumbnails at the bottom OR the pagination. Both is useless. types are 'integrated' or 'special'.
-        if ( $this->options['thumbbartype'] === 'integrated') 
+        if ( $this->options['thumbbartype'] === 'integrated') {
             $thumbsWrapper  = $this->generateSwiperThumbs( $doc, $data, $up_url, $thumbsdir );
-        else if ( $this->options['thumbbartype'] === 'special') 
+            $doc->appendChild($thumbsWrapper);
+        } else if ( $this->options['thumbbartype'] === 'special') {
             $thumbsWrapper = $this->generateSpecialThumbs( $doc, $data, $up_url, $thumbsdir );
-
-        $this->showpagination ? $root->appendElWithAttsDIV([['class', 'swiper-pagination']]) : $doc->appendChild($thumbsWrapper);;
+            $doc->appendChild($thumbsWrapper);
+        } else {
+            $this->showpagination ? $root->appendElWithAttsDIV([['class', 'swiper-pagination']]) : '';
+        }
         
 
         $comment = $doc->createComment('------- end of swiper ---------');

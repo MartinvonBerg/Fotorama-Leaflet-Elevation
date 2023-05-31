@@ -101,13 +101,13 @@
                 // update markers on the map if the active image changes
                 document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
                     // move map
-                    allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide-1]['coord'] ); // change only
+                    allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ); // change only
 
                     // remove old markers - on change only. 
                     allMaps[ e.detail.slider ].unSetActiveMarker();
 
                     // mark now the marker for the active image --> 
-                    allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide-1 );
+                    allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
                    
                 });
 
