@@ -114,7 +114,8 @@
                 // update markers on the map if the active image changes
                 document.querySelector('#'+sliderSel+ m).addEventListener('sliderload', function wasloaded(e) {
                     // mark now the marker for the active image --> setActiveMarker
-                    allMaps[e.detail.slider ].setActiveMarker( e.detail.newslide-1 );
+                    //allMaps[e.detail.slider ].setActiveMarker( e.detail.newslide-1 ); allMaps is generated asynchronously, so it might not be available here.
+                    allSliders[e.detail.slider].activeIndex = e.detail.newslide-1;
                 });
 
                 // update the slider if the marker on the map was clicked
@@ -149,6 +150,9 @@
             for (let m = 0; m < numberOfBoxes; m++) {
                 // w: width, h: height as shortform.
                 if (typeof(allMaps[m]) === 'object') {
+                    // mark now the marker for the active image --> setActiveMarker
+                    allMaps[m].setActiveMarker( allSliders[m].activeIndex );
+
                     let wmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).width.replace("px", ""));
                     let hmap = parseFloat( getComputedStyle( document.querySelector('#map' + m), null).height.replace("px", ""));
                     let ratioMap = wmap / hmap;

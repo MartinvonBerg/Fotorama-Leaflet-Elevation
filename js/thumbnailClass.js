@@ -15,7 +15,7 @@ document.querySelector('.thumb_wrapper').addEventListener('thumbnailchange', fun
   //console.log(e)
 });
 */
-import "./thumbnailClass.css";
+//import "./thumbnailClass.css";
 export {ThumbnailSlider};
 
 class ThumbnailSlider {

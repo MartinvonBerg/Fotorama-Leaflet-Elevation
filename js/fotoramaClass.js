@@ -49,6 +49,7 @@ class SliderFotorama {
     sliderData = null;
     sliderDiv = null;
     infoel = {};
+    activeIndex = 0;
 
     /**
      * Constructor Function
@@ -113,6 +114,7 @@ class SliderFotorama {
      */
     setSliderIndex(index) {
         this.sliderData.show(index);
+        this.activeIndex = index;
     }
 
     /**
@@ -315,7 +317,7 @@ class SliderFotorama {
             const changed = new CustomEvent('sliderchange', {
                 detail: {
                     name: 'sliderChange',
-                    newslide: classThis.sliderData.activeFrame.i,
+                    newslide: classThis.sliderData.activeFrame.i-1,
                     slider: m
                 }
             });

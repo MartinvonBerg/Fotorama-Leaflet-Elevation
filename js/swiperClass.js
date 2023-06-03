@@ -4,7 +4,7 @@
 import Swiper, {Navigation, Mousewheel, Zoom, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectFade, EffectCube, Thumbs, Keyboard} from 'swiper';
 // import Swiper styles (Selection of CSS saves 0,6 kB only)
 import 'swiper/css/bundle';
-import "./swiperClass.css";
+//import "./swiperClass.css";
 import {ThumbnailSlider} from "./thumbnailClass";
 //import {ThumbnailSlider} from './typescript/thumbnailClass.ts'
 
@@ -17,6 +17,7 @@ class SliderSwiper {
 
     // public attributes (fields). These can be set / get by dot-notation.
     number = 0;
+    activeIndex = 0;
    
     // swiper
     swiper = {};
@@ -111,9 +112,10 @@ class SliderSwiper {
                 
         // generate the swiper slider on the new html 
         this.swiper = new Swiper('#'+this.elementOnPage, this.sw_options);
-        this.updateCSS();
         this.scrollToHash();
+        this.updateCSS();
         this.#listenEventSliderShowend();
+
         ((this.#pageVariables.sw_options.sw_fslightbox === 'true') && (typeof(fsLightboxInstances) !== 'undefined')) ? window.addEventListener('load', this.lightbox(this.number), false ) : null;
         
         // This does not work here if the ThumbnailClass is conditionally imported
@@ -154,22 +156,28 @@ class SliderSwiper {
             passive: true,
         };
 
-        window.addEventListener('DOMContentLoaded', function () {
-
+        function onReady( ) {
             if (window.location.hash === '') {
                 return false;
             }
+
             let h = window.location.hash.split('/')[0];
             if ( ! h.includes('swiper') ) {
                 return false;
             };
+
             let el = document.querySelector(h);
             if (el !== null) {
-                this.setTimeout( function () {
+                setTimeout( function () {
                     el.scrollIntoView({ behavior: 'smooth' })}, 500);
             }
+        }
 
-        }, options);
+        if (document.readyState !== "loading") {
+            onReady(); // Or setTimeout(onReady, 0); if you want it consistently async
+        } else {
+            document.addEventListener('DOMContentLoaded', onReady , options);
+        };
     }
 
     /**
@@ -248,6 +256,7 @@ class SliderSwiper {
         } else {
             this.swiper.slideTo(index, this.#pageVariables.sw_options.sw_transition_duration, true);
         }
+        this.activeIndex = index;
     }
 
     // --------------- Generate Class Events -----------------------------------
@@ -294,6 +303,16 @@ class SliderSwiper {
      * Mind: the slider number counts from one, where counting from '0' would be correct.
      */
     #listenEventSliderLoaded(event) {
+        // update all images
+        for(let index = 0; index < event.slides.length; index++) {
+            if ( event.slides[index].children[0].children[0].dataset.src !== undefined) {
+                event.slides[index].children[0].children[0].src = event.slides[index].children[0].children[0].dataset.src;
+            }
+            if ( event.slides[index].children[0].children[0].dataset.srcset !== undefined) {
+                event.slides[index].children[0].children[0].srcset = event.slides[index].children[0].children[0].dataset.srcset;
+            }
+        };
+
         // create Event on swiper init, only once 
         let nr = event.realIndex + 1;
         let m = parseInt(event.el.id.replace('swiper',''));

@@ -26,10 +26,7 @@ namespace mvbplugins\fotoramamulti;
 //			-- custom fields der Posts / pages: wie bei settings
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
 //			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
-// --- Fotorama
-//			-- TODO: Slider und Karte indizes passen nach Korrektur bei Swiper nicht mehr zusammen.
 // --- Swiper
-//			-- TODO: lazy loading einbauen.
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
 //			--lighthouse : passive event listener bei swiper der Fall. stimmt auch, wird nach event unterschieden. Das erste Event ist richtigerweise "false".
 // --- Karte
@@ -320,6 +317,18 @@ function showmulti($attr, $content = null)
 
 			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
 			\mvbplugins\fotoramamulti\enqueue_fslightbox();
+			
+			//\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.18.0','all');
+			$path = $plugin_path . 'js/swiperClass.min.css';
+			add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
+
+			if ( $sw_thumbbartype == 'special') {
+				//\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.18.0','all');
+				// add the style for the grid to ALL headers!
+				$path = $plugin_path . 'js/thumbnailClass.min.css';
+				add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
+			}
+			
 
 		} elseif ( $slider === 'masonry1') {
 			$masonryCounter++;
@@ -464,8 +473,7 @@ EOF;
 		'sw_options' => $page_options // keep old name of php-variable here for javascript.
  	);
 
-	$plugin_url = plugins_url('/', __FILE__);
-	wp_enqueue_script('fotorama_main_bundle',  $plugin_url . 'build/fm_bundle/fm_main.js', ['jquery'], '0.18.0', true);
+	wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.18.0', true);
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;

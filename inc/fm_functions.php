@@ -41,7 +41,7 @@ function enqueue_fslightbox()
 }
 
 // add the style for the grid to ALL headers!
-//add_action('wp_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
+add_action('wp_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
 /**
  * Generate the inline style for the CSS-Grid. Identical for all shortcodes!
  *
@@ -56,6 +56,19 @@ function fotorama_multi_styles( ) {
 		$stylestring  .= ' grid-template-columns: repeat(auto-fit, minmax('. $fotorama_elevation_options['min_width_css_grid_row_14'] .'px, 1fr)); grid-gap: 5px;} } </style>';  
 		echo $stylestring;
 	}
+}
+
+/**
+ * special enque syle to header or footer. with media query and onload hack.
+ * Call this with: add_action('wp_head', function() use ( $cssFile ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $cssFile ); }, 10, 1);
+ *
+ * @source https://www.filamentgroup.com/lab/load-css-simpler/ reasoning
+ * @param  string $cssFile full url to the stylesheet to include in header.
+ * @return void
+ */
+function enqueue_style_tag( $cssFile) {
+	$stylestring  = '<link rel="stylesheet" href="'.$cssFile.'" media="print" onload="this.media=\'all\'">';
+	echo $stylestring;
 }
 
 // hook the function addLinkToHead the wp_head hook
