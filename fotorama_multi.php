@@ -11,7 +11,7 @@ namespace mvbplugins\fotoramamulti;
  * Plugin Name:       Slider + Leaflet-Map + Chart
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Image and Video Slider, Leaflet Map and Elevation Chart Integration. Shows images from any directory in your upload folder. Uses Fotorama or Swiper for the Slider.
- * Version:           0.18.0
+ * Version:           0.19.0
  * Requires at least: 5.9
  * Requires PHP:      7.4
  * Author:            Martin von Berg
@@ -318,12 +318,12 @@ function showmulti($attr, $content = null)
 			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
 			\mvbplugins\fotoramamulti\enqueue_fslightbox();
 			
-			//\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.18.0','all');
+			//\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.19.0','all');
 			$path = $plugin_path . 'js/swiperClass.min.css';
 			add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
 
 			if ( $sw_thumbbartype == 'special') {
-				//\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.18.0','all');
+				//\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.19.0','all');
 				// add the style for the grid to ALL headers!
 				$path = $plugin_path . 'js/thumbnailClass.min.css';
 				add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
@@ -473,7 +473,7 @@ EOF;
 		'sw_options' => $page_options // keep old name of php-variable here for javascript.
  	);
 
-	wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.18.0', true);
+	wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.19.0', true);
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;
