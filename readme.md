@@ -344,9 +344,10 @@ This plugin uses the great work from:
 = 0.19.0 =
 03.06.2023: Swiper, Thumbbar, improvement: Added option 'none' to hide the thumbbar under swiper slider (added for test purposed, but kept in code.)
             Swiper+Special Thumbbar, improvement: changed loading of CSS-files for better performance and CLS. 
-            Swiper, improvement: included Lazy Loading for images in swiperClass.js js-code because Swiper V9 removed the Lazy Loading module completely. Native browser lazy laoding did not work
+            Swiper, improvement: included Lazy Loading for images in swiperClass.js js-code because Swiper V9 removed the Lazy Loading module completely. Native browser lazy loading did not work
             Swiper, bugfix: hashnavigation correction. 
-            Swiper, bugfix: handling of indices between swiper, thumbbar and map corrected and improved. Swiper in Loop moded handles indices differently.
+            Swiper, Version Note: Version kept to 9.0.5. Shortly tested with 9.3.2 which did not work (TODO)
+            Swiper, bugfix: handling of indices between swiper, thumbbar and map corrected and improved. Swiper in Loop mode handles indices differently.
             fslightbox, improvement: changed synchronous loading of images when fslightbox changes. Is done on Close of fslightbox. So users of the free version will see the updated image in Swiper as well.
 
 = 0.18.0 =
