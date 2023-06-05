@@ -27,6 +27,8 @@ namespace mvbplugins\fotoramamulti;
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
 //			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
 // --- Swiper
+//			-- Img-Tabs > 1 Display none setzen und dann im im JS display!
+//			-- script loader in den header mit media query
 // 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
 //			--lighthouse : passive event listener bei swiper der Fall. stimmt auch, wird nach event unterschieden. Das erste Event ist richtigerweise "false".
 // --- Karte
@@ -71,6 +73,11 @@ add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
 function showmulti($attr, $content = null)
 {
+	//require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
+	$plugin_path = plugins_url('/', __FILE__);
+	\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.19.0','all');
+	\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.19.0','all');
+
 	// Define global Values and Variables. We need the globals for the state-transition of the post.
 	global $post_state_pub_2_draft;
 	global $post_state_draft_2_pub;
@@ -318,17 +325,19 @@ function showmulti($attr, $content = null)
 			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
 			\mvbplugins\fotoramamulti\enqueue_fslightbox();
 			
+			// add the style for the swiper and Thumbnails to header (which does not work here)!
 			//\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.19.0','all');
+			/*
 			$path = $plugin_path . 'js/swiperClass.min.css';
-			add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
+			do_action( 'qm/debug', $path );
+			add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 1, 1);
 
 			if ( $sw_thumbbartype == 'special') {
 				//\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.19.0','all');
-				// add the style for the grid to ALL headers!
 				$path = $plugin_path . 'js/thumbnailClass.min.css';
-				add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
+				add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 1, 1);
 			}
-			
+			*/
 
 		} elseif ( $slider === 'masonry1') {
 			$masonryCounter++;

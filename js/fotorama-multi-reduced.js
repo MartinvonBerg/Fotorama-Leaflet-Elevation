@@ -88,28 +88,41 @@
                         allMaps[m] = new LeafletMap.LeafletMap(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+
+                        // update markers on the map if the active image changes
+                        document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
+                            // move map
+                            allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ); // change only
+
+                            // remove old markers - on change only. 
+                            allMaps[ e.detail.slider ].unSetActiveMarker();
+
+                            // mark now the marker for the active image --> 
+                            allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
+                        });
+
                     })
                 } else {
                     import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+
+                        // update markers on the map if the active image changes
+                        document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
+                            // move map
+                            allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ); // change only
+
+                            // remove old markers - on change only. 
+                            allMaps[ e.detail.slider ].unSetActiveMarker();
+
+                            // mark now the marker for the active image --> 
+                            allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
+                        });
+
                     })
                     
                 }
-
-                // update markers on the map if the active image changes
-                document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
-                    // move map
-                    allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ); // change only
-
-                    // remove old markers - on change only. 
-                    allMaps[ e.detail.slider ].unSetActiveMarker();
-
-                    // mark now the marker for the active image --> 
-                    allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
-                   
-                });
 
                 // update markers on the map if the active image changes
                 document.querySelector('#'+sliderSel+ m).addEventListener('sliderload', function wasloaded(e) {

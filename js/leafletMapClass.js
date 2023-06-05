@@ -530,13 +530,17 @@ class LeafletMap {
      * remove old markers - on change only
      */
     unSetActiveMarker () {
-         // remove old markers - on change only. --> removeMarkers
-         this.map.removeLayer(this.newmarker);
-         // differ between image and video
-         if (this.pageVariables.imgdata[this.newmarker.options.id].mime === 'video') this.storemarker.setIcon(this.myIcon4) 
-         else this.storemarker.setIcon(this.myIcon1);
-         this.newmarker.setZIndexOffset(-500);
-         this.storemarker.addTo(this.map);
+        if ( typeof(this.storemarker.setIcon)==='function' && typeof(this.storemarker.addTo)==='function') {
+            // remove old markers - on change only. --> removeMarkers
+            this.map.removeLayer(this.newmarker);
+            // differ between image and video
+            
+            if (typeof(this.newmarker.options) !=='undefined' && this.pageVariables.imgdata[this.newmarker.options.id].mime === 'video') this.storemarker.setIcon(this.myIcon4) 
+            else this.storemarker.setIcon(this.myIcon1);
+            
+            this.newmarker.setZIndexOffset(-500);
+            this.storemarker.addTo(this.map);
+        }
     }
 
     /**
