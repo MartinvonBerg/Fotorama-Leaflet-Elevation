@@ -22,18 +22,17 @@ namespace mvbplugins\fotoramamulti;
 
 // Aufgaben-liste
 // 		PHP: !!! TODO entferne das custom_field "fm_header_link" bringt nix für performance!
-//			--mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet. 
-//			-- custom fields der Posts / pages: wie bei settings
+//			- mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet. 
+//			- custom fields der Posts / pages: wie bei settings
 //			return false ist als Rückgabewert bei Funktionen teilweise falsch
 //			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
 // --- Swiper
-//			-- Img-Tabs > 1 Display none setzen und dann im im JS display!
-//			-- script loader in den header mit media query
-// 			--Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
-//			--lighthouse : passive event listener bei swiper der Fall. stimmt auch, wird nach event unterschieden. Das erste Event ist richtigerweise "false".
+//			- Img-Tabs > 1 Display none setzen und dann im im JS display! Bringt doch nicht viel!
+//			++++ script loader in den header mit media query. Dann aber bei Seiten ohne Swiper, Thumbnail entfernen! De-queue style. Irgendwo schonmal gemacht
+// 			- Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
 // --- Karte
-// 			--Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
-// 			--anderen Icon-Satz verwenden? Neue Icons skalieren.
+// 			-- Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
+// 			-- anderen Icon-Satz verwenden? Neue Icons skalieren.
 // --- Masonry
 //			-- info dialog oder modal popup overlay geht nur mit einem masonry pro Seite. Ids und Zähler u.s.w sind nicht richtig gesetzt.
 
