@@ -69,6 +69,14 @@ if ( is_admin() ) {
 // define the shortcode to generate the image-slider with map
 add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 
+// add styles globally. Just for performance testing!
+//$path = plugins_url('/', __FILE__) . 'js/swiperClass.min.css';
+//add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
+
+//$path = plugins_url('/', __FILE__) . 'js/thumbnailClass.min.css';
+//add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
+
+
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
 function showmulti($attr, $content = null)
 {

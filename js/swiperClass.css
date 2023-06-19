@@ -65,7 +65,7 @@
 }
 
 .swiper-slide-title p {
-  margin: 0px;
+  margin: 0px !important;
   font-size: smaller;
 }
 

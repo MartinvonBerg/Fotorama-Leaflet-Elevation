@@ -370,6 +370,8 @@ final class SwiperClass
                         if ( $this->options['image_sizes'] !== 'none') $img->setAttribute('sizes', $this->options['image_sizes']); // /\(max\-width:\s?[0-9]{3,5}px\)\s?[0-9]{1,3}vw,\s?[0-9]{1,3}vw/gm 
                     };
 
+                    $slide->setAttribute('style', 'display:none;');
+
                 } else {
                     $img->setAttribute('style', 'width:100%');
                     $img->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
@@ -413,6 +415,7 @@ final class SwiperClass
                     $jscaption = '';
                 } else {
                     $title=$slide->appendElWithAttsDIV([['class', 'swiper-slide-title']]);
+                    $title->setAttribute('style', 'display:none;');
                     foreach ($caption as $p) {
                         $el=$doc->createElement('p',$p);
                         $title->appendChild($el);
@@ -529,7 +532,8 @@ final class SwiperClass
             $height = intval( $this->options['bar_min_height'] );
             $border = intval( $this->options['active_border_width'] );
             $this->options['bar_min_height'] = strval($height + $border) . 'px';
-         }
+        }
+
         // create wrapper for thumbnails
         $thumbsWrapper = $doc->createElement('div','');
         $thumbsWrapper->setAttribute('oncontextmenu', 'return false;');
@@ -543,6 +547,7 @@ final class SwiperClass
         $thumbsWrapper->appendChild($inner1);
 
         $imgnr = 0;
+        $height = intval( $this->options['bar_min_height'] );
 
         foreach ($this->imageData as $data) {
 			// --------------- Proceed with HTML -------------------
@@ -562,14 +567,15 @@ final class SwiperClass
                 $img2->setAttribute('class', 'th_wrap_'. $this->shortcodecounter .'_img');
                 $img2->setAttribute('draggable', 'false');
                 $img2->setAttribute('style', 'margin-left:' . $this->options['nail_margin_side'] . ';margin-right:' . $this->options['nail_margin_side']);
+                // add width and height to thumbnail. H = height_from_settings + border, if border is used. Width according to asp ratio. See first lines of function.
+                $img2->setAttribute('height', $height );
+                $img2->setAttribute('width', round($height * $data['thumbAspRatio'],2) );
 
                 if ( $data['thumbinsubdir'] ) {
                     $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
                 } elseif ( $data['thumbavail'] ) {
-                    // sizes is missing. but not required in examples.
                     $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}"); 
                 } else { 
-                    // do not add srcset here, because this else is for folders without thumbnails. If this is the case we don't have image-sizes for the srcset
                     $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}"); 
                 };
 

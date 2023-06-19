@@ -75,7 +75,7 @@ It is possible to reach a Google lighthouse Performance of 99 and 100 for the ot
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.9 - 6.2.0 and PHP 7.4.2 - 8.2.0
+- The plugin was tested with wordpress versions 5.9 - 6.2.2 and PHP 7.4.2 - 8.2.0
 
 # Installation
 
@@ -342,6 +342,9 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.19.0 =
+19.06.2023: Bugfix and Performance improvement for Lighthouse.
 
 = 0.19.0 =
 03.06.2023: Swiper, Thumbbar, improvement: Added option 'none' to hide the thumbbar under swiper slider (added for test purposed, but kept in code.)

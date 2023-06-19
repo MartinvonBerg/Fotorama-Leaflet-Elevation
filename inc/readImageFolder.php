@@ -295,6 +295,22 @@ final class ReadImageFolder
                 if ( (is_null($lon) || is_null($lat)) && ('true' === $this->requiregps)) {
                     array_pop($data2);
                 } else {
+                    // get the thumb aspect ratio
+                    if ( $thumbinsubdir ) {
+                        $thumbFile = $pathtocheck . $thumbs;
+                        list($width, $height, $type, $attr) = getimagesize( $thumbFile);
+                        $thumbAspRatio = $width / $height;
+                    } elseif ( $thumbavail ) {
+                        $thumbFile = $pathtocheck . $thumbs;
+                        list($width, $height, $type, $attr) = getimagesize( $thumbFile);
+                        $thumbAspRatio = $width / $height;
+                    } else { 
+                        $thumbFile = $pathtocheck . $ext;
+                        list($width, $height, $type, $attr) = getimagesize( $thumbFile);
+                        $thumbAspRatio = $width / $height;
+                    };
+
+
                     // expand array data2 with information that was collected during the image loop
                     $data2[$this->imageNumber]['id'] = $this->imageNumber;
                     $data2[$this->imageNumber]['lat'] = $lat;
@@ -304,6 +320,7 @@ final class ReadImageFolder
                     $data2[$this->imageNumber]['thumbavail'] = $thumbavail;
                     $data2[$this->imageNumber]['thumbinsubdir'] = $thumbinsubdir;
                     $data2[$this->imageNumber]['thumbs'] = $thumbs;
+                    $data2[$this->imageNumber]['thumbAspRatio'] = $thumbAspRatio;
                     $data2[$this->imageNumber]['extension'] = $ext;
                     $data2[$this->imageNumber]['permalink'] = $permalink;
 

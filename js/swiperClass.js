@@ -109,11 +109,14 @@ class SliderSwiper {
 
         // change sw_options for firefox to prevent the '#' at the end of the url.
         if (navigator.userAgent.match(/firefox|fxios/i) || this.#pageVariables.sw_options.sw_hashnavigation !== 'true') delete this.sw_options['hashNavigation'];
+
+        // update display in html Code for best CLS.
+        this.#displaySlides();
                 
         // generate the swiper slider on the new html 
         this.swiper = new Swiper('#'+this.elementOnPage, this.sw_options);
-        this.scrollToHash();
         this.updateCSS();
+        this.scrollToHash();
         this.#listenEventSliderShowend();
 
         ((this.#pageVariables.sw_options.sw_fslightbox === 'true') && (typeof(fsLightboxInstances) !== 'undefined')) ? window.addEventListener('load', this.lightbox(this.number), false ) : null;
@@ -331,5 +334,20 @@ class SliderSwiper {
         });
         setTimeout( function () {
             event.el.dispatchEvent(changed)},500);
+    }
+
+    #displaySlides() {
+        // update all images
+        const collection = document.getElementsByClassName("swiper-slide");
+
+        for(let index = 0; index < collection.length; index++) {
+            collection[index].style.display=''
+        };
+
+        const collection2 = document.getElementsByClassName("swiper-slide-title");
+
+        for(let index = 0; index < collection2.length; index++) {
+            collection2[index].style.display=''
+        };
     }
 }

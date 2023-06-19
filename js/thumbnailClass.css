@@ -9,7 +9,7 @@
 	display: -moz-box;
 	display: -ms-flexbox;
 	display: -webkit-flex;
-	display: flex;
+	display: flex !important;
 
 	overflow-x: scroll;
 	overflow-y: hidden;
@@ -45,7 +45,7 @@
 	-o-object-fit: contain;
 	object-fit: contain;
 	width: auto;
-	max-width: unset;
+	max-width: unset !important;
 	height: 100%;
 	margin-right: 1px;
 }
