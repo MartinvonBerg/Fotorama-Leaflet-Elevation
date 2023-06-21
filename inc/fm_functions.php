@@ -70,6 +70,7 @@ function enqueue_style_tag( $cssFile) {
 	$stylestring  = '<link rel="stylesheet" href="'.$cssFile.'" media="print" onload="this.media=\'all\'">';
 	echo $stylestring;
 	do_action( 'qm/debug', $stylestring );
+	return;
 }
 
 // hook the function addLinkToHead the wp_head hook
