@@ -24,8 +24,10 @@ if ( ! defined('ABSPATH' )) { die('Are you ok?'); }
  * @see https://developer.wordpress.org/reference/functions/register_block_type/
  */
 function fotoramamulti_fotorama_multi_block_init() {
+	$path = \plugin_dir_path(__DIR__) . 'build';
+
   	register_block_type( 
-		WP_PLUGIN_DIR . '/fotorama_multi/build', 
+		$path, 
 		[
 			'render_callback' => '\mvbplugins\fotoramamulti\shortcodewrapper'
 		]
