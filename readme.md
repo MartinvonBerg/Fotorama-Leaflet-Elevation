@@ -343,6 +343,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.20.0 =
+23.06.2023: New Release for testing
+
 = 0.19.0 =
 19.06.2023: Bugfix and Performance improvement for Lighthouse.
 
