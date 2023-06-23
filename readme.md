@@ -22,8 +22,6 @@
 
 # Description 
 
-**NOTE: Plugin is currently NOT working. Please wait for an update.**
-
 WordPress-Plugin to show a responsive Image Slider with images located in a separate FOLDER on your server or even in the WordPress Media Library. A thumbnail bar could be shown together with the image slider. Fotorama or Swiper is used for the slider. The Fotorama slider only works with JPG- or WEBP-Files an not with videos. Swiper works with Videos, too.
 
 **NEW** Show a simple Masonry Gallery with your images from a dedicated Folder! Use only once per page if you like the info popup window.
@@ -40,7 +38,7 @@ The Admin panel gives an overview of all shortcode parameters and allow to set t
 
 **NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
 
-**The Plugin runs from WordPress 5.9 - 6.2 and PHP 7.4 - 8.2.0**
+**The Plugin runs from WordPress 5.9 - 6.2.2 and PHP 7.4.2 - 8.2.0**
 
 </br>
 
@@ -68,7 +66,7 @@ or any other travel or tour report on my page.
 ![screenshot_live_site](./fotorama1.png)
 
 # Performance
-It is possible to reach a Google lighthouse Performance of 99 and 100 for the other values (Swiper only)! All values depend on the selected WordPress theme and server performance, too.
+It is possible to reach a Google lighthouse Performance of 100 for the all values (Swiper only)! All values depend on the selected WordPress theme and server performance, too. Other settings : Please contact me, if you are interested.
 
 ![screenshot_lighthouse](./swiper-leaflet-perf.jpg)
 
