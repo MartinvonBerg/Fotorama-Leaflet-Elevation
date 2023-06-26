@@ -20,22 +20,6 @@ namespace mvbplugins\fotoramamulti;
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-// Aufgaben-liste
-// 		PHP: !!! TODO entferne das custom_field "fm_header_link" bringt nix für performance!
-//			- mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet. 
-//			- custom fields der Posts / pages: wie bei settings
-//			return false ist als Rückgabewert bei Funktionen teilweise falsch
-//			Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
-// --- Swiper
-//			- Img-Tabs > 1 Display none setzen und dann im im JS display! Bringt doch nicht viel!
-//			++++ script loader in den header mit media query. Dann aber bei Seiten ohne Swiper, Thumbnail entfernen! De-queue style. Irgendwo schonmal gemacht
-// 			- Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
-// --- Karte
-// 			-- Diese Darstellung ansehen: https://github.com/turban/Leaflet.Photo
-// 			-- anderen Icon-Satz verwenden? Neue Icons skalieren.
-// --- Masonry
-//			-- info dialog oder modal popup overlay geht nur mit einem masonry pro Seite. Ids und Zähler u.s.w sind nicht richtig gesetzt.
-
 
 // fallback for wordpress security
 if ( ! defined('ABSPATH' )) die('Are you ok?');
@@ -69,14 +53,6 @@ if ( is_admin() ) {
 // define the shortcode to generate the image-slider with map
 add_shortcode('gpxview', '\mvbplugins\fotoramamulti\showmulti');
 
-// add styles globally. Just for performance testing!
-//$path = plugins_url('/', __FILE__) . 'js/swiperClass.min.css';
-//add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
-
-//$path = plugins_url('/', __FILE__) . 'js/thumbnailClass.min.css';
-//add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 10, 1);
-
-
 // this is the function that runs if the post is rendered an the shortcode is found in the page. Somehow the main-function
 function showmulti($attr, $content = null)
 {
@@ -105,7 +81,7 @@ function showmulti($attr, $content = null)
 	$page_options = [];
 		
  	// Get Values from Admin settings page
- 	//$fotorama_elevation_options = get_option( 'fotorama_elevation_option_name' ); // Array of All Options
+ 	// Array of All Options
 	$fotorama_elevation_options = \array_merge(get_option('fm_fotorama_options'), get_option('fm_swiper_options'), get_option('fm_leaflet_options'), get_option('fm_gpx_options'), get_option('fm_common_options'), \get_option('fm_masonry_options'));
 	$setCustomFields = $fotorama_elevation_options['setCustomFields_15'] === 'true'; // liefert 'true'
 	$addPermalink = $fotorama_elevation_options['useCDN_13'] === 'true'; // re-used for addPermalink now!
@@ -331,20 +307,6 @@ function showmulti($attr, $content = null)
 
 			// load script for fslightbox. Move to if() one level above if used for fotorama-slider also.
 			\mvbplugins\fotoramamulti\enqueue_fslightbox();
-			
-			// add the style for the swiper and Thumbnails to header (which does not work here)!
-			//\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.19.0','all');
-			/*
-			$path = $plugin_path . 'js/swiperClass.min.css';
-			do_action( 'qm/debug', $path );
-			add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 1, 1);
-
-			if ( $sw_thumbbartype == 'special') {
-				//\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.19.0','all');
-				$path = $plugin_path . 'js/thumbnailClass.min.css';
-				add_action('wp_head', function() use ( $path ) { \mvbplugins\fotoramamulti\enqueue_style_tag( $path ); }, 1, 1);
-			}
-			*/
 
 		} elseif ( $slider === 'masonry1') {
 			$masonryCounter++;
