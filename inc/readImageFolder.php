@@ -294,22 +294,31 @@ final class ReadImageFolder
                 // do nothing, GPS-data invalid but we want only to show images WITH GPS, so skip this image;
                 if ( (is_null($lon) || is_null($lat)) && ('true' === $this->requiregps)) {
                     array_pop($data2);
+
                 } else {
-                    // get the thumb aspect ratio
+
+                    // get the thumb image size for aspect ratio
                     if ( $thumbinsubdir ) {
                         $thumbFile = $pathtocheck . $thumbs;
                         list($width, $height, $type, $attr) = getimagesize( $thumbFile);
-                        $thumbAspRatio = $width / $height;
                     } elseif ( $thumbavail ) {
                         $thumbFile = $pathtocheck . $thumbs;
                         list($width, $height, $type, $attr) = getimagesize( $thumbFile);
-                        $thumbAspRatio = $width / $height;
                     } else { 
                         $thumbFile = $pathtocheck . $ext;
                         list($width, $height, $type, $attr) = getimagesize( $thumbFile);
-                        $thumbAspRatio = $width / $height;
                     };
 
+                    // get the thumb aspect ratio
+                    if ( $width !== null && $height !== null) {
+                        $thumbAspRatio = $width / $height;
+                    } else {
+                        // fallback for thumbs where width and height is not available
+                        $thumbavail = false;
+                        $thumbinsubdir = false;
+                        $thumbs = '';
+                        $thumbAspRatio = 1.0;
+                    }
 
                     // expand array data2 with information that was collected during the image loop
                     $data2[$this->imageNumber]['id'] = $this->imageNumber;
