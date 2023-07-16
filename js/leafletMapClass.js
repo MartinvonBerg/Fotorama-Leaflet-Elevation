@@ -548,6 +548,8 @@ class LeafletMap {
      * @param {int} markerNumber 
      */
     setActiveMarker ( markerNumber ) {
+        if ( markerNumber === undefined) return;
+
         this.storemarker = this.mrk[markerNumber];
         this.newmarker = this.mrk[markerNumber];
         this.map.removeLayer( this.mrk[markerNumber]);
