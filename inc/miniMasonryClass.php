@@ -304,7 +304,7 @@ final class MiniMasonryClass
                         $mod->appendChild($subel);
                     }
 
-                    // GPS coords 
+                    // GPS coords (won't work on localhost)
                     if (\key_exists('lat', $data) && \key_exists('lon', $data)) {
                         $geo = number_format($data['lat'], 4, '.', '') . ',' . number_format($data['lon'], 4, '.', '');
                         $key = $this->googleAPIkey; 
@@ -340,9 +340,9 @@ final class MiniMasonryClass
                             $tag = get_term_by('name', $tagname, 'post_tag');
                             if ( $tag != false) {
                                 $taglink = get_term_link($tag->term_id);
-                                $tags .= '<a href="' . $taglink . '"> ' . $tagname . ' </a>';
+                                $tags .= '<a href="' . $taglink . '">' . $tagname .' </a>'; // TODO: WordPress escapes this html!
                             } else {
-                                $tags .= ' ' . $tagname . ' ';
+                                $tags .= $tagname . ' ';
                             }	
                         }
                     }
@@ -352,7 +352,7 @@ final class MiniMasonryClass
                         $tagstitle=$doc->createElement($this->dialogHeader,__('Stichwörter'));
                         $subtags->appendChild($tagstitle);
                         $template = $doc->createDocumentFragment();
-                        $tags = \esc_html($tags);
+                        //$tags = \esc_html($tags);
                         $template->appendXML($tags);
                         $subtags->appendChild($template);
                         $mod->appendChild($subtags);
