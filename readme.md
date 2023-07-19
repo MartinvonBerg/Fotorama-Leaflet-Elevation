@@ -343,8 +343,13 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.21.0 =
+23.07.2023: New Release after testing. Bugfixes for MiniMasonry, LeafletMapClass.js, readImageFolder.php and CSS for Swiper Special Thumbbar.
+
+
+
 = 0.20.0 =
-23.06.2023: New Release for testing
+23.06.2023: New Pre-Release for testing
 
 = 0.19.0 =
 19.06.2023: Bugfix and Performance improvement for Lighthouse.
