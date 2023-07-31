@@ -214,10 +214,13 @@ final class ReadImageFolder
     {
         // Remark to variables: Not all variables are defined as class variables. So the exist only locally within this function.
         $data2 = [];
+        $vidThumb = ['.jpg','.jpeg','.webp'];
+        $vidext = ['.mp4', '.m4v', '.webm', '.ogv', '.wmv', '.flv'];
         
         if ($this->thumbsdir === '') {
             // this class variable has to be set by _construct and the class has to be instaniated with a non-empty string-value for $dir = $thumbsdir
             return;
+
         } else {
             $pathtocheck = $this->imagepath . '/' . $this->thumbsdir;
             $this->hasThumbsDir = is_dir($pathtocheck);
@@ -235,8 +238,6 @@ final class ReadImageFolder
             // All other additions to the filename will be treated as full scaled image-file that will be shown in the image-slider
             $ext = '.' . pathinfo($file, PATHINFO_EXTENSION);
             $jpgfile = basename($file, $ext);
-            $vidThumb = ['.jpg','.jpeg','.webp'];
-            $vidext = ['.mp4', '.m4v', '.webm', '.ogv', '.wmv', '.flv'];
             $isthumb = stripos($jpgfile, 'thumb') || preg_match('.\dx{1}\d.', $jpgfile) || stripos($jpgfile, 'scaled') || stripos($jpgfile, 'poster'); 
             
             if ( ! $isthumb ) {
@@ -253,14 +254,12 @@ final class ReadImageFolder
                 if (('.jpg' === $ext || '.jpeg' === $ext) && ! $thumbavail) {
                     $thumbcheck = '-' . $this->thumbwidth . 'x' . $this->thumbheight . '.webp';
                     [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, '.webp');
-                // search for video thumbs    
-                //} else if (($ext === '.mp4') || ($ext === '.m4v') || ($ext === '.webm') || ($ext === '.ogv') || ($ext === '.wmv') || ($ext === '.flv') ) {
+                // search for video thumbs in the same folder as the video.
                 } else if ( \in_array( \strtolower( $ext), $vidext, true) ) {
-                    foreach ($vidThumb as $vidext) {
-                        [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, 'thumb', $vidext);
+                    foreach ($vidThumb as $currentVideoExt) {
+                        [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, 'thumb', $currentVideoExt);
                         if ( $thumbavail) break;
                     }
-                    
                 }
 
                 // check conditionally whether thumbnails are available in the sub-folder ./thumbs and if, how they are named
@@ -268,7 +267,14 @@ final class ReadImageFolder
                 // therefore this check runs here after the above check for the image-folder
                 if ($this->hasThumbsDir) {
                     $pathtocheck = $this->imagepath . '/' . $this->thumbsdir . '/' . $jpgfile;
-                    [$thumbinsubdir, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, $ext);
+                    [$thumbinsubdir, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, $ext); // TODO : set the extension for videos correctly.
+                    // search for video thumbnails
+                    if ( \in_array( \strtolower( $ext), $vidext, true) && !$thumbinsubdir) {
+                        foreach ($vidThumb as $currentThumbExt) {
+                            [$thumbinsubdir, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, 'thumb', $currentThumbExt);
+                            if ( $thumbinsubdir) break;
+                        }
+                    }
                 }
 
                 // get $Exif-Data from image and check wether image contains GPS-data

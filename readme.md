@@ -343,10 +343,11 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.22.0 =
+23.07.2023: BugFix in Class ReadImageFolder for thumbnails for Videos in Subfolder.
+
 = 0.21.0 =
 23.07.2023: New Release after testing. Bugfixes for MiniMasonry, LeafletMapClass.js, readImageFolder.php and CSS for Swiper Special Thumbbar.
-
-
 
 = 0.20.0 =
 23.06.2023: New Pre-Release for testing
