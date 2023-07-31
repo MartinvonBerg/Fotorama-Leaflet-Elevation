@@ -224,7 +224,7 @@ final class SwiperClass
             $lightbox=$doc->createElement('a');
             $lightbox->setAttribute('data-fslightbox','swiper' . $this->shortcodecounter);
             $lightbox->setAttribute('data-type','video');
-            //$lightbox->setAttribute('data-caption', $data['title']);
+            $lightbox->setAttribute('data-caption', $data['title']);
             $lightbox->setAttribute('href',"{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
             $lightbox->setAttribute('aria-label','Open fullscreen lightbox with current image');
             $lbdiv=$doc->createElement('div');
@@ -250,15 +250,18 @@ final class SwiperClass
         if ( $data['thumbinsubdir'] ) {
             $img2 = $doc->createElement('img','');
             $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
+            $lightbox->setAttribute('data-thumb', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
 
         } elseif ( $data['thumbavail'] ) {
             $img2 = $doc->createElement('img','');
             $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}"); 
+            $lightbox->setAttribute('data-thumb', "{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['thumbs']}");
 
         } elseif (\key_exists('poster', $data) ) {
             // use the poster as thumbnail
             $img2 = $doc->createElement('img','');
             $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$data['poster']}");
+            $lightbox->setAttribute('data-thumb', "{$up_url}/{$this->options['imgpath']}/{$data['poster']}");
 
         } else { 
             // do not use video as thumbnail
