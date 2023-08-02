@@ -58,7 +58,7 @@ final class parseGpxFile {
 
         foreach ($file->routes as $segment) { 
             // Statistics for whole track
-            if ( ($file->routes[0]->stats->cumulativeElevationGain > 0) || ($file->routes[0]->stats->cumulativeElevationLoss > 0)) {
+            if ( ($segment->stats->cumulativeElevationGain > 0) || ($segment->stats->cumulativeElevationLoss > 0)) {
                 $segment->stats->toArray();// Statistics for segment of track
             
                 $pointsbefore = $pointsbefore + \sizeof($segment->points);
@@ -67,8 +67,7 @@ final class parseGpxFile {
                 $dist = $dist + $segment->stats->distance;
                 $bounds = $this->getBounds($segment, $reducetrack, $smooth, $ignoreZeroElev);
             } else {
-                $desc = 'No elevation data in route of GPX-File. Skipped';
-                return $desc;
+                $desc .= 'No elevation data in route of GPX-File. Skipped';
             }
         }
         
@@ -80,29 +79,31 @@ final class parseGpxFile {
             //if (\array_key_exists('minLongitude', $bounds )) {
             //    $lastbounds = $bounds[0];
             //}
-            
-            foreach ( $track->segments as $segment ) {
-                // check lastbounds and set new maxmin values
-                if ( sizeof($bounds)>0 ) {
-                    $lastbounds = $bounds[0];
-                }
-                
+            if ( ($track->stats->cumulativeElevationGain > 0) || ($track->stats->cumulativeElevationLoss > 0)) {
+                foreach ( $track->segments as $segment ) {
+                    // check lastbounds and set new maxmin values
+                    if ( sizeof($bounds)>0 ) {
+                        $lastbounds = $bounds[0];
+                    }
 
-                // Statistics for segment of track
-                $segment->stats->toArray();
-                $pointsbefore = $pointsbefore + \sizeof($segment->points);
-                $ascent = $ascent + $segment->stats->cumulativeElevationGain;
-                $descent = $descent + $segment->stats->cumulativeElevationLoss;
-                $dist = $dist + $segment->stats->distance;
-                $bounds = $this->getBounds($segment, $reducetrack, $smooth, $ignoreZeroElev);
-            
-                // check lastbounds and set new maxmin values
-                if ( \sizeof( $lastbounds ) > 0) {
-                    ($bounds[0]->maxLatitude > $lastbounds->maxLatitude) ? '' : ($bounds[0]->maxLatitude = $lastbounds->maxLatitude);
-                    ($bounds[0]->maxLongitude > $lastbounds->maxLongitude) ? '' : ($bounds[0]->maxLongitude = $lastbounds->maxLongitude);
-                    ($bounds[0]->minLatitude < $lastbounds->minLatitude) ? '' : ($bounds[0]->minLatitude = $lastbounds->minLatitude);
-                    ($bounds[0]->minLongitude < $lastbounds->minLongitude) ? '' : ($bounds[0]->minLongitude = $lastbounds->minLongitude);
+                    // Statistics for segment of track
+                    $segment->stats->toArray();
+                    $pointsbefore = $pointsbefore + \sizeof($segment->points);
+                    $ascent = $ascent + $segment->stats->cumulativeElevationGain;
+                    $descent = $descent + $segment->stats->cumulativeElevationLoss;
+                    $dist = $dist + $segment->stats->distance;
+                    $bounds = $this->getBounds($segment, $reducetrack, $smooth, $ignoreZeroElev);
+                
+                    // check lastbounds and set new maxmin values
+                    if ( isset($lastbounds->minLatitude) && isset($lastbounds->maxLatitude) ) {
+                        ($bounds[0]->maxLatitude > $lastbounds->maxLatitude) ? '' : ($bounds[0]->maxLatitude = $lastbounds->maxLatitude);
+                        ($bounds[0]->maxLongitude > $lastbounds->maxLongitude) ? '' : ($bounds[0]->maxLongitude = $lastbounds->maxLongitude);
+                        ($bounds[0]->minLatitude < $lastbounds->minLatitude) ? '' : ($bounds[0]->minLatitude = $lastbounds->minLatitude);
+                        ($bounds[0]->minLongitude < $lastbounds->minLongitude) ? '' : ($bounds[0]->minLongitude = $lastbounds->minLongitude);
+                    }
                 }
+            } else {
+                $desc .= 'No elevation data in track of GPX-File. Skipped';
             }
         }
         
@@ -150,7 +151,7 @@ final class parseGpxFile {
             $desc .= ', Filesize (before / after): ' . number_format_i18n($sizebefore, 0) . ' / ' . number_format_i18n($sizeafter, 0) . ' kB';
             $desc .= ', Points (before / after): ' . number_format_i18n($pointsbefore, 0) . ' / ' . number_format_i18n($pointsafter, 0);
         } else {
-            $desc = 'No tracks in GPX-File. Skipped';
+            $desc = 'No routes or tracks in GPX-File. Skipped';
         }
         
         return $desc;

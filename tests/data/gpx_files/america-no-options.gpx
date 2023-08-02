@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" creator="http://furkot.com/" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:frkt="http://www.furkot.com/2014/gpx" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.furkot.com/2014/gpx http://cdn.furkot.com/schema/gpx.xsd">
+  <metadata>
+    <author>
+      <name>Furkot - road trip planner</name>
+      <email id="trips" domain="furkot.com"></email>
+      <link href="https://trips.furkot.com">
+        <text>Furkot</text>
+      </link>
+    </author>
+  </metadata>
+  <rte>
+    <name>gpx america</name>
+    <rtept lat="42.3584308" lon="-71.0597732">
+      <time>2014-05-20T13:00:00.000Z</time>
+      <name>Boston, MA, USA</name>
+      <extensions>
+        <frkt:duration>0</frkt:duration>
+        <frkt:address>Boston, MA, USA</frkt:address>
+      </extensions>
+    </rtept>
+    <rtept lat="42.4792618" lon="-71.15227649999997">
+      <time>2014-05-20T13:28:55.000Z</time>
+      <name>Woburn, MA, United States</name>
+      <extensions>
+        <frkt:duration>86400000</frkt:duration>
+        <frkt:address>Woburn, MA, USA</frkt:address>
+      </extensions>
+    </rtept>
+    <rtept lat="42.5998139" lon="-71.3672838">
+      <time>2014-05-21T13:32:38.000Z</time>
+      <name>Chelmsford, MA, USA</name>
+      <extensions>
+        <frkt:duration>3600000</frkt:duration>
+        <frkt:address>Chelmsford, MA, USA</frkt:address>
+      </extensions>
+    </rtept>
+    <rtept lat="42.6112018" lon="-71.57451520000001">
+      <time>2014-05-21T14:56:25.000Z</time>
+      <name>Groton, MA, United States</name>
+      <extensions>
+        <frkt:duration>0</frkt:duration>
+        <frkt:address>Groton, MA, USA</frkt:address>
+      </extensions>
+    </rtept>
+  </rte>
+</gpx>

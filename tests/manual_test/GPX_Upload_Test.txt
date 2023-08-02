@@ -1,0 +1,117 @@
+Reduce GPX-File : yes
+Ignore Track Points with Zero Elevation : yes
+Distance Smooth = 25
+Elevation Smooth = 4
+
+Testfiles und Ergebnisse
+
+    Fichtelsee-Wandern.gpx
+    Upload: of "Fichtelsee-Wandern.gpx" successful!
+    With: Dist: 3,3 km, Gain: 21 Hm, Loss: 21 Hm, Filesize (before / after): 315 / 11 kB, Points (before / after): 877 / 101
+
+    america-no-options.gpx: Upload: . Error during File processing!. No elevation data in route of GPX-File. Skipped
+    --> Das ist korrekt. PHP ist korrekt.
+
+    around-visnjan-with-car.gpx
+    Upload: of "around-visnjan-with-car.gpx" successful!
+    With: Dist: 2,7 km, Gain: 41 Hm, Loss: 38 Hm, Filesize (before / after): 12 / 4 kB, Points (before / after): 104 / 35
+
+    Upload: of "cerknicko-jezero.gpx" successful!
+    With: Dist: 4,6 km, Gain: 200 Hm, Loss: 68 Hm, Filesize (before / after): 36 / 1 kB, Points (before / after): 296 / 9
+
+    Upload: of "cerknicko-jezero-no-creator.gpx" successful!
+    With: Dist: 4,6 km, Gain: 200 Hm, Loss: 68 Hm, Filesize (before / after): 35 / 1 kB, Points (before / after): 296 / 9
+
+    Upload: of "cerknicko-jezero-with-elevations-zero.gpx" successful!
+    With: Dist: 4,6 km, Gain: 0 Hm, Loss: 0 Hm, Filesize (before / after): 33 / 1 kB, Points (before / after): 296 / 0
+
+    Mit: Ignore Track Points with Zero Elevation : NO
+    Upload: of "cerknicko-jezero-with-elevations-zero.gpx" successful!
+    With: Dist: 4,6 km, Gain: 0 Hm, Loss: 0 Hm, Filesize (before / after): 33 / 1 kB, Points (before / after): 296 / 9
+
+    Upload: of "cerknicko-jezero-without-elevations.gpx" successful!
+    With: Dist: 4,6 km, Gain: 0 Hm, Loss: 0 Hm, Filesize (before / after): 28 / 1 kB, Points (before / after): 296 / 0
+
+    Mit: Ignore Track Points with Zero Elevation : NO
+    Upload: of "cerknicko-jezero-without-elevations.gpx" successful!
+    With: Dist: 4,6 km, Gain: 0 Hm, Loss: 0 Hm, Filesize (before / after): 28 / 1 kB, Points (before / after): 296 / 0
+
+    Upload: of "cerknicko-without-times.gpx" successful!
+    With: Dist: 4,6 km, Gain: 200 Hm, Loss: 68 Hm, Filesize (before / after): 25 / 1 kB, Points (before / after): 296 / 9
+
+    custom_schema_locations.gpx, default_schema_locations.gpx
+    Upload: . Error during File processing!. No tracks in GPX-File. Skipped
+    --> Das ist korrekt. PHP ist korrekt.
+
+    first_and_last_elevation.gpx
+    Upload: of "first_and_last_elevation.gpx" successful!
+    With: Dist: 195,5 km, Gain: 0 Hm, Loss: 0 Hm, Filesize (before / after): 1 / 1 kB, Points (before / after): 10 / 2
+
+    gpx_with_garmin_extension.gpx
+    Upload: . Error during File processing!. No tracks in GPX-File. Skipped
+    --> Datei enthält nur einen Wegpunkt, sonst nichts --> korrekt.
+
+    gpx1.0_with_all_fields.gpx, gpx1.1_with_all_fields.gpx
+    Upload: . Error during File processing!. No elevation data in route or track of GPX-File. Skipped
+    --> Das ist korrekt. PHP ist korrekt.
+
+    gpx1.1_with_extensions.gpx, gpx1.1_with_extensions_without_namespaces.gpx
+    Upload: . Error during File processing!. No tracks in GPX-File. Skipped
+    --> Das ist korrekt. PHP ist korrekt.
+
+    gpx-with-node-with-comments.gpx
+        Upload: of "gpx-with-node-with-comments.gpx" successful!
+        With: Dist: 0,0 km, Gain: 0 Hm, Loss: 0 Hm, Filesize (before / after): 1 / 1 kB, Points (before / after): 1 / 1
+        Einstellung geändert: No reduce
+        Upload: of "gpx-with-node-with-comments.gpx" successful!
+        With: File not touched!
+
+    korita-zbevnica.gpx
+    Upload: of "korita-zbevnica.gpx" successful!
+    With: Dist: 14,9 km, Gain: 765 Hm, Loss: 771 Hm, Filesize (before / after): 86 / 11 kB, Points (before / after): 871 / 115
+
+    Upload: of "Mojstrovka.gpx" successful!
+    With: Dist: 2,7 km, Gain: 471 Hm, Loss: 441 Hm, Filesize (before / after): 23 / 6 kB, Points (before / after): 184 / 63
+
+    route.gpx
+    Upload: . Error during File processing!. No elevation data in route of GPX-File. Skipped
+    --> Das ist korrekt. PHP ist korrekt.
+
+    track_with_dilution_errors.gpx
+    Upload: . Error during File processing!. No elevation data in route of GPX-File. Skipped
+    --> Das ist korrekt. PHP ist korrekt.
+
+    track_with_speed.gpx
+    Upload: of "track_with_speed.gpx" successful!
+    With: Dist: 0,0 km, Gain: 9 Hm, Loss: 4 Hm, Filesize (before / after): 1 / 1 kB, Points (before / after): 3 / 1
+
+    track-with-empty-segment.gpx:
+    Upload: of "track-with-empty-segment.gpx" successful!
+    With: Dist: 0,1 km, Gain: 0 Hm, Loss: 0 Hm, Filesize (before / after): 2 / 1 kB, Points (before / after): 9 / 3
+
+    track-with-extremes.gpx
+    Upload: of "track-with-extremes.gpx" successful!
+    With: Dist: 2,2 km, Gain: 25 Hm, Loss: 17 Hm, Filesize (before / after): 2 / 3 kB, Points (before / after): 25 / 25
+
+    track-with-less-sec-time.gpx
+    Upload: of "track-with-less-sec-time.gpx" successful!
+    With: Dist: 0,0 km, Gain: 0 Hm, Loss: 0 Hm, Filesize (before / after): 1 / 1 kB, Points (before / after): 2 / 1
+
+    track-with-small-floats.gpx
+    Upload: of "track-with-small-floats.gpx" successful!
+    With: Dist: 9,5 km, Gain: 0 Hm, Loss: 9 Hm, Filesize (before / after): 1 / 1 kB, Points (before / after): 3 / 2
+
+    unicode.gpx
+    Upload: . Error during File processing!. No routes or tracks in GPX-File. Skipped
+    --> Datei enthält nur Wegpunkte mit Höhen. PHP ist korrekt
+
+    unicode_with_bom.gpx
+    Upload: . Error during File processing!. No tracks in GPX-File. Skipped
+    --> Datei enthält nur Wegpunkt mit Höhen. PHP ist korrekt
+
+    unicode2.gpx
+    Upload: . Error during File processing!. No tracks in GPX-File. Skipped
+    --> Datei enthält nur unvollständigen Track. PHP ist korrekt
+
+    Upload: of "waypoints.gpx" successful!
+    With: Dist: 16,0 km, Gain: 1096 Hm, Loss: 1100 Hm, Filesize (before / after): 18 / 16 kB, Points (before / after): 197 / 168
