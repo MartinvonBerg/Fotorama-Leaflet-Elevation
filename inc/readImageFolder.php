@@ -151,10 +151,9 @@ final class ReadImageFolder
      *
      * @return array<int, array<string, mixed>> array with all images in the folder and relevant information.
      */
-    public function getImagesForGallery( $sortorder )
+    public function getImagesForGallery( string $sortorder )
     {
         $imgdata = $this->result;
-        $sortOrder = SORT_ASC;
         $rowsum = $this->imageNumber * ($this->imageNumber + 1) / 2;
 
         if ( $sortorder === 'desc') $sortOrder = \SORT_DESC;

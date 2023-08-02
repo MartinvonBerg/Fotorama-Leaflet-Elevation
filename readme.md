@@ -344,7 +344,7 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.22.0 =
-23.07.2023: BugFix in Class ReadImageFolder for thumbnails for Videos in Subfolder.
+31.07.2023: BugFix in Class ReadImageFolder for thumbnails for Videos in Subfolder. Add caption and thumbnails for Videos in fslightbox.
 
 = 0.21.0 =
 23.07.2023: New Release after testing. Bugfixes for MiniMasonry, LeafletMapClass.js, readImageFolder.php and CSS for Swiper Special Thumbbar.

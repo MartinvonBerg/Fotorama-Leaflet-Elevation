@@ -480,8 +480,10 @@ class AdminSettingsPage {
 				$name_file = $_FILES['uploadedfile']['name'];
 				$tmp_name = $_FILES['uploadedfile']['tmp_name']; 
 
-				if ($parsegpxfile) { 
-					$values = parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth, $ignoreZeroElev);
+				if ($parsegpxfile) {
+					$gpxParser = new parseGpxFile();
+					$values = $gpxParser->parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth, $ignoreZeroElev);
+					$gpxParser = null;
 					$result = strpos($values, 'Skip') === false;
 				} else {
 					$values = __('File not touched!');

@@ -101,7 +101,7 @@ class fotoramaSitemaps
 					// Loop through all webp- and jpg-files in the given folder, and get the required data
 					require_once __DIR__ . '/readImageFolder.php'; 
 					$folder = new ReadImageFolder($imgpath, $this->thumbs, $imageurl, $reqgps, 'true');
-					$folderImages = $folder->getImagesForGallery();
+					$folderImages = $folder->getImagesForGallery( 'asc' );
 					$folder = null;
 
 					// loop through all images and append to output array. skip image if already in.
