@@ -17,8 +17,10 @@ use phpGPX\Models\Bounds;
  */
 final class parseGpxFile {
 
+    /**
+     * just an empty constructor
+     */
      public function __construct( ) {
-        return;
     }
 
     /**
@@ -29,13 +31,13 @@ final class parseGpxFile {
      * @param string $newfile name for GPX-Track-file
      * @param float $smooth value for distance smoothing in meters
      * @param int $elesmooth value for elevation smoothing in meters
+     * @param mixed $ignoreZeroElev ignore Elevations with zero as value or not
      *
      * @return string description with simple stats as written to metadata of gpx-track
      */
-    public function parsegpx($infile, $path, $newfile, $smooth, $elesmooth, $ignoreZeroElev) {
+    public function parsegpx(string $infile, string $path, string $newfile, float $smooth, int $elesmooth, $ignoreZeroElev) :string {
 
         // metdata for track
-        $desc = '';
         $bounds = []; 
         $lastbounds = [];
         $ascent = 0;
@@ -46,9 +48,10 @@ final class parseGpxFile {
         $sizeafter = 0;
         $pointsbefore = 0;
         $pointsafter = 0;
+        $allSegments = [];
 
         $gpx = new phpGPX();  
-        $gpx::$ELEVATION_SMOOTHING_THRESHOLD = $elesmooth ?? 4;
+        $gpx::$ELEVATION_SMOOTHING_THRESHOLD = $elesmooth; // ?? 4;
         //$gpx::$DISTANCE_SMOOTHING_THRESHOLD = $smooth ?? 25; is not used here because smoothing is done in seperate function.
         $gpx::$APPLY_DISTANCE_SMOOTHING = true; // always true because we are if we want to reduce the track.
         $gpx::$APPLY_ELEVATION_SMOOTHING = true; // always true because we are if we want to reduce the track.
@@ -56,64 +59,78 @@ final class parseGpxFile {
 
         $file = $gpx->load($infile);
 
+        // append all segments in routes and tracks to one array
+        // Including: Calc Statistics for whole track assuming that a track without elevation gain / loss or no distance is not realistic
         foreach ($file->routes as $segment) { 
-            // Statistics for whole track
-            if ( ($segment->stats->cumulativeElevationGain > 0) || ($segment->stats->cumulativeElevationLoss > 0)) {
-                $segment->stats->toArray();// Statistics for segment of track
-            
-                $pointsbefore = $pointsbefore + \sizeof($segment->points);
-                $ascent = $ascent + $segment->stats->cumulativeElevationGain;
-                $descent = $descent + $segment->stats->cumulativeElevationLoss;
-                $dist = $dist + $segment->stats->distance;
-                $bounds = $this->getBounds($segment, $reducetrack, $smooth, $ignoreZeroElev);
-            } else {
-                $desc .= 'No elevation data in route of GPX-File. Skipped';
+            if ( ($segment->stats->cumulativeElevationGain > 0) || ($segment->stats->cumulativeElevationLoss > 0) || ($segment->stats->distance > 0)) {
+                // convert route segment to track segment with phpGPX library
+                $segment = $this->convertToTrackSegment( $segment );
+                $segment !== null ? $allSegments[] = $segment : '';
+            } 
+        }
+        foreach ($file->tracks as $track) {
+            if ( ($track->stats->cumulativeElevationGain > 0) || ($track->stats->cumulativeElevationLoss > 0) || ($track->stats->distance > 0)) {
+                foreach ( $track->segments as $segment ) {
+                    $allSegments[] = $segment;
+                }
             }
         }
+
+        // Handle the track with segments. Creating new track for output
+        $newTrack 	= new Track();
+        // Name of track
+        $newTrack->name = $newfile;
+
+        foreach ( $allSegments as $segment ) {
+
+            $bounds = $this->getBounds($segment, $reducetrack, $smooth, $ignoreZeroElev);
+            // TBD: add the distance, elevation diff between last point of one track and first point of next track to Statistics?
+            // check lastbounds 
+            if ( $pointsbefore === 0 ) { $lastbounds = $bounds[0]; }
         
-        foreach ($file->tracks as $track) {
-            // Statistics for whole track
-            //$track->stats->toArray();
-
+            // Statistics for segment of track
+            $segment->stats->toArray();
+            $pointsbefore = $pointsbefore + \sizeof($segment->points);
+            $ascent = $ascent + $segment->stats->cumulativeElevationGain;
+            $descent = $descent + $segment->stats->cumulativeElevationLoss;
+            $dist = $dist + $segment->stats->distance;
+        
             // check lastbounds and set new maxmin values
-            //if (\array_key_exists('minLongitude', $bounds )) {
-            //    $lastbounds = $bounds[0];
-            //}
-            if ( ($track->stats->cumulativeElevationGain > 0) || ($track->stats->cumulativeElevationLoss > 0)) {
-                foreach ( $track->segments as $segment ) {
-                    // check lastbounds and set new maxmin values
-                    if ( sizeof($bounds)>0 ) {
-                        $lastbounds = $bounds[0];
-                    }
+            if ( isset($lastbounds->minLatitude) && isset($lastbounds->maxLatitude) && isset($lastbounds->minLongitude) && isset($lastbounds->maxLongitude) ) {
+                ($bounds[0]->maxLatitude > $lastbounds->maxLatitude) ? '' : ($bounds[0]->maxLatitude = $lastbounds->maxLatitude);
+                ($bounds[0]->maxLongitude > $lastbounds->maxLongitude) ? '' : ($bounds[0]->maxLongitude = $lastbounds->maxLongitude);
+                ($bounds[0]->minLatitude < $lastbounds->minLatitude) ? '' : ($bounds[0]->minLatitude = $lastbounds->minLatitude);
+                ($bounds[0]->minLongitude < $lastbounds->minLongitude) ? '' : ($bounds[0]->minLongitude = $lastbounds->minLongitude);
+            }
 
-                    // Statistics for segment of track
-                    $segment->stats->toArray();
-                    $pointsbefore = $pointsbefore + \sizeof($segment->points);
-                    $ascent = $ascent + $segment->stats->cumulativeElevationGain;
-                    $descent = $descent + $segment->stats->cumulativeElevationLoss;
-                    $dist = $dist + $segment->stats->distance;
-                    $bounds = $this->getBounds($segment, $reducetrack, $smooth, $ignoreZeroElev);
-                
-                    // check lastbounds and set new maxmin values
-                    if ( isset($lastbounds->minLatitude) && isset($lastbounds->maxLatitude) ) {
-                        ($bounds[0]->maxLatitude > $lastbounds->maxLatitude) ? '' : ($bounds[0]->maxLatitude = $lastbounds->maxLatitude);
-                        ($bounds[0]->maxLongitude > $lastbounds->maxLongitude) ? '' : ($bounds[0]->maxLongitude = $lastbounds->maxLongitude);
-                        ($bounds[0]->minLatitude < $lastbounds->minLatitude) ? '' : ($bounds[0]->minLatitude = $lastbounds->minLatitude);
-                        ($bounds[0]->minLongitude < $lastbounds->minLongitude) ? '' : ($bounds[0]->minLongitude = $lastbounds->minLongitude);
-                    }
-                }
+            // append the points of this segment to existing
+            // Add segment to segment array of track.
+            if ( sizeof($newTrack->segments) === 0 ) {
+                $newTrack->segments[] = $bounds[1];
             } else {
-                $desc .= 'No elevation data in track of GPX-File. Skipped';
+                $newTrack->segments[0]->points = array_merge($newTrack->segments[0]->points, $bounds[1]->points);
             }
         }
         
         // create the new track and store it to the file.
-        if ( sizeof($bounds)>0 )  {
+        if ( isset($bounds[0]->minLatitude) && isset($bounds[0]->maxLatitude) && isset($bounds[0]->minLongitude) && isset($bounds[0]->maxLongitude)) { 
             $ascent = intval($ascent);
             $descent = intval($descent);
             $dist = number_format_i18n($dist / 1000, 1);
-
             $desc = 'Dist: ' . $dist . ' km, Gain: ' . $ascent . ' Hm, Loss: ' . $descent. ' Hm';
+            $newTrack->recalculateStats();
+
+            if ( $newTrack->stats->cumulativeElevationGain === null && $newTrack->stats->cumulativeElevationLoss === null && $newTrack->stats->distance === null ) {
+                $desc = 'No elevation or distance data in reduced route or track of GPX-File. Skipped';
+                return $desc;
+            }
+
+            // Calc the new number of points
+            $pointsafter = \sizeof( $newTrack->segments[0]->points );
+            if ( $pointsafter === 0 ) {
+                $desc = 'File Skipped. No points in reduced track: ' . $desc . '. Please upload without reduction.';
+                return $desc;
+            }
 
             // GpxFile contains data and handles serialization of objects
             $gpx_file = new GpxFile();
@@ -128,21 +145,8 @@ final class parseGpxFile {
             $gpx_file->metadata->time = new \DateTime(); 
             $gpx_file->metadata->time = $file->tracks[0]->segments[0]->points[0]->time;
 
-            // Creating track
-            $track 	= new Track();
-
-            // Name of track
-            $track->name = $newfile;
-
-            // Creating Track segment
-            $newsegment = $bounds[1];	
-
-            // Add segment to segment array of track
-            $track->segments[] 	= $newsegment;
-            $pointsafter = \sizeof($newsegment->points);
-
             // Add track to file
-            $gpx_file->tracks[] = $track;
+            $gpx_file->tracks[] = $newTrack;
 
             // GPX output
             $complete = $path . '/' . $newfile;
@@ -167,7 +171,7 @@ final class parseGpxFile {
      *
      * @return array<mixed> bounds of track and segment 
      */
-    private function getBounds($segment, $reduce, $smooth, $ignoreZeroElev) {
+    private function getBounds( object $segment, bool $reduce, float $smooth, bool $ignoreZeroElev) :array {
         $minlat = 180;
         $maxlat = -180;
         $minlon = 180;
@@ -236,7 +240,7 @@ final class parseGpxFile {
      *
      * @return float [m] distance beteen two points in meters
      */
-    private function distance($lat1, $lon1, $lat2, $lon2) {
+    private function distance( float $lat1, float $lon1, float $lat2, float $lon2) :float {
 
         $unit = "K";
         $theta = $lon1 - $lon2;
@@ -253,6 +257,27 @@ final class parseGpxFile {
         } else {
             return $miles;
         }
+    }
+
+    /**
+     * convert route segment to track segment with phpGPX library
+     *
+     * @param  object $segment as route segment
+     * @return object|null $segment as track segment
+     */
+    private function convertToTrackSegment( object $segment ) : ?object {
+        if (get_class( $segment ) !== "phpGPX\Models\Route" ) {
+            return null;
+        }
+        if ( sizeof($segment->points) === 0 ) {
+            return null;
+        }
+
+        $new = new Segment();
+        $new->points = $segment->points;
+        $new->stats = $segment->stats;
+
+        return $new;
     }
 
 }
