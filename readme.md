@@ -345,6 +345,8 @@ This plugin uses the great work from:
 
 = 0.22.0 =
 31.07.2023: BugFix in Class ReadImageFolder for thumbnails for Videos in Subfolder. Add caption and thumbnails for Videos in fslightbox.
+04.08.2023: BugFixes in parseGPX.php. Change gpxparser to Class. Added the combination of all included routes and tracks. Updated PHP library
+            phpGPX to version 1.3.0 from 07 / 2023.
 
 = 0.21.0 =
 23.07.2023: New Release after testing. Bugfixes for MiniMasonry, LeafletMapClass.js, readImageFolder.php and CSS for Swiper Special Thumbbar.

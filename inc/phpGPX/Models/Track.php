@@ -46,7 +46,7 @@ class Track extends Collection
 			$points = array_merge($points, $segment->points);
 		}
 
-		if (phpGPX::$SORT_BY_TIMESTAMP && !empty($points)) {
+		if (phpGPX::$SORT_BY_TIMESTAMP && !empty($points) && $points[0]->time !== null) {
 			usort($points, array('phpGPX\Helpers\DateTimeHelper', 'comparePointsByTimestamp'));
 		}
 
@@ -114,8 +114,11 @@ class Track extends Collection
 		$lastPoint = end(end($this->segments)->points);
 
 		$this->stats->startedAt = $firstPoint->time;
+		$this->stats->startedAtCoords = ["lat" => $firstPoint->latitude, "lng" => $firstPoint->longitude];
 		$this->stats->finishedAt = $lastPoint->time;
+		$this->stats->finishedAtCoords = ["lat" => $lastPoint->latitude, "lng" => $lastPoint->longitude];
 		$this->stats->minAltitude = $firstPoint->elevation;
+		$this->stats->minAltitudeCoords = ["lat" => $firstPoint->latitude, "lng" => $firstPoint->longitude];
 
 		for ($s = 0; $s < $segmentsCount; $s++) {
 			$this->segments[$s]->recalculateStats();
@@ -124,20 +127,24 @@ class Track extends Collection
 			$this->stats->cumulativeElevationLoss += $this->segments[$s]->stats->cumulativeElevationLoss;
 
 			$this->stats->distance += $this->segments[$s]->stats->distance;
+			$this->stats->realDistance += $this->segments[$s]->stats->realDistance;
 
 			if ($this->stats->minAltitude === null) {
 				$this->stats->minAltitude = $this->segments[$s]->stats->minAltitude;
+				$this->stats->minAltitudeCoords = $this->segments[$s]->stats->minAltitudeCoords;
 			}
 			if ($this->stats->maxAltitude < $this->segments[$s]->stats->maxAltitude) {
 				$this->stats->maxAltitude = $this->segments[$s]->stats->maxAltitude;
+				$this->stats->maxAltitudeCoords = $this->segments[$s]->stats->maxAltitudeCoords;
 			}
 			if ($this->stats->minAltitude > $this->segments[$s]->stats->minAltitude) {
 				$this->stats->minAltitude = $this->segments[$s]->stats->minAltitude;
+				$this->stats->minAltitudeCoords = $this->segments[$s]->stats->minAltitudeCoords;
 			}
 		}
 
 		if (($firstPoint->time instanceof \DateTime) && ($lastPoint->time instanceof \DateTime)) {
-			$this->stats->duration = $lastPoint->time->getTimestamp() - $firstPoint->time->getTimestamp();
+			$this->stats->duration = abs($lastPoint->time->getTimestamp() - $firstPoint->time->getTimestamp());
 
 			if ($this->stats->duration != 0) {
 				$this->stats->averageSpeed = $this->stats->distance / $this->stats->duration;

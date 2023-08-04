@@ -47,7 +47,7 @@ class Route extends Collection
 
 		$points = array_merge($points, $this->points);
 
-		if (phpGPX::$SORT_BY_TIMESTAMP && !empty($points)) {
+		if (phpGPX::$SORT_BY_TIMESTAMP && !empty($points) && $points[0]->time !== null) {
 			usort($points, array('phpGPX\Helpers\DateTimeHelper', 'comparePointsByTimestamp'));
 		}
 
@@ -96,25 +96,33 @@ class Route extends Collection
 		$lastPoint = end($this->points);
 
 		$this->stats->startedAt = $firstPoint->time;
+		$this->stats->startedAtCoords = ["lat" => $firstPoint->latitude, "lng" => $firstPoint->longitude];
 		$this->stats->finishedAt = $lastPoint->time;
+		$this->stats->finishedAtCoords = ["lat" => $lastPoint->latitude, "lng" => $lastPoint->longitude];
 		$this->stats->minAltitude = $firstPoint->elevation;
+		$this->stats->minAltitudeCoords = ["lat" => $firstPoint->latitude, "lng" => $firstPoint->longitude];
 
 		list($this->stats->cumulativeElevationGain, $this->stats->cumulativeElevationLoss) =
 			ElevationGainLossCalculator::calculate($this->getPoints());
 
-		$this->stats->distance = DistanceCalculator::calculate($this->getPoints());
+		$calculator = new DistanceCalculator($this->getPoints());
+		$this->stats->distance = $calculator->getRawDistance();
+		$this->stats->realDistance = $calculator->getRealDistance();
 
 		for ($p = 0; $p < $pointCount; $p++) {
 			if ((phpGPX::$IGNORE_ELEVATION_0 === false || $this->points[$p]->elevation > 0) && $this->stats->minAltitude > $this->points[$p]->elevation) {
 				$this->stats->minAltitude = $this->points[$p]->elevation;
+				$this->stats->minAltitudeCoords = ["lat" => $this->points[$p]->latitude, "lng" => $this->points[$p]->longitude];
 			}
 
 			if ($this->stats->maxAltitude < $this->points[$p]->elevation) {
 				$this->stats->maxAltitude = $this->points[$p]->elevation;
+				$this->stats->maxAltitudeCoords = ["lat" => $this->points[$p]->latitude, "lng" => $this->points[$p]->longitude];
 			}
 
 			if ($this->stats->minAltitude > $this->points[$p]->elevation) {
 				$this->stats->minAltitude = $this->points[$p]->elevation;
+				$this->stats->minAltitudeCoords = ["lat" => $this->points[$p]->latitude, "lng" => $this->points[$p]->longitude];
 			}
 		}
 
