@@ -4,7 +4,6 @@
 -			- custom fields der Posts / pages: wie bei settings
 -			--- return false ist als Rückgabewert bei Funktionen teilweise falsch
 -			--- Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
--           + TODO: update phpGPX library aus https://github.com/Sibyx/phpGPX/tree/master
 - JS:
 -           + TOOD: update aller JS bibliotheken.
 ---- Swiper
@@ -15,3 +14,4 @@
 -			-- anderen Icon-Satz verwenden? Neue Icons skalieren.
 ---- Masonry
 -			-- info dialog oder modal popup overlay geht nur mit einem masonry pro Seite. Ids und Zähler u.s.w sind nicht richtig gesetzt.
+            -- Masonry ist auf der Seite zu langsam. Beschleunigen, oder Option entfernen. Andere Masonry Bibliotheken wurgen geprüft und sind zu kompliziert.

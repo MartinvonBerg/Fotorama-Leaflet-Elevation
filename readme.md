@@ -40,7 +40,7 @@ The Admin panel gives an overview of all shortcode parameters and allow to set t
 
 **NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
 
-**The Plugin runs from WordPress 5.9 - 6.2.2 and PHP 7.4.2 - 8.2.0**
+**The Plugin runs from WordPress 5.9 - 6.3.x and PHP 7.4.2 - 8.2.0**
 
 </br>
 
@@ -97,7 +97,7 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 
 # Upgrade Notice 
 
-Upgrade to WordPress 6.2 and PHP 8.0+ is highly recommended! PHP 8.1.x is even better!
+Upgrade to WordPress 6.3 and PHP 8.0+ is highly recommended! PHP 8.1.x is even better!
 Due to the error corrections it is highly recommended to upgrade the Plugin to 0.18.x! Thank's for your patience. With version update to 0.15.x all settings have to be done once again. But only once. Sorry for that! This won't be the case for future updates!
 
 </br>
@@ -344,9 +344,10 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.22.0 =
-31.07.2023: BugFix in Class ReadImageFolder for thumbnails for Videos in Subfolder. Add caption and thumbnails for Videos in fslightbox.
+09.08.2023: Test with WordPress 6.3. But not a compplete 100% test. Currently not possible.
 04.08.2023: BugFixes in parseGPX.php. Change gpxparser to Class. Added the combination of all included routes and tracks. Updated PHP library
             phpGPX to version 1.3.0 from 07 / 2023.
+31.07.2023: BugFix in Class ReadImageFolder for thumbnails for Videos in Subfolder. Add caption and thumbnails for Videos in fslightbox.
 
 = 0.21.0 =
 23.07.2023: New Release after testing. Bugfixes for MiniMasonry, LeafletMapClass.js, readImageFolder.php and CSS for Swiper Special Thumbbar.
