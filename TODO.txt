@@ -1,17 +1,26 @@
 -Aufgaben-liste für das Plugin
--	PHP: +++ TODO entferne das custom_field "fm_header_link" bringt nix für performance!
+-	PHP:    +++ TODO entferne das custom_field "fm_header_link" bringt nix für performance!
 -			- mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet werden. 
 -			- custom fields der Posts / pages: wie bei settings
 -			--- return false ist als Rückgabewert bei Funktionen teilweise falsch
 -			--- Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
+            + In Android-Browsern auf dem Smartphone werden die Short Captions nicht angezeigt, obwohl als Parameter eingestellt (war auch schon in den Vor-Versionen)
 - JS:
 -           + TOOD: update aller JS bibliotheken.
 ---- Swiper
--			- script loader in den header mit media query: Getestet, bring bzgl. lighthouse nichts.
--			- Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
+-			-- script loader in den header mit media query: Getestet, bring bzgl. lighthouse nichts.
+-			-- Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
 ---- Karte
 -			-- Diese Darstellung ansehen: https:-github.com/turban/Leaflet.Photo
 -			-- anderen Icon-Satz verwenden? Neue Icons skalieren.
 ---- Masonry
 -			-- info dialog oder modal popup overlay geht nur mit einem masonry pro Seite. Ids und Zähler u.s.w sind nicht richtig gesetzt.
             -- Masonry ist auf der Seite zu langsam. Beschleunigen, oder Option entfernen. Andere Masonry Bibliotheken wurgen geprüft und sind zu kompliziert.
+            -- Masonry entfernen ? Dafür gibt es bessere Plugins. Nicht Thema des Plugins.
+---- WordPress.org Upload:
+            + Readme.txt erstellen
+            + echo, esc_html etc. korrekt umsetzen.
+            + Admin: settings array durch json in ./languages übersetzen
+                - Array aus json laden und mit admin settings mergen, so dass die Anzeigetexte duch Sprache ersetzt werden.
+
+
