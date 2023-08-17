@@ -1250,7 +1250,8 @@ final class FotoramaElevationAdmin
 					{
 						?>
 						<!-- table with all shortcode Parameters -->
-						<h3>Table with shortcode Parameters</h3>
+						<!--h3>Table with shortcode Parameters</h3-->
+						<hr>
 
 						<style type="text/css">
 							.tg {

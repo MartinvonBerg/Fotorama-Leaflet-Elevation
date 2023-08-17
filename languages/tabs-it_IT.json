@@ -1,6 +1,7 @@
 {
     "title": "Impostazioni per il plugin Slider + Leaflet-Map + Chart",
     "subtitle": "Impostazioni per il plugin Slider + Leaflet-Map + Chart che vengono utilizzate ogni volta che si utilizza lo shortcode. Quasi tutte le impostazioni possono essere sovrascritte con i parametri dello shortcode.",
+    "menu_title": "Slider-Mappa-Chart",
     "parametersTitle": "Parametri",
     "tabs": [
         {

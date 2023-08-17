@@ -49,8 +49,8 @@
     },
     "param3": {
         "text": "Text für Startadresse",
-        "description": "Legen Sie den Text für die Startadresse fest (nur 'start address' wird automatisch übersetzt)",
-        "info": "Legen Sie den Text für die Startadresse fest (nur 'start address' wird automatisch übersetzt)"
+        "description": "Legen Sie den Text für die Startadresse fest (nur 'Start address' wird automatisch übersetzt!)",
+        "info": "Legen Sie den Text für die Startadresse fest (nur 'Start address' wird automatisch übersetzt!)"
     },
     "param4": {
         "text": "Kartentyp festlegen",
