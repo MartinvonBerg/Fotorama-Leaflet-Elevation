@@ -1,0 +1,48 @@
+{
+    "page_title": "Slider-Map-Chart",
+    "menu_title": "Slider-Map-Chart",
+    "slug": "slider-map-chart",
+    "namespace": "fotoramamulti",
+    "title": "Settings for Slider + Leaflet-Map + Chart Plugin",
+    "subtitle": "Settings for the Slider + Leaflet-Map + Chart Plugin that are used for every page or post where the Plugin is used. (Almost) All settings can be overwritten by parameters of the shortcode.",
+    "showParametersPage": true,
+    "parametersTitle": "Parameters",
+    "tabs": [
+        {
+            "slug": "general",
+            "title": "General",
+            "setting": "commonSettings"
+        },
+        {
+            "slug": null,
+            "title": "GPX-File",
+            "setting": "gpxSettings",
+            "default": true
+        },
+        {
+            "slug": "leaflet",
+            "title": "Map + Chart",
+            "setting": "leafletSettings"
+        },
+        {
+            "slug": "fotorama",
+            "title": "Fotorama",
+            "setting": "fotoramaSettings"
+        },
+        {
+            "slug": "swiper",
+            "title": "Swiper",
+            "setting": "swiperSettings"
+        },
+        {
+            "slug": "masonry",
+            "title": "Masonry",
+            "setting": "masonrySettings"
+        },
+        {
+            "slug": "import-export",
+            "title": "Import \/ Export",
+            "setting": "import_export"
+        }
+    ]
+}

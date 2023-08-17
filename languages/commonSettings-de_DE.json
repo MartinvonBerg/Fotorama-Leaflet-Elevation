@@ -1,0 +1,232 @@
+{
+    "sectionsText": "Allgemeine Einstellungen",
+    "subTitle": "Allgemeine Einstellungen für alle Slider und Darstellung des Sliders mit Karte auf der Seite.",
+    "param5": {
+        "text": "Slider Typ",
+        "description": "Auswahl des Slider, um die Bilder anzuzeigen. Swiper funktioniert mit Fotos und Videos, Fotorama nur mit Bildern..",
+        "info": "Auswahl des Slider, um die Bilder anzuzeigen. Swiper funktioniert mit Fotos und Videos, Fotorama nur mit Bildern."
+    },
+    "param6": {
+        "text": "Art der Bild-Skalierung für den Slider",
+        "description": "Lege die Skalierung der Fotos / Videos für den Slider fest",
+        "info": "Lege die Skalierung der Fotos / Videos für den Slider fest"
+    },
+    "param7": {
+        "text": "Seitenverhältnis des Sliders",
+        "info": "Definiere das Verhältnis von Breite zu Höhe des Sliders. Ein kleineres Verhältnis bedeutet eine größere Höhe des Schiebereglers. Die Werte werden nicht überprüft"
+    },
+    "param8": {
+        "text": "Hintergrundfarbe der Slides",
+        "info": "Hintergrundfarbe der Bilder im Slider. Wert muss als gültiger CSS-Wert im HEX-Format angegeben werden"
+    },
+    "param0": {
+        "text": "Pfad zu den Bildern",
+        "info": "Pfad zu den Bildern relativ zum Wordpress uploads Verzeichnis, z.B.: 'holiday2023' ergibt ..\/wordpress\/wp-content\/uploads\/holiday2023"
+    },
+    "param4": {
+        "text": "Art der Bild-/Video-Sortierung: ",
+        "values": {
+            "false": "Custom (gallery_sort)",
+            "true": "Aufnahmedatum",
+            "fileending": "Dateiname"
+        },
+        "info": "Lege die Arte der Bildersortierung fest."
+    },
+    "param20": {
+        "label": "sortorder",
+        "text": "Define File sort Order",
+        "class": "common_row",
+        "custom_data": "custom20",
+        "type": "select",
+        "values": {
+            "asc": "Ascending",
+            "desc": "Descending"
+        },
+        "default": "asc",
+        "description": "Define the sort Order of Files",
+        "shortcode": "sortorder",
+        "info": "Define the sort Order of Files."
+    },
+    "param1": {
+        "label": "show_caption_4",
+        "text": "Show Caption",
+        "class": "common_row",
+        "custom_data": "custom1",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "Show the Caption in slider or masonry Gallery",
+        "shortcode": "showcaption",
+        "info": "Show the caption in the Slider"
+    },
+    "param2": {
+        "label": "short_caption",
+        "text": "Short Caption",
+        "class": "common_row",
+        "custom_data": "custom2",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "Show short caption only. (Don not show image metadata from EXIF)",
+        "shortcode": "shortcaption",
+        "info": "Show short caption only. (Do not show image metadata from EXIF)"
+    },
+    "param3": {
+        "label": "images_with_gps_required_5",
+        "text": "Images with GPS required",
+        "class": "common_row",
+        "custom_data": "custom3",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "Show images only if they provide GPS-Data in EXIF. Remember to set showmap=\"false\".",
+        "shortcode": "requiregps",
+        "info": "Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF."
+    },
+    "param24": {
+        "label": "max_width_of_container_12",
+        "text": "Max Width of Container in px",
+        "class": "common_row",
+        "custom_data": "custom24",
+        "type": "number",
+        "values": 1500,
+        "default": 1500,
+        "min": 100,
+        "max": 1500,
+        "description": "",
+        "shortcode": "maxwidth",
+        "info": "Maximum width of the whole container with slider and map"
+    },
+    "param25": {
+        "label": "min_width_css_grid_row_14",
+        "text": "Min Width of one CSS-grid Row in px",
+        "class": "common_row",
+        "custom_data": "custom25",
+        "type": "number",
+        "values": 480,
+        "default": 480,
+        "min": 50,
+        "max": 1500,
+        "description": "",
+        "shortcode": "minrowwidth",
+        "info": "Minimum width of one row of the CSS-Grid. If greater than maxwidth\/2: Slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme."
+    },
+    "param11": {
+        "label": "f_thumbwidth",
+        "text": "Thumbnail Width in px",
+        "class": "common_row",
+        "custom_data": "custom11",
+        "type": "number",
+        "values": 96,
+        "default": 96,
+        "min": 10,
+        "max": 200,
+        "description": "",
+        "shortcode": "f_thumbwidth",
+        "info": "Width of the single thumbnail in the navigation bar in pixels"
+    },
+    "param12": {
+        "label": "f_thumbheight",
+        "text": "Thumbnail Height in px",
+        "class": "common_row",
+        "custom_data": "custom12",
+        "type": "number",
+        "values": 64,
+        "default": 64,
+        "min": 10,
+        "max": 200,
+        "description": "",
+        "shortcode": "f_thumbheight",
+        "info": "Height of the single thumbnail in the navigation bar in pixels"
+    },
+    "param13": {
+        "label": "thumbmargin",
+        "text": "Thumbnail Side Margin in px",
+        "class": "common_row",
+        "custom_data": "custom13",
+        "type": "number",
+        "values": 2,
+        "default": 2,
+        "min": 0,
+        "max": 20,
+        "description": "",
+        "shortcode": "thumbmargin",
+        "info": "Margin between thumbnails in pixels"
+    },
+    "param14": {
+        "label": "thumbborderwidth",
+        "text": "Thumbnail Border Width in px",
+        "class": "common_row",
+        "custom_data": "custom14",
+        "type": "number",
+        "values": 2,
+        "default": 2,
+        "min": 0,
+        "max": 20,
+        "description": "",
+        "shortcode": "thumbborderwidth",
+        "info": "Width of the coloured thumbnail border in pixels"
+    },
+    "param15": {
+        "label": "thumbbordercolor",
+        "text": "Thumbnail Border Colour",
+        "class": "common_row",
+        "custom_data": "custom15",
+        "type": "color",
+        "values": "#FF0000",
+        "default": "#FF0000",
+        "description": "",
+        "shortcode": "thumbbordercolor",
+        "info": "Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken."
+    },
+    "param17": {
+        "label": "transitionduration",
+        "text": "Transition Duration in ms",
+        "class": "common_row",
+        "custom_data": "custom17",
+        "type": "number",
+        "values": 300,
+        "default": 300,
+        "min": 1,
+        "max": 2000,
+        "description": "",
+        "shortcode": "transitionduration",
+        "info": "Duration of Slide transition in ms"
+    },
+    "param21": {
+        "label": "useCDN_13",
+        "text": "Add Permalink",
+        "class": "common_row",
+        "custom_data": "custom1",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": " Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.",
+        "shortcode": "",
+        "info": ""
+    },
+    "param22": {
+        "label": "setCustomFields_15",
+        "text": "Set Custom Fields for post",
+        "class": "common_row",
+        "custom_data": "custom1",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.",
+        "shortcode": "",
+        "info": ""
+    },
+    "param23": {
+        "label": "doYoastXmlSitemap_16",
+        "text": "Generate Entries in Yoast XML-Sitemap for Fotorama Images",
+        "class": "common_row",
+        "custom_data": "custom1",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "Generate the Yoast XML-Sitemap with the images shown in the Slider. Used for SEO.",
+        "shortcode": "",
+        "info": ""
+    }
+}

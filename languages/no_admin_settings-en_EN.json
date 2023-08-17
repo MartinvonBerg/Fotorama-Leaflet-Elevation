@@ -1,0 +1,40 @@
+{
+    "sectionsText": "Parameters without Admin Settings but Shortcode",
+    "param0": {
+        "shortcode": "showalltracks",
+        "type": "checkbox",
+        "values": "",
+        "default": "false",
+        "info": "Show all Tracks from List of GPX-Files at once on the Map."
+    },
+    "param1": {
+        "shortcode": "mapcenter",
+        "type": "text",
+        "values": "0.0, 0.0",
+        "default": "0.0, 0.0",
+        "info": "Define the Map center for the Map that shows a Marker only."
+    },
+    "param2": {
+        "shortcode": "zoom",
+        "type": "number",
+        "values": 8,
+        "default": 8,
+        "min": 1,
+        "max": 19,
+        "info": "Define the Zoom Level for the Map that shows a Marker only."
+    },
+    "param3": {
+        "shortcode": "markertext",
+        "type": "text",
+        "values": "Home address",
+        "default": "Home address",
+        "info": "Define the Marker Text for the Map that shows a Marker only."
+    },
+    "param4": {
+        "shortcode": "filefilter",
+        "type": "text",
+        "values": "Filter Filenames",
+        "default": "",
+        "info": "Define a simple Filter for Files given by *imgpath*, e.g. if using a WordPress Standard-Folder like ..\/uploads\/2023\/01 \r\n\t\t\tand taking only pictures containing *filefilter* in filenames. Default empty, so no filtering. Seperate filters by \",\". Mind that filters are combined by logical AND!"
+    }
+}

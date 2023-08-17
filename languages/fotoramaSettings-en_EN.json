@@ -1,0 +1,95 @@
+{
+    "pre": "fotorama",
+    "options": "fm_fotorama_options",
+    "sanitizer": "options_sanitizer",
+    "section": "fotorama_section",
+    "sectionsText": "Fotorama Slider Settings",
+    "namespace": "fotoramamulti",
+    "subTitle": "Settings for the Fotorama Slider only.",
+    "param16": {
+        "label": "transition",
+        "text": "Slide Transition Type",
+        "class": "fotorama_row",
+        "custom_data": "custom16",
+        "type": "select",
+        "values": {
+            "slide": "Slide",
+            "crossfade": "Crossfade",
+            "dissolve": "Dissolve"
+        },
+        "default": "slide",
+        "description": "",
+        "shortcode": "transition",
+        "info": "Type of transition between Slides."
+    },
+    "param19": {
+        "label": "autoplay",
+        "text": "Autoplay Slideshow",
+        "class": "fotorama_row",
+        "custom_data": "custom19",
+        "type": "text",
+        "required": "required",
+        "values": "",
+        "default": "false",
+        "description": "Values: false, true, or integer value in milliseconds",
+        "shortcode": "autoplay",
+        "info": "Autoplay or loop the slider. On with \"true\" or any numeric interval in milliseconds. Of with \"false\""
+    },
+    "param18": {
+        "label": "loop",
+        "text": "Loop through Slides",
+        "class": "common_row",
+        "custom_data": "custom18",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "loop",
+        "shortcode": "loop",
+        "info": "Loop through images (proceed with first slide after reaching the last one)"
+    },
+    "param20": {
+        "label": "arrows",
+        "text": "Show Arrows",
+        "class": "fotorama_row",
+        "custom_data": "custom16",
+        "type": "select",
+        "values": {
+            "true": "True",
+            "false": "False",
+            "always": "Always"
+        },
+        "default": "true",
+        "description": "",
+        "shortcode": "arrows",
+        "info": "Show arrows for the slider control. 'always' : Do not hide controls on hover or tap"
+    },
+    "param9": {
+        "label": "navposition",
+        "text": "Thumbnailbar Position",
+        "class": "fotorama_row",
+        "custom_data": "custom9",
+        "type": "select",
+        "values": {
+            "bottom": "Bottom",
+            "top": "Top"
+        },
+        "default": "bottom",
+        "description": "Provide download link for GPX-Files",
+        "shortcode": "navposition",
+        "info": "Position of the Thumbnailbar (=Thumbbar)"
+    },
+    "param10": {
+        "label": "navwidth",
+        "text": "Thumbnailbar Width in %",
+        "class": "fotorama_row",
+        "custom_data": "custom10",
+        "type": "number",
+        "values": 100,
+        "default": 100,
+        "min": 10,
+        "max": 100,
+        "description": "",
+        "shortcode": "navwidth",
+        "info": "Width of the Thumbnailbar in percent relative to Slider size."
+    }
+}

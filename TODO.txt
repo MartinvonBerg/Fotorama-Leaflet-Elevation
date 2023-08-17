@@ -19,8 +19,11 @@
             -- Masonry entfernen ? Dafür gibt es bessere Plugins. Nicht Thema des Plugins.
 ---- WordPress.org Upload:
             + Readme.txt erstellen
-            + echo, esc_html etc. korrekt umsetzen.
+            + echo, esc_html etc. korrekt umsetzen. oder durch json übersetzung und standardisierte Funktion ersetzen.
             + Admin: settings array durch json in ./languages übersetzen
                 - Array aus json laden und mit admin settings mergen, so dass die Anzeigetexte duch Sprache ersetzt werden.
+                - alle arrays in json umwandeln und auf texte reduzieren.
+                - Strings im PHP-Code durch WP-Standard übersetzen oder ebenfall in json packen.
+                - JSON kann mit Google-Übersetzer oder deepl übersetzt werden. Oder der REST-API von Deepl
 
 

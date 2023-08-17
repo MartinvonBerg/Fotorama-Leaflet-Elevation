@@ -1,0 +1,35 @@
+{
+    "pre": "impexp",
+    "options": "fm_impexp_options",
+    "sanitizer": "handle_settings",
+    "section": "impexp_section",
+    "sectionsText": "Import or Export Settings to \/ from JSON-File.",
+    "namespace": "fotoramamulti",
+    "subTitle": "",
+    "param1": {
+        "label": "import_settings_file",
+        "text": "Load Settings from JSON-File",
+        "class": "impexp_row",
+        "custom_data": "custom1",
+        "type": "file_input",
+        "accept": ".json",
+        "values": "",
+        "default": "settings_import.json",
+        "description": "JSON-File : Contains all settings from the database",
+        "shortcode": "",
+        "info": "JSON-File : Contains all settings from the database"
+    },
+    "param2": {
+        "label": "export_settings_file",
+        "text": "Export Settings to JSON-File. ",
+        "class": "impexp_row",
+        "custom_data": "custom2",
+        "type": "download",
+        "required": "",
+        "values": "settings_export.json",
+        "default": "settings_export.json",
+        "description": "Download settings",
+        "shortcode": "",
+        "info": "Download settings"
+    }
+}

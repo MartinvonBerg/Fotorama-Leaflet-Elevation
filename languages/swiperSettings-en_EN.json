@@ -1,0 +1,161 @@
+{
+    "pre": "swiper",
+    "options": "fm_swiper_options",
+    "sanitizer": "options_sanitizer",
+    "section": "swiper_section",
+    "sectionsText": "Swiper Slider Settings",
+    "namespace": "fotoramamulti",
+    "subTitle": "Settings for the Swiper Slider only.",
+    "param1": {
+        "label": "sw_effect",
+        "text": "Swiper Slide Change Effect",
+        "class": "swiper_row",
+        "custom_data": "custom1",
+        "type": "select",
+        "values": {
+            "slide": "Slide",
+            "fade": "Fade",
+            "flip": "Flip",
+            "cube": "Cube",
+            "coverflow": "Coverflow"
+        },
+        "default": "slide",
+        "description": "",
+        "shortcode": "sw_effect",
+        "info": "Swiper Slide Change Effect. Cube works but is reduced in functionality (no-zoom and lightbox)"
+    },
+    "param11": {
+        "label": "sw_button_color",
+        "text": "Arrow Colour",
+        "class": "common_row",
+        "custom_data": "custom11",
+        "type": "color",
+        "values": "#FF0000",
+        "default": "#FF0000",
+        "description": "Color of the Arrow on Slider to change Slide.",
+        "shortcode": "sw_button_color",
+        "info": "Color of the Arrow on Slider to change Slide."
+    },
+    "param7": {
+        "label": "sw_mousewheel",
+        "text": "Use Mousewheel for Slide Change",
+        "class": "swiper_row",
+        "custom_data": "custom7",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "Only active if there is one Slider on Page.",
+        "shortcode": "sw_mousewheel",
+        "info": "Use the Mousewheel for Slide change. Only activated for ONE Slider on page."
+    },
+    "param4": {
+        "label": "sw_zoom",
+        "text": "Activate Zoom on Slider",
+        "class": "swiper_row",
+        "custom_data": "custom4",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "Activates the Zoom Function within the Swiper Slider",
+        "shortcode": "sw_zoom",
+        "info": "Activates the Zoom Function within the Swiper Slider"
+    },
+    "param9": {
+        "label": "sw_max_zoom_ratio",
+        "text": "Set the Zoom Ratio for Swiper Zoom",
+        "class": "swiper_row",
+        "custom_data": "custom9",
+        "type": "number",
+        "values": 3,
+        "default": 3,
+        "min": 1,
+        "max": 10,
+        "description": "",
+        "shortcode": "sw_max_zoom_ratio",
+        "info": "Defines the Zoom ratio for the Swiper Zoom Effect."
+    },
+    "param5": {
+        "label": "sw_fslightbox",
+        "text": "Use fslightbox for Fullscreen",
+        "class": "swiper_row",
+        "custom_data": "custom5",
+        "type": "checkbox",
+        "values": "",
+        "default": "true",
+        "description": "Requires an additional Plugin!",
+        "shortcode": "sw_fslightbox",
+        "info": "Activate the fslightbox for Fullscreen Presentation. Mind: Requires the installation of another Plugin from me!"
+    },
+    "param2": {
+        "label": "sw_thumbbartype",
+        "text": "Thumbnailbar Type",
+        "class": "swiper_row",
+        "custom_data": "custom2",
+        "type": "select",
+        "values": {
+            "integrated": "Swiper",
+            "special": "Special",
+            "none": "none"
+        },
+        "default": "special",
+        "description": "",
+        "shortcode": "sw_thumbbartype",
+        "info": "Select Swiper native Thumbbar or my special Thumbbar"
+    },
+    "param3": {
+        "label": "sw_activetype",
+        "text": "Effect for Special Thumbbar",
+        "class": "swiper_row",
+        "custom_data": "custom3",
+        "type": "select",
+        "values": {
+            "active_border": "Border",
+            "active": "Brightness",
+            "active_animation": "Shake"
+        },
+        "default": "active_border",
+        "description": "",
+        "shortcode": "sw_activetype",
+        "info": "Select the Effect to show the active Image in the special Thumbbar"
+    },
+    "param10": {
+        "label": "sw_bar_margin_top",
+        "text": "Margin above Special Thumbbar in px",
+        "class": "swiper_row",
+        "custom_data": "custom10",
+        "type": "number",
+        "values": 5,
+        "default": 5,
+        "min": 0,
+        "max": 100,
+        "description": "",
+        "shortcode": "sw_bar_margin_top",
+        "info": "Margin above Thumbbar in pixels"
+    },
+    "param8": {
+        "label": "sw_hashnavigation",
+        "text": "Activate Hash Navigation",
+        "class": "swiper_row",
+        "custom_data": "custom8",
+        "type": "checkbox",
+        "values": "",
+        "default": "false",
+        "description": "Enables the option to use a page-link to a dedicated image.",
+        "shortcode": "sw_hashnavigation",
+        "info": "Use hashnavigation to directly jump to a dedicated Slider and Image."
+    },
+    "param12": {
+        "label": "image_sizes",
+        "text": "Define srcset for responsive images",
+        "class": "swiper_row",
+        "custom_data": "custom12",
+        "type": "text",
+        "required": "",
+        "pattern": ".{0,20}",
+        "values": "(max-width: 940px) 100vw, 50vw",
+        "default": "(max-width: 940px) 100vw, 50vw",
+        "description": "Define 'sizes' for responsive images. Type 'none' if you don't want to use it.",
+        "shortcode": "",
+        "info": "Define srcset for responsive images"
+    }
+}

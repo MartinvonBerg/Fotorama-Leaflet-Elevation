@@ -1080,9 +1080,15 @@ final class FotoramaElevationAdmin
 	private $allSettingsClasses = [];
 	private $allSettings = [];
 
+	public $dashboardLanguage = '';
+
 
 	public function __construct()
 	{
+		// start with translation of texts in arrays.
+		$this->dashboardLanguage = $this->setDashboardLanguage();
+		$this->translateSettingsArray('tabs');
+
 		//add_action( 'admin_init', array( $this, 'fotorama_elevation_page_init' ) );
 		add_action('admin_menu', array($this, 'admin_add_plugin_page_to_menu'));
 
@@ -1098,6 +1104,7 @@ final class FotoramaElevationAdmin
 		// init the classes and settings for the tab.
 		$i = 0;
 		foreach($this->tabs['tabs'] as $currentTab) {
+			$this->translateSettingsArray($currentTab['setting']);
 			$set = $this->{$currentTab['setting']};
 			$this->allSettingsClasses[ $i ] = new AdminSettingsPage( $set );
 			$this->allSettings[ $i ] = $set;
@@ -1106,6 +1113,70 @@ final class FotoramaElevationAdmin
 
 		// append $no_admin_settings to show in info page
 		$this->allSettings[ $i ] = $this->no_admin_settings;
+	}
+
+	/**
+	 * Sets the dashboard language for the admin panel.
+	 *
+	 * This function retrieves the backend language for the admin panel by checking the
+	 * cookies. If the cookies are not empty, it searches for the logged in user ID and
+	 * retrieves the locale from the user's meta data. If the locale is not found, the
+	 * function falls back to the default user locale.
+	 *
+	 * @return string The locale for the dashboard language.
+	 */
+	public function setDashboardLanguage() {
+		//get backend language for the admin panel
+		$locale = false;
+
+		if (isset( $_COOKIE ) && !empty( $_COOKIE ) ) {
+			// get logged in user ID
+			$ID = 0;
+
+			foreach ($_COOKIE as $key => $value) {
+				if ( \strpos($key, '-settings-time') !== false ) {
+					$ID = intval(explode('-',$key)[3]);
+					break;
+				}
+			}
+
+			// find user in all users and get the id
+			$locale = get_user_meta( $ID, 'locale');
+			if ( $locale !== false) $locale = $locale[0];
+		}
+
+		return $locale !== false ? $locale : get_user_locale();
+	}
+
+	/**
+	 * Translate a settings array from an available .json file
+	 *
+	 * @param  string $setting name of the settings array that should be translated.
+	 * @return void
+	 */
+	private function translateSettingsArray( string $setting ) : void {
+		// check the parameter
+		if ( $setting === '' || !\is_string( $setting ) ) {
+			return;
+		}
+		// check if settings array is available.
+		$settings = $this->{$setting};
+		if ( !\is_array( $settings ) ) {
+			return;
+		}
+
+		$language = $this->dashboardLanguage;
+
+		// create filename and load settings from filename
+		$newpath = dirname(__DIR__, 1) . \DIRECTORY_SEPARATOR .'languages' . \DIRECTORY_SEPARATOR . $setting . '-' . $language . '.json';
+		
+		if ( is_file( $newpath ) ) {
+            $arrayWithI18nStrings     = strval(file_get_contents($newpath, false));
+            $arrayWithI18nStrings     = \json_decode($arrayWithI18nStrings, true);
+			//$result = \array_merge( $settings, $arrayWithI18nStrings);
+			$result = \array_replace_recursive($settings, $arrayWithI18nStrings);
+			$this->{$setting} = $result;
+		}
 	}
 
 	/**
