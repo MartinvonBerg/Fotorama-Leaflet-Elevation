@@ -1,0 +1,14 @@
+{
+    "sectionsText": "Importieren oder Exportieren aller Einstellungen in / aus einer JSON-Datei",
+    "subTitle": "",
+    "param1": {
+        "text": "Einstellungen aus JSON-Datei laden",
+        "description": "JSON-Datei : Enthält alle Einstellungen aus der Datenbank",
+        "info": "JSON-Datei: Enthält alle Einstellungen aus der Datenbank"
+    },
+    "param2": {
+        "text": "Einstellungen in JSON-Datei exportieren. ",
+        "description": "Einstellungen herunterladen",
+        "info": "Einstellungen herunterladen"
+    }
+}

@@ -1,0 +1,129 @@
+{
+    "sectionsText": "General and Common Settings",
+    "subTitle": "Common Settings and Settings used for both Sliders",
+    "param5": {
+        "text": "Slider Type",
+        "values": {
+            "fotorama": "Fotorama",
+            "swiper": "Swiper",
+            "masonry1": "MiniMasonry"
+        },
+        "description": "Select the Slider to show the Images. Swiper works with Fotos and Videos.",
+        "info": "Select the Image Slider. Swiper works with Fotos and Videos. Fotorama with Images only."
+    },
+    "param6": {
+        "text": "How to fit the images in Slider",
+        "values": {
+            "contain": "Contain",
+            "cover": "Cover",
+            "fill": "Fill",
+            "inherit": "Inherit"
+        },
+        "description": "Define the scaling of Fotos for the Fotorama Slider",
+        "info": "Define the scaling of Fotos for the Slider"
+    },
+    "param7": {
+        "text": "Slider Aspect Ratio",
+        "description": "Define the width / height ratio of the Fotorama slider. Smaller ratio means greater height of the Slider. No checking of values up to now",
+        "info": "Define the width / height ratio of the Slider. Smaller ratio means greater height of the Slider. No checking of values up to now"
+    },
+    "param8": {
+        "text": "Slide Background Colour",
+        "description": "Background color of the slider defined by a valid CSS name",
+        "info": "Background color of the slider defined by a valid CSS name"
+    },
+    "param0": {
+        "text": "Path to Images for Slider",
+        "description": "Define path to images without leading and trailing slashes",
+        "info": "Path the images relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/galleries/holiday2020"
+    },
+    "param4": {
+        "text": "Define File sorting. Use: ",
+        "values": {
+            "false": "Custom (gallery_sort)",
+            "true": "Date taken",
+            "fileending": "Filename"
+        },
+        "description": "Define the sorting of Files and / or ignore custom sort even if provided by Wordpress.",
+        "info": "Define the sorting of Files and / or ignore custom sort even if provided by Wordpress."
+    },
+    "param20": {
+        "text": "Define File sort Order",
+        "values": {
+            "asc": "Ascending",
+            "desc": "Descending"
+        },
+        "description": "Define the sort Order of Files",
+        "info": "Define the sort Order of Files."
+    },
+    "param1": {
+        "text": "Show Caption",
+        "description": "Show the Caption in slider or masonry Gallery",
+        "info": "Show the caption in the Slider"
+    },
+    "param2": {
+        "text": "Short Caption",
+        "description": "Show short caption only. (Don not show image metadata from EXIF)",
+        "info": "Show short caption only. (Do not show image metadata from EXIF)"
+    },
+    "param3": {
+        "text": "Images with GPS required",
+        "description": "Show images only if they provide GPS-Data in EXIF. Remember to set showmap=\"false\".",
+        "info": "Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF."
+    },
+    "param24": {
+        "text": "Max Width of Container in px",
+        "description": "",
+        "info": "Maximum width of the whole container with slider and map"
+    },
+    "param25": {
+        "text": "Min Width of one CSS-grid Row in px",
+        "description": "",
+        "info": "Minimum width of one row of the CSS-Grid. If greater than maxwidth/2: Slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme."
+    },
+    "param11": {
+        "text": "Thumbnail Width in px",
+        "description": "",
+        "info": "Width of the single thumbnail in the navigation bar in pixels"
+    },
+    "param12": {
+        "text": "Thumbnail Height in px",
+        "description": "",
+        "info": "Height of the single thumbnail in the navigation bar in pixels"
+    },
+    "param13": {
+        "text": "Thumbnail Side Margin in px",
+        "description": "",
+        "info": "Margin between thumbnails in pixels"
+    },
+    "param14": {
+        "text": "Thumbnail Border Width in px",
+        "description": "",
+        "info": "Width of the coloured thumbnail border in pixels"
+    },
+    "param15": {
+        "text": "Thumbnail Border Colour",
+        "description": "",
+        "info": "Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken."
+    },
+    "param17": {
+        "text": "Transition Duration in ms",
+        "description": "",
+        "info": "Duration of Slide transition in ms"
+    },
+    "param21": {
+        "text": "Add Permalink",
+        "description": " Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.",
+        "info": ""
+    },
+    "param22": {
+        "text": "Set Custom Fields for post",
+        "description": "Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.",
+        "info": ""
+    },
+    "param23": {
+        "text": "Generate Entries in Yoast XML-Sitemap for Fotorama Images",
+        "description": "Generate the Yoast XML-Sitemap with the images shown in the Slider. Used for SEO.",
+        "info": ""
+    }
+}

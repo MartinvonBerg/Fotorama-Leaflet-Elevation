@@ -1,0 +1,18 @@
+{
+    "sectionsText": "Parameter ohne Admin-Einstellungen, aber mit Shortcode",
+    "param0": {
+        "info": "Zeige alle Tracks aus der Liste der GPX-Dateien auf einmal auf der Karte."
+    },
+    "param1": {
+        "info": "Legt das Kartenzentrum für die Karte fest, die nur einen Marker anzeigt."
+    },
+    "param2": {
+        "info": "Legt die Zoomstufe für die Karte fest, die nur einen Marker anzeigt."
+    },
+    "param3": {
+        "info": "Legt den Markierungstext für die Karte fest, die nur eine Markierung anzeigt."
+    },
+    "param4": {
+        "info": "Definiert einen einfachen Filter für Dateien, die aus dem *imgpath* geladen und gefiltert werden. Wenn z.B. ein WordPress Standard-Ordner, wie ../uploads/2023/01 als imgpath verwendet wird, und nur Bilder angezeigt werden sollen, die *filefilter* im Dateinamen enthalten. Standardmäßig leer, also keine Filterung. Mehrere Filter sollen durch Kommas voneinander getrennt werden. Beachte, dass Filter durch ein logisches UND kombiniert werden!"
+    }
+}

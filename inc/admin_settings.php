@@ -1097,7 +1097,7 @@ final class FotoramaElevationAdmin
 		if ($hasWorkingHtaccess) {
 			$infoText = __('Use a local Tile-Server to provide Map-Tiles (.htaccess checked and OK)', 'fotoramamulti');
 		} else {
-			$infoText = 'ATTENTION: File .htaccess is NOT OK.';
+			$infoText = __('ATTENTION: File .htaccess is NOT OK.', 'fotoramamulti');
 		}
 		$this->leafletSettings['param5']['description'] = $infoText;
 
@@ -1112,6 +1112,7 @@ final class FotoramaElevationAdmin
 		}
 
 		// append $no_admin_settings to show in info page
+		$this->translateSettingsArray('no_admin_settings');
 		$this->allSettings[ $i ] = $this->no_admin_settings;
 	}
 

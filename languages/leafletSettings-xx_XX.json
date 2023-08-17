@@ -1,0 +1,86 @@
+{
+    "sectionsText": "Leaflet Map and Elevation Chart Settings",
+    "subTitle": "Settings for the Leaflet Map and Elevation Chart",
+    "param13": {
+        "text": "Show Elevation Chart",
+        "description": "Show the elevation Chart. Or not.",
+        "info": "Show the elevation Chart. Or not."
+    },
+    "param12": {
+        "text": "Colour Theme for Leaflet Elevation",
+        "values": {
+            "martin-theme": "Martin",
+            "lime-theme": "Lime",
+            "steelblue-theme": "Steelblue",
+            "purple-theme": "Purple",
+            "yellow-theme": "Yellow",
+            "red-theme": "Red",
+            "magenta-theme": "Magenta",
+            "lightblue-theme": "Lightblue",
+            "custom-theme": "Benutzerdefiniert"
+        },
+        "description": "Theme for leaflet elevation Chart. Martin-theme is my special theme. Custom theme is customizable in Colours.",
+        "info": "Theme for leaflet elevation Chart. Martin-theme is my special theme. Custom theme is customizable in Colours."
+    },
+    "param11": {
+        "text": "Chart fill Colour (only for Custom)",
+        "description": "Colour to fill the area under the Elevation profile",
+        "info": "Colour to fill the area under the Elevation profile"
+    },
+    "param10": {
+        "text": "Chart Background Colour (only for Custom)",
+        "description": "Background Colour for the Elevation Chart",
+        "info": "Background Colour for the Elevation Chart"
+    },
+    "param9": {
+        "text": "Height of Chart in px",
+        "description": "Height of the leaflet elevation chart in pixels (px)",
+        "info": "Height of the leaflet elevation chart in pixels (px)"
+    },
+    "param1": {
+        "text": "Download GPX-Files",
+        "description": "Provide download link for GPX-Files",
+        "info": "Provide download link for the GPX-Tracks."
+    },
+    "param2": {
+        "text": "Show Address",
+        "description": "Show address of starting point (taken from the first image or GPX-coordinate in the GPX-track)",
+        "info": "Show start address of the tour. GPX-coords are taken from the first point in the GPX-track or from the first image."
+    },
+    "param3": {
+        "text": "Text for Start address",
+        "description": "Set the Text for the Start Address",
+        "info": "Text for header above start address"
+    },
+    "param4": {
+        "text": "Select the Map",
+        "values": {
+            "OpenStreetMap": "OpenStreetMap",
+            "OpenTopoMap": "OpenTopoMap",
+            "CycleOSM": "CycleOSM",
+            "Satellit": "Satellite"
+        },
+        "description": "Choose which map should be shown first. OpenTopoMap might be slow!",
+        "info": "Choose which map should be shown first. OpenTopoMap might be slow!"
+    },
+    "param5": {
+        "text": "Use local Tileserver",
+        "description": "ATTENTION: File .htaccess not checked yet!",
+        "info": "ATTENTION: File .htaccess not checked yet!"
+    },
+    "param6": {
+        "text": "Convert and serve local Tiles as webp",
+        "description": "Convert Tile-Files to webp (conversion settings in PHP only)",
+        "info": "Convert Tile-Files to webp (conversion settings in PHP only)"
+    },
+    "param7": {
+        "text": "Maximum Height of Map in px",
+        "description": "Height of the leaflet map in pixels (px)",
+        "info": "Height of the leaflet map in pixels (px)"
+    },
+    "param8": {
+        "text": "Aspect Ratio of Map",
+        "description": "Aspect ratio of Map Element on Page (used for responsiveness)",
+        "info": "Aspect ratio of Map Element on Page (used for responsiveness)"
+    }
+}

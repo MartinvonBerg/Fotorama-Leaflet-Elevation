@@ -1,0 +1,70 @@
+{
+    "sectionsText": "Swiper Slider Settings",
+    "subTitle": "Settings for the Swiper Slider only.",
+    "param1": {
+        "text": "Swiper Slide Change Effect",
+        "description": "",
+        "info": "Swiper Slide Change Effect. Cube works but is reduced in functionality (no-zoom and lightbox)"
+    },
+    "param11": {
+        "text": "Arrow Colour",
+        "description": "Color of the Arrow on Slider to change Slide.",
+        "info": "Color of the Arrow on Slider to change Slide."
+    },
+    "param7": {
+        "text": "Use Mousewheel for Slide Change",
+        "description": "Only active if there is one Slider on Page.",
+        "info": "Use the Mousewheel for Slide change. Only activated for ONE Slider on page."
+    },
+    "param4": {
+        "text": "Activate Zoom on Slider",
+        "description": "Activates the Zoom Function within the Swiper Slider",
+        "info": "Activates the Zoom Function within the Swiper Slider"
+    },
+    "param9": {
+        "text": "Set the Zoom Ratio for Swiper Zoom",
+        "description": "",
+        "info": "Defines the Zoom ratio for the Swiper Zoom Effect."
+    },
+    "param5": {
+        "text": "Use fslightbox for Fullscreen",
+        "description": "Requires an additional Plugin!",
+        "info": "Activate the fslightbox for Fullscreen Presentation. Mind: Requires the installation of another Plugin from me!"
+    },
+    "param2": {
+        "text": "Thumbnailbar Type",
+        "values": {
+            "integrated": "Swiper",
+            "special": "Special",
+            "none": "none"
+        },
+        "description": "",
+        "info": "Select Swiper native Thumbbar or my special Thumbbar"
+    },
+    "param3": {
+        "text": "Effect for Special Thumbbar",
+        "values": {
+            "active_border": "Border",
+            "active": "Brightness",
+            "active_animation": "Shake"
+        },
+        "description": "",
+        "info": "Select the Effect to show the active Image in the special Thumbbar"
+    },
+    "param10": {
+        "text": "Margin above Special Thumbbar in px",
+        "description": "",
+        "info": "Margin above Thumbbar in pixels"
+    },
+    "param8": {
+        "text": "Activate Hash Navigation",
+        "description": "Enables the option to use a page-link to a dedicated image.",
+        "info": "Use hashnavigation to directly jump to a dedicated Slider and Image."
+    },
+    "param12": {
+        "text": "Define srcset for responsive images",
+        "pattern": ".{0,20}",
+        "description": "Define 'sizes' for responsive images. Type 'none' if you don't want to use it.",
+        "info": "Define srcset for responsive images"
+    }
+}

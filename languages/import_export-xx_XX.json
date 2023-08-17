@@ -1,0 +1,14 @@
+{
+    "sectionsText": "Import or Export Settings to / from JSON-File.",
+    "subTitle": "",
+    "param1": {
+        "text": "Load Settings from JSON-File",
+        "description": "JSON-File : Contains all settings from the database",
+        "info": "JSON-File : Contains all settings from the database"
+    },
+    "param2": {
+        "text": "Export Settings to JSON-File. ",
+        "description": "Download settings",
+        "info": "Download settings"
+    }
+}

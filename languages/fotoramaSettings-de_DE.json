@@ -1,0 +1,48 @@
+{
+    "sectionsText": "Fotorama Slider Einstellungen",
+    "subTitle": "Einstellungen ausschließlich für den Fotorama Slider",
+    "param16": {
+        "text": "Übergangsart der Bilder",
+        "values": {
+            "slide": "Dia-Show",
+            "crossfade": "Überblendung",
+            "dissolve": "Auflösen"
+        },
+        "description": "Art des Übergangs zwischen den Bildern",
+        "info": "Art des Übergangs zwischen den Bildern"
+    },
+    "param19": {
+        "text": "Autoplay Diashow",
+        "description": "Werte: false (kein Autoplay), true (starte automatisch), oder ganzzahliger Wert in Millisekunden (starte automatisch nach x Millisekunden)",
+        "info": "Werte: false (kein Autoplay), true (starte automatisch), oder ganzzahliger Wert in Millisekunden (starte automatisch nach x Millisekunden)"
+    },
+    "param18": {
+        "text": "Fortlaufender Durchlauf der Bilder",
+        "description": "Fortlaufender Durchlauf der Bilder (mit dem ersten Dia fortfahren, wenn das letzte erreicht ist)",
+        "info": "Fortlaufender Durchlauf der Bilder (mit dem ersten Dia fortfahren, wenn das letzte erreicht ist)"
+    },
+    "param20": {
+        "text": "Steuer-Pfeile im Slider anzeigen",
+        "values": {
+            "true": "Ja",
+            "false": "Bei Hover",
+            "always": "Immer"
+        },
+        "description": "Pfeile für den Schieberegler anzeigen. 'Immer' : Steuerelemente bei Hover oder Tap nicht ausblenden",
+        "info": "Pfeile für den Schieberegler anzeigen. 'Immer' : Steuerelemente bei Hover oder Tap nicht ausblenden"
+    },
+    "param9": {
+        "text": "Position der Thumbnails",
+        "values": {
+            "bottom": "Unterhalb",
+            "top": "Oberhalb"
+        },
+        "description": "Position der Thumbnailbar (=Thumbbar)",
+        "info": "Position der Thumbnailbar (=Thumbbar)"
+    },
+    "param10": {
+        "text": "Thumbnailbar-Breite in %",
+        "description": "Breite der Thumbnailbar in Prozent relativ zur Slidergröße",
+        "info": "Breite der Thumbnailbar in Prozent relativ zur Slidergröße"
+    }
+}

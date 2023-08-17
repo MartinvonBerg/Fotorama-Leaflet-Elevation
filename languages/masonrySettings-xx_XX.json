@@ -1,0 +1,44 @@
+{
+    "sectionsText": "Mini Masonry Settings",
+    "subTitle": "Settings for the MiniMasonry Gallery only. Used General settings: Slide Background Colour, Define File Filter and sorting, Define File sort Order, Show Caption, Short Caption, Images with GPS required, Max Width of Container in, Min Width of one CSS-grid Row",
+    "param0": {
+        "text": "Use fslightbox for Fullscreen",
+        "description": "Requires an additional Plugin!",
+        "info": "Activate the fslightbox for Fullscreen Presentation. Mind: Requires the installation of another Plugin from me!"
+    },
+    "param1": {
+        "text": "Optimize Space needed for the Gallery",
+        "description": "Minimizes the Space needed for the Gallery",
+        "info": "Minimizes the Space needed for the Gallery"
+    },
+    "param2": {
+        "text": "Horizontal Gutter-X in px",
+        "description": "Horizontal or X Gutter (Space, Gap) between Images in px",
+        "info": "Horizontal or X Gutter (Space, Gap) between Images in px"
+    },
+    "param3": {
+        "text": "Vertical Gutter-Y in px",
+        "description": "Vertical or Y-Gutter (Space, Gap) between Images in px",
+        "info": "Vertical or Y-Gutter (Space, Gap) between Images in px"
+    },
+    "param4": {
+        "text": "Vertical Gutter-Y in px if one Row is shown",
+        "description": "Gutter-Y applied when only 1 column can be displayed in px",
+        "info": "Gutter-Y applied when only 1 column can be displayed in px"
+    },
+    "param5": {
+        "text": "Use left and right Gutter",
+        "description": "Use left gutter on first column and right gutter on last",
+        "info": "Use left gutter on first column and right gutter on last"
+    },
+    "param6": {
+        "text": "Header for Info Popup",
+        "description": "Header for Info Popup",
+        "info": "Header for Info Popup"
+    },
+    "param7": {
+        "text": "Google Maps API Key",
+        "description": "Type the Google Maps API Key taken from the Google Cloud Platform page",
+        "info": "Type the Google Maps API Key taken from the Google Cloud Platform page"
+    }
+}

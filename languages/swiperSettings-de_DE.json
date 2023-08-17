@@ -1,0 +1,69 @@
+{
+    "sectionsText": "Swiper-Slider Einstellungen",
+    "subTitle": "Einstellungen nur für den Swiper-Slider",
+    "param1": {
+        "text": "Übergangsart der Bilder",
+        "description": "Swiper Bild-Wechsel-Effekt. 'Cube' funktioniert, ist aber in seiner Funktionalität eingeschränkt (kein Zoom und kein Lightbox)",
+        "info": "Swiper Bild-Wechsel-Effekt. 'Cube' funktioniert, ist aber in seiner Funktionalität eingeschränkt (kein Zoom und kein Lightbox)"
+    },
+    "param11": {
+        "text": "Pfeilfarbe",
+        "description": "Farbe des Pfeils im Slider, um das angezeigte Bild zu ändern",
+        "info": "Farbe des Pfeils im Slider, um das angezeigte Bild zu ändern"
+    },
+    "param7": {
+        "text": "Mausrad zum Diawechsel verwenden",
+        "description": "Mausrad zum Diawechsel verwenden. Nur aktiv, wenn es genau einen Slider auf der Seite gibt",
+        "info": "Mausrad zum Diawechsel verwenden. Nur aktiv, wenn es genau einen Slider auf der Seite gibt"
+    },
+    "param4": {
+        "text": "Zoom für Slider aktivieren",
+        "description": "Aktiviert die Zoom-Funktion im Swiper-Slider",
+        "info": "Aktiviert die Zoom-Funktion im Swiper-Slider"
+    },
+    "param9": {
+        "text": "Legt das Zoomverhältnis für den Swiper-Zoom fest",
+        "description": "Legt das Zoomverhältnis für den Swiper-Zoom-Effekt fest",
+        "info": "Legt das Zoomverhältnis für den Swiper-Zoom-Effekt fest"
+    },
+    "param5": {
+        "text": "fslightbox für Vollbildschirm verwenden",
+        "description": "Aktivieren Sie die fslightbox für die Vollbilddarstellung. Achtung! Benötigt die Installation eines weiteren Plugins von mir! (Name: Simple Lightbox for WordPress)",
+        "info": "Aktivieren Sie die fslightbox für die Vollbilddarstellung. Achtung! Benötigt die Installation eines weiteren Plugins von mir! (Name: Simple Lightbox for WordPress)!"
+    },
+    "param2": {
+        "text": "Typ der Thumbnails",
+        "values": {
+            "integrated": "Swiper",
+            "special": "Spezial",
+            "none": "Keine"
+        },
+        "description": "Verwende die Thumbnailbar von Swiper oder meine spezielle Thumbnailbar oder keine",
+        "info": "Verwende die Thumbnailbar von Swiper oder meine spezielle Thumbnailbar oder keine"
+    },
+    "param3": {
+        "text": "Spezielle Thumbbar: Hervorhebung des aktiven Bildes",
+        "values": {
+            "active_border": "Farb-Rahmen",
+            "active": "Helligkeit",
+            "active_animation": "Wackeln"
+        },
+        "description": "Legt den Effekt fest, um das aktive Bild in der speziellen Thumbbar hervorzuheben",
+        "info": "Legt den Effekt fest, um das aktive Bild in der speziellen Thumbbar hervorzuheben"
+    },
+    "param10": {
+        "text": "Abstand über der speziellen Thumbbar in px",
+        "description": "Abstand über der speziellen Thumbbar in px",
+        "info": "Abstand über der speziellen Thumbbar in px"
+    },
+    "param8": {
+        "text": "Hash-Navigation aktivieren",
+        "description": "Aktiviert die Option, einen Seiten-Link zu einem bestimmten Bild im Slider zu verwenden. Verwenden Sie Hashnavigation, um direkt zu einem bestimmten Slider und Bild zu springen",
+        "info": "Aktiviert die Option, einen Seiten-Link zu einem bestimmten Bild im Slider zu verwenden. Verwenden Sie Hashnavigation, um direkt zu einem bestimmten Slider und Bild zu springen"
+    },
+    "param12": {
+        "text": "Definiere srcset für responsive Bilder",
+        "description": "Definieren Sie 'sizes' für responsive Bilder. Geben Sie 'none' ein, wenn Sie es nicht verwenden wollen.",
+        "info": "Definieren Sie 'sizes' für responsive Bilder. Geben Sie 'none' ein, wenn Sie es nicht verwenden wollen."
+    }
+}

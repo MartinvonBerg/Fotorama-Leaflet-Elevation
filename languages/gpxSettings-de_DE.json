@@ -1,0 +1,39 @@
+{
+    "sectionsText": "GPX-Dateieinstellungen + Upload",
+    "subTitle": "Hinweis: GPX-Routen ohne Höhendaten sollten in Tracks mit Höhendaten mittels www.gpsvisualizer.com umgewandelt werden. Der Button unten speichert die Einstellungen und / oder die GPX-Datei. Optional: Trackdaten ohne Höhendaten werden übersprungen. Tracksegmente und Routen werden zusammengefasst. Wegpunkte werden ignoriert. Trackname wird auf Dateiname gesetzt.",
+    "param0": {
+        "text": "Pfad zu GPX-Dateien",
+        "description": "Pfad zu Datei(en) mit GPX-Track(s) relativ zum Wordpress-Uploads-Ordner, z.B.: 'gpx' ergibt: ../wordpress/wp-content/uploads/gpx. Pfad ohne führende und nachfolgende Schrägstriche definieren.",
+        "info": "Pfad zu Datei(en) mit GPX-Track(s) relativ zum Wordpress-Uploads-Ordner, z.B.: 'gpx' ergibt: ../wordpress/wp-content/uploads/gpx. Pfad ohne führende und nachfolgende Schrägstriche definieren."
+    },
+    "param1": {
+        "text": "GPX-Datei auswählen",
+        "description": "GPX-Datei : Route(n) und Track(s) kombinieren, mit den untenstehenden Einstellungen reduzieren und Track-Statistiken (Tracklänge und Höhengewinn und -verlust) hinzufügen. Wird nur beim Hochladen verwendet. Die Datei muss auch im Shortcode definiert werden. Im Shortcode kann auch eine kommagetrennte Liste für mehrere Dateien verwendet werden, z.B.: 'f1.gpx, f2.gpx, f3.gpx'",
+        "info": "GPX-Datei : Route(n) und Track(s) kombinieren, mit den untenstehenden Einstellungen reduzieren und Track-Statistiken (Tracklänge und Höhengewinn und -verlust) hinzufügen. Wird nur beim Hochladen verwendet. Die Datei muss auch im Shortcode definiert werden. Im Shortcode kann auch eine kommagetrennte Liste für mehrere Dateien verwendet werden, z.B.: 'f1.gpx, f2.gpx, f3.gpx'"
+    },
+    "param2": {
+        "text": "GPX-Datei verkleinern",
+        "description": "GPX-Datei : Route(n) und Track(s) kombinieren, mit den untenstehenden Einstellungen reduzieren und Track-Statistiken (Tracklänge und Höhengewinn und -verlust) hinzufügen",
+        "info": "GPX-Datei : Route(n) und Track(s) kombinieren, mit den untenstehenden Einstellungen reduzieren und Track-Statistiken (Tracklänge und Höhengewinn und -verlust) hinzufügen"
+    },
+    "param5": {
+        "text": "Track-Punkte mit Höhe=0 ignorieren.",
+        "description": "GPX-Datei hochladen: Track-Punkte mit Höhe=0 ignorieren. Notwendig für einige Geräte, weil sie 0 als Höhendaten schreiben, wenn die GPX-Genauigkeit nicht ausreicht",
+        "info": "GPX-Datei hochladen: Track-Punkte mit Höhe=0 ignorieren. Notwendig für einige Geräte, weil sie 0 als Höhendaten schreiben, wenn die GPX-Genauigkeit nicht ausreicht"
+    },
+    "param3": {
+        "text": "Min. Distanz zur Verringerung der Trackpunkte [m]",
+        "description": "Min. Abstand der Trackpunkte in Metern (am besten 25 m für jede Art von Bergsteigen)",
+        "info": ""
+    },
+    "param4": {
+        "text": "Glättung Höhendaten [m]",
+        "description": "Min. Höhe zwischen Trackpunkten in Metern. Wird nur für Track-Statistik verwendet. Am besten ist 4.",
+        "info": ""
+    },
+    "param6": {
+        "text": "GPX-Datei überschreiben",
+        "description": "Vorhandene GPX-Datei überschreiben",
+        "info": ""
+    }
+}

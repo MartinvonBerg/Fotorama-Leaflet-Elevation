@@ -1,0 +1,48 @@
+{
+    "sectionsText": "Fotorama Slider Settings",
+    "subTitle": "Settings for the Fotorama Slider only.",
+    "param16": {
+        "text": "Slide Transition Type",
+        "values": {
+            "slide": "Slide",
+            "crossfade": "Crossfade",
+            "dissolve": "Dissolve"
+        },
+        "description": "",
+        "info": "Type of transition between Slides."
+    },
+    "param19": {
+        "text": "Autoplay Slideshow",
+        "description": "Values: false, true, or integer value in milliseconds",
+        "info": "Autoplay or loop the slider. On with \"true\" or any numeric interval in milliseconds. Of with \"false\""
+    },
+    "param18": {
+        "text": "Loop through Slides",
+        "description": "loop",
+        "info": "Loop through images (proceed with first slide after reaching the last one)"
+    },
+    "param20": {
+        "text": "Show Arrows",
+        "values": {
+            "true": "True",
+            "false": "False",
+            "always": "Always"
+        },
+        "description": "",
+        "info": "Show arrows for the slider control. 'always' : Do not hide controls on hover or tap"
+    },
+    "param9": {
+        "text": "Thumbnailbar Position",
+        "values": {
+            "bottom": "Bottom",
+            "top": "Top"
+        },
+        "description": "Provide download link for GPX-Files",
+        "info": "Position of the Thumbnailbar (=Thumbbar)"
+    },
+    "param10": {
+        "text": "Thumbnailbar Width in %",
+        "description": "",
+        "info": "Width of the Thumbnailbar in percent relative to Slider size."
+    }
+}

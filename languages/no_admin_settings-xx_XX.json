@@ -1,0 +1,18 @@
+{
+    "sectionsText": "Parameters without Admin Settings but Shortcode",
+    "param0": {
+        "info": "Show all Tracks from List of GPX-Files at once on the Map."
+    },
+    "param1": {
+        "info": "Define the Map center for the Map that shows a Marker only."
+    },
+    "param2": {
+        "info": "Define the Zoom Level for the Map that shows a Marker only."
+    },
+    "param3": {
+        "info": "Define the Marker Text for the Map that shows a Marker only."
+    },
+    "param4": {
+        "info": "Define a simple Filter for Files given by *imgpath*, e.g. if using a WordPress Standard-Folder like ../uploads/2023/01 and taking only pictures containing *filefilter* in filenames. Default empty, so no filtering. Seperate filters by commas. Mind that filters are combined by logical AND!"
+    }
+}

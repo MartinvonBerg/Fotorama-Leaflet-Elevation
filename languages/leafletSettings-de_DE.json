@@ -1,0 +1,86 @@
+{
+    "sectionsText": "Leaflet Karte und Höhendiagramm Einstellungen",
+    "subTitle": "Einstellungen für die Leaflet Karte und das Höhendiagramm",
+    "param13": {
+        "text": "Höhendiagramm anzeigen",
+        "description": "Zeige das Höhendiagramm",
+        "info": "Zeige das Höhendiagramm"
+    },
+    "param12": {
+        "text": "Farbthema für das Höhendiagramm",
+        "values": {
+            "martin-theme": "Martin",
+            "lime-theme": "Limette",
+            "steelblue-theme": "Stahlblau",
+            "purple-theme": "Lila",
+            "yellow-theme": "Gelb",
+            "red-theme": "Rot",
+            "magenta-theme": "Magenta",
+            "lightblue-theme": "Hellblau",
+            "custom-theme": "Custom"
+        },
+        "description": "Farbthema für das Höhendiagramm. Martin-Theme ist mein spezielles Theme. Das Custom-Theme ist in den Farben anpassbar",
+        "info": "Farbthema für das Höhendiagramm. Martin-Theme ist mein spezielles Theme. Das Custom-Theme ist in den Farben anpassbar"
+    },
+    "param11": {
+        "text": "Diagrammfüllfarbe (nur für Custom)",
+        "description": "Farbe zum Füllen des Bereichs unter dem Höhenprofil",
+        "info": "Farbe zum Füllen des Bereichs unter dem Höhenprofil"
+    },
+    "param10": {
+        "text": "Diagramm-Hintergrundfarbe (nur für Custom)",
+        "description": "Hintergrundfarbe für das Höhendiagramm",
+        "info": "Hintergrundfarbe für die Höhentabelle"
+    },
+    "param9": {
+        "text": "Höhe des Höhendiagramms in px",
+        "description": "Höhe des Höhendiagramms in px (wird ggf. bei responsive angepasst)",
+        "info": "Höhe des Höhendiagramms in px (wird ggf. bei responsive angepasst)"
+    },
+    "param1": {
+        "text": "Download-Link für GPX-Dateien",
+        "description": "Download-Link für GPX-Dateien erzeugen",
+        "info": "Download-Link für GPX-Dateien erzeugen"
+    },
+    "param2": {
+        "text": "Start-Adresse anzeigen",
+        "description": "Adresse des Startpunktes anzeigen (wird aus dem ersten Bild oder der GPX-Koordinate im GPX-Track ermittelt. Bei Bildern ändert die Bildsortierung die Adresse.)",
+        "info": "Adresse des Startpunktes anzeigen (wird aus dem ersten Bild oder der GPX-Koordinate im GPX-Track ermittelt. Bei Bildern ändert die Bildsortierung die Adresse.)"
+    },
+    "param3": {
+        "text": "Text für Startadresse",
+        "description": "Legen Sie den Text für die Startadresse fest (nur 'start address' wird automatisch übersetzt)",
+        "info": "Legen Sie den Text für die Startadresse fest (nur 'start address' wird automatisch übersetzt)"
+    },
+    "param4": {
+        "text": "Kartentyp festlegen",
+        "values": {
+            "OpenStreetMap": "OpenStreetMap",
+            "OpenTopoMap": "OpenTopoMap",
+            "CycleOSM": "CycleOSM",
+            "Satellit": "Satellit"
+        },
+        "description": "Wählen Sie, welche Karte zuerst angezeigt werden soll. OpenTopoMap kann sehr langsam sein!",
+        "info": "Wählen Sie, welche Karte zuerst angezeigt werden soll. OpenTopoMap kann sehr langsam sein!"
+    },
+    "param5": {
+        "text": "Lokalen Tileserver für Karte verwenden",
+        "description": "ACHTUNG: Datei .htaccess noch nicht geprüft!",
+        "info": "ACHTUNG: Datei .htaccess noch nicht geprüft!"
+    },
+    "param6": {
+        "text": "Lokale Karten-Tiles in webp konvertieren und bereitstellen",
+        "description": "Kachel-Dateien zur Karte in webp konvertieren (Konvertierungseinstellungen zu webp nur als Variable in PHP)",
+        "info": "Kachel-Dateien zur Karte in webp konvertieren (Konvertierungseinstellungen zu webp nur als Variable in PHP)"
+    },
+    "param7": {
+        "text": "Maximale Höhe der Karte in px",
+        "description": "Maximale Höhe der Leaflet-Karte in px",
+        "info": "Maximale Höhe der Leaflet-Karte in px"
+    },
+    "param8": {
+        "text": "Seitenverhältnis der Karte",
+        "description": "Seitenverhältnis der Leaflet-Karte (wird für responsive verwendet)",
+        "info": "Seitenverhältnis der Leaflet-Karte (wird für responsive verwendet)"
+    }
+}

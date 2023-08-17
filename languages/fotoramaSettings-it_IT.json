@@ -1,0 +1,48 @@
+{
+    "sectionsText": "Impostazioni dello slider di Fotorama",
+    "subTitle": "Solo impostazioni dello slider Fotorama",
+    "param16": {
+        "text": "Tipo di transizione delle immagini",
+        "values": {
+            "slide": "slide",
+            "crossfade": "crossfade",
+            "dissolve": "dissolve"
+        },
+        "description": "Tipo di transizione tra le immagini",
+        "info": "Tipo di transizione tra le immagini"
+    },
+    "param19": {
+        "text": "Presentazione automatica",
+        "description": "valori: false (nessun autoplay), true (avvio automatico) o valore intero in millisecondi (avvio automatico dopo x millisecondi)",
+        "info": "valori: false (nessun autoplay), true (avvio automatico) o valore intero in millisecondi (avvio automatico dopo x millisecondi)"
+    },
+    "param18": {
+        "text": "Scorrimento continuo delle immagini",
+        "description": "Scorrimento continuo delle immagini (continua con la prima diapositiva quando viene raggiunta l'ultima)",
+        "info": "Scorrimento continuo delle immagini (continua con la prima diapositiva quando viene raggiunta l'ultima)"
+    },
+    "param20": {
+        "text": "Mostra frecce di controllo nello slider",
+        "values": {
+            "true": "Si",
+            "false": "Al passaggio del mouse",
+            "always": "Sempre"
+        },
+        "description": "Mostra le frecce del cursore. 'Sempre' : non nascondere i controlli al passaggio del mouse o al tocco",
+        "info": "Mostra frecce di scorrimento. 'Sempre': non nascondere i controlli al passaggio o al tocco"
+    },
+    "param9": {
+        "text": "Posizione delle Miniature",
+        "values": {
+            "bottom": "Sotto",
+            "top": "Sopra"
+        },
+        "description": "Posizione della barra delle miniature (=Thumbbar)",
+        "info": "Posizione della barra delle miniature (=Thumbbar)"
+    },
+    "param10": {
+        "text": "Larghezza della barra delle miniature in %",
+        "description": "Larghezza della barra delle miniature in % rispetto alle dimensioni del cursore",
+        "info": "Larghezza della barra delle miniature in percentuale rispetto alle dimensioni del cursore"
+    }
+}

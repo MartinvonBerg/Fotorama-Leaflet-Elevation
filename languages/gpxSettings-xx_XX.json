@@ -1,0 +1,39 @@
+{
+    "sectionsText": "GPX-File settings + upload",
+    "subTitle": "Hint: GPX-routes without elevation data should be converted to tracks with www.gpsvisualizer.com. Trackdata without elevation will be skipped on demand. Tracksegments will be combined. Routes and waypoints will be ignored. Trackname will be set to filename. Button Save GPX-File underneath will save settings and / or GPX-File.",
+    "param0": {
+        "text": "Path to GPX-Files",
+        "description": "Define path without leading and trailing slashes",
+        "info": "Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder, e.g: ../wordpress/wp-content/uploads/gpx"
+    },
+    "param1": {
+        "text": "Select GPX-File",
+        "description": "GPX-File : Combine Route(s) and Track(s), Reduce with Settings below and add Track Statistics (Track length and Elevation gain and loss).",
+        "info": "Used for uploading only. Define the file in your shortcode, too!. File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: \"f1.gpx, f2.gpx, f3.gpx\""
+    },
+    "param2": {
+        "text": "Reduce GPX-File",
+        "description": "GPX-File :  Combine Route(s) and Track(s), Reduce with Settings below and add Track Statistics (Track length and Elevation gain and loss).",
+        "info": ""
+    },
+    "param5": {
+        "text": "Ignore Track Points with Zero Elevation.",
+        "description": "Upload GPX-File : Ignore Track Points with Zero Elevation. Necessary for some devices, because they write \"0\" as Elevation Data if GPX accuracy is not sufficient",
+        "info": "Ignore Track Points with Zero Elevation in Chart. Necessary for some devices, because they write \"0\" as Elevation Data if GPX accuracy is not sufficient"
+    },
+    "param3": {
+        "text": "Distance Smooth",
+        "description": "Min. Distance of Track Points in Meters (25m best for mountaineering of any kind)",
+        "info": ""
+    },
+    "param4": {
+        "text": "Elevation Smooth",
+        "description": "Min. Elevation between Track Points in Meters. Used for Statistics Calc only. Best is 4.",
+        "info": ""
+    },
+    "param6": {
+        "text": "Overwrite GPX-File",
+        "description": "Overwrite existing GPX-File",
+        "info": ""
+    }
+}

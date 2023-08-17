@@ -1,10 +1,10 @@
 {
     "sectionsText": "Allgemeine Einstellungen",
-    "subTitle": "Allgemeine Einstellungen für alle Slider und Darstellung des Sliders mit Karte auf der Seite.",
+    "subTitle": "Allgemeine Einstellungen für alle Slider und Darstellung des Sliders mit Karte auf der Seite",
     "param5": {
         "text": "Slider Typ",
-        "description": "Auswahl des Slider, um die Bilder anzuzeigen. Swiper funktioniert mit Fotos und Videos, Fotorama nur mit Bildern..",
-        "info": "Auswahl des Slider, um die Bilder anzuzeigen. Swiper funktioniert mit Fotos und Videos, Fotorama nur mit Bildern."
+        "description": "Auswahl des Slider, um die Bilder anzuzeigen. Swiper funktioniert mit Fotos und Videos, Fotorama nur mit Bildern",
+        "info": "Auswahl des Slider, um die Bilder anzuzeigen. Swiper funktioniert mit Fotos und Videos, Fotorama nur mit Bildern"
     },
     "param6": {
         "text": "Art der Bild-Skalierung für den Slider",
@@ -30,203 +30,85 @@
             "true": "Aufnahmedatum",
             "fileending": "Dateiname"
         },
-        "info": "Lege die Arte der Bildersortierung fest."
+        "info": "Lege die Arte der Bildersortierung fest"
     },
     "param20": {
-        "label": "sortorder",
-        "text": "Define File sort Order",
-        "class": "common_row",
-        "custom_data": "custom20",
-        "type": "select",
+        "text": "Sortierung der Dateien",
         "values": {
-            "asc": "Ascending",
-            "desc": "Descending"
+            "asc": "Aufsteigend",
+            "desc": "Absteigend"
         },
-        "default": "asc",
-        "description": "Define the sort Order of Files",
-        "shortcode": "sortorder",
-        "info": "Define the sort Order of Files."
+        "description": "Legt die Sortierreihenfolge der Dateien fest",
+        "info": "Legt die Sortierreihenfolge der Dateien fest"
     },
     "param1": {
-        "label": "show_caption_4",
-        "text": "Show Caption",
-        "class": "common_row",
-        "custom_data": "custom1",
-        "type": "checkbox",
-        "values": "",
-        "default": "true",
-        "description": "Show the Caption in slider or masonry Gallery",
-        "shortcode": "showcaption",
-        "info": "Show the caption in the Slider"
+        "text": "Beschriftung zum Bild anzeigen",
+        "description": "Beschriftung in Slider oder Masonry Gallery anzeigen",
+        "info": "Beschriftung in Slider oder Masonry Gallery anzeigen"
     },
     "param2": {
-        "label": "short_caption",
-        "text": "Short Caption",
-        "class": "common_row",
-        "custom_data": "custom2",
-        "type": "checkbox",
-        "values": "",
-        "default": "true",
-        "description": "Show short caption only. (Don not show image metadata from EXIF)",
-        "shortcode": "shortcaption",
-        "info": "Show short caption only. (Do not show image metadata from EXIF)"
+        "text": "Kurze Beschriftung",
+        "description": "Nur kurze Beschriftung anzeigen, d.h. nur den Titel (Keine Bild-Metadaten aus EXIF anzeigen)",
+        "info": "Nur kurze Beschriftung anzeigen, d.h. nur den Titel (Keine Bild-Metadaten aus EXIF anzeigen)"
     },
     "param3": {
-        "label": "images_with_gps_required_5",
-        "text": "Images with GPS required",
-        "class": "common_row",
-        "custom_data": "custom3",
-        "type": "checkbox",
-        "values": "",
-        "default": "true",
-        "description": "Show images only if they provide GPS-Data in EXIF. Remember to set showmap=\"false\".",
-        "shortcode": "requiregps",
-        "info": "Require images to have GPS-data in EXIF. Show image only if it provides GPS-Data in its EXIF."
+        "text": "Zeiger nur Bilder mit GPS-Daten",
+        "description": "Zeige Bilder nur dann an, wenn sie GPS-Daten im EXIF enthalten. Dabei muss der Parameter showmap=\"false\" gesetzt werden (wird nicht automatisch geprüft)",
+        "info": "Zeige Bilder nur dann an, wenn sie GPS-Daten im EXIF enthalten. Dabei muss der Parameter showmap=\"false\" gesetzt werden (wird nicht automatisch geprüft)"
     },
     "param24": {
-        "label": "max_width_of_container_12",
-        "text": "Max Width of Container in px",
-        "class": "common_row",
-        "custom_data": "custom24",
-        "type": "number",
-        "values": 1500,
-        "default": 1500,
-        "min": 100,
-        "max": 1500,
-        "description": "",
-        "shortcode": "maxwidth",
-        "info": "Maximum width of the whole container with slider and map"
+        "text": "Maximale Breite in px",
+        "description": "Maximale Breite in px des gesamten Containers mit Slider, Karte und Höhendiagramm",
+        "info": "Maximale Breite in px des gesamten Containers mit Slider, Karte und Höhendiagramm"
     },
     "param25": {
-        "label": "min_width_css_grid_row_14",
-        "text": "Min Width of one CSS-grid Row in px",
-        "class": "common_row",
-        "custom_data": "custom25",
-        "type": "number",
-        "values": 480,
-        "default": 480,
-        "min": 50,
-        "max": 1500,
-        "description": "",
-        "shortcode": "minrowwidth",
-        "info": "Minimum width of one row of the CSS-Grid. If greater than maxwidth\/2: Slider and the map are never shown in one row. Mind that the max. width of the outer div may be inherited from other elements or set by the theme."
+        "text": "Minimale Breite von Slider und Karte in px",
+        "description": "Minimale Breite einer Zeile (Slider und / oder Karte) in px. Wenn die minimale Breite größer als die halbe maximale Breite ist, werden der Slider und die Karte werden nie in einer Zeile angezeigt. Beachten Sie, dass die maximale Breite von Slider+Karte+Chart von anderen Elementen oder durch das Theme festgelegt werden kann",
+        "info": "Minimale Breite einer Zeile (Slider und / oder Karte) in px. Wenn die minimale Breite größer als die halbe maximale Breite ist, werden der Slider und die Karte werden nie in einer Zeile angezeigt. Beachten Sie, dass die maximale Breite von Slider+Karte+Chart von anderen Elementen oder durch das Theme festgelegt werden kann"
     },
     "param11": {
-        "label": "f_thumbwidth",
-        "text": "Thumbnail Width in px",
-        "class": "common_row",
-        "custom_data": "custom11",
-        "type": "number",
-        "values": 96,
-        "default": 96,
-        "min": 10,
-        "max": 200,
-        "description": "",
-        "shortcode": "f_thumbwidth",
-        "info": "Width of the single thumbnail in the navigation bar in pixels"
+        "text": "Thumbnail-Breite in px",
+        "description": "Breite des einzelnen Thumbnails in der Navigationsleiste in Pixel",
+        "info": "Breite des einzelnen Thumbnails in der Navigationsleiste in Pixel"
     },
     "param12": {
-        "label": "f_thumbheight",
-        "text": "Thumbnail Height in px",
-        "class": "common_row",
-        "custom_data": "custom12",
-        "type": "number",
-        "values": 64,
-        "default": 64,
-        "min": 10,
-        "max": 200,
-        "description": "",
-        "shortcode": "f_thumbheight",
-        "info": "Height of the single thumbnail in the navigation bar in pixels"
+        "text": "Thumbnail-Höhe in px",
+        "description": "Höhe des einzelnen Vorschaubildes in der Navigationsleiste in Pixel",
+        "info": "Höhe des einzelnen Vorschaubildes in der Navigationsleiste in Pixel"
     },
     "param13": {
-        "label": "thumbmargin",
-        "text": "Thumbnail Side Margin in px",
-        "class": "common_row",
-        "custom_data": "custom13",
-        "type": "number",
-        "values": 2,
-        "default": 2,
-        "min": 0,
-        "max": 20,
-        "description": "",
-        "shortcode": "thumbmargin",
-        "info": "Margin between thumbnails in pixels"
+        "text": "Seitlicher Margin eines Thumbnails in px",
+        "description": "Seitlicher Margin der Vorschaubilder (Thumbnails) in px",
+        "info": "Seitlicher Margin der Vorschaubilder (Thumbnails) in px"
     },
     "param14": {
-        "label": "thumbborderwidth",
-        "text": "Thumbnail Border Width in px",
-        "class": "common_row",
-        "custom_data": "custom14",
-        "type": "number",
-        "values": 2,
-        "default": 2,
-        "min": 0,
-        "max": 20,
-        "description": "",
-        "shortcode": "thumbborderwidth",
-        "info": "Width of the coloured thumbnail border in pixels"
+        "text": "Rahmenbreite des Thumbnails in px",
+        "description": "Breite des farbigen Thumbnail-Rahmens in Pixel",
+        "info": "Breite des farbigen Thumbnail-Rahmens in Pixel"
     },
     "param15": {
-        "label": "thumbbordercolor",
-        "text": "Thumbnail Border Colour",
-        "class": "common_row",
-        "custom_data": "custom15",
-        "type": "color",
-        "values": "#FF0000",
-        "default": "#FF0000",
-        "description": "",
-        "shortcode": "thumbbordercolor",
-        "info": "Color of thumbnail border in CSS name or HEX-value with #!. Attention: If there are multiple shortcodes on the page, the color of the LAST shortcode on the page will be taken."
+        "text": "Farbe des Thumbnail-Rahmens",
+        "description": "Farbe des Thumbnail-Rahmens als CSS-Name oder HEX-Wert mit führendem #",
+        "info": "Farbe des Thumbnail-Rahmens als CSS-Name oder HEX-Wert mit führendem #"
     },
     "param17": {
-        "label": "transitionduration",
-        "text": "Transition Duration in ms",
-        "class": "common_row",
-        "custom_data": "custom17",
-        "type": "number",
-        "values": 300,
-        "default": 300,
-        "min": 1,
-        "max": 2000,
-        "description": "",
-        "shortcode": "transitionduration",
-        "info": "Duration of Slide transition in ms"
+        "text": "Übergangsdauer in ms",
+        "description": "Dauer des Dia-Übergangs in ms",
+        "info": "Dauer des Dia-Übergangs in ms"
     },
     "param21": {
-        "label": "useCDN_13",
-        "text": "Add Permalink",
-        "class": "common_row",
-        "custom_data": "custom1",
-        "type": "checkbox",
-        "values": "",
-        "default": "true",
-        "description": " Add a Permalink to the attachment page of the Image. AND add the permalink ot the sitemap instead of the image link.",
-        "shortcode": "",
-        "info": ""
+        "text": "Permalink hinzufügen",
+        "description": "Füge einen Permalink zur Anhangseite des Bildes hinzu und füge den Permalink in die Sitemap anstelle des Bildlinks ein",
+        "info": "Füge einen Permalink zur Anhangseite des Bildes hinzu und füge den Permalink in die Sitemap anstelle des Bildlinks ein"
     },
     "param22": {
-        "label": "setCustomFields_15",
-        "text": "Set Custom Fields for post",
-        "class": "common_row",
-        "custom_data": "custom1",
-        "type": "checkbox",
-        "values": "",
-        "default": "true",
-        "description": "Set Custom Fields (geoadress, lat, lon) in post. Geoadress is for the address shown under the elevation chart. Lat.,Lon. is for the GPS-Coords used for the Overview-Map.",
-        "shortcode": "",
-        "info": ""
+        "text": "Benutzerdefinierte Felder für Beitrag schreiben",
+        "description": "Benutzerdefinierte Felder (geoadress, lat, lon) zum Beitrag setzen. Geoadress ist für die Adresse, die unter dem Höhendiagramm angezeigt wird. Lat.,Lon. ist für die GPS-Koordinaten, die für die Übersichtskarte verwendet werden",
+        "info": "Benutzerdefinierte Felder (geoadress, lat, lon) zum Beitrag setzen. Geoadress ist für die Adresse, die unter dem Höhendiagramm angezeigt wird. Lat.,Lon. ist für die GPS-Koordinaten, die für die Übersichtskarte verwendet werden"
     },
     "param23": {
-        "label": "doYoastXmlSitemap_16",
-        "text": "Generate Entries in Yoast XML-Sitemap for Fotorama Images",
-        "class": "common_row",
-        "custom_data": "custom1",
-        "type": "checkbox",
-        "values": "",
-        "default": "true",
-        "description": "Generate the Yoast XML-Sitemap with the images shown in the Slider. Used for SEO.",
-        "shortcode": "",
-        "info": ""
+        "text": "Erzeige Einträge in der Yoast XML-Sitemap",
+        "description": "Erzeugt die Yoast XML-Sitemap mit den im Slider angezeigten Bildern. Wird für SEO verwendet",
+        "info": "Erzeugt die Yoast XML-Sitemap mit den im Slider angezeigten Bildern. Wird für SEO verwendet"
     }
 }

@@ -1,0 +1,44 @@
+{
+    "sectionsText": "Mini-Masonry Einstellungen (experimentell)",
+    "subTitle": "Einstellungen für die MiniMasonry-Galerie. Für MiniMasonry verwendete allgemeine Einstellungen: Dia-Hintergrundfarbe, Dateifilter und -sortierung festlegen, Dateisortierreihenfolge festlegen, Bildunterschrift anzeigen, kurze Bildunterschrift, Bilder mit GPS erforderlich, maximale Breite des Containers in px, minimale Breite einer CSS-Rasterzeile px",
+    "param0": {
+        "text": "Nutze fslightbox zur Vollbilddarstellung",
+        "description": "Aktivieren Sie die fslightbox für die Vollbilddarstellung. Achtung! Benötigt die Installation eines weiteren Plugins von mir! (Name: Simple Lightbox for WordPress)",
+        "info": "Aktivieren Sie die fslightbox für die Vollbilddarstellung. Achtung! Benötigt die Installation eines weiteren Plugins von mir! (Name: Simple Lightbox for WordPress)"
+    },
+    "param1": {
+        "text": "Optimiere den für die Galerie benötigten Platz",
+        "description": "Minimiert den für die Galerie benötigten Platz",
+        "info": "Minimiert den für die Galerie benötigten Platz"
+    },
+    "param2": {
+        "text": "Horizontal Abstand X in px",
+        "description": "Horizontaler oder X-Balken (Abstand, Lücke) zwischen Bildern in px",
+        "info": "Horizontaler oder X-Balken (Abstand, Lücke) zwischen Bildern in px"
+    },
+    "param3": {
+        "text": "Vertikaler Randabstand Y in px",
+        "description": "Vertikaler Y-Gutter zum Rand (Abstand, Lücke) in px",
+        "info": "Vertikaler Y-Gutter zum Rand (Abstand, Lücke) in px"
+    },
+    "param4": {
+        "text": "Vertikaler Abstand Y in px, wenn nur eine Zeile angezeigt wird",
+        "description": "Gutter-Y in px, wenn nur eine Spalte angezeigt werden kann",
+        "info": "Gutter-Y angewandt, wenn nur eine Spalte in px angezeigt werden kann"
+    },
+    "param5": {
+        "text": "Linke und rechte Gutter verwenden",
+        "description": "Nutze den linken Randabstand für die erste und den rechten Randabstand für die letzte Spalte",
+        "info": "Nutze den linken Randabstand für die erste und den rechten Randabstand für die letzte Spalte"
+    },
+    "param6": {
+        "text": "Überschrift für Info-Popup",
+        "description": "Überschrift für Info-Popup",
+        "info": "Überschrift für Info-Popup"
+    },
+    "param7": {
+        "text": "Google Maps API-Schlüssel",
+        "description": "Geben Sie den Google Maps-API-Schlüssel von der Google Cloud Platform-Seite ein. Verwendet zur Karten-Anzeige im Info-Popup",
+        "info": "Geben Sie den Google Maps-API-Schlüssel von der Google Cloud Platform-Seite ein. Verwendet zur Karten-Anzeige im Info-Popup"
+    }
+}
