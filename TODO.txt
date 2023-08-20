@@ -19,5 +19,6 @@
             -- Masonry entfernen ? Dafür gibt es bessere Plugins. Nicht Thema des Plugins.
 ---- WordPress.org Upload:
             + Readme.txt erstellen
+            + Readme.md in Ordner languages erstellen: Arrays, Json, überladen, deepl, sprache ermitteln
             + echo, esc_html etc. korrekt umsetzen. oder durch json übersetzung und standardisierte Funktion ersetzen.
 

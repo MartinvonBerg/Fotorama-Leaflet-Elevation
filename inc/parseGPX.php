@@ -117,18 +117,18 @@ final class parseGpxFile {
             $ascent = intval($ascent);
             $descent = intval($descent);
             $dist = number_format_i18n($dist / 1000, 1);
-            $desc = 'Dist: ' . $dist . ' km, Gain: ' . $ascent . ' Hm, Loss: ' . $descent. ' Hm';
+            $desc = __('Dist', 'fotoramamulti') . ': ' . $dist . ' km, ' . __('Gain', 'fotoramamulti') . ': ' . $ascent . ' m, ' . __('Loss', 'fotoramamulti') . ': ' . $descent. ' m';
             $newTrack->recalculateStats();
 
             if ( $newTrack->stats->cumulativeElevationGain === null && $newTrack->stats->cumulativeElevationLoss === null && $newTrack->stats->distance === null ) {
-                $desc = 'No elevation or distance data in reduced route or track of GPX-File. Skipped';
+                $desc = 'No elevation or distance data in reduced route or track of GPX-File. Skipped'; // TODO
                 return $desc;
             }
 
             // Calc the new number of points
             $pointsafter = \sizeof( $newTrack->segments[0]->points );
             if ( $pointsafter === 0 ) {
-                $desc = 'File Skipped. No points in reduced track: ' . $desc . '. Please upload without reduction.';
+                $desc = 'File Skipped. No points in reduced track: ' . $desc . '. Please upload without reduction.'; // TODO
                 return $desc;
             }
 
@@ -152,10 +152,11 @@ final class parseGpxFile {
             $complete = $path . '/' . $newfile;
             $gpx_file->save($complete, \phpGPX\phpGPX::XML_FORMAT);
             $sizeafter = \filesize($complete) / 1024;
-            $desc .= ', Filesize (before / after): ' . number_format_i18n($sizebefore, 0) . ' / ' . number_format_i18n($sizeafter, 0) . ' kB';
-            $desc .= ', Points (before / after): ' . number_format_i18n($pointsbefore, 0) . ' / ' . number_format_i18n($pointsafter, 0);
+            $desc .= ', ' . __('Filesize', 'fotoramamulti') . ': '  . number_format_i18n(  $sizebefore, 0) . ' / ' . number_format_i18n($sizeafter,   0) . ' kB';
+            $desc .= ', ' . __('Points', 'fotoramamulti')   . ': '  . number_format_i18n($pointsbefore, 0) . ' / ' . number_format_i18n($pointsafter, 0);
+            $desc .= ' (' . __('before / after', 'fotoramamulti') . '): ';
         } else {
-            $desc = 'No routes or tracks in GPX-File. Skipped';
+            $desc = 'No routes or tracks in GPX-File. Skipped'; // TODO
         }
         
         return $desc;

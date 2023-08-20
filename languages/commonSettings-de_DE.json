@@ -26,7 +26,7 @@
     "param4": {
         "text": "Art der Bild-/Video-Sortierung: ",
         "values": {
-            "false": "Custom (gallery_sort)",
+            "false": "Sortierfeld (gallery_sort)",
             "true": "Aufnahmedatum",
             "fileending": "Dateiname"
         },

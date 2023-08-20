@@ -1,0 +1,18 @@
+{
+    "sectionsText": "parametro senza impostazioni admin ma con shortcode",
+    "param0": {
+        "info": "Mostra sulla mappa tutte le tracce dell'elenco di file GPX in una sola volta"
+    },
+    "param1": {
+        "info": "Imposta il centro della mappa per la mappa che mostra un solo marker"
+    },
+    "param2": {
+        "info": "Imposta il livello di zoom per la mappa che mostra un solo marcatore"
+    },
+    "param3": {
+        "info": "imposta il testo del marcatore per la mappa che mostra un solo marcatore"
+    },
+    "param4": {
+        "info": "Definisce un semplice filtro per i file caricati e filtrati da *imgpath*. Ad esempio, se una cartella predefinita di WordPress, come ../uploads/2023/01, viene usata come imgpath e devono essere visualizzate solo le immagini contenenti *filefilter* nel nome del file. Vuoto per impostazione predefinita, quindi nessun filtro. I filtri multipli devono essere separati da virgole. Si noti che i filtri sono combinati da un AND logico!"
+    }
+}

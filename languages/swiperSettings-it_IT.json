@@ -1,0 +1,69 @@
+{
+    "sectionsText": "Impostazioni dello slider Swiper",
+    "subTitle": "Solo Impostazioni dello slider Swiper",
+    "param1": {
+        "text": "Tipo di transizione delle immagini",
+        "description": "Effetto di transizione delle immagini di Swiper. 'Cube' funziona ma ha funzionalità limitate (niente zoom e niente lightbox)",
+        "info": "Effetto di transizione dell'immagine Swiper. 'Cubo' funziona, ma è limitato nella sua funzionalità (niente zoom e niente lightbox)"
+    },
+    "param11": {
+        "text": "Colore della freccia",
+        "description": "Colore della freccia nel cursore per cambiare l'immagine visualizzata",
+        "info": "Colore della freccia nel cursore per cambiare l'immagine visualizzata"
+    },
+    "param7": {
+        "text": "Usa la rotella del mouse per cambiare diapositiva",
+        "description": "Usa la rotella del mouse per cambiare diapositiva. Attivo solo se c'è esattamente uno slider nella pagina",
+        "info": "Usa la rotellina del mouse per cambiare diapositiva. Attivo solo se c'è esattamente un cursore nella pagina"
+    },
+    "param4": {
+        "text": "Abilita lo zoom per lo slider",
+        "description": "Attiva la funzione di zoom nel cursore a scorrimento",
+        "info": "Attiva la funzione di zoom nel cursore swiper"
+    },
+    "param9": {
+        "text": "Imposta il rapporto di zoom per lo swiper zoom",
+        "description": "Imposta il rapporto di zoom per l'effetto zoom del cursore",
+        "info": "Imposta il rapporto di zoom per l'effetto zoom del cigno"
+    },
+    "param5": {
+        "text": "Usa fslightbox per lo schermo intero",
+        "description": "Abilita fslightbox per la visualizzazione a schermo intero. Attenzione. Richiede l'installazione di un altro plugin da parte mia! (Nome: Simple Lightbox for WordPress)",
+        "info": "Attivare fslightbox per la visualizzazione a schermo intero. Attenzione. Richiede l'installazione di un altro plugin da parte mia! (Nome: Simple Lightbox for WordPress)!"
+    },
+    "param2": {
+        "text": "Tipo di miniatura",
+        "values": {
+            "integrated": "Swiper",
+            "special": "Speciale",
+            "none": "Nessuna"
+        },
+        "description": "Usa la barra delle miniature di Swiper o la mia barra delle miniature speciale o nessuna",
+        "info": "Usa la barra delle miniature di Swiper o la mia barra delle miniature speciale o nessuna"
+    }, 
+    "param3": {
+        "text": "Barra delle miniature speciale: evidenziazione dell'immagine attiva",
+        "values": {
+            "active_border": "Cornice colorata",
+            "active": "Luminosità",
+            "active_animation": "Muoversi"
+        },
+        "description": "Imposta l'effetto per evidenziare l'immagine attiva nella speciale thumbbar",
+        "info": "Imposta l'effetto per evidenziare l'immagine attiva nella barra speciale"
+    },
+    "param10": {
+        "text": "Distanza sopra il thumbbar speciale in px",
+        "description": "Distanza sopra la barra speciale in px",
+        "info": "Distanza sopra la barra speciale del pollice in px"
+    },
+    "param8": {
+        "text": "Abilita la navigazione hash",
+        "description": "Abilita l'opzione di usare un link di pagina a un'immagine specifica nel cursore. Utilizza la navigazione hash per saltare direttamente a uno slider e a un'immagine specifici.",
+        "info": "Abilita l'opzione di usare un link di pagina a un'immagine specifica nel cursore. Utilizza la navigazione con hash per saltare direttamente a uno slider e a un'immagine specifici."
+    },
+    "param12": {
+        "text": "Definisce srcset per le immagini responsive",
+        "description": "Definire le 'dimensioni' per le immagini responsive. Inserire 'none' se non si desidera utilizzarlo",
+        "info": "Definire le 'dimensioni' per le immagini responsive. Inserire 'none' se non si desidera utilizzarlo"
+    }
+}

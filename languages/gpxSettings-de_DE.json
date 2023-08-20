@@ -24,16 +24,16 @@
     "param3": {
         "text": "Min. Distanz zur Verringerung der Trackpunkte [m]",
         "description": "Min. Abstand der Trackpunkte in Metern (am besten 25 m für jede Art von Bergsteigen)",
-        "info": ""
+        "info": "Min. Abstand der Trackpunkte in Metern (am besten 25 m für jede Art von Bergsteigen)"
     },
     "param4": {
         "text": "Glättung Höhendaten [m]",
-        "description": "Min. Höhe zwischen Trackpunkten in Metern. Wird nur für Track-Statistik verwendet. Am besten ist 4.",
-        "info": ""
+        "description": "Min. Höhe zwischen Trackpunkten in Metern. Wird nur für Track-Statistik verwendet. Am besten ist 4",
+        "info": "Min. Höhe zwischen Trackpunkten in Metern. Wird nur für Track-Statistik verwendet. Am besten ist 4"
     },
     "param6": {
         "text": "GPX-Datei überschreiben",
         "description": "Vorhandene GPX-Datei überschreiben",
-        "info": ""
+        "info": "Vorhandene GPX-Datei überschreiben"
     }
 }

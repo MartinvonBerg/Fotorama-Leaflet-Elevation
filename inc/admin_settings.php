@@ -1079,14 +1079,13 @@ final class FotoramaElevationAdmin
 
 	private $allSettingsClasses = [];
 	private $allSettings = [];
-
 	public $dashboardLanguage = '';
 
 
 	public function __construct()
 	{
 		// start with translation of texts in arrays.
-		$this->dashboardLanguage = $this->setDashboardLanguage();
+		$this->dashboardLanguage = $this->classSetDashboardLanguage();
 		$this->translateSettingsArray('tabs');
 
 		//add_action( 'admin_init', array( $this, 'fotorama_elevation_page_init' ) );
@@ -1106,7 +1105,7 @@ final class FotoramaElevationAdmin
 		foreach($this->tabs['tabs'] as $currentTab) {
 			$this->translateSettingsArray($currentTab['setting']);
 			$set = $this->{$currentTab['setting']};
-			$this->allSettingsClasses[ $i ] = new AdminSettingsPage( $set );
+			$this->allSettingsClasses[ $i ] = new AdminSettingsPage( $set, $this->dashboardLanguage );
 			$this->allSettings[ $i ] = $set;
 			$i++;
 		}
@@ -1126,8 +1125,10 @@ final class FotoramaElevationAdmin
 	 *
 	 * @return string The locale for the dashboard language.
 	 */
-	public function setDashboardLanguage() {
+	private function classSetDashboardLanguage() {
+		return setDashboardLanguage();
 		//get backend language for the admin panel
+		/*
 		$locale = false;
 
 		if (isset( $_COOKIE ) && !empty( $_COOKIE ) ) {
@@ -1141,12 +1142,13 @@ final class FotoramaElevationAdmin
 				}
 			}
 
-			// find user in all users and get the id
+			// get dashboard language from user metadata
 			$locale = get_user_meta( $ID, 'locale');
 			if ( $locale !== false) $locale = $locale[0];
 		}
 
 		return $locale !== false ? $locale : get_user_locale();
+		*/
 	}
 
 	/**
@@ -1309,10 +1311,10 @@ final class FotoramaElevationAdmin
 						<table class="tg">
 							<thead>
 								<tr>
-									<th class="tg-dncm">Shortcode</th>
-									<th class="tg-dncm">Value (Default first)</th>
-									<th class="tg-dncm">Example</th>
-									<th class="tg-dncm">Description</th>
+									<th class="tg-dncm"><?php echo __('Shortcode',   'fotoramamulti'); ?></th>
+									<th class="tg-dncm"><?php echo __('Value (Default first)',   'fotoramamulti'); ?></th>
+									<th class="tg-dncm"><?php echo __('Example',     'fotoramamulti'); ?></th> 
+									<th class="tg-dncm"><?php echo __('Description', 'fotoramamulti'); ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1352,7 +1354,7 @@ final class FotoramaElevationAdmin
 											} else {
 												?>
 													<tr>
-														<td class="tg-0pky"><?php echo ('no Shortode: </br>' . $single['text']) ?></td>
+														<td class="tg-0pky"><?php echo __('no Shortode','fotoramamulti') .': </br>' . $single['text']; ?></td>
 														<td class="tg-0pky" style="max-width:480px;"><?php echo ($value) ?></td>
 														<td class="tg-0pky"><?php echo ('--') ?></td>
 														<td class="tg-0pky"><?php echo ($single['text'] .': '. $single['description']) ?></td>

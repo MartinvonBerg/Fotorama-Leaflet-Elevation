@@ -1,0 +1,86 @@
+{
+    "sectionsText": "Impostazioni della mappa e della carta altimetrica",
+    "subTitle": "Impostazioni della mappa e della carta altimetrica del volantino",
+    "param13": {
+        "text": "Mostra carta altimetrica",
+        "description": "Mostra grafico altimetrico",
+        "info": "Mostra grafico altimetrico"
+    },
+    "param12": {
+        "text": "Tema colore per il grafico di elevazione",
+        "values": {
+            "martin-theme": "Martin",
+            "lime-theme": "lime",
+            "steelblue-theme": "steel blue",
+            "purple-theme": "purple",
+            "yellow-theme": "giallo",
+            "red-theme": "red",
+            "magenta-theme": "magenta",
+            "lightblue-theme": "Light blue",
+            "custom-theme": "personalizzato"
+        },
+        "description": "tema di colore per il grafico dell'altitudine. Il tema Martin è il mio tema personalizzato. Il tema personalizzato è personalizzabile nei colori",
+        "info": "Tema dei colori per il grafico dell'altitudine. Il tema Martin è il mio tema speciale. Il tema personalizzato è personalizzabile nei colori."
+    }, 
+    "param11": {
+        "text": "Colore di riempimento del grafico (solo personalizzato)",
+        "description": "Colore per riempire l'area sotto il profilo altimetrico",
+        "info": "Colore per riempire l'area sotto il profilo altimetrico"
+    }, 
+    "param10": {
+        "text": "Colore di sfondo del grafico (solo per l'uso personalizzato)",
+        "description": "Colore di sfondo per il diagramma altimetrico",
+        "info": "Colore di sfondo del diagramma di quota"
+    },
+    "param9": {
+        "text": "Altezza del diagramma altimetrico in px",
+        "description": "Altezza del diagramma altimetrico in px (verrà regolata se reattiva)",
+        "info": "Altezza del grafico dell'altezza in px (sarà adattata se responsive)"
+    }, 
+    "param1": {
+        "text": "Link di download per i file GPX",
+        "description": "crea link di download per i file GPX",
+        "info": "genera link di download per i file GPX"
+    },
+    "param2": {
+        "text": "Mostra indirizzo di partenza",
+        "description": "Mostra l'indirizzo del punto di partenza (determinato dalla prima immagine o coordinata GPX nella traccia GPX. Nel caso delle immagini, l'ordinamento dell'immagine modifica l'indirizzo).",
+        "info": "Mostra l'indirizzo del punto di partenza (è determinato dalla prima immagine o dalla coordinata GPX nella traccia GPX. Nel caso delle immagini, l'ordinamento delle immagini modifica l'indirizzo)."
+    },
+    "param3": {
+        "text": "Testo per l'indirizzo di partenza",
+        "description": "Impostare il testo per l'indirizzo iniziale (solo 'Start address' verrà tradotto automaticamente!)",
+        "info": "Impostare il testo per l'indirizzo di partenza (solo 'Start address' sarà tradotto automaticamente!)"
+    },
+    "param4": {
+        "text": "Impostare il tipo di carta",
+        "values": {
+            "OpenStreetMap": "OpenStreetMap",
+            "OpenTopoMap": "OpenTopoMap",
+            "CycleOSM": "CycleOSM",
+            "Satellit": "Satellite"
+        },
+        "description": "Scegliere quale mappa visualizzare per prima. OpenTopoMap può essere molto lento!",
+        "info": "Scegliere quale mappa visualizzare per prima. OpenTopoMap può essere molto lento!"
+    },
+    "param5": {
+        "text": "Usa il tile server locale per la mappa",
+        "description": "ATTENZIONE: File .htaccess non ancora controllato!",
+        "info": "ATTENZIONE: il file .htaccess non è ancora stato controllato!"
+    },
+    "param6": {
+        "text": "Convertire le piastrelle della mappa locale in webp e distribuire",
+        "description": "Convertire i file delle tile in mappa in webp (le impostazioni di conversione in webp solo come variabile in PHP)",
+        "info": "Convertire i file delle tile in mappe in webp (le impostazioni di conversione in webp sono solo una variabile di PHP)"
+    },
+    "param7": {
+        "text": "Altezza massima della mappa in px",
+        "description": "Altezza massima della mappa dei foglietti in px",
+        "info": "Altezza massima della mappa in px"
+    }, 
+    "param8": {
+        "text": "Rapporto di aspetto della mappa",
+        "description": "Rapporto d'aspetto della mappa foglietto (usato per il responsive)",
+        "info": "Rapporto d'aspetto della mappa (usato per il responsive)"
+    }
+}

@@ -695,3 +695,36 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 	}
 	return array ( $gpxfile, $tracks, $i );
 }
+
+/**
+ * Sets the dashboard language for the admin panel.
+ *
+ * This function retrieves the backend language for the admin panel by checking the
+ * cookies. If the cookies are not empty, it searches for the logged in user ID and
+ * retrieves the locale from the user's meta data. If the locale is not found, the
+ * function falls back to the default user locale.
+ *
+ * @return string The locale for the dashboard language.
+ */
+function setDashboardLanguage() {
+	//get backend language for the admin panel
+	$locale = false;
+
+	if (isset( $_COOKIE ) && !empty( $_COOKIE ) ) {
+		// get logged in user ID
+		$ID = 0;
+
+		foreach ($_COOKIE as $key => $value) {
+			if ( \strpos($key, '-settings-time') !== false ) {
+				$ID = intval(explode('-',$key)[3]);
+				break;
+			}
+		}
+
+		// get dashboard language from user metadata
+		$locale = get_user_meta( $ID, 'locale');
+		if ( $locale !== false) $locale = $locale[0];
+	}
+
+	return $locale !== false ? $locale : get_user_locale();
+}

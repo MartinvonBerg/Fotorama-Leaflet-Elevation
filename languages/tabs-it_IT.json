@@ -5,22 +5,22 @@
     "parametersTitle": "Parametri",
     "tabs": [
         {
-            "title": "General"
+            "title": "Generale"
         },
         {
-            "titolo": "File GPX"
+            "title": "File GPX"
         },
         {
-            "titolo": "Mappa + Diagramma"
+            "title": "Mappa + Diagramma"
         },
         {
-            "titolo": "Fotorama"
+            "title": "Fotorama"
         },
         {
-            "titolo": "Swiper"
+            "title": "Swiper"
         },
         {
-            "titolo": "Masonry"
+            "title": "Masonry"
         },
         {
             "title": "Importa / Esporta"

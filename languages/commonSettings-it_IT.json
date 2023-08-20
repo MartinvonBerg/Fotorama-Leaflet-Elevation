@@ -1,0 +1,114 @@
+{
+    "sectionsText": "Impostazioni generali",
+    "subTitle": "Impostazioni generali per tutti gli slider e visualizzazione dello slider con mappa sulla pagina",
+    "param5": {
+        "text": "Tipo di slider",
+        "description": "Selezione dello slider per la visualizzazione delle immagini. Swiper funziona con foto e video, Fotorama solo con le immagini",
+        "info": "Selezione del cursore per visualizzare le immagini. Swiper funziona con foto e video, Fotorama solo con le immagini"
+    },
+    "param6": {
+        "text": "Tipo di scalatura delle immagini per il cursore",
+        "description": "Imposta il ridimensionamento delle foto/video per lo slider",
+        "info": "Imposta il ridimensionamento delle foto / dei video per lo slider"
+    },
+    "param7": {
+        "text": "Rapporto di aspetto dello slider",
+        "info": "Definisce il rapporto tra larghezza e altezza dello slider. Un rapporto minore significa un'altezza maggiore dello slider. I valori non sono controllati"
+    },
+    "param8": {
+        "text": "Colore di sfondo delle diapositive",
+        "info": "Colore di sfondo delle immagini nello slider. Il valore deve essere specificato come valore CSS valido in formato HEX"
+    },
+    "param0": {
+        "text": "Percorso delle immagini",
+        "info": "Percorso delle immagini relativo alla directory degli upload di wordpress, ad esempio: 'holiday2023' risulta in ..\/wordpress/wp-content\/uploads\/holiday2023"
+    },
+    "param4": {
+        "text": "Tipo di immagine/video sort: ",
+        "values": {
+            "false": "campo di ordinamento (gallery_sort)",
+            "true": "data di scatto",
+            "fileending": "filename"
+        },
+        "info": "Imposta il tipo di ordinamento delle immagini"
+    },
+    "param20": {
+        "text": "Ordinamento dei file",
+        "values": {
+            "asc": "Ascendente",
+            "desc": "Discendente"
+        },
+        "description": "Imposta l'ordinamento dei file",
+        "info": "Imposta l'ordine dei file"
+    },
+    "param1": {
+        "text": "Mostra didascalia per l'immagine",
+        "description": "Mostra didascalia in Slider o Masonry Gallery",
+        "info": "Mostra didascalia in Slider o Masonry Gallery"
+    },
+    "param2": {
+        "text": "Didascalia breve",
+        "description": "Mostra solo la didascalia breve, cioè solo il titolo (non mostra i metadati dell'immagine da EXIF)",
+        "info": "Mostra solo la didascalia breve, cioè solo il titolo (non mostra i metadati dell'immagine da EXIF)"
+    },
+    "param3": {
+        "text": "Mostra solo le immagini con dati GPS",
+        "description": "Mostra le immagini solo se contengono dati GPS nell'EXIF. È necessario impostare il parametro showmap='false' (non selezionato automaticamente)",
+        "info": "Mostra le immagini solo se contengono dati GPS nell'EXIF. Il parametro showmap='false' deve essere impostato (non verrà controllato automaticamente)."
+    },
+    "param24": {
+        "text": "Larghezza massima in px",
+        "description": "Larghezza massima in px dell'intero contenitore con cursore, mappa e grafico di altezza",
+        "info": "Larghezza massima in px dell'intero contenitore con cursore, mappa e grafico dell'altezza"
+    },
+    "param25": {
+        "text": "Larghezza minima in px dello slider e della mappa",
+        "description": "Larghezza minima di una linea (cursore e/o mappa) in px. Se la larghezza minima è superiore alla metà della larghezza massima, il cursore e la mappa non verranno mai visualizzati in una riga. Si noti che la larghezza massima di cursore+mappa+cartina può essere impostata da altri elementi o dal tema.",
+        "info": "Larghezza minima di una riga (slider e/o mappa) in px. Se la larghezza minima è superiore alla metà della larghezza massima, lo slider e la mappa non verranno mai visualizzati in una riga. Si noti che la larghezza massima di slider+mappa+cartografia può essere impostata da altri elementi o dal tema."
+    },
+    "param11": {
+        "text": "Larghezza della miniatura in px",
+        "description": "Larghezza della singola miniatura nella barra di navigazione in pixel",
+        "info": "Larghezza della singola miniatura nella barra di navigazione in pixel"
+    },
+    "param12": {
+        "text": "Altezza della miniatura in px",
+        "description": "Altezza della singola miniatura nella barra di navigazione in pixel",
+        "info": "Altezza della singola miniatura nella barra di navigazione in pixel"
+    },
+    "param13": {
+        "text": "Margine laterale di una miniatura in px",
+        "description": "Margine laterale delle miniature in px",
+        "info": "Margine laterale delle miniature in px"
+    },
+    "param14": {
+        "text": "Larghezza del bordo delle miniature in px",
+        "description": "Larghezza della cornice colorata delle miniature in pixel",
+        "info": "Larghezza del riquadro della miniatura colorata in pixel"
+    },
+    "param15": {
+        "text": "Colore della cornice della miniatura",
+        "description": "Colore della cornice dell'anteprima come nome CSS o valore HEX con # iniziale",
+        "info": "Colore del riquadro dell'anteprima come nome CSS o valore HEX con # iniziale"
+    },
+    "param17": {
+        "text": "Durata della transizione in ms",
+        "description": "Durata della transizione della diapositiva in ms",
+        "info": "Durata della transizione della diapositiva in ms"
+    },
+    "param21": {
+        "text": "Aggiungi un permalink",
+        "description": "Aggiungi un permalink alla pagina di allegato dell'immagine e includi il permalink nella sitemap al posto del link dell'immagine",
+        "info": "Aggiungi un permalink alla pagina di allegato dell'immagine e includi il permalink nella sitemap invece del link all'immagine"
+    },
+    "param22": {
+        "text": "Scrivi campi personalizzati per il post",
+        "description": "Imposta i campi personalizzati (geoadress, lat, lon) sul post. Geoadress è per l'indirizzo visualizzato sotto il grafico di elevazione. Lat.,Lon. è per le coordinate GPS utilizzate per la mappa panoramica",
+        "info": "Imposta i campi personalizzati (geoindirizzo, lat, lon) per il contributo. Geoadress è per l'indirizzo visualizzato sotto il grafico dell'altitudine. Lat.,Lon. è per le coordinate GPS utilizzate per la mappa panoramica"
+    },
+    "param23": {
+        "text": "Visualizza le voci della sitemap Yoast XML",
+        "description": "Genera la sitemap Yoast XML con le immagini visualizzate nel cursore. Utilizzata per la SEO",
+        "info": "Crea la sitemap Yoast XML con le immagini visualizzate nello slider. Utilizzato per la SEO"
+    }
+}

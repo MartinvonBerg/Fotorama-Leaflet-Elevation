@@ -1,0 +1,14 @@
+{
+    "sectionsText": "Importazione o esportazione di tutte le impostazioni in/da un file JSON",
+    "subTitle": "",
+    "param1": {
+        "text": "Carica le impostazioni da un file JSON",
+        "description": "File JSON: contiene tutte le impostazioni del database",
+        "info": "File JSON: Contiene tutte le impostazioni del database"
+    },
+    "param2": {
+        "text": "Esportazione delle impostazioni in un file JSON. ",
+        "description": "Scarica le impostazioni",
+        "info": "Impostazioni di download"
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "sectionsText": "Impostazioni della MiniMasonry (sperimentale)",
+    "subTitle": "Impostazioni della galleria MiniMasonry. Impostazioni generali utilizzate per MiniMasonry: Colore di sfondo delle diapositive, impostazione dei filtri e dell'ordinamento dei file, impostazione dell'ordine di ordinamento dei file, mostra didascalia, didascalia breve, immagini con GPS obbligatorio, larghezza massima del contenitore in px, larghezza minima di una riga della griglia CSS in px",
+    "param0": {
+        "text": "Usa fslightbox per la visualizzazione a schermo intero",
+        "description": "Abilita fslightbox per la visualizzazione a schermo intero. Attenzione. Richiede l'installazione di un altro plugin da parte mia! (Nome: Simple Lightbox for WordPress)",
+        "info": "Attivare fslightbox per la visualizzazione a schermo intero. Attenzione. Richiede l'installazione di un altro plugin da parte mia! (Nome: Simple Lightbox for WordPress)"
+    },
+    "param1": {
+        "text": "Ottimizza lo spazio necessario per la galleria",
+        "description": "Ridurre al minimo lo spazio necessario per la galleria",
+        "info": "Ridurre al minimo lo spazio necessario per la galleria"
+    },
+    "param2": {
+        "text": "Spaziatura orizzontale X in px",
+        "description": "Barra orizzontale o X (spaziatura, gap) tra le immagini in px",
+        "info": "Barra orizzontale o X (spaziatura, gap) tra le immagini in px"
+    }, 
+    "param3": {
+        "text": "Margine verticale Y in px",
+        "description": "Margine verticale Y rispetto al bordo (spaziatura, gap) in px",
+        "info": "Margine verticale Y verso il bordo (distanza, gap) in px"
+    },
+    "param4": {
+        "text": "Spaziatura verticale Y in px quando viene visualizzata una sola riga",
+        "description": "Gutter-Y in px quando può essere visualizzata una sola colonna",
+        "info": "Gutter-Y applicata quando può essere visualizzata una sola colonna in px"
+    },
+    "param5": {
+        "text": "Usa il margine sinistro e destro",
+        "description": "Usa la spaziatura del margine sinistro per la prima colonna e la spaziatura del margine destro per l'ultima colonna",
+        "info": "Usa la spaziatura del margine sinistro per la prima colonna e la spaziatura del margine destro per l'ultima colonna"
+    },
+    "param6": {
+        "text": "Intestazione per il popup informativo",
+        "description": "Intestazione per il popup informativo",
+        "info": "Intestazione per il popup informativo"
+    },
+    "param7": {
+        "text": "Google Maps API Key",
+        "description": "Inserire la chiave API di Google Maps dalla pagina di Google Cloud Platform. Utilizzata per la visualizzazione della mappa nel popup informativo",
+        "info": "Inserire la chiave API di Google Maps dalla pagina di Google Cloud Platform. Utilizzata per la visualizzazione della mappa nel popup informativo"
+    }
+}

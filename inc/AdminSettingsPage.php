@@ -11,15 +11,17 @@ class AdminSettingsPage {
 	private $uploadDirectory = '';
 	private $hasFileInput = false;
 	private $settings = [];
+	private $language = '';
 	
 	/**
 	 * load settings and hook on 'admin_init' to register settings, sections and fields. Init the Database with settings.
 	 *
 	 * @param  array $settings to generate on admin page
 	 */
-	public function __construct( array $settings ) {
+	public function __construct( array $settings, string $language ) {
 		$this->settings = $settings;
 		$this->uploadDirectory = wp_get_upload_dir()['basedir']; // upload_dir
+		$this->language = $language;
 
 		// check if settings contains a file_input field
 		if (array_search('file_input', array_column($settings, 'type')) !== false) $this->hasFileInput = true;
@@ -44,10 +46,11 @@ class AdminSettingsPage {
 			array('sanitize_callback' => array($this, $this->settings['sanitizer']) )
 		);
 
-		// Register a new section in the "swiper" page.
+		// Register a new section in the admin settings page.
 		add_settings_section(
 			$this->settings['section'],
-			__( $this->settings['sectionsText'], $this->settings['namespace'] ), array($this,'section_callback'),
+			$this->settings['sectionsText'],
+			array($this,'section_callback'),
 			$this->settings['pre']
 		);
 
@@ -56,7 +59,7 @@ class AdminSettingsPage {
 			if ( \gettype($param) === 'array') {
 				add_settings_field(
 					$this->settings[$key]['label'], // As of WP 4.6 this value is used only internally. // Use $args' label_for to populate the id inside the callback.
-					__( $this->settings[$key]['text'], $this->settings['namespace'] ),
+					$this->settings[$key]['text'],
 					array( $this, $this->settings[$key]['type'] . '_callback'), // integer_cb, checkbox_cb, select_cb
 					$this->settings['pre'],
 					$this->settings['section'],
@@ -164,7 +167,7 @@ class AdminSettingsPage {
 	 * @param array $args
 	 * @return void
 	 */
-	function number_callback( array $args) {
+	function number_callback( array $args ) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -181,7 +184,7 @@ class AdminSettingsPage {
 		}
 	}
 
-	function checkbox_callback( array $args) {
+	function checkbox_callback( array $args ) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -199,7 +202,7 @@ class AdminSettingsPage {
 		}
 	}
 
-	function select_callback( array $args) {
+	function select_callback( array $args ) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -225,7 +228,7 @@ class AdminSettingsPage {
 		}
 	}
 
-	function path_callback( array $args) {
+	function path_callback( array $args ) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -238,7 +241,7 @@ class AdminSettingsPage {
 			if ( \key_exists('pattern',$this->settings[ $args['param']])) {
 				$pattern = 'pattern="'.$this->settings[ $args['param']]['pattern'].'"';
 				$pattern = '';
-				$path = 'Recommendation: (max-width: '.\number_format( (intval(get_option('fm_common_options')['min_width_css_grid_row_14']) * 2 + 5) * 1.15) .'px) 100vw, 50vw';
+				$path = __('Recommendation', 'fotoramamulti') . ': (max-width: '.\number_format( (intval(get_option('fm_common_options')['min_width_css_grid_row_14']) * 2 + 5) * 1.15) .'px) 100vw, 50vw'; 
 			} else {
 				$pattern = '';
 			}
@@ -258,12 +261,12 @@ class AdminSettingsPage {
 		}
 	}
 
-	function text_callback( array $args) {
+	function text_callback( array $args ) {
 		// Get the value of the setting we've registered with register_setting()
 		$this->path_callback( $args );
 	}
 
-	function color_callback( array $args) {
+	function color_callback( array $args ) {
 		// Get the value of the setting we've registered with register_setting()
 		$options = get_option( $this->settings['options'] );
 
@@ -282,7 +285,7 @@ class AdminSettingsPage {
 		}
 	}
 
-	function file_input_callback ( array $args) {
+	function file_input_callback ( array $args ) {
 		$options = get_option( $this->settings['options'] );
 
 		if ($this->settings[ $args['param']]['type'] === 'file_input' ) {
@@ -296,11 +299,18 @@ class AdminSettingsPage {
 					name="uploadedfile" style='width:400px;'
 					accept="<?php echo( $this->settings[ $args['param']]['accept'] );?>">
 			<?php 
-			if (\array_key_exists( $args['label_for'], $options ) && $args['label_for'] === 'gpxfile') {echo ('</br>Upload: ' .  $optset );}
+			if (\array_key_exists( $args['label_for'], $options ) && $args['label_for'] === 'gpxfile') {echo '</br>' . __('Upload', 'fotoramamulti') . ': ' .  $optset;}
 		}
 	}
 
-	function download_callback ( array $args) {
+	/**
+	 * Provides a download link or a help text based on whether the settings file exists.
+	 *
+	 * @param array $args An array of arguments.
+	 * @throws None
+	 * @return void
+	 */
+	function download_callback ( array $args ) :void {
 		$options = get_option( $this->settings['options'] );
 		$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
 		$optset = html_entity_decode($optset);
@@ -313,11 +323,11 @@ class AdminSettingsPage {
 		if ( $exportFileExists && $path !== '') {
 			// if yes provide download link
 			$path = $path = plugin_dir_url(__DIR__) . $optset;
-			//<p>Herunterladen: <a download="Wanderung-Cascata-Marmarico.gpx" href="gpx">Wanderung-Cascata-Marmarico.gpx</a></p>
-			echo ('<a download="' .  $optset . '" href="'. $path .'">Download <strong>'. $optset .'</strong></a>');
+			$text = t('Download', $this->language );	
+			echo ('<a download="' .  $optset . '" href="'. $path .'">' . $text . ': <strong>'. $optset .'</strong></a>');
 		} else {
 			// if no provide help text
-			echo ('File <strong>' .  $optset . '</strong> does not exist. </br>Leave Import File empty and press Save Button before.' );
+			echo ( __('File', 'fotoramamulti') . ': <strong>' .  $optset . '</strong> ' . __('does not exist', 'fotoramamulti') . '.</br>' . __('Leave Import File empty and press Save Button before', 'fotoramamulti') ); 
 		}
 	}
 
@@ -336,8 +346,8 @@ class AdminSettingsPage {
 		// check if the user have submitted the settings
 		// WordPress will add the "settings-updated" $_GET parameter to the url
 		if ( isset( $_GET['settings-updated'] ) ) {
-			// add settings saved message with the class of "updated"
-			add_settings_error( $this->settings['pre'].'_messages', $this->settings['pre'].'_message', __( 'Settings saved', $this->settings['namespace'] ), 'updated' );
+			// add settings saved message with the class of "updated". This message seems not to be used
+			//add_settings_error( $this->settings['pre'].'_messages', $this->settings['pre'].'_message', __( 'Settings saved', $this->settings['namespace'] ), 'updated' ); 
 		}
 
 		$extendForm = '';
@@ -374,7 +384,7 @@ class AdminSettingsPage {
 	 * @param  string $inp the input string to be sanitized
 	 * @return string sanitized string
 	 */	
-	private function my_sanitize_text ( string $inp) :string
+	private function my_sanitize_text ( string $inp ) :string
 	{
 		$inp = sanitize_text_field( $inp);
 		$inp = \htmlspecialchars($inp);
@@ -390,7 +400,7 @@ class AdminSettingsPage {
 	 * @param  string $inp the input path to be sanitized
 	 * @return string sanitized path
 	 */
-	private function my_sanitize_path (string $inp) :string
+	private function my_sanitize_path (string $inp ) :string
 	{
 		//$inp = $this::my_sanitize_text( $inp );
 		$inp = \sanitize_file_name($inp);
@@ -455,7 +465,7 @@ class AdminSettingsPage {
 	 * @param  array  $option the current options settings on the page
 	 * @return array the sanitized options to handle with options.php
 	 */
-	public function handle_file_upload(array $option) :array { 
+	public function handle_file_upload(array $option ) :array { 
 
 		// sanitize options
 		$option = $this->options_sanitizer( $option );
@@ -486,20 +496,20 @@ class AdminSettingsPage {
 					$gpxParser = null;
 					$result = strpos($values, 'Skip') === false;
 				} else {
-					$values = __('File not touched!');
+					$values = __('File not touched', 'fotoramamulti' ) .'!';
 					$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
 				}
 
 				if( $result )  {
-					$temp = ' of "'. $name_file . '" successful! </br> With: ' . $values;
+					$temp = '"'. $name_file . '" ' . __('successful', 'fotoramamulti' ) . '! </br>' . $values;
 				} else {
-					$temp = ". " . __('Error during File processing!. ') . $values;
+					$temp = ". " . __('Error during File processing', 'fotoramamulti' ) . ' ! ' . $values;
 				}
 
-			} else { $temp = __("File alread exists!"); }
+			} else { $temp = __('File alread exists', 'fotoramamulti' )  .'!'; }
 
 		} else { 
-			$temp = __('No Filename given!') ;
+			$temp = __('No Filename given', 'fotoramamulti' ) . '!';
 		}
 
 		$option['gpxfile'] = $temp;
@@ -538,7 +548,7 @@ class AdminSettingsPage {
 			if ($result > 0) {
 				add_settings_error(
 					'fotoramamulti_json_ok',
-					esc_attr( 'file_generated' ),
+					'file_generated',
 					__('Settings File generated. Use Download link below', $this->settings['namespace'] ),
 					'success'
 				);
@@ -546,7 +556,7 @@ class AdminSettingsPage {
 			} else {
 				add_settings_error(
 					'fotoramamulti_json_nok',
-					esc_attr( 'file_failed' ),
+					'file_failed',
 					__('Could not generate File!', $this->settings['namespace'] ),
 					'error'
 				);
@@ -579,8 +589,8 @@ class AdminSettingsPage {
 			if ( \in_array('failed', $upd_result) ) {
 				add_settings_error(
 					'fotoramamulti_settingsupdate_nok',
-					esc_attr( 'settings_update_failed' ),
-					'Something Failed! Settings were not upated! Or set to default values.',
+					'settings_update_failed', 
+					__('Something Failed! Settings were not upated! Or set to default values.', 'fotoramamulti'),
 					'error'
 				);
 			}

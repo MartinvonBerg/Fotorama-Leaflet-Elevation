@@ -1,0 +1,39 @@
+{
+    "sectionsText": "Impostazioni file GPX + upload",
+    "subTitle": "Nota: i percorsi GPX senza dati altimetrici devono essere convertiti in tracciati con dati altimetrici utilizzando www.gpsvisualizer.com. Il pulsante sottostante salva le impostazioni e/o il file GPX. Opzionale: i dati delle tracce senza dati altimetrici saranno saltati. I segmenti di traccia e i percorsi vengono combinati. I waypoint vengono ignorati. Il nome della traccia è impostato sul nome del file",
+    "param0": {
+        "text": "Percorso dei file GPX",
+        "description": "Percorso dei file con le tracce GPX relativo alla cartella degli upload di wordpress, ad esempio: 'gpx' risulta in: ../wordpress/wp-content/uploads/gpx. Definire il percorso senza barre iniziali e finali.",
+        "info": "Percorso dei file con tracce GPX relativo alla cartella wordpress uploads, ad esempio: 'gpx' risulta in: ../wordpress/wp-content/uploads/gpx. Definire il percorso senza barre iniziali e finali"
+    },
+    "param1": {
+        "text": "Selezionare il file GPX",
+        "description": "File GPX: combina percorso/i e traccia/e, riduce con le impostazioni sottostanti e aggiunge le statistiche della traccia (lunghezza della traccia e dislivello). Utilizzato solo per il caricamento. Il file deve essere definito anche nello shortcode. Nello shortcode è possibile utilizzare anche un elenco separato da virgole per più file, ad esempio: 'f1.gpx, f2.gpx, f3.gpx'",
+        "info": "File GPX: combina percorso/i e traccia/e, riduce con le impostazioni sottostanti e aggiunge statistiche sulla traccia (lunghezza della traccia e dislivello). Utilizzato solo per il caricamento. Il file deve essere definito anche nello shortcode. Nello shortcode è possibile utilizzare anche un elenco separato da virgole per più file, ad esempio: 'f1.gpx, f2.gpx, f3.gpx'"
+    },
+    "param2": {
+        "text": "Restringi file GPX",
+        "description": "File GPX: combinare percorso/i e traccia/e, ridurre con le impostazioni sottostanti e aggiungere le statistiche della traccia (lunghezza della traccia e dislivello)",
+        "info": "File GPX: combinare percorso/i e traccia/e, ridurre con le impostazioni sottostanti e aggiungere statistiche sulla traccia (lunghezza della traccia e guadagno e perdita di quota)"
+    },
+    "param5": {
+        "text": "Ignora i punti della traccia con altitudine=0.",
+        "description": "Carica file GPX: Ignora i punti di traccia con altitudine=0. Necessario per alcuni dispositivi perché scrivono 0 come dati di altitudine se la precisione del GPX non è sufficiente.",
+        "info": "Carica file GPX: Ignora i punti di traccia con altitudine=0. Necessario per alcuni dispositivi perché scrivono 0 come dati di elevazione se la precisione GPX non è sufficiente"
+    }, 
+    "param3": {
+        "text": "Distanza minima per ridurre i punti traccia [m]",
+        "description": "Distanza minima per ridurre i punti traccia [m] (25 m è la migliore per qualsiasi tipo di alpinismo)",
+        "info": "Distanza minima per ridurre i punti traccia [m] (25 m è la migliore per qualsiasi tipo di alpinismo)"
+    },
+    "param4": {
+        "text": "Attenuazione dei dati di altitudine [m]",
+        "description": "Altitudine minima tra i punti della traccia in metri. Utilizzato solo per le statistiche della traccia. La migliore è 4",
+        "info": "Altitudine minima tra i punti della traccia in metri. Utilizzato solo per le statistiche della traccia. La migliore è 4"
+    },
+    "param6": {
+        "text": "Sovrascrivi file GPX",
+        "description": "Sovrascrivi il file GPX esistente",
+        "info": "Sovrascrivi il file GPX esistente"
+    }
+}
