@@ -27,10 +27,10 @@ function i18n_init() {
 }
 
 /**
- * A function that returns a string without modification.
+ * A function that overloads the wordpress standard translate function.
  *
- * @param string $text The input string to be returned.
- * @return string The input string.
+ * @param string $text The input string to be translated.
+ * @return string The translated string.
  */
 function __( string $text, $namespace = 'fotoramamulti' ) :string {
 	$lang = setDashboardLanguage();
@@ -124,10 +124,20 @@ function t(string $translate, string $language) :string {
 
 	$es = array(
 		'Download' => 'Descarga',
-		'Start address' => 'Dirección de inicio');
+		'Start address' => 'Dirección de inicio'
+	);
 
 	if ( in_array($language, $languages)) {
 		$translate = isset( $$language[$translate]) ? $$language[$translate] : $translate;
+	}
+
+	// escape the translated string depending on existing html tags.
+	if($translate != strip_tags($translate)) {
+		// contains HTML
+		//$translate = \wp_kses_post($translate); // do nothing for the moment
+	} else {
+		// does not contain HTML
+		$translate = esc_html( $translate );
 	}
 
 	return $translate;

@@ -13,7 +13,7 @@ namespace mvbplugins\fotoramamulti;
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * @since      0.16.0
- * @version    0.22.0
+ * @version    0.23.0
  */
 
 
@@ -340,7 +340,7 @@ final class MiniMasonryClass
                             $tag = get_term_by('name', $tagname, 'post_tag');
                             if ( $tag != false) {
                                 $taglink = get_term_link($tag->term_id);
-                                $tags .= '<a href="' . $taglink . '">' . $tagname .' </a>'; // TODO: WordPress escapes this html!
+                                $tags .= '<a href="' . $taglink . '">' . $tagname .' </a>';
                             } else {
                                 $tags .= $tagname . ' ';
                             }	

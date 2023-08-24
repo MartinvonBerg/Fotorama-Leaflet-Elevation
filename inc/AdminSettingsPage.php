@@ -154,7 +154,7 @@ class AdminSettingsPage {
 	 */
 	function section_callback( array $args ) {
 		?>
-		<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( $this->settings['subTitle'], $this->settings['namespace'] ); ?></p>
+		<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php echo esc_attr( $this->settings['subTitle'] ); ?></p>
 		<?php
 	}
 
@@ -175,11 +175,11 @@ class AdminSettingsPage {
 			$current = isset( $options[$args['label_for']] ) ? $options[$args['label_for']] : '';
 			$step = \array_key_exists('step',$this->settings[ $args['param'] ]) ? $this->settings[ $args['param']]['step'] : ''
 			?>
-			<input type="number" min="<?php echo( $this->settings[ $args['param']]['min']) ?>" max="<?php echo( $this->settings[ $args['param']]['max']) ?>" step="<?php echo( $step ) ?>" 
-                name="<?php echo( $this->settings['options'])?>[<?php echo($args['label_for']) ?>]"
+			<input type="number" min="<?php echo esc_attr( $this->settings[ $args['param']]['min']) ?>" max="<?php echo esc_attr( $this->settings[ $args['param']]['max']) ?>" step="<?php echo esc_attr( $step ) ?>" 
+                name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr($args['label_for']) ?>]"
 				id="<?php echo esc_attr( $args['label_for'] ); ?>" 
 				value="<?php echo esc_attr( $current ); ?>">
-			<label>  Min: <?php echo( $this->settings[ $args['param']]['min']) ?>, Max: <?php echo( $this->settings[ $args['param']]['max']) ?></label>
+			<label>  Min: <?php echo esc_attr( $this->settings[ $args['param']]['min']) ?>, Max: <?php echo esc_attr( $this->settings[ $args['param']]['max']) ?></label>
 			<?php
 		}
 	}
@@ -194,10 +194,10 @@ class AdminSettingsPage {
 			<input type="checkbox" 
 				   id="<?php echo esc_attr( $args['label_for'] ); ?>"
 				   data-custom="<?php echo esc_attr( $args['custom_data'] ); ?>"
-				   name="<?php echo( $this->settings['options'])?>[<?php echo($args['label_for']) ?>]"
+				   name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr($args['label_for']) ?>]"
 				   <?php echo esc_attr( $optset ); ?>
 				   >
-			<label for="<?php echo esc_attr( $args['label_for'] ); ?>"><?php esc_attr_e($this->settings[ $args['param']]['description'], $this->settings['namespace']);?></label>
+			<label for="<?php echo esc_attr( $args['label_for'] ); ?>"><?php echo esc_attr( $this->settings[ $args['param']]['description'] );?></label>
 			<?php
 		}
 	}
@@ -215,9 +215,9 @@ class AdminSettingsPage {
 				<?php
 				foreach($this->settings[ $args['param']]['values'] as $key => $value) {
 					?>
-					<option value="<?php echo esc_attr($key); ?>" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], $key, false ) ) : ( '' ); ?>>
+					<option value="<?php echo esc_attr($key); ?>" <?php echo esc_attr( isset( $options[ $args['label_for'] ] )) ? ( selected( $options[ $args['label_for'] ], $key, false ) ) : ( '' ); ?>>
 						<?php 
-						esc_html_e( $value, $this->settings['pre'] ); 
+						echo esc_attr( $value ); 
 						?>
 					</option>
 					<?php
@@ -234,7 +234,7 @@ class AdminSettingsPage {
 
 		if ($this->settings[ $args['param']]['type'] === 'path' || ($this->settings[ $args['param']]['type'] === 'text') ) {
 			
-			$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
+			$optset = \array_key_exists( $args['label_for'], $options ) ? $options[ $args['label_for'] ] : '';
 			$path = $this->settings[ $args['param']]['type'] === 'path' ? $path = $this->uploadDirectory . '/' . $options[ $args['label_for'] ]: '';
 			$label = $this->settings[ $args['param']]['type'] === 'text' ? $this->settings[ $args['param']]['description'] : '';
 			
@@ -249,14 +249,14 @@ class AdminSettingsPage {
 			?>
 			<input class="regular-text"
 					type="text"
-					<?php echo( $this->settings[ $args['param']]['required'] );?>
+					<?php echo esc_attr( $this->settings[ $args['param']]['required'] );?>
 					placeholder="<?php echo esc_attr( $this->settings[ $args['param']]['description'] );?>" 
 					name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr( $args['label_for'] ); ?>]" 
 					id="<?php echo esc_attr( $args['label_for'] ); ?>" 
-					value="<?php echo($optset); ?>"
-					<?php if ($pattern!=='') echo($pattern); ?>>
-					<label><?php echo($label);?></label>
-					<p><?php echo($path);?></p>
+					value="<?php echo esc_attr($optset); ?>"
+					<?php if ($pattern!=='') echo  esc_attr($pattern); ?>>
+					<label><?php echo esc_attr($label);?></label>
+					<p><?php echo esc_attr($path);?></p>
 			<?php
 		}
 	}
@@ -272,15 +272,15 @@ class AdminSettingsPage {
 
 		if ($this->settings[ $args['param']]['type'] === 'color' ) {
 			
-			$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
+			$optset = \array_key_exists( $args['label_for'], $options ) ? $options[ $args['label_for'] ] : '';
 			
 			?>
 			<input class="color-picker"
 					type="color"
 					name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr( $args['label_for'] ); ?>]" 
 					id="<?php echo esc_attr( $args['label_for'] ); ?>" 
-					value="<?php echo($optset); ?>">
-					<label><?php echo('hex: '.$optset);?></label>
+					value="<?php echo esc_attr($optset); ?>">
+					<label><?php echo esc_attr('hex: '.$optset);?></label>
 			<?php
 		}
 	}
@@ -290,16 +290,18 @@ class AdminSettingsPage {
 
 		if ($this->settings[ $args['param']]['type'] === 'file_input' ) {
 			
-			$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
+			$optset = \array_key_exists( $args['label_for'], $options ) ? $options[ $args['label_for'] ] : '';
 			$optset = html_entity_decode($optset);
 
 			?>
 			<input class="file-input"
 					type="file"
 					name="uploadedfile" style='width:400px;'
-					accept="<?php echo( $this->settings[ $args['param']]['accept'] );?>">
+					accept="<?php echo esc_attr( $this->settings[ $args['param']]['accept'] );?>">
 			<?php 
-			if (\array_key_exists( $args['label_for'], $options ) && $args['label_for'] === 'gpxfile') {echo '</br>' . __('Upload', 'fotoramamulti') . ': ' .  $optset;}
+			if (\array_key_exists( $args['label_for'], $options ) && $args['label_for'] === 'gpxfile') {
+				echo wp_kses_post('</br>' . __('Upload', 'fotoramamulti') . ': ' .  $optset);
+			}
 		}
 	}
 
@@ -312,7 +314,7 @@ class AdminSettingsPage {
 	 */
 	function download_callback ( array $args ) :void {
 		$options = get_option( $this->settings['options'] );
-		$optset = \array_key_exists( $args['label_for'], $options ) ? esc_attr( $options[ $args['label_for'] ]) : '';
+		$optset = \array_key_exists( $args['label_for'], $options ) ? $options[ $args['label_for'] ] : '';
 		$optset = html_entity_decode($optset);
 
 		$exportFileExists = false;
@@ -322,12 +324,11 @@ class AdminSettingsPage {
 
 		if ( $exportFileExists && $path !== '') {
 			// if yes provide download link
-			$path = $path = plugin_dir_url(__DIR__) . $optset;
-			$text = t('Download', $this->language );	
-			echo ('<a download="' .  $optset . '" href="'. $path .'">' . $text . ': <strong>'. $optset .'</strong></a>');
+			$path = $path = plugin_dir_url(__DIR__) . $optset;	
+			echo wp_kses_post('<a download="' .  $optset . '" href="'. $path .'">' . __('Download', 'fotoramamulti' ) . ': <strong>'. $optset .'</strong></a>');
 		} else {
 			// if no provide help text
-			echo ( __('File', 'fotoramamulti') . ': <strong>' .  $optset . '</strong> ' . __('does not exist', 'fotoramamulti') . '.</br>' . __('Leave Import File empty and press Save Button before', 'fotoramamulti') ); 
+			echo wp_kses_post( __('File', 'fotoramamulti') . ': <strong>' .  $optset . '</strong> ' . __('does not exist', 'fotoramamulti') . '.</br>' . __('Leave Import File empty and press Save Button before', 'fotoramamulti') ); 
 		}
 	}
 
@@ -347,7 +348,7 @@ class AdminSettingsPage {
 		// WordPress will add the "settings-updated" $_GET parameter to the url
 		if ( isset( $_GET['settings-updated'] ) ) {
 			// add settings saved message with the class of "updated". This message seems not to be used
-			//add_settings_error( $this->settings['pre'].'_messages', $this->settings['pre'].'_message', __( 'Settings saved', $this->settings['namespace'] ), 'updated' ); 
+			//add_settings_error( $this->settings['pre'].'_messages', $this->settings['pre'].'_message', __( 'Settings saved', 'fotoramamulti' ), 'updated' ); 
 		}
 
 		$extendForm = '';
@@ -357,7 +358,7 @@ class AdminSettingsPage {
 
 		?>
 		<div class="wrap">
-			<form action="options.php" method="post" <?php echo( $extendForm );?>>
+			<form action="options.php" method="post" <?php echo esc_attr( $extendForm );?>>
 				<?php
 				// output save settings button
 				//submit_button();
@@ -438,25 +439,13 @@ class AdminSettingsPage {
 		$max= $checks[2][2];
 
 		if (filter_var($val, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max))) === false) {
-			// echo("Variable value is not within the legal range"); Restrict to min / max-Value.
+			//("Variable value is not within the legal range"); Restrict to min / max-Value.
 			($val < $min) ? $val = $min : $val = $max;
 		} else {
-			//echo("Variable value is within the legal range"). Do nothing.
+			// ("Variable value is within the legal range"). Do nothing.
 		}
 		
 		return strval($val);
-	}
-
-	/**
-	 * helper function to show the settings
-	 *
-	 * @return void
-	 */
-	function show_settings() {
-		$options = get_option( $this->settings['options'] );
-		//$string =\var_export($options);
-		?><p><?php //echo $string;?></p><?php
-		?><pre><?php print_r($options);?></pre><?php
 	}
 
 	/**
@@ -549,7 +538,7 @@ class AdminSettingsPage {
 				add_settings_error(
 					'fotoramamulti_json_ok',
 					'file_generated',
-					__('Settings File generated. Use Download link below', $this->settings['namespace'] ),
+					__('Settings File generated. Use Download link below', 'fotoramamulti' ),
 					'success'
 				);
 				$result = true;
@@ -557,7 +546,7 @@ class AdminSettingsPage {
 				add_settings_error(
 					'fotoramamulti_json_nok',
 					'file_failed',
-					__('Could not generate File!', $this->settings['namespace'] ),
+					__('Could not generate File!', 'fotoramamulti' ),
 					'error'
 				);
 			}

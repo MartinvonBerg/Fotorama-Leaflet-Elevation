@@ -74,7 +74,7 @@ function enqueue_style_tag( $cssFile) {
 }
 
 // hook the function addLinkToHead the wp_head hook
-add_action('wp_head', '\mvbplugins\fotoramamulti\addLinkToHead', 2);
+//add_action('wp_head', '\mvbplugins\fotoramamulti\addLinkToHead', 2);
 /**
  * add the link-tag to the header of the page depending on mobile or desktop request
  *

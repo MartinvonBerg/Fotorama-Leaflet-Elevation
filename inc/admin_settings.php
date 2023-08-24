@@ -1211,8 +1211,8 @@ final class FotoramaElevationAdmin
 
 		?>
 		<div class="wrap">
-			<h2><?php esc_html_e($this->tabs['title'], $this->tabs['namespace']) ?></h2>
-			<h4><?php esc_html_e($this->tabs['subtitle'], $this->tabs['namespace']) ?></h4>
+			<h2><?php echo esc_attr( $this->tabs['title'] ) ?></h2>
+			<h4><?php echo esc_attr( $this->tabs['subtitle'] ) ?></h4>
 
 			<nav class="nav-tab-wrapper">
 				<?php 
@@ -1225,14 +1225,14 @@ final class FotoramaElevationAdmin
 					($tab === $currentTab['slug']) ? $tabstring .= ' nav-tab-active"' : $tabstring .= '"';
 
 					$tabstring .= ">{$currentTab['title']}</a>";
-					echo( $tabstring);
+					echo wp_kses_post( $tabstring );
 				}
 
 				if ( $this->tabs['showParametersPage'] ) {
 					$tabstring = "<a href=\"?page={$this->tabs['slug']}&tab=params\" class=\"nav-tab";
 					($tab === 'params') ? $tabstring .= ' nav-tab-active"' : $tabstring .= '"';
 					$tabstring .= ">{$this->tabs['parametersTitle']}</a>";
-					echo( $tabstring);
+					echo wp_kses_post( $tabstring );
 				}
 				?>
 			</nav>
@@ -1311,10 +1311,10 @@ final class FotoramaElevationAdmin
 						<table class="tg">
 							<thead>
 								<tr>
-									<th class="tg-dncm"><?php echo __('Shortcode',   'fotoramamulti'); ?></th>
-									<th class="tg-dncm"><?php echo __('Value (Default first)',   'fotoramamulti'); ?></th>
-									<th class="tg-dncm"><?php echo __('Example',     'fotoramamulti'); ?></th> 
-									<th class="tg-dncm"><?php echo __('Description', 'fotoramamulti'); ?></th>
+									<th class="tg-dncm"><?php echo esc_attr(__('Shortcode',   'fotoramamulti')); ?></th>
+									<th class="tg-dncm"><?php echo esc_attr(__('Value (Default first)',   'fotoramamulti')); ?></th>
+									<th class="tg-dncm"><?php echo esc_attr(__('Example',     'fotoramamulti')); ?></th> 
+									<th class="tg-dncm"><?php echo esc_attr(__('Description', 'fotoramamulti')); ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1324,7 +1324,7 @@ final class FotoramaElevationAdmin
 									// create the header 
 								?>
 									<tr>
-										<td class="tg-0pky" colspan="4"><strong><?php echo ($setArr['sectionsText']) ?></strong></td>
+										<td class="tg-0pky" colspan="4"><strong><?php echo esc_attr($setArr['sectionsText']) ?></strong></td>
 									</tr>
 									<?php
 									foreach ($setArr as $single) {
@@ -1345,19 +1345,19 @@ final class FotoramaElevationAdmin
 											if ( $single['shortcode'] !== '' ) {
 												?>
 													<tr>
-														<td class="tg-0pky"><?php echo ($single['shortcode']) ?></td>
-														<td class="tg-0pky" style="max-width:480px;"><?php echo ($value) ?></td>
-														<td class="tg-0pky"><?php echo ($single['shortcode'] . '="' . $single['default'] . '"') ?></td>
-														<td class="tg-0pky"><?php echo ($single['info']) ?></td>
+														<td class="tg-0pky"><?php echo esc_attr($single['shortcode']) ?></td>
+														<td class="tg-0pky" style="max-width:480px;"><?php echo esc_attr($value) ?></td>
+														<td class="tg-0pky"><?php echo esc_attr($single['shortcode'] . '="' . $single['default'] . '"') ?></td>
+														<td class="tg-0pky"><?php echo esc_attr($single['info']) ?></td>
 													</tr>
 												<?php
 											} else {
 												?>
 													<tr>
-														<td class="tg-0pky"><?php echo __('no Shortode','fotoramamulti') .': </br>' . $single['text']; ?></td>
-														<td class="tg-0pky" style="max-width:480px;"><?php echo ($value) ?></td>
-														<td class="tg-0pky"><?php echo ('--') ?></td>
-														<td class="tg-0pky"><?php echo ($single['text'] .': '. $single['description']) ?></td>
+														<td class="tg-0pky"><?php echo wp_kses_post(__('no Shortode','fotoramamulti')) .': </br>' . $single['text']; ?></td>
+														<td class="tg-0pky" style="max-width:480px;"><?php echo esc_attr($value) ?></td>
+														<td class="tg-0pky">--</td>
+														<td class="tg-0pky"><?php echo esc_attr($single['text'] .': '. $single['description']) ?></td>
 													</tr>
 												<?php
 											}

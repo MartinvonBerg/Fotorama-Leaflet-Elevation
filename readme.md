@@ -343,6 +343,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.23.0 =
+Added translation for back-end and changed echo () and escaping html according WordPress Plugin-Guidelines.
+
 = 0.22.0 =
 09.08.2023: Test with WordPress 6.3. But not a compplete 100% test. Currently not possible.
 04.08.2023: BugFixes in parseGPX.php. Change gpxparser to Class. Added the combination of all included routes and tracks. Updated PHP library

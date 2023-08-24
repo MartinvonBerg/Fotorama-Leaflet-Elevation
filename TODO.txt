@@ -1,12 +1,14 @@
 -Aufgaben-liste für das Plugin
--	PHP:    +++ TODO entferne das custom_field "fm_header_link" bringt nix für performance!
+-	PHP:    TODO entferne das custom_field "fm_header_link" bringt nix für performance! 
+                    wird nicht mehr erzeugt und nicht in post geschrieben.
+                    + TODO: Altbestand wird (noch) nicht bereinigt. 
+                    Der Header wird nicht mehr erzeugt
 -			- mehrere Ordner mit Komma getrennt: aufwändig, da url und pfad an vielen Stellen verwendet werden. 
 -			- custom fields der Posts / pages: wie bei settings
 -			--- return false ist als Rückgabewert bei Funktionen teilweise falsch
 -			--- Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
-            + In Android-Browsern auf dem Smartphone werden die Short Captions nicht angezeigt, obwohl als Parameter eingestellt (war auch schon in den Vor-Versionen)
 - JS:
--           + TOOD: update aller JS bibliotheken.
+-           - TOOD: update aller JS bibliotheken. (Aber: Es funktioniert doch alles. Neue Funktionen sind nicht erforderlich)
 ---- Swiper
 -			-- script loader in den header mit media query: Getestet, bring bzgl. lighthouse nichts.
 -			-- Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
@@ -18,7 +20,6 @@
             -- Masonry ist auf der Seite zu langsam. Beschleunigen, oder Option entfernen. Andere Masonry Bibliotheken wurgen geprüft und sind zu kompliziert.
             -- Masonry entfernen ? Dafür gibt es bessere Plugins. Nicht Thema des Plugins.
 ---- WordPress.org Upload:
-            + Readme.txt erstellen
-            + Readme.md in Ordner languages erstellen: Arrays, Json, überladen, deepl, sprache ermitteln
-            + echo, esc_html etc. korrekt umsetzen. oder durch json übersetzung und standardisierte Funktion ersetzen.
+            + Readme.txt für Wordpress.org erstellen
+            - übersetzung in ES, FR ergänzen
 
