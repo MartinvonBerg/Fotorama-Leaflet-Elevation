@@ -39,9 +39,9 @@ $path = "$($path)\css"
 robocopy .\css $path *.png /s /NFL /NDL /NJH /NJS
 
 ## ./css copy only all minified css files
-#$path = ".\release"
-#$path = "$($path)\css"
-#robocopy .\css $path *.min.css /s /xf Control* /xf leaflet* /NFL /NDL /NJH /NJS
+$path = ".\release"
+$path = "$($path)\js"
+robocopy .\js $path *.min.css /xf Control* /xf leaflet* /NFL /NDL /NJH /NJS
 
 # ./images
 $path = ".\release"
@@ -118,9 +118,6 @@ robocopy .\inc $path *.* /s /xf shortCodeTester.php /NFL /NDL /NJH /NJS
 #$path = "$($path)\js\src"
 #New-Item "$($path)" -Force -itemType Directory
 #robocopy .\js\elevation\src $path *.* /s /NFL /NDL /NJH /NJS
-
-# TODO: webpack bundling does not work!
-# npx webpack --config ./webpack.fotorama.js
 
 # ./languages
 $path = ".\release"

@@ -153,13 +153,14 @@
             if( isMobile && hasFotorama) {
                 document.querySelector('.fotorama__caption__wrapm, .fotorama__caption').style.display='none';
             }
+            /*
             if( isMobile && hasSwiper) {
                 const el = document.querySelectorAll('.swiper-slide-title');
                 el.forEach(element => {
                     element.style.display = 'none';
                 });
             }
-                       
+            */           
             for (let m = 0; m < numberOfBoxes; m++) {
                 // w: width, h: height as shortform.
                 if (typeof(allMaps[m]) === 'object') {

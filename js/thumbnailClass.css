@@ -43,21 +43,22 @@
 }
 
 .thumb_inner div img {
-	margin-bottom: 0;
+	margin-bottom: 0px;
 	-o-object-fit: fill;
 	object-fit: fill;
-	/*width: auto;*/
 	max-width: unset !important;
 	height: 100%;
-	margin-right: 1px;
 }
-/*
+
 @-moz-document url-prefix() {
 	.thumb_inner div img { 
-		height: 100px;
+		all:initial;
+		margin-bottom: 0px;
+		object-fit: fill;
+		max-width: unset !important;
 	}
 }	
-*/
+
 .thumbnail_slide {
 	-webkit-filter: brightness(0.6);
 	filter: brightness(0.6);

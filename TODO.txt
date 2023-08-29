@@ -20,6 +20,5 @@
             -- Masonry ist auf der Seite zu langsam. Beschleunigen, oder Option entfernen. Andere Masonry Bibliotheken wurgen geprüft und sind zu kompliziert.
             -- Masonry entfernen ? Dafür gibt es bessere Plugins. Nicht Thema des Plugins.
 ---- WordPress.org Upload:
-            + Readme.txt für Wordpress.org erstellen
             - übersetzung in ES, FR ergänzen
 

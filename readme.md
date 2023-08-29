@@ -22,7 +22,7 @@
 
 # Description 
 
-**STATUS** The upload to the WordPress Plugin directory is still pending. The Plugin won't be maintained until End of 09 / 2023. Tests with WordPress 6.3 will be done later.
+**STATUS** The upload to the WordPress Plugin directory is still pending.
 
 WordPress-Plugin to show a responsive Image Slider with images located in a separate FOLDER on your server or even in the WordPress Media Library. A thumbnail bar could be shown together with the image slider. Fotorama or Swiper is used for the slider. The Fotorama slider only works with JPG- or WEBP-Files an not with videos. Swiper works with Videos, too.
 
@@ -344,7 +344,8 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.23.0 =
-Added translation for back-end and changed echo () and escaping html according WordPress Plugin-Guidelines.
+29.08.2023: Removed hiding of captions on mobile devices (JS). Changed CSS for Swiper special thumbnails.
+21.08.2023: Added translation for back-end and changed echo() and escaping html according WordPress Plugin-Guidelines.
 
 = 0.22.0 =
 09.08.2023: Test with WordPress 6.3. But not a compplete 100% test. Currently not possible.
