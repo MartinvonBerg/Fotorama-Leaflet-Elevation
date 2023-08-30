@@ -343,6 +343,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.23.2 =
+30.08.2023: Bugfix for File upload in Admin Section.
+
 = 0.23.1 =
 29.08.2023: Removed hiding of captions on mobile devices (JS). Changed CSS for Swiper special thumbnails.
 21.08.2023: Added translation for back-end and changed echo() and escaping html according WordPress Plugin-Guidelines.

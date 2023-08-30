@@ -351,14 +351,9 @@ class AdminSettingsPage {
 			//add_settings_error( $this->settings['pre'].'_messages', $this->settings['pre'].'_message', __( 'Settings saved', 'fotoramamulti' ), 'updated' ); 
 		}
 
-		$extendForm = '';
-		if ( $this->hasFileInput === true) {
-			$extendForm = 'enctype="multipart/form-data"';
-		}
-
 		?>
 		<div class="wrap">
-			<form action="options.php" method="post" <?php echo esc_attr( $extendForm );?>>
+			<form action="options.php" method="post" <?php if ( $this->hasFileInput === true) { echo 'enctype="multipart/form-data"';} ?>>
 				<?php
 				// output save settings button
 				//submit_button();
@@ -505,16 +500,15 @@ class AdminSettingsPage {
 		return $option;
 	}
 
-	public function handle_settings( $option) { 
+	public function handle_settings( $option ) { 
 		// sanitize options
 		// is not required here. 
 		
 		// get and generate file names and upload directory if not exists
-		$file = $_FILES['uploadedfile']['name'];
 		$result = true;
 		
 		// generate export settings file
-		if ( $file === '') {
+		if ( $_FILES['uploadedfile']['name'] === '' ) {
 			$options = get_option( $this->settings['options'] );
 			$optset = $options['export_settings_file'];
 			$path = plugin_dir_path(__DIR__) . $optset;
@@ -551,13 +545,14 @@ class AdminSettingsPage {
 				);
 			}
 		} 
-		else 
+		else if ( $_FILES["uploadedfile"]["type"] === 'application/json' && $_FILES["uploadedfile"]["error"] === 0 ) // if ( \file_exists($_FILES['uploadedfile']['tmp_name'] !== '' ) )
 		{
+			$upd_result = [];
+
 			// read tmp file to json
 			$prettyJsonString = \file_get_contents( $_FILES['uploadedfile']['tmp_name']);
 			$allSettings = \json_decode( $prettyJsonString, true );
-			$upd_result = [];
-
+			
 			foreach( $allSettings as $key => $newval) {
 				$cur = \get_option( $key ); // special treatment for key : gpxfile in fm_gpx_options required! Do not change it!
 				if ( $key === 'fm_gpx_options') {
@@ -575,7 +570,7 @@ class AdminSettingsPage {
 				}
 			}
 
-			if ( \in_array('failed', $upd_result) ) {
+			if ( \in_array('failed', $upd_result) || $allSettings === [] || $allSettings === null ) {
 				add_settings_error(
 					'fotoramamulti_settingsupdate_nok',
 					'settings_update_failed', 
@@ -584,7 +579,20 @@ class AdminSettingsPage {
 				);
 			}
 		}
-	
+		/*
+		else {
+			$var = \implode(', ', $_FILES);
+
+			add_settings_error(
+				'fotoramamulti_settingsupdate_tmpfile_nok',
+				'settings_update_failed', 
+				__('Something Failed! Temporary File empty. ' . $var . ' End', 'fotoramamulti'),
+				'error'
+			);
+
+			$result = false;
+		}
+		*/
 		return $result;
 	}
 }

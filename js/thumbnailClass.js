@@ -1,5 +1,5 @@
 /*!
-	ThumbnailClass V 0.23.1
+	ThumbnailClass V 0.23.2
 	license: GPL 2.0
 	Martin von Berg
 */

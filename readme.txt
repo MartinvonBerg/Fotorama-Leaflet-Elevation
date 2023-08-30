@@ -5,7 +5,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: slider, leaflet map, height chart, responsive, tile server
 Requires at least: 5.9
 Tested up to: 6.3
-Stable tag: 0.23.1
+Stable tag: 0.23.2
 Requires PHP: 7.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -86,7 +86,7 @@ None for the moment.
 
 == Changelog ==
 
-= 0.23.1 =
+= 0.23.2 =
 First Version for WordPress.org. See complete history in Github: https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation/blob/before_chartjs/readme.md
 
 == Plugin uses ==
