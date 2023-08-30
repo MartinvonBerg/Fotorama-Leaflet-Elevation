@@ -57,7 +57,16 @@
 		object-fit: fill;
 		max-width: unset !important;
 	}
-}	
+}
+
+@media not all and (min-resolution: 0.001dpcm) {
+	.thumb_inner div img { 
+		all:initial;
+		margin-bottom: 0px;
+		object-fit: fill;
+		max-width: unset !important;
+	}
+}
 
 .thumbnail_slide {
 	-webkit-filter: brightness(0.6);
