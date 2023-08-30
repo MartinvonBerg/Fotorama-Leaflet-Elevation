@@ -320,8 +320,8 @@ final class MiniMasonryClass
                             $geoimg->setAttribute('class', 'noLazy');
                             $geoimg->setAttribute('src', "https://maps.googleapis.com/maps/api/staticmap?key=".$key."&size=320x240&zoom=10&scale=2&maptype=roadmap&markers=".$geo );
                             $geoimg->setAttribute('alt', '');
-                            $geoimg->setAttribute('width', '320');
-                            $geoimg->setAttribute('height', '240');
+                            $geoimg->setAttribute('width', '320px');
+                            $geoimg->setAttribute('height', '240px');
 
                             $subgeo->appendChild($geoimg);
                             $mod->appendChild($subgeo);

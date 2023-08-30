@@ -571,8 +571,8 @@ final class SwiperClass
                 $img2->setAttribute('draggable', 'false');
                 $img2->setAttribute('style', 'margin-left:' . $this->options['nail_margin_side'] . ';margin-right:' . $this->options['nail_margin_side']);
                 // add width and height to thumbnail. H = height_from_settings + border, if border is used. Width according to asp ratio. See first lines of function.
-                $img2->setAttribute('height', $height );
-                $img2->setAttribute('width', round($height * $data['thumbAspRatio'],2) );
+                $img2->setAttribute('height', $height . 'px' );
+                $img2->setAttribute('width', round($height * $data['thumbAspRatio'],2) . 'px' );
 
                 if ( $data['thumbinsubdir'] ) {
                     $img2->setAttribute('src', "{$up_url}/{$this->options['imgpath']}/{$thumbsdir}/{$data['file']}{$data['thumbs']}");
