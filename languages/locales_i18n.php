@@ -134,7 +134,7 @@ function t(string $translate, string $language) :string {
 	// escape the translated string depending on existing html tags.
 	if($translate != strip_tags($translate)) {
 		// contains HTML
-		//$translate = \wp_kses_post($translate); // do nothing for the moment
+		// do nothing for the moment
 	} else {
 		// does not contain HTML
 		$translate = esc_html( $translate );

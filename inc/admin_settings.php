@@ -458,7 +458,7 @@ final class FotoramaElevationAdmin
 			'class' => 'swiper_row',
 			'custom_data' => 'custom1',
 			'type' => 'select',
-			'values' => ['slide' => 'Slide', 'fade' => 'Fade', 'flip' => 'Flip', 'cube' => 'Cube', 'coverflow' => 'Coverflow'],
+			'values' => ['slide' => 'Slide', 'fade' => 'Fade', 'flip' => 'Flip', 'coverflow' => 'Coverflow'],
 			'default' => 'slide',
 			'description' => '',
 			'shortcode' => 'sw_effect',
@@ -1225,14 +1225,14 @@ final class FotoramaElevationAdmin
 					($tab === $currentTab['slug']) ? $tabstring .= ' nav-tab-active"' : $tabstring .= '"';
 
 					$tabstring .= ">{$currentTab['title']}</a>";
-					echo wp_kses_post( $tabstring );
+					echo htmlspecialchars_decode( esc_html( $tabstring ) );
 				}
 
 				if ( $this->tabs['showParametersPage'] ) {
 					$tabstring = "<a href=\"?page={$this->tabs['slug']}&tab=params\" class=\"nav-tab";
 					($tab === 'params') ? $tabstring .= ' nav-tab-active"' : $tabstring .= '"';
 					$tabstring .= ">{$this->tabs['parametersTitle']}</a>";
-					echo wp_kses_post( $tabstring );
+					echo htmlspecialchars_decode( esc_html( $tabstring ) );
 				}
 				?>
 			</nav>
@@ -1354,7 +1354,7 @@ final class FotoramaElevationAdmin
 											} else {
 												?>
 													<tr>
-														<td class="tg-0pky"><?php echo wp_kses_post(__('no Shortode','fotoramamulti')) .': </br>' . $single['text']; ?></td>
+														<td class="tg-0pky"><?php echo esc_attr( __('no Shortode','fotoramamulti')) .': </br>' . $single['text']; ?></td>
 														<td class="tg-0pky" style="max-width:480px;"><?php echo esc_attr($value) ?></td>
 														<td class="tg-0pky">--</td>
 														<td class="tg-0pky"><?php echo esc_attr($single['text'] .': '. $single['description']) ?></td>

@@ -40,7 +40,7 @@ The Admin panel gives an overview of all shortcode parameters and allow to set t
 
 **NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
 
-**The Plugin runs from WordPress 5.9 - 6.3.x and PHP 7.4.2 - 8.2.0**
+**The Plugin runs from WordPress 5.9 - 6.4.x and PHP 7.4.2 - 8.2.0**
 
 </br>
 
@@ -97,7 +97,7 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 
 # Upgrade Notice 
 
-Upgrade to WordPress 6.3 and PHP 8.0+ is highly recommended! PHP 8.1.x is even better!
+Upgrade to WordPress 6.4 and PHP 8.1+ is highly recommended! PHP 8.1.x is even better!
 Due to the error corrections it is highly recommended to upgrade the Plugin to 0.18.x! Thank's for your patience. With version update to 0.15.x all settings have to be done once again. But only once. Sorry for that! This won't be the case for future updates!
 
 </br>
@@ -342,6 +342,9 @@ This plugin uses the great work from:
 - leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
 
 # Changelog
+
+= 0.23.2 =
+27.10.2023: Test with WP 6.4-RC2. Cube transition in Swiper deactivated. Does not Work and did never work completely. Update of Gutenberg Block still pending. Should not be used. Removed wp_kses_post() on Admin Pages.
 
 = 0.23.2 =
 30.08.2023: Bugfix for File upload in Admin Section.

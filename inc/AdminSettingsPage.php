@@ -300,7 +300,7 @@ class AdminSettingsPage {
 					accept="<?php echo esc_attr( $this->settings[ $args['param']]['accept'] );?>">
 			<?php 
 			if (\array_key_exists( $args['label_for'], $options ) && $args['label_for'] === 'gpxfile') {
-				echo wp_kses_post('</br>' . __('Upload', 'fotoramamulti') . ': ' .  $optset);
+				echo htmlspecialchars_decode( esc_html('</br>' . __('Upload', 'fotoramamulti') . ': ' .  $optset) );
 			}
 		}
 	}
@@ -325,10 +325,10 @@ class AdminSettingsPage {
 		if ( $exportFileExists && $path !== '') {
 			// if yes provide download link
 			$path = $path = plugin_dir_url(__DIR__) . $optset;	
-			echo wp_kses_post('<a download="' .  $optset . '" href="'. $path .'">' . __('Download', 'fotoramamulti' ) . ': <strong>'. $optset .'</strong></a>');
+			echo htmlspecialchars_decode( esc_html('<a download="' .  $optset . '" href="'. $path .'">' . __('Download', 'fotoramamulti' ) . ': <strong>'. $optset .'</strong></a>') );
 		} else {
-			// if no provide help text
-			echo wp_kses_post( __('File', 'fotoramamulti') . ': <strong>' .  $optset . '</strong> ' . __('does not exist', 'fotoramamulti') . '.</br>' . __('Leave Import File empty and press Save Button before', 'fotoramamulti') ); 
+			// if not provide help text
+			echo htmlspecialchars_decode( esc_html( __('File', 'fotoramamulti') . ': <strong>' .  $optset . '</strong> ' . __('does not exist', 'fotoramamulti') . '.</br>' . __('Leave Import File empty and press Save Button before', 'fotoramamulti') ) ); 
 		}
 	}
 

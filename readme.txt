@@ -4,7 +4,7 @@ Contributors: martinvonberg
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CQA6XZ7LUMBJQ
 Tags: slider, leaflet map, height chart, responsive, tile server
 Requires at least: 5.9
-Tested up to: 6.3
+Tested up to: 6.4
 Stable tag: 0.23.2
 Requires PHP: 7.3
 License: GPLv2 or later
@@ -72,7 +72,7 @@ Yes, here it is:
 - Enjoy.
 
 = Which WordPress and PHP versions are supported?
-The Plugin runs from WordPress 5.9 - 6.3.x and PHP 7.4.2 - 8.2.0.
+The Plugin runs from WordPress 5.9.x - 6.4.x and PHP 7.4.3 - 8.2.0.
 
 == Screenshots ==
 1. Example Front End Output

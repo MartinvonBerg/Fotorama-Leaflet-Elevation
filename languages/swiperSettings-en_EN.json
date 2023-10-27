@@ -16,7 +16,6 @@
             "slide": "Slide",
             "fade": "Fade",
             "flip": "Flip",
-            "cube": "Cube",
             "coverflow": "Coverflow"
         },
         "default": "slide",

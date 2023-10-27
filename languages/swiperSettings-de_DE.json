@@ -4,7 +4,7 @@
     "param1": {
         "text": "Übergangsart der Bilder",
         "description": "Swiper Bild-Wechsel-Effekt. 'Cube' funktioniert, ist aber in seiner Funktionalität eingeschränkt (kein Zoom und kein Lightbox)",
-        "info": "Swiper Bild-Wechsel-Effekt. 'Cube' funktioniert, ist aber in seiner Funktionalität eingeschränkt (kein Zoom und kein Lightbox)"
+        "info": "Swiper Bild-Wechsel-Effekt. 'Cube' funktioniert, ist aber in seiner Funktionalität eingeschränkt (kein Zoom und keine Lightbox)"
     },
     "param11": {
         "text": "Pfeilfarbe",

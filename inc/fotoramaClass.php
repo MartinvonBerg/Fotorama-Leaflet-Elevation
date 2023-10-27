@@ -4,7 +4,7 @@ namespace mvbplugins\fotoramamulti;
 /**
  * Class FotoramaClass to generate the html for the fotorama slider.
  * 
- * PHP version 7.3.0 - 8.0.x
+ * PHP version 7.3.0 - 8.2.x
  *
  * Summary     Class FotoramaClass to generate the html for the fotorama slider.
  * Description This Class generates the html for the fotoram slider.
