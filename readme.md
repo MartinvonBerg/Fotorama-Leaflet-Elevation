@@ -343,8 +343,9 @@ This plugin uses the great work from:
 
 # Changelog
 
-= 0.23.2 =
-27.10.2023: Test with WP 6.4-RC2. Cube transition in Swiper deactivated. Does not Work and did never work completely. Update of Gutenberg Block still pending. Should not be used. Removed wp_kses_post() on Admin Pages.
+= 0.24.0 =
+29.10.2023: PHP: Escaping for echo finalized. Translation completed ( .htaccess test output ). Tileserver.php minor changes. Unused funtions in fm_functions.php out commented.
+27.10.2023: Test with WP 6.4-RC2. Cube transition in Swiper deactivated (stil usable as shortcode parameter). Does not work and did never work completely. Update of Gutenberg Block still pending. Should not be used. Removed wp_kses_post() on Admin Pages.
 
 = 0.23.2 =
 30.08.2023: Bugfix for File upload in Admin Section.
