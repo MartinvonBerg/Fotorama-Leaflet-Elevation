@@ -1098,13 +1098,19 @@ final class FotoramaElevationAdmin
 		} else {
 			$infoText = __('ATTENTION: File .htaccess is NOT OK.', 'fotoramamulti');
 		}
-		$this->leafletSettings['param5']['description'] = $infoText;
-
+		
 		// init the classes and settings for the tab.
 		$i = 0;
 		foreach($this->tabs['tabs'] as $currentTab) {
 			$this->translateSettingsArray($currentTab['setting']);
 			$set = $this->{$currentTab['setting']};
+			
+			// special treatment for leaflet tile server htaccess result.
+			if ($currentTab['setting'] === 'leafletSettings') {
+				$set['param5']['description'] = $infoText;
+				$set['param5']['info'] = $infoText;
+			}
+
 			$this->allSettingsClasses[ $i ] = new AdminSettingsPage( $set, $this->dashboardLanguage );
 			$this->allSettings[ $i ] = $set;
 			$i++;
@@ -1383,7 +1389,8 @@ final class FotoramaElevationAdmin
 	 */
 	public function checkHtaccess()
 	{
-		// try to access testfile.webp which will be redirected to testfile.php if .htaccess is working
+		// try to access testfile.webp which will be redirected to testfile.php if .htaccess is working. 
+		// The file 'testfile.webp' shall not be existent!
 		$path = \str_replace('inc/', '', plugins_url('/', __FILE__)) . 'leaflet_map_tiles/';
 
 		if (\ini_get('allow_url_fopen') === '1') {

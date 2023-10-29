@@ -44,7 +44,7 @@
     "param3": {
         "text": "Spezielle Thumbbar: Hervorhebung des aktiven Bildes",
         "values": {
-            "active_border": "Farb-Rahmen",
+            "active_border": "farbiger Rahmen unten",
             "active": "Helligkeit",
             "active_animation": "Wackeln"
         },

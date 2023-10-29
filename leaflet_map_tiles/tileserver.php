@@ -1,7 +1,24 @@
 <?php 
 namespace mvbplugins\fotoramamulti;
-// TODO: cache fileage solution. What to do if files are too old?
 
+/**
+ * Summary Tileserver to provide leaflet map tiles from a locals server.
+ * 
+ * Assuming that map tiles and other files are in <plugin>/leaflet_map_tiles:
+ * Provide a .htaccess file that points to above folder. This path has to be complete after your wordpress installation path.
+ * If the WP-option is set to use local files (see Admin Page) the javascript code for leaflet map tiles is generated with url pointing to 
+ * that (above) folder on your server.
+ * The access to that folder is handled by Apache-servers and .htaccess: If the map tile as file is available it will be sent to the client.
+ * If the file is not found this PHP script will be loaded. The new file will be donwloaded from OpenStreetMap servers and stored locally on your server.
+ * Optionally it will be converted to webp which is best for performance and SEO.
+ *
+ * @author     Martin von Berg <mail@mvb1.de>
+ * @copyright  Martin von Berg, 2023
+ * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
+ */
+
+// TODO: cache fileage solution. What to do if files are too old?
 
 // get the directory ot this file which is the cachedir and define other variables
 $cacheDir = __DIR__;
@@ -61,7 +78,7 @@ foreach ($tileServers as $key => $entry) {
 	}
 }
 
-if ($_GET["tile"]=== 'testfile.webp') {
+if ($_GET["tile"] === 'testfile.webp') {
 	http_response_code(302);
 	echo('local htaccess is working');
 	return;
@@ -141,12 +158,10 @@ if ( $error || ! $allowed) {
 }
 
 // pass the image content to client
-$imgData = file_get_contents($localFile);
 http_response_code( $httpResCode );
 header("Cache-Control: public, max-age=".$cacheHeaderTime.", s-maxage=".$cacheHeaderTime."");
 header('Content-type: ' . $headerMime); 
-echo $imgData;
-
+readfile( $localFile);
 
 // ----------------------------------------------------------------
 /**

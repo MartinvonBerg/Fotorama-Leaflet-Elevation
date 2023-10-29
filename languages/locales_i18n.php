@@ -45,7 +45,7 @@ add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\i18n_init'); // only for
  *
  * @param $string $translate the string to translate
  * @param $string $language	 the client language
- * @return $string the translated string for defined language or the original string
+ * @return $string the translated and escaped string for defined language or the original string
  */
 function t(string $translate, string $language) :string {
 	
