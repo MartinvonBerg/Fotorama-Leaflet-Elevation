@@ -462,7 +462,7 @@ final class FotoramaElevationAdmin
 			'default' => 'slide',
 			'description' => '',
 			'shortcode' => 'sw_effect',
-			'info' => 'Swiper Slide Change Effect. Cube works but is reduced in functionality (no-zoom and lightbox)',
+			'info' => 'Swiper Slide Change Effect',
 		],
 		'param11' => [
 			'label' => 'sw_button_color',

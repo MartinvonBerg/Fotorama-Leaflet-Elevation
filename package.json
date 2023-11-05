@@ -1,6 +1,6 @@
 {
 	"name": "fotorama-multi",
-	"version": "0.23.2",
+	"version": "0.24.0",
 	"description": "Provide settings for the Fotorama-Elevation shortcode by a Gutenberg block",
 	"author": "Martin von Berg",
 	"license": "GPL-2.0",
@@ -43,6 +43,6 @@
 		"leaflet": "^1.9.x",
 		"minimasonry": "^1.3.1",
 		"screenfull": "^6.0.2",
-		"swiper": "^9.0.5"
+		"swiper": "^11.x"
 	}
 }

@@ -3,8 +3,8 @@
     "subTitle": "Solo Impostazioni dello slider Swiper",
     "param1": {
         "text": "Tipo di transizione delle immagini",
-        "description": "Effetto di transizione delle immagini di Swiper. 'Cube' funziona ma ha funzionalità limitate (niente zoom e niente lightbox)",
-        "info": "Effetto di transizione dell'immagine Swiper. 'Cubo' funziona, ma è limitato nella sua funzionalità (niente zoom e niente lightbox)"
+        "description": "Effetto di transizione delle immagini di Swiper",
+        "info": "Effetto di transizione dell'immagine Swiper"
     },
     "param11": {
         "text": "Colore della freccia",
