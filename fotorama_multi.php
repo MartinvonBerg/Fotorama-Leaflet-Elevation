@@ -118,6 +118,7 @@ function showmulti($attr, $content = null)
 		'sw_button_color'	=> $fotorama_elevation_options['sw_button_color'] ?? 'white', // swiper button color in CSS name or value
 		'chart_fill_color'		=> $fotorama_elevation_options['chart_fill_color'] ?? 'white',
 		'chart_background_color'=> $fotorama_elevation_options['chart_background_color'] ?? 'gray',
+		'charttype'			=> 'chartjs',
 		//'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', 'false' // funktioniert nicht: andere Werte als thums zeigen nicht alle Bilder im Slider!
 		'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
 		'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
@@ -339,21 +340,39 @@ function showmulti($attr, $content = null)
 
 		// show Elevation-Chart and custom summary
 		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
-			$display = '';
-			if ( $showchart === 'false' ) $display = 'display:none';
-			$htmlstring .= <<<EOF
-		<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;{$display}"></div>
-		<div id="data-summary{$shortcodecounter}" class="data-summary">
-		<span class="totlen">
-		<span class="summarylabel"> </span>
-		<span class="summaryvalue">0</span></span>
-		<span class="gain">
-		<span class="summarylabel"> </span>
-		<span class="summaryvalue">0</span></span> 
-		<span class="loss">
-		<span class="summarylabel"> </span>
-		<span class="summaryvalue">0</span></span></div>
+			if ( $charttype !== 'chartjs' ) {
+				$display = '';
+				if ( $showchart === 'false' ) $display = 'display:none';
+				$htmlstring .= <<<EOF
+				<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;{$display}"></div>
+				<div id="data-summary{$shortcodecounter}" class="data-summary">
+				<span class="totlen">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span>
+				<span class="gain">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span> 
+				<span class="loss">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span></div>
 EOF;
+			}
+			// generate div and cancas for chartjs if chart should be shown 
+			elseif ( $showchart !== 'false' ) {
+				$htmlstring .= "<div class=\"chartjs-profile-container\" id=\"chartjs-profile-container{$shortcodecounter}\" style=\"height:{$chartheight}px;\"><canvas id=\"route-elevation-chart{$shortcodecounter}\" style=\"width:100%;height:100%\"></canvas></div>";
+				$htmlstring .= <<<EOF
+				<div id="data-summary{$shortcodecounter}" class="data-summary">
+				<span class="totlen">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span>
+				<span class="gain">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span> 
+				<span class="loss">
+				<span class="summarylabel"> </span>
+				<span class="summaryvalue">0</span></span></div>
+EOF;
+			}
 		} 
 	}
 	
@@ -451,7 +470,12 @@ EOF;
 		'sw_options' => $page_options // keep old name of php-variable here for javascript.
  	);
 
-	wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.24.0', true);
+	 if ( isset($charttype) && $charttype === 'chartjs') {
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.24.0', true);
+	} else {
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.24.0', true);
+	}
+
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
 	
 	$shortcodecounter++;

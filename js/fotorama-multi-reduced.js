@@ -7,6 +7,7 @@
         let hasFotorama = false;
         let hasSwiper = false;
         let hasMasonry1 = false;
+        let hasChartJS = false;
         
         // slider variables
         let allSliders = [ numberOfBoxes-1 ];
@@ -21,6 +22,8 @@
             hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length === 1;
             hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length === 1;
             hasMasonry1 = document.querySelectorAll('[id^=minimasonry'+m+']').length === 1;
+            hasChartJS = document.querySelectorAll('[id^=chartjs-profile-container'+m+']').length === 1;
+
             let sliderSel = '';
 
             //------------- leaflet - elevation part ---------------------------
@@ -70,11 +73,15 @@
                         allMaps[m].createSingleMarker(text);
                     })                    
                     
-                } else {
-                    // no fotorama, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
+                } else if ( ! hasChartJS ) {
+                    // no slider, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
                     // initiate the leaflet map
                     import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
+                    })
+                } else {
+                    import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
+                        allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
                     })
                 }
             }
@@ -102,27 +109,34 @@
                         });
 
                     })
-                } else {
+
+                } else if ( ! hasChartJS ) {
                     import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
-
-                        // update markers on the map if the active image changes
-                        document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
-                            // move map
-                            allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ); // change only
-
-                            // remove old markers - on change only. 
-                            allMaps[ e.detail.slider ].unSetActiveMarker();
-
-                            // mark now the marker for the active image --> 
-                            allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
-                        });
-
                     })
                     
+                } else {
+                    import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
+                        allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
+                        // create the markers on the map
+                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+                    })
+
                 }
+
+                // update markers on the map if the active image changes
+                document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
+                    // move map
+                    allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide]['coord'] ); // change only
+
+                    // remove old markers - on change only. 
+                    allMaps[ e.detail.slider ].unSetActiveMarker();
+
+                    // mark now the marker for the active image --> 
+                    allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
+                });
 
                 // update markers on the map if the active image changes
                 document.querySelector('#'+sliderSel+ m).addEventListener('sliderload', function wasloaded(e) {

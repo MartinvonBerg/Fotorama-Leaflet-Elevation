@@ -1,0 +1,16 @@
+.chartjs-profile-container {
+    margin-top: 6px;
+}
+
+.data-summary {
+    left: 3px;
+    right: 3px;
+    padding-left: 5px;
+    margin-bottom: 1px;
+    border-bottom: 1px solid lightslategray;
+    font-size: initial;
+}
+
+.data-summary .summaryvalue {
+    font-weight: bold;
+}

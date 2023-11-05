@@ -1,0 +1,22 @@
+.leaflet-pane .div-icon-height {
+    margin-left: 0px !important;
+    margin-top: -50px !important;
+    z-index: 163;
+    outline: none;
+    color: white;
+    border-left: 2px solid red;
+    height: 50px !important;
+    z-index: 1000 !important;
+    width: unset;
+}
+
+.leaflet-pane .div-icon-height p {
+    margin: 0px;
+    width: max-content;
+    background: red;
+    padding-right: 5px;
+}
+
+.leaflet-overlay-pane svg {
+    pointer-events: auto !important;
+}
