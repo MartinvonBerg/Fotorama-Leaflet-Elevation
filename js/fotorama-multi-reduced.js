@@ -148,7 +148,7 @@
                 // update the slider if the marker on the map was clicked
                 document.querySelector('#boxmap'+ m).addEventListener('mapmarkerclick', function markerclicked(e) {
                     allSliders[e.detail.map].setSliderIndex(e.detail.marker);
-                    console.log('set from map to:', e.detail.marker);
+                    //console.log('set from map to:', e.detail.marker);
                 });
             }
             

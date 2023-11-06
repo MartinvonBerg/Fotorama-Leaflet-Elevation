@@ -1,5 +1,5 @@
 /*!
-  chartJsClass 0.17.0
+  chartJsClass 0.25.0
   license: GPL 2.0
   Martin von Berg
 */
@@ -59,7 +59,7 @@ class chartJsClass {
     this.pageVariables = options.pageVariables || [];
     
     // stop the constructor and return undefined if options is not set sufficiently.
-    if ( (this.elementDiv ==='') || (this.elementOnPage === {}) || (this.pageVariables === [])) return undefined;
+    if ( (this.elementDiv ==='') || (this.elementOnPage == {}) || (this.pageVariables == [])) return undefined;
     
     // set parent aspRatio if responsive is set. get parent and replace size in style by aspRatio.
     this.setAspRatioParentDiv();
@@ -127,10 +127,16 @@ class chartJsClass {
   setAxesMinMax(chart) {
     let maxHeight = Math.max(...chart.data.datasets[0].data);
     let minHeight = Math.min(...chart.data.datasets[0].data);
+
+    // set the factor for the Altitude difference
+    let diff = maxHeight - minHeight;
+    let factor = 100;
+    if (diff <= 100.0) {factor = 10} else {factor = 100};
+
     chart.options.scales.x.min = Math.min(...chart.data.labels);
     chart.options.scales.x.max = Math.max(...chart.data.labels);
-    chart.options.scales.y.max = Math.ceil(maxHeight/100)*100; 
-    chart.options.scales.y.min = Math.floor(minHeight/100)*100;
+    chart.options.scales.y.max = Math.ceil(maxHeight/factor)*factor; 
+    chart.options.scales.y.min = Math.floor(minHeight/factor)*factor;
   }
   
   /**
@@ -180,10 +186,10 @@ class chartJsClass {
         },
         layout: {
           padding: {
-            left: 0.6*this.options.padding,
+            left: 0.4*this.options.padding,
             top: this.options.padding,
             right: this.options.padding,
-            bottom: 0.6*this.options.padding,
+            bottom: 0.4*this.options.padding,
           }
         },
         tooltip: {
@@ -196,14 +202,20 @@ class chartJsClass {
             type: 'linear',
             grid: { color: this.scaleColor },
             distribution: 'linear',
+            title: {display:true, text: '  km', align: 'start', padding: {top: -17}},
           },
           y: {
             type: 'linear',
             display: true,
             position: 'left',
-            beginAtZero: false,
+            beginAtZero: true,
             // grid line settings
             grid: { color: this.scaleColor },
+            ticks: {
+              callback: function(value, index, values) {
+                      return value + ' m';
+              }
+            }
           },
         },
         plugins: {
@@ -213,13 +225,14 @@ class chartJsClass {
             text: this.i18n('Distance')+ ' / km, '+ this.i18n('Altitude')+ ' / m',
           },
           legend: {
-            display: false
+            display: false,
           },
           tooltip: {
             displayColors: false,
             backgroundColor: this.tooltipBackgroundColor,
             titleColor: this.tooltipTitleColor,
             bodyColor: this.tooltipTitleColor,
+            caretPadding: 6,
             callbacks: {
               label: (tooltipItems) => {
                 return this.i18n('Distance')+': '+ tooltipItems.parsed.x.toFixed(2) + ' km';

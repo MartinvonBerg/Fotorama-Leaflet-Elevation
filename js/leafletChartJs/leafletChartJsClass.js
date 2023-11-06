@@ -20,6 +20,9 @@ class LeafletChartJs extends LeafletMap {
     coords = [];
     theMarker = {};
     elev_data = [];
+    leafletTrackID = 0;
+    chart = {};
+    track = {};
 
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
@@ -28,8 +31,9 @@ class LeafletChartJs extends LeafletMap {
         // TODO: multitracks feature
         let mapthis = {};
         mapthis = this; 
-        const track = new gpxTrackClass( number, mapthis, this.pageVariables.tracks );
-        this.coords = track.coords;
+        this.track = new gpxTrackClass( number, mapthis, this.pageVariables.tracks );
+        this.coords = this.track.coords;
+        this.leafletTrackID = this.track.gpxTracks._leaflet_id;
               
         // set i18n for chart (map is done in parent class 'leafletMapClass')
         // set the CSS, styling for the chart 
@@ -53,11 +57,12 @@ class LeafletChartJs extends LeafletMap {
             aspRatio : pageVarsForJs[number].mapaspect * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
             chartAnimation : true, // TODO: setting
             showChartHeader : false, // TODO: setting
-            padding : 22 // TODO: setting, useful 0 ... 20 px or not?
+            padding : 22, // TODO: setting, useful 0 ... 20 px or not?
+            followSlider: true // TODO: setting
         }
 
         // show chart with the first track
-        const chart = new chartJsClass( track.elev_data, chartOptions );
+        this.chart = new chartJsClass( this.track.elev_data, chartOptions );
 
         // update the slider if the marker on the map was clicked
         this.catchChartEvent(div);
@@ -66,29 +71,20 @@ class LeafletChartJs extends LeafletMap {
 
         let classThis = this;
         document.getElementById('map'+number).addEventListener('mouseoverpath', function charthover(e) {
-            chart.triggerTooltip(e.detail.index);
+            classThis.chart.triggerTooltip(e.detail.index);
             classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele.toFixed(1) + " m</p>");
             //classThis.mapFlyTo(e.detail.position);
         });
-        /*
-        // 1 second delay
-        setTimeout(function(){
-            console.log("Executed after 1 second");
-            track.showTrack(1);
-            this.coords = track.coords;
-            this.elev_data = track.elev_data;
-            chart.showElevationProfile(this.elev_data, 1);
-        }, 1000);
+    }
 
-         // 1 second delay
-         setTimeout(function(){
-            console.log("Executed after 1 second");
-            track.showTrack(2);
-            this.coords = track.coords;
-            this.elev_data = track.elev_data;
-            chart.showElevationProfile(this.elev_data, 2);
-        }, 3000);
-        */
+    setActiveMarker(markerNumber){
+        super.setActiveMarker(markerNumber);
+        if (this.chart.options.followSlider !== true) return;
+
+        // get index for chartpos for pos of markernumber
+        let coords = this.mrk[markerNumber]._latlng
+        let index = this.track.getIndexForCoords(coords)
+        if (index >-1) this.chart.triggerTooltip(index);
     }
 
     /**
@@ -107,6 +103,12 @@ class LeafletChartJs extends LeafletMap {
         //this.mapFlyTo(pos);
     }
 
+    removeSingleMarker() {
+        if (this.theMarker != undefined) {
+            this.map.removeLayer(this.theMarker);
+        };
+    }
+
     catchChartEvent(div) {
         let classThis = this;
 
@@ -114,9 +116,25 @@ class LeafletChartJs extends LeafletMap {
             let x= e.detail.index;
             let xval = classThis.coords[x];
             //console.log(xval);
-            // update the marker on the map
-            classThis.createSingleMarker([xval.lat, xval.lng], "<p>" + xval.meta.ele.toFixed(1) + " m</p>")
+            // update the marker on the map 
+            let GpxLayerNumber = -1;
+
+            classThis.controlLayer._layerControlInputs.forEach((value, index) => {
+               if (value.layerId === classThis.leafletTrackID) {
+                GpxLayerNumber = index;
+               }
+            });
+           
+            if (GpxLayerNumber > -1 && classThis.controlLayer._layerControlInputs[GpxLayerNumber].checked) {
+                classThis.createSingleMarker([xval.lat, xval.lng], "<p>" + xval.meta.ele.toFixed(1) + " m</p>")
+            } else {
+                classThis.removeSingleMarker();
+            }
         
+        });
+
+        document.getElementById(div).addEventListener('mouseout', () => {
+            classThis.removeSingleMarker();
         });
     }
 

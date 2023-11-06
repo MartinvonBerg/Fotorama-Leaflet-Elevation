@@ -1,5 +1,5 @@
 /*!
-  Wrapper for chartJs 0.17.0
+  Wrapper for chartJs 0.25.0
   license: GPL 2.0
   Martin von Berg
 */
