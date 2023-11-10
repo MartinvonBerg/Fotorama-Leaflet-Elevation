@@ -87,7 +87,7 @@ class LeafletMap {
    
     /**
      * Constructor Function
-     * @param {int} number current number
+     * @param {int} number current number of slider-map-chart container and so the shortcode on the page or post
      * @param {string} elementOnPage id of the div on the page that shall contain the map
      * @param {array} center the map center as lat, lon coord value
      * @param {int} zoom the zoom factor to use for a map with center coords.

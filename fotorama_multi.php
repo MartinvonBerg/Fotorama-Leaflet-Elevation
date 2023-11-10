@@ -339,10 +339,10 @@ function showmulti($attr, $content = null)
 		$htmlstring  .= "<div id=\"{$mapid}\" class=\"leafmap\" style=\"max-height:{$mapheight}px;aspect-ratio:{$mapaspect}\"></div>";
 
 		// show Elevation-Chart and custom summary
-		if ($i > 0) { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
+		if ($i > 0 && $showchart !== 'false') { // number of gpxtracks at least 1 ! <div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;" class="leaflet-control elevation"></div>
 			if ( $charttype !== 'chartjs' ) {
 				$display = '';
-				if ( $showchart === 'false' ) $display = 'display:none';
+				//if ( $showchart === 'false' ) $display = 'display:none';
 				$htmlstring .= <<<EOF
 				<div id="elevation-div{$shortcodecounter}" style="height:{$chartheight}px;{$display}"></div>
 				<div id="data-summary{$shortcodecounter}" class="data-summary">
@@ -358,7 +358,7 @@ function showmulti($attr, $content = null)
 EOF;
 			}
 			// generate div and cancas for chartjs if chart should be shown 
-			elseif ( $showchart !== 'false' ) {
+			else {
 				$htmlstring .= "<div class=\"chartjs-profile-container\" id=\"chartjs-profile-container{$shortcodecounter}\" style=\"height:{$chartheight}px;\"><canvas id=\"route-elevation-chart{$shortcodecounter}\" style=\"width:100%;height:100%\"></canvas></div>";
 				$htmlstring .= <<<EOF
 				<div id="data-summary{$shortcodecounter}" class="data-summary">

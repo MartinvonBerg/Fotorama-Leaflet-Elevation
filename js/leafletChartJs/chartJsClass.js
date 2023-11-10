@@ -10,6 +10,8 @@
 import {ChartJS as Chart} from './chartJSwrapper.js'; // this is 15.6 kB or 31.8% smaller (compressed download size)
 import './ChartJsClass.css';
 
+// TODO: performance from https://www.chartjs.org/docs/latest/general/performance.html
+
 export { chartJsClass };
 
 class chartJsClass {
@@ -55,11 +57,13 @@ class chartJsClass {
     this.options = options;
     this.number = options.number || 0;
     this.elementDiv = options.divID || '';
-    this.elementOnPage = document.getElementById(options.divID) || {};
     this.pageVariables = options.pageVariables || [];
+    this.elementOnPage = document.getElementById(options.divID) || {};
     
     // stop the constructor and return undefined if options is not set sufficiently.
-    if ( (this.elementDiv ==='') || (this.elementOnPage == {}) || (this.pageVariables == [])) return undefined;
+    if ( (this.elementDiv ==='') || this.isObjEmpty(this.elementOnPage) || (this.pageVariables == [])) {
+      return;
+    }
     
     // set parent aspRatio if responsive is set. get parent and replace size in style by aspRatio.
     this.setAspRatioParentDiv();
@@ -79,28 +83,24 @@ class chartJsClass {
     this.drawElevationProfile();
   }
 
-  /**
-   * show chart number n with new elevation data
-   * @param {array} elevdata 
-   * @param {int} trackNumber 
-   */
-  showElevationProfile( elevdata, trackNumber ) {
-      // remap new data
-      this.elevationData = this.prepareChartData(elevdata);
-      // add data to config
-      this.chart.data.labels = [];
-      this.chart.data.datasets[0].data = [];
-      this.chart.data.labels = this.elevationData.labels;
-      this.chart.data.datasets[0].data = this.elevationData.data;
-      this.setChartData();
-      // set axes
-      this.setAxesMinMax(this.chart);
-      // updata chart and statistics
-      this.chart.update();
-      this.trackNumber = trackNumber;
-      this.setTrackStatistics();
+  isObjEmpty (obj) {
+    return Object.values(obj).length === 0 && obj.constructor === Object;
   }
-  
+
+  /**
+   * Reformat the input data to a format compatible with chart.js, which is two arrays with labels and data.
+   * @param {array} gpxdata 
+   * @returns {object} An object containing two arrays: data and labels.
+   */
+  prepareChartData(gpxdata) {
+    const labels = gpxdata.map(point => point[0]);
+    const data = gpxdata.map(point => point[1]);
+    return {
+      data,
+      labels
+    };
+  }
+
   /**
    * set the chart data to show in elevation profile
    */
@@ -118,45 +118,6 @@ class chartJsClass {
         spanGaps: true
       }]
     };
-  }
-
-  /**
-   * set the min max values for the chart axes
-   * @param {object} chart 
-   */
-  setAxesMinMax(chart) {
-    let maxHeight = Math.max(...chart.data.datasets[0].data);
-    let minHeight = Math.min(...chart.data.datasets[0].data);
-
-    // set the factor for the Altitude difference
-    let diff = maxHeight - minHeight;
-    let factor = 100;
-    if (diff <= 100.0) {factor = 10} else {factor = 100};
-
-    chart.options.scales.x.min = Math.min(...chart.data.labels);
-    chart.options.scales.x.max = Math.max(...chart.data.labels);
-    chart.options.scales.y.max = Math.ceil(maxHeight/factor)*factor; 
-    chart.options.scales.y.min = Math.floor(minHeight/factor)*factor;
-  }
-  
-  /**
-   * reformat the input data to a format that is compatible to chart.js. Which is two arrays with labels and data.
-   * @param {array} gpxdata 
-   * @returns {object{array,array}} labels and data in two arrays
-   */
-  prepareChartData(gpxdata) {
-    let labels = [];
-    let data = [];
-
-    gpxdata.forEach((point, index) => {
-      labels.push(point[0]);
-      data.push(point[1]);
-    });
-
-    return {
-      data: data,
-      labels: labels
-    }
   }
 
   /**
@@ -235,10 +196,10 @@ class chartJsClass {
             caretPadding: 6,
             callbacks: {
               label: (tooltipItems) => {
-                return this.i18n('Distance')+': '+ tooltipItems.parsed.x.toFixed(2) + ' km';
+                return this.i18n('Distance')+': '+ tooltipItems.parsed.x.toFixed(1) + ' km';
               },
               title: (tooltipItem) => {
-                return this.i18n('Altitude') +': ' + tooltipItem[0].formattedValue + ' m' ;
+                return this.i18n('Altitude') +': ' + tooltipItem[0].parsed.y.toFixed(0) + ' m' ;
               },
             }
           }
@@ -252,60 +213,51 @@ class chartJsClass {
     this.setTrackStatistics()
   }
 
-  /** 
-    * translate text for chart.js.
-    * @param {string} text to translate
-    * @returns {string} the string value for the locale or the original text if translation not available.
-    */
-  i18n(text) {
-    let de = {
-        'Distance' : "Strecke",
-        "Ascent"   : "Anstieg",
-        "Descent"  : "Abstieg",
-        "Altitude" : "Höhe", 
-        "y: "				: "Höhe: ",
-        "x: "				: "Strecke: ",
-    };
-
-    let it = {
-        'Distance' : "Distanza",
-        "Ascent"   : "Salita",
-        "Descent"  : "Discesa",
-        "Altitude" : "Altitudine", 
-        "y: "				: "Altitudine: ",
-        "x: "				: "Distanza: ",
-    };
-
-    let fr = {
-        'Distance' : "Distance",
-        "Ascent"   : "Ascente",
-        "Descent"  : "Descente",
-        "Altitude" : "Altitude", 
-        "y: "				: "Altitude: ",
-        "x: "				: "Distance: ",
-    };
-
-    let es = {
-        'Distance' : "Distancia",
-        "Ascent"   : "Ascenso",
-        "Descent"  : "Descenso",
-        "Altitude" : "Altura", 
-        "y: "				: "Altura: ",
-        "x: "				: "Distancia: ",
-    };
-
-    let langs = {'de': de, 'it':it, 'fr':fr, 'es':es};
-
-    let lang = navigator.language;
-    lang = lang.split('-')[0];
+  removeData() {
+    this.chart.data.labels = [];
     
-    if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
-        return langs[lang][text];
-    } 
-    else {
-        return text;
+    this.chart.data.datasets.forEach((dataset) => {
+        dataset.data = [];
+    });
+    this.chart.update();
+    //this.chart.destroy();
+  }
+
+  addData(data) {
+    /*
+    let newdata = [];
+    if (data == null) {
+        newdata.labels = this.elevationData.labels;
+        newdata.data = this.elevationData.data;
     }
-  };
+
+    this.chart.data.datasets[0].label = this.elevationData.labels;
+    this.chart.data.datasets[0].data =this.elevationData.data;
+    */
+    this.chart.data.labels.push([1,2,3,4]);
+    this.chart.data.datasets[0].data.push([1,2,3,4]);
+    
+    this.chart.update('show');
+  }
+
+  /**
+   * set the min max values for the chart axes
+   * @param {object} chart 
+   */
+  setAxesMinMax(chart) {
+    let maxHeight = Math.max(...chart.data.datasets[0].data);
+    let minHeight = Math.min(...chart.data.datasets[0].data);
+
+    // set the factor for the Altitude difference
+    let diff = maxHeight - minHeight;
+    let factor = 100;
+    if (diff <= 100.0) {factor = 10} else {factor = 100};
+
+    chart.options.scales.x.min = Math.min(...chart.data.labels);
+    chart.options.scales.x.max = Math.max(...chart.data.labels);
+    chart.options.scales.y.max = Math.ceil(maxHeight/factor)*factor; 
+    chart.options.scales.y.min = Math.floor(minHeight/factor)*factor;
+  }
 
   /**
      * Write the track statistics data to the dom element when the elevation data was loaded
@@ -422,33 +374,28 @@ class chartJsClass {
    * @param {string} hex the hex color value
    * @returns 
    */
-  getBestContrastTextColor(hex){
-   
-    if (hex.indexOf('#') === 0) {
+  getBestContrastTextColor(hex) {
+    if (hex[0] === '#') {
       hex = hex.slice(1);
     }
-    // convert 3-digit hex to 6-digits.
+    
     if (hex.length === 3) {
-        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     }
+    
     if (hex.length !== 6) {
-        throw new Error('Invalid HEX color.');
+      throw new Error('Invalid HEX color.');
     }
     
-    let threshold = 130; /* about half of 256. Lower threshold equals more dark text on dark background  */
+    const threshold = 130;
     
-    let hRed = hexToR(hex);
-    let hGreen = hexToG(hex);
-    let hBlue = hexToB(hex);
+    const hRed = parseInt(hex.substring(0, 2), 16);
+    const hGreen = parseInt(hex.substring(2, 4), 16);
+    const hBlue = parseInt(hex.substring(4, 6), 16);
     
+    const cBrightness = ((hRed * 299) + (hGreen * 587) + (hBlue * 114)) / 1000;
     
-    function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
-    function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
-    function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
-    function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
-
-    let cBrightness = ((hRed * 299) + (hGreen * 587) + (hBlue * 114)) / 1000;
-      if (cBrightness > threshold){return "#000000";} else { return "#ffffff";}	
+    return cBrightness > threshold ? "#000000" : "#ffffff";
   }
 
   /**
@@ -467,7 +414,6 @@ class chartJsClass {
     this.gradient.addColorStop(1, 'rgba(212,100,14,0.95)'); // bottom 1 : end of gradient
   }
   // ------------ end theme functions -------------------
-
 
   // ------------ start Event Handlers -------------------
   /**
@@ -505,9 +451,8 @@ class chartJsClass {
    * @param {int} pos the index of the lat-long value in the chart data.
    */
   triggerTooltip(pos) {
-    let chart = this.chart;
-    const tooltip = chart.tooltip;
-    const chartArea = chart.chartArea;
+    const tooltip = this.chart.tooltip;
+    const chartArea = this.chart.chartArea;
 
     if (tooltip.getActiveElements().length > 0) {
       tooltip.setActiveElements([], {x: 0, y: 0});
@@ -524,8 +469,63 @@ class chartJsClass {
       y: (chartArea.top + chartArea.bottom) / 2,
     });
     
-    chart.update();
+    this.chart.update();
   }
+
+  /** 
+    * translate text for chart.js.
+    * @param {string} text to translate
+    * @returns {string} the string value for the locale or the original text if translation not available.
+    */
+  i18n(text) {
+    let de = {
+        'Distance' : "Strecke",
+        "Ascent"   : "Anstieg",
+        "Descent"  : "Abstieg",
+        "Altitude" : "Höhe", 
+        "y: "				: "Höhe: ",
+        "x: "				: "Strecke: ",
+    };
+
+    let it = {
+        'Distance' : "Distanza",
+        "Ascent"   : "Salita",
+        "Descent"  : "Discesa",
+        "Altitude" : "Altitudine", 
+        "y: "				: "Altitudine: ",
+        "x: "				: "Distanza: ",
+    };
+
+    let fr = {
+        'Distance' : "Distance",
+        "Ascent"   : "Ascente",
+        "Descent"  : "Descente",
+        "Altitude" : "Altitude", 
+        "y: "				: "Altitude: ",
+        "x: "				: "Distance: ",
+    };
+
+    let es = {
+        'Distance' : "Distancia",
+        "Ascent"   : "Ascenso",
+        "Descent"  : "Descenso",
+        "Altitude" : "Altura", 
+        "y: "				: "Altura: ",
+        "x: "				: "Distancia: ",
+    };
+
+    let langs = {'de': de, 'it':it, 'fr':fr, 'es':es};
+
+    let lang = navigator.language;
+    lang = lang.split('-')[0];
+    
+    if ( (lang == 'de') || (lang == 'it') || (lang == 'fr') || (lang == 'es') ) {
+        return langs[lang][text];
+    } 
+    else {
+        return text;
+    }
+  };
   // ------------ end Event Handlers ------------------
 
 }

@@ -7,7 +7,9 @@
         let hasFotorama = false;
         let hasSwiper = false;
         let hasMasonry1 = false;
+        let hasMap = false;
         let hasChartJS = false;
+        let hasLeafElev = false;
         
         // slider variables
         let allSliders = [ numberOfBoxes-1 ];
@@ -22,12 +24,13 @@
             hasFotorama = document.querySelectorAll('[id^=mfotorama'+m+']').length === 1;
             hasSwiper = document.querySelectorAll('[id^=swiper'+m+']').length === 1;
             hasMasonry1 = document.querySelectorAll('[id^=minimasonry'+m+']').length === 1;
-            hasChartJS = document.querySelectorAll('[id^=chartjs-profile-container'+m+']').length === 1;
 
             let sliderSel = '';
 
-            //------------- leaflet - elevation part ---------------------------
-            let hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length === 1;
+            //------------- leaflet - elevation - chart part ---------------------------
+            hasMap = document.querySelectorAll('[id^=boxmap'+m+']').length === 1;
+            hasChartJS = document.querySelectorAll('[id^=chartjs-profile-container'+m+']').length === 1;
+            hasLeafElev = document.querySelectorAll('[id^=elevation-div'+m+']').length === 1; 
 
             // remove grid class if parent is a column.
             let el = document.getElementById('multifotobox'+m);
@@ -63,6 +66,7 @@
                 })
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
+                  // TODO: check logic here for map with track but no chart!
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
@@ -90,46 +94,38 @@
             if ( hasMap && (hasFotorama || hasSwiper) ) {
                 
                 // initiate the leaflet map
-                if ( pageVarsForJs[m].ngpxfiles === 0) {
+                if ( pageVarsForJs[m].ngpxfiles === 0 ) {
                     import(/* webpackChunkName: "leaflet" */'./leafletMapClass.js').then( (LeafletMap) => {
                         allMaps[m] = new LeafletMap.LeafletMap(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
-
-                        // update markers on the map if the active image changes
-                        document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
-                            // move map
-                            allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ); // change only
-
-                            // remove old markers - on change only. 
-                            allMaps[ e.detail.slider ].unSetActiveMarker();
-
-                            // mark now the marker for the active image --> 
-                            allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
-                        });
-
                     })
 
-                } else if ( ! hasChartJS ) {
+                } else if ( hasLeafElev ) {
                     import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
                     })
                     
+                } else if ( hasChartJS) {
+                    import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
+                        allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
+                        // create the markers on the map
+                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+                    })
                 } else {
                     import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
                         allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
                         // create the markers on the map
                         allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
                     })
-
                 }
 
                 // update markers on the map if the active image changes
                 document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
                     // move map
-                    allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide]['coord'] ); // change only
+                    allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ); // change only
 
                     // remove old markers - on change only. 
                     allMaps[ e.detail.slider ].unSetActiveMarker();

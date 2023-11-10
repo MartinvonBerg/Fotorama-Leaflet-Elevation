@@ -1,5 +1,5 @@
 /*!
-	gpxTrackClass 0.17.0
+	gpxTrackClass 0.25.0
 	license: GPL 2.0
 	Martin von Berg
 */
@@ -26,13 +26,16 @@ class gpxTrackClass {
     trackNumber = 0;
     pageVariables = [];
     mapobject = {};
+    trackColour = '';
 
-    constructor( number, mapobject, tracks, options=null) {
+    constructor( number, mapobject, tracks, trackNumber, trackColour='#ff0000') {
         this.tracks = tracks;
         this.pageVariables = pageVarsForJs[number];
         this.mapobject = mapobject;
+        this.trackNumber = trackNumber;
+        this.trackColour = trackColour || '#ff0000';
 
-        this.showTrack(0);
+        this.showTrack( this.trackNumber);
     }
 
     showTrack( trackNumber) {
@@ -42,7 +45,7 @@ class gpxTrackClass {
         this.gpxTracks = new L.GPX(this.trackurl, {
             async: this.asyncLoading,
             polyline_options: {
-                color: '#aa1111' // TODO: setting
+                color: this.trackColour
             },
             /*
             marker_options: {
