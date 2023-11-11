@@ -25,6 +25,7 @@ class LeafletChartJs extends LeafletMap {
     track = [];
     trackStartColour = '#ff0000';// TODO: setting for start colour
     trackColours = [];
+    allBounds =[];
 
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
@@ -40,14 +41,21 @@ class LeafletChartJs extends LeafletMap {
         for (const [key, track] of Object.entries( this.pageVariables.tracks )) {
             let trackNumber = parseInt(key.replace(/\D/g,''));
             this.track[trackNumber] = new gpxTrackClass( number, mapthis, this.pageVariables.tracks, trackNumber, this.trackColours[trackNumber] );
-            // TODO set bounds to all tracks
+            // get all bounds from all tracks
+            this.allBounds[trackNumber] = this.track[trackNumber].bounds;
         };
 
+        // set the bounds for the map TODO : handle showalltracks
+        let maxBounds = this.findMaxBounds(this.allBounds);
+        super.setBounds(maxBounds);
+        mapthis.map.fitBounds(maxBounds);
+
+        // start chartjs pars
         this.coords = this.track[0].coords; // for catchChartEvent
         this.leafletTrackID = this.track[0].gpxTracks._leaflet_id; // for catchChartEvent
               
         // show line chart with first track. example: https://jsfiddle.net/Geoapify/2pjhyves/
-        let div = 'route-elevation-chart'+number; // TODO : change the ids and classnames of chart different to example! Handle the empty obj here and return constructor?
+        let div = 'fm-elevation-chartjs'+number; // TODO : Handle the empty obj here and return constructor here already?
 
         let chartOptions = {
             // set i18n for chart (map is done in parent class 'leafletMapClass')
@@ -90,6 +98,26 @@ class LeafletChartJs extends LeafletMap {
             classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele.toFixed(1) + " m</p>");
             //classThis.mapFlyTo(e.detail.position);
         });
+    }
+
+    findMaxBounds(mapBoundsArray) {
+      if (!Array.isArray(mapBoundsArray) || mapBoundsArray.length === 0) {
+        return null; // Return null for an empty or invalid array
+      }
+    
+      let maxBounds = mapBoundsArray[0]; // Initialize with the first bounds in the array
+    
+      for (let i = 1; i < mapBoundsArray.length; i++) {
+        const currentBounds = mapBoundsArray[i];
+    
+        // Compare the latitude and longitude values to find the maximum bounds
+        maxBounds._southWest.lat = Math.min(maxBounds._southWest.lat, currentBounds._southWest.lat);
+        maxBounds._southWest.lng = Math.min(maxBounds._southWest.lng, currentBounds._southWest.lng);
+        maxBounds._northEast.lat = Math.max(maxBounds._northEast.lat, currentBounds._northEast.lat);
+        maxBounds._northEast.lng = Math.max(maxBounds._northEast.lng, currentBounds._northEast.lng);
+      }
+    
+      return maxBounds;
     }
 
     isObjEmpty (obj) {
@@ -240,7 +268,10 @@ class LeafletChartJs extends LeafletMap {
      * @return {string} The hexadecimal color code.
      */
     hslToHex(h, s, l) {
-        // TODO: treatment of wrong input values
+        // treatment of wrong input values
+        if ( (h<0) || (h>360) || (s<0) || (s>1) || (l<0) || (l>1) ) {
+          	return '#000000';
+        }
       
         const C = (1 - Math.abs(2 * l - 1)) * s;
         const X = C * (1 - Math.abs((h / 60) % 2 - 1));

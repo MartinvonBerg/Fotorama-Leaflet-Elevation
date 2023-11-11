@@ -359,7 +359,7 @@ EOF;
 			}
 			// generate div and cancas for chartjs if chart should be shown 
 			else {
-				$htmlstring .= "<div class=\"chartjs-profile-container\" id=\"chartjs-profile-container{$shortcodecounter}\" style=\"height:{$chartheight}px;\"><canvas id=\"route-elevation-chart{$shortcodecounter}\" style=\"width:100%;height:100%\"></canvas></div>";
+				$htmlstring .= "<div class=\"chartjs-profile-container\" id=\"chartjs-profile-container{$shortcodecounter}\" style=\"height:{$chartheight}px;\"><canvas id=\"fm-elevation-chartjs{$shortcodecounter}\" style=\"width:100%;height:100%\"></canvas></div>";
 				$htmlstring .= <<<EOF
 				<div id="data-summary{$shortcodecounter}" class="data-summary">
 				<span class="totlen">

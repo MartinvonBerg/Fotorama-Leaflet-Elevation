@@ -449,13 +449,13 @@ class LeafletMap {
      * Create the Leaflet Map Markers for the images of fotorama slider.
      * @param {array} markers
      */
-    createFotoramaMarkers(markers) {
+    createFotoramaMarkers(markers, fit=true) {
         let { marker, j, testgroup } = this.createMarkers(markers);
         this.mrk = marker;
         this.controlLayer.addOverlay(this.group1, this.i18n('Images') + ' (' + j + ')');
         this.group1.addTo(this.map); 
-        this.bounds = undefined;
-        this.bounds = this.setBoundsToMarkers(testgroup);
+        //this.bounds = undefined;
+        if (fit) this.bounds = this.setBoundsToMarkers(testgroup);
     }
 
     /**

@@ -118,7 +118,8 @@
                     import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
                         allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
                         // create the markers on the map
-                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata, false);
+                        allMaps[m].map.fitBounds(allMaps[m].bounds);
                     })
                 }
 

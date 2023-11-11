@@ -27,6 +27,7 @@ class gpxTrackClass {
     pageVariables = [];
     mapobject = {};
     trackColour = '';
+    bounds = null;
 
     constructor( number, mapobject, tracks, trackNumber, trackColour='#ff0000') {
         this.tracks = tracks;
@@ -69,8 +70,9 @@ class gpxTrackClass {
         this.setTrackInfo();
       
         this.mapobject.controlLayer.addOverlay(this.gpxTracks, this.gpxTracks._info.name);
-        this.mapobject.map.fitBounds(this.gpxTracks.getBounds(), {padding: [150, 150]});
+        //this.mapobject.map.fitBounds(this.gpxTracks.getBounds(), {padding: [150, 150]});
         this.mapobject.bounds = this.gpxTracks.getBounds();
+        this.bounds = this.mapobject.bounds;
 
         let classThis = this;
         this.gpxTracks.on('mouseover', function(e) {
