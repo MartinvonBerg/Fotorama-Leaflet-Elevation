@@ -76,15 +76,25 @@ class gpxTrackClass {
 
         let classThis = this;
         this.gpxTracks.on('mouseover', function(e) {
-            if ( e.type === 'mouseover' ) {
-                //let thecoords = e.propagatedFrom.latlngs;
+            if ( e.type === 'mouseover' && (classThis.trackNumber == classThis.mapobject.currentTrack ) ) {
+                // let thecoords = e.propagatedFrom.latlngs;
                 // get id in coords. triggerEvent
+                // classThis.trackNumber : is the hovered track // classThis.mapobject.currentTrack : ist the current track
                 const changed = new CustomEvent('mouseoverpath', {
                     detail: {
                         name: 'mouseoverpath',
                         track: this._info.name,
                         position: e.latlng,
                         index: classThis.getIndexForCoords(e.latlng),
+                    }
+                  });
+            
+                  this._map._container.dispatchEvent(changed);
+            } else if ( e.type === 'mouseover' && (classThis.trackNumber != classThis.mapobject.currentTrack ) ) {
+                const changed = new CustomEvent('changetrack', {
+                    detail: {
+                        name: 'changetrack',
+                        newtrack: classThis.trackNumber,
                     }
                   });
             

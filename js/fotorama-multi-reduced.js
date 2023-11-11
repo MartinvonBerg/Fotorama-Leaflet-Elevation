@@ -66,7 +66,6 @@
                 })
             } else {
                   // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
-                  // TODO: check logic here for map with track but no chart!
                   if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
@@ -77,17 +76,18 @@
                         allMaps[m].createSingleMarker(text);
                     })                    
                     
-                } else if ( ! hasChartJS ) {
+                } else if ( hasLeafElev ) {
                     // no slider, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
                     // initiate the leaflet map
                     import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
                     })
                 } else {
+                    // only map with gpx-tracks and eventually a chart.
                     import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
                         allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
                     })
-                }
+                } 
             }
             
             // define map and chart

@@ -210,34 +210,7 @@ class chartJsClass {
     this.chart = new Chart(this.ctx, config);
 
     // set statistics
-    this.setTrackStatistics()
-  }
-
-  removeData() {
-    this.chart.data.labels = [];
-    
-    this.chart.data.datasets.forEach((dataset) => {
-        dataset.data = [];
-    });
-    this.chart.update();
-    //this.chart.destroy();
-  }
-
-  addData(data) {
-    /*
-    let newdata = [];
-    if (data == null) {
-        newdata.labels = this.elevationData.labels;
-        newdata.data = this.elevationData.data;
-    }
-
-    this.chart.data.datasets[0].label = this.elevationData.labels;
-    this.chart.data.datasets[0].data =this.elevationData.data;
-    */
-    this.chart.data.labels.push([1,2,3,4]);
-    this.chart.data.datasets[0].data.push([1,2,3,4]);
-    
-    this.chart.update('show');
+    this.setTrackStatistics(0) // TODO : do not start with 0?
   }
 
   /**
@@ -260,12 +233,13 @@ class chartJsClass {
   }
 
   /**
-     * Write the track statistics data to the dom element when the elevation data was loaded
-     */
-  setTrackStatistics() {
+   * Write the track statistics data to the dom element when the elevation data was loaded
+   * @param {int} number
+   */
+  setTrackStatistics(number = 0) {
     // get the trace info from the gpx-file
     // track info in description of gpx track
-    let info = this.pageVariables.tracks['track_'+ this.trackNumber.toString() ].info;
+    let info = this.pageVariables.tracks['track_'+ number.toString() ].info;
 
     if (info) {info = info.split(' ')} else {info='';};
 

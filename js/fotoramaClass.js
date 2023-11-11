@@ -6,10 +6,7 @@
 // Class for the fotorama Slider
 // Fotorama and the Zoom-function depend on jQuery, so no need to replace jQuery with vanilla js.
 // Note on fotorama options and input-image-data: the fotorama options are defined in the html. And the image data is given by html.
-// Notes on REACT: ----------------------------
-// TODO: before adopting to react this class should be transferred to Typescript.
-// TODO: install and use eslint up to the latest coding standards
-// TODO: create tests with Jest testing framework
+// Notes on REACT: ---------------------------
 // A React Component would receive the fotorama options as props and image-data as a js-array. 
 // Here the js-array would be received by a server side render to have a dynamic react component. The SSR would be the PHP 'readImageFolder'.
 // The React component would then generate the html including the given options which would be then parsed by fotorama afterwards.

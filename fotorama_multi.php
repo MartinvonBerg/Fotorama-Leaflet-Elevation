@@ -118,7 +118,7 @@ function showmulti($attr, $content = null)
 		'sw_button_color'	=> $fotorama_elevation_options['sw_button_color'] ?? 'white', // swiper button color in CSS name or value
 		'chart_fill_color'		=> $fotorama_elevation_options['chart_fill_color'] ?? 'white',
 		'chart_background_color'=> $fotorama_elevation_options['chart_background_color'] ?? 'gray',
-		'charttype'			=> 'chartjs',
+		'charttype'			=> $fotorama_elevation_options['charttype'] ??  'chartjs', // TODO setting
 		//'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', 'false' // funktioniert nicht: andere Werte als thums zeigen nicht alle Bilder im Slider!
 		'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
 		'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
@@ -233,60 +233,59 @@ function showmulti($attr, $content = null)
 	list( $gpxfile, $tracks, $i ) = parseGPXFiles( $postid, $gpxfile, $gpx_dir, $gpx_url, $showadress, $setCustomFields, $shortcodecounter );
 	// Generate the html-code start with the surrounding Div
 	$htmlstring .= "<div id=\"multifotobox{$shortcodecounter}\" class=\"mfoto_grid\" style=\"max-width:{$maxwidth}px;\">";
+
+	// used for all Elements on the page, not only the swiper. 
+	$page_options = [
+		'addPermalink' 			=> $addPermalink, 
+		'allImgInWPLibrary' 	=> $allImgInWPLibrary,
+		'sw_effect'				=> $sw_effect,
+		'sw_zoom'				=> $sw_zoom,
+		'sw_fslightbox'			=> $sw_fslightbox,
+		'sw_pagination'			=> $sw_pagination,
+		'sw_slides_per_view' 	=> $sw_slides_per_view, // unused with martins thumbnails
+		'sw_transition_duration'=> $sw_transition_duration,
+		'sw_mousewheel'			=> $sw_mousewheel,
+		'sw_hashnavigation'  	=> $sw_hashnavigation,
+		'sw_max_zoom_ratio'		=> $sw_max_zoom_ratio,
+		'showcaption'			=> $showcaption,
+		'shortcaption'			=> $shortcaption,
+		'imgpath'				=> $imgpath,
+		'slide_fit'				=> $fit,
+		'sw_aspect_ratio'		=> $ratio,
+		'sw_keyboard'			=> 'true', // fixed to this setting
+		'background'			=> $background,
+		'sw_button_color'		=> $sw_button_color,
+		// thumbnails settings
+		'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
+		'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
+		'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful. for future change.
+		'bar_margin_top'     	=> $sw_bar_margin_top . 'px', // top margin of thumbnail bar in px
+		'bar_min_height'		=> $f_thumbheight . 'px', // now two values for the height!
+		'bar_rel_height'		=> '1%', // Does not work.height of thumbnail bar in percent. Use 1% to have a fixed height. for future change.
+		'nail_margin_side' 		=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
+		'nail_activeClass'		=> $sw_activetype, // available params: active, active_animation, active_border
+		// only for active_border  
+		'active_border_width'	=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
+		'active_border_color'	=> $thumbbordercolor, // '#ea0000', 
+		'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused. for future change.
+		// for elevation chart
+		'chart_fill_color'		=> $chart_fill_color,
+		'chart_background_color'=> $chart_background_color,
+		'minrowwidth'			=> $minrowwidth,
+		// special parameters for masonry
+		'mm_fslightbox'			=> $mm_fslightbox,
+		'mm_gutterX'			=> $mm_gutterx,
+		'mm_gutterY'			=> $mm_guttery,
+		'mm_minify'				=> $mm_minify,
+		'mm_surrGutter'			=> $mm_surrGutter,
+		'mm_ultiGutter'			=> $mm_ultiGutter,
+		'mm_dialogHeader'		=> $mm_dialogHeader,
+		// responsive image sizes
+		'image_sizes'			=> $fotorama_elevation_options['image_sizes']
+	];
 		
 	// Generate html for Slider images for javascript-rendering
-	if ($imageNumber > 0) {
-
-		// used for all Elements on the page, not only the swiper. 
-		$page_options = [
-			'addPermalink' 			=> $addPermalink, 
-			'allImgInWPLibrary' 	=> $allImgInWPLibrary,
-			'sw_effect'				=> $sw_effect,
-			'sw_zoom'				=> $sw_zoom,
-			'sw_fslightbox'			=> $sw_fslightbox,
-			'sw_pagination'			=> $sw_pagination,
-			'sw_slides_per_view' 	=> $sw_slides_per_view, // unused with martins thumbnails
-			'sw_transition_duration'=> $sw_transition_duration,
-			'sw_mousewheel'			=> $sw_mousewheel,
-			'sw_hashnavigation'  	=> $sw_hashnavigation,
-			'sw_max_zoom_ratio'		=> $sw_max_zoom_ratio,
-			'showcaption'			=> $showcaption,
-			'shortcaption'			=> $shortcaption,
-			'imgpath'				=> $imgpath,
-			'slide_fit'				=> $fit,
-			'sw_aspect_ratio'		=> $ratio,
-			'sw_keyboard'			=> 'true', // fixed to this setting
-			'background'			=> $background,
-			'sw_button_color'		=> $sw_button_color,
-			// thumbnails settings
-			'f_thumbwidth'			=> $f_thumbwidth, // for swiper thumbs and for videos without thumbnails
-			'thumbbartype'			=> $sw_thumbbartype, // 'integrated' or 'special'. 'multi' is from 'thumbnailClass.js'
-			'navposition' 			=> 'bottom', //$navposition, // only 'bottom' is useful. for future change.
-			'bar_margin_top'     	=> $sw_bar_margin_top . 'px', // top margin of thumbnail bar in px
-			'bar_min_height'		=> $f_thumbheight . 'px', // now two values for the height!
-			'bar_rel_height'		=> '1%', // Does not work.height of thumbnail bar in percent. Use 1% to have a fixed height. for future change.
-			'nail_margin_side' 		=> $thumbmargin . 'px', // left and right margin of single thumb in pixels
-			'nail_activeClass'		=> $sw_activetype, // available params: active, active_animation, active_border
-			// only for active_border  
-			'active_border_width'	=> $thumbborderwidth . 'px', // in pixels. only bottom border here!
-			'active_border_color'	=> $thumbbordercolor, // '#ea0000', 
-			'active_brightness'		=> '1.05', // brightness if activate. other values are: 0.6, 0.95, 1.05 currently unused. for future change.
-			// for elevation chart
-			'chart_fill_color'		=> $chart_fill_color,
-			'chart_background_color'=> $chart_background_color,
-			'minrowwidth'			=> $minrowwidth,
-			// special parameters for masonry
-			'mm_fslightbox'			=> $mm_fslightbox,
-			'mm_gutterX'			=> $mm_gutterx,
-			'mm_gutterY'			=> $mm_guttery,
-			'mm_minify'				=> $mm_minify,
-			'mm_surrGutter'			=> $mm_surrGutter,
-			'mm_ultiGutter'			=> $mm_ultiGutter,
-			'mm_dialogHeader'		=> $mm_dialogHeader,
-			// responsive image sizes
-			'image_sizes'			=> $fotorama_elevation_options['image_sizes']
-		];
-				
+	if ($imageNumber > 0) {				
 		if ( $slider === 'fotorama') {
 			// load the scripts for fotorama here
 			require_once __DIR__ . '/inc/fotoramaClass.php';

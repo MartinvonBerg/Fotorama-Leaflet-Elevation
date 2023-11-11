@@ -26,6 +26,7 @@ class LeafletChartJs extends LeafletMap {
     trackStartColour = '#ff0000';// TODO: setting for start colour
     trackColours = [];
     allBounds =[];
+    currentTrack = 0;
 
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
@@ -47,12 +48,13 @@ class LeafletChartJs extends LeafletMap {
 
         // set the bounds for the map TODO : handle showalltracks
         let maxBounds = this.findMaxBounds(this.allBounds);
-        super.setBounds(maxBounds);
+        super.setBounds(maxBounds); // TODO : bounds are not correctly set leaflet-overlay-pane
         mapthis.map.fitBounds(maxBounds);
+        mapthis.map.currentTrack = this.currentTrack;
 
         // start chartjs pars
-        this.coords = this.track[0].coords; // for catchChartEvent
-        this.leafletTrackID = this.track[0].gpxTracks._leaflet_id; // for catchChartEvent
+        this.coords = this.track[this.currentTrack].coords; // for catchChartEvent
+        this.leafletTrackID = this.track[this.currentTrack].gpxTracks._leaflet_id; // for catchChartEvent
               
         // show line chart with first track. example: https://jsfiddle.net/Geoapify/2pjhyves/
         let div = 'fm-elevation-chartjs'+number; // TODO : Handle the empty obj here and return constructor here already?
@@ -76,11 +78,11 @@ class LeafletChartJs extends LeafletMap {
             chartAnimation : true, // TODO: setting
             showChartHeader : false, // TODO: setting
             padding : 22, // TODO: setting, useful 0 ... 20 px or not?
-            followSlider: true // TODO: setting
+            followSlider: this.track.length > 1 ? false : true // TODO: setting
         }
 
         // show chart with the first track
-        this.chart = new chartJsClass( this.track.elev_data, chartOptions );
+        this.chart = new chartJsClass( this.track[this.currentTrack].elev_data, chartOptions );
 
         if ( this.isObjEmpty(this.chart.chart) ) {
             this.chart = null;
@@ -90,14 +92,22 @@ class LeafletChartJs extends LeafletMap {
         // update the slider if the marker on the map was clicked
         this.catchChartEvent(div);
 
-        //this.group = L.layerGroup();
-
         let classThis = this;
         document.getElementById('map'+number).addEventListener('mouseoverpath', function charthover(e) {
             classThis.chart.triggerTooltip(e.detail.index);
             classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele.toFixed(1) + " m</p>");
-            //classThis.mapFlyTo(e.detail.position);
         });
+
+        document.getElementById('map'+number).addEventListener('changetrack', function charthover(e) {
+          classThis.currentTrack = e.detail.newtrack;
+          let newdata = classThis.chart.prepareChartData(classThis.track[classThis.currentTrack].elev_data)
+          classThis.chart.chart.data.datasets[0].data = newdata.data;
+          classThis.chart.chart.data.labels = newdata.labels;
+          classThis.chart.setAxesMinMax(classThis.chart.chart)
+          classThis.chart.chart.update();
+          classThis.chart.setTrackStatistics(classThis.currentTrack);
+          classThis.coords = classThis.track[classThis.currentTrack].coords;
+      });
     }
 
     findMaxBounds(mapBoundsArray) {
@@ -126,11 +136,11 @@ class LeafletChartJs extends LeafletMap {
 
     setActiveMarker(markerNumber){
         super.setActiveMarker(markerNumber);
-        if (this.chart === null || this.chart.options.followSlider !== true) return;
+        if (this.chart === null || markerNumber === undefined || this.chart.options.followSlider !== true) return;
 
         // get index for chartpos for pos of markernumber
         let coords = this.mrk[markerNumber]._latlng
-        let index = this.track.getIndexForCoords(coords)
+        let index = this.track[this.currentTrack].getIndexForCoords(coords)
         if (index >-1) this.chart.triggerTooltip(index);
     }
 
