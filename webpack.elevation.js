@@ -1,7 +1,7 @@
 const path = require('path');
 //const webpack = require('webpack');
 //const TerserPlugin = require("terser-webpack-plugin");
-let _mode = 'development';
+let _mode = 'production';
 
 // create bundle for fotorama
 module.exports = [
