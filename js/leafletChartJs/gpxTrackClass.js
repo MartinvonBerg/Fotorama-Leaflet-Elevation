@@ -22,7 +22,7 @@ class gpxTrackClass {
     number = -1;
     eleSmoothing = 1.25; // value in meters // TODO: setting
     distSmoothing = 25; // TODO: setting
-    doTrackCalc = true; // TODO: setting
+    doTrackCalc = false; // TODO: setting
     trackNumber = 0;
     pageVariables = [];
     mapobject = {};
@@ -46,7 +46,8 @@ class gpxTrackClass {
         this.gpxTracks = new L.GPX(this.trackurl, {
             async: this.asyncLoading,
             polyline_options: {
-                color: this.trackColour
+                color: this.trackColour,
+                weight: 4, // TODO: setting
             },
             /*
             marker_options: {

@@ -209,8 +209,8 @@ class chartJsClass {
     
     this.chart = new Chart(this.ctx, config);
 
-    // set statistics
-    this.setTrackStatistics(0) // TODO : do not start with 0?
+    // set statistics for track 0. the first track is always the starting track
+    this.setTrackStatistics(0) 
   }
 
   /**
@@ -326,10 +326,6 @@ class chartJsClass {
         this.diagrFillColor = ''; // unset to default
         break;
     }
-
-    // limit the padding to a useful value
-    //if (this.options.padding > 20) this.options.padding = 20; // TODO: required?
-
   }
 
   /**

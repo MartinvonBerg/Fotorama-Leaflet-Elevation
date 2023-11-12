@@ -23,8 +23,8 @@ class LeafletChartJs extends LeafletMap {
     leafletTrackID = 0;
     chart = {};
     track = [];
-    trackStartColour = '#ff0000';// TODO: setting for start colour
-    trackColours = [];
+    trackStartColour = '#ff0000';// TODO: setting and trackwidth
+    trackColours = []; // TODO: setting all same colours
     allBounds =[];
     currentTrack = 0;
 
@@ -46,7 +46,7 @@ class LeafletChartJs extends LeafletMap {
             this.allBounds[trackNumber] = this.track[trackNumber].bounds;
         };
 
-        // set the bounds for the map TODO : handle showalltracks
+        // set the bounds for the map. handling of parameter showalltracks is ignored here.
         let maxBounds = this.findMaxBounds(this.allBounds);
         super.setBounds(maxBounds); // TODO : bounds are not correctly set leaflet-overlay-pane
         mapthis.map.fitBounds(maxBounds);
@@ -57,7 +57,7 @@ class LeafletChartJs extends LeafletMap {
         this.leafletTrackID = this.track[this.currentTrack].gpxTracks._leaflet_id; // for catchChartEvent
               
         // show line chart with first track. example: https://jsfiddle.net/Geoapify/2pjhyves/
-        let div = 'fm-elevation-chartjs'+number; // TODO : Handle the empty obj here and return constructor here already?
+        let div = 'fm-elevation-chartjs'+number; // do not handle the empty element here if not chart should be shown. This causes errors.
 
         let chartOptions = {
             // set i18n for chart (map is done in parent class 'leafletMapClass')
@@ -77,7 +77,7 @@ class LeafletChartJs extends LeafletMap {
             aspRatio : pageVarsForJs[number].mapaspect * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
             chartAnimation : true, // TODO: setting
             showChartHeader : false, // TODO: setting
-            padding : 22, // TODO: setting, useful 0 ... 20 px or not?
+            padding : 22, // TODO: setting
             followSlider: this.track.length > 1 ? false : true // TODO: setting
         }
 

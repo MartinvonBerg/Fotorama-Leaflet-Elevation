@@ -716,6 +716,21 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'showchart',
 			'info' => 'Show the elevation Chart. Or not.',
 		],
+		'param14' => [ // TODO translate
+			'label' => 'charttype',
+			'text' => 'Elevation Chart Type',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom14',
+			'type' => 'select',
+			'values' => [
+				'ele' => 'Leaflet-Elevation',
+				'chartjs' => 'Chart.js',
+			],
+			'default' => 'ele',
+			'description' => 'Select the elevation Chart.',
+			'shortcode' => 'charttype',
+			'info' => 'Select the elevation Chart.',
+		],
 		'param12' => [
 			'label' => 'colour_theme_for_leaflet_elevation_1',
 			'text' => 'Colour Theme for Leaflet Elevation',
