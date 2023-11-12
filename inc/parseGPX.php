@@ -117,7 +117,7 @@ final class parseGpxFile {
             $ascent = intval($ascent);
             $descent = intval($descent);
             $dist = number_format_i18n($dist / 1000, 1);
-            $desc = __('Dist', 'fotoramamulti') . ': ' . $dist . ' km, ' . __('Gain', 'fotoramamulti') . ': ' . $ascent . ' m, ' . __('Loss', 'fotoramamulti') . ': ' . $descent. ' m';
+            $desc = 'Dist: ' . $dist . ' km, Gain: ' . $ascent . ' m, Loss: ' . $descent. ' m'; // Do not translate this! Translation is done in Javascript.
             $newTrack->recalculateStats();
 
             if ( $newTrack->stats->cumulativeElevationGain === null && $newTrack->stats->cumulativeElevationLoss === null && $newTrack->stats->distance === null ) {

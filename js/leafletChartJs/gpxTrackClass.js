@@ -20,23 +20,22 @@ class gpxTrackClass {
     gpxTracks = {}
     asyncLoading = false;
     number = -1;
-    eleSmoothing = 1.25; // value in meters // TODO: setting
-    distSmoothing = 25; // TODO: setting
-    doTrackCalc = false; // TODO: setting
+    eleSmoothing = 4; // value in meters // TODO: setting. take from admin panel
+    distSmoothing = 5; // value in meters // TODO: setting. Do not take from admin panel. Or give a hint.
+    doTrackCalc = true; // no setting. always calc track statistics if not in file because leafelet-gpx is too inaccurate.
     trackNumber = 0;
     pageVariables = [];
     mapobject = {};
     trackColour = '';
     bounds = null;
 
-    constructor( number, mapobject, tracks, trackNumber, trackColour='#ff0000') {
+    constructor(number, mapobject, tracks, trackNumber, trackColour = '#ff0000') {
         this.tracks = tracks;
         this.pageVariables = pageVarsForJs[number];
         this.mapobject = mapobject;
         this.trackNumber = trackNumber;
-        this.trackColour = trackColour || '#ff0000';
-
-        this.showTrack( this.trackNumber);
+        this.trackColour = trackColour;
+        this.showTrack(this.trackNumber);
     }
 
     showTrack( trackNumber) {
@@ -118,108 +117,108 @@ class gpxTrackClass {
 
     getIndexForCoords(point) {
         let n = this.coords.length
-        let dist = 1e4;
-        let newdist = 1e5;
+        let dist = Infinity;
         let index = -1;
 
         //let startTime = performance.now();
         for (let i = 0; i < n; i++) {
-            newdist = this.calcCrow(point.lat, point.lng, this.coords[i].lat, this.coords[i].lng);
-            //console.log(newdist);
-            // the method from gpx.js leads to identical results. So the calc is correct.
-            //newdist = 1e-3*this.gpxTracks._dist2d({lat:point.lat,lng:point.lng},{lat:this.coords[i].lat,lng:this.coords[i].lng}); 
-            //console.log(newdist);
+            let newdist = this.calcCrow(point.lat, point.lng, this.coords[i].lat, this.coords[i].lng);
 
             if (newdist < dist) {
                 index = i;
                 dist = newdist;
             }
         }
-        //let endTime = performance.now();
-        //console.log(`Call took ${endTime - startTime} milliseconds`);
-
         return index;
     }
 
-    // https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
-    //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
-    calcCrow(lat1, lon1, lat2, lon2) 
-    {
-      var R = 6371; // km
-      var dLat = this.toRad(lat2-lat1);
-      var dLon = this.toRad(lon2-lon1);
-      var lat1 = this.toRad(lat1);
-      var lat2 = this.toRad(lat2);
+    /**
+     * Calculates the distance between two coordinates as the crow flies (in km).
+     * @param {number} lat1 - Latitude of the first location.
+     * @param {number} lon1 - Longitude of the first location.
+     * @param {number} lat2 - Latitude of the second location.
+     * @param {number} lon2 - Longitude of the second location.
+     * @returns {number} - The distance between the two coordinates.
+     */
+    calcCrow(lat1, lon1, lat2, lon2) {
+        const R = 6371; // km
+        const dLat = this.toRad(lat2 - lat1);
+        const dLon = this.toRad(lon2 - lon1);
+        const radLat1 = this.toRad(lat1);
+        const radLat2 = this.toRad(lat2);
 
-      var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-      var d = R * c;
-      return d;
-    }
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(radLat1) * Math.cos(radLat2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
 
-    // Converts numeric degrees to radians
-    toRad(Value) 
-    {
-        return Value * Math.PI / 180;
+        return distance;
     }
 
     /**
-   * calc the distance and elevation data for the track.
-   * @param {array} gpxdata 
-   * @returns {object} the sorted data
-   */
-    calcGpxTrackdata() {
-    let info = '';
-    //elevation
-    let cumulativeElevationGain = 0;
-    let cumulativeElevationLoss = 0;
-    let curElevation = 0;
-    let lastConsideredElevation = this.coords[0].meta.ele;
-    let elevationDelta = 0;
-    // distance
-    let lastPoint = [this.coords[0].lat, this.coords[0].lng];
-    let curPoint = [0,0];
-    let curDist = 0;
-    let cumulativeDistance = 0;
-    
-
-    if ( this.doTrackCalc) {
-        this.coords.forEach((point, index) => {
-            curElevation = point.meta.ele;
-            
-            if ( typeof(curElevation === 'number') && curElevation > 0.1){ // filter elevation data // TODO: setting
-                elevationDelta = curElevation - lastConsideredElevation;
-
-                if ( Math.abs( elevationDelta) > this.eleSmoothing ) {
-                    elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
-                    elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
-                }
-                lastConsideredElevation = curElevation;
-
-                // distance calc
-                curPoint = [point.lat, point.lng];
-                curDist = 1000 * this.calcCrow(lastPoint[0], lastPoint[1], curPoint[0], curPoint[1]);
-                if ( Math.abs(curDist) > this.distSmoothing) {
-                    cumulativeDistance += curDist;
-                }
-                lastPoint = curPoint;
-            }
-        });
-
-        this.tracklen = cumulativeDistance.toString(); 
-        this.ascent = cumulativeElevationGain.toString();
-        this.descent = cumulativeElevationLoss.toString();
-        info = 'Dist: '+ cumulativeDistance/1000 +' km, Gain: '+ cumulativeElevationGain +' Hm, Loss: '+ cumulativeElevationLoss+' Hm';  
-
-    } else {
-        let distKm = this.gpxTracks.get_distance() / 1000;
-        let distKmRnd = distKm.toFixed(1);
-        let eleGain = this.gpxTracks.get_elevation_gain().toFixed(1);
-        let eleLoss = this.gpxTracks.get_elevation_loss().toFixed(1);
-        info = 'Dist: '+distKmRnd+' km, Gain: '+ eleGain+' Hm, Loss: '+eleLoss+' Hm';   
+     * Converts degrees to radians.
+     * @param {number} degrees - The value in degrees.
+     * @returns {number} - The value in radians.
+     */
+    toRad(degrees) {
+        return (degrees * Math.PI) / 180;
     }
 
-    return info;
+    /**
+     * Calculate the distance and elevation data for the track.
+     * @param {array} gpxdata 
+     * @returns {object} the sorted data
+     */
+    calcGpxTrackdata() {
+        let info = '';
+
+        //elevation
+        let lastConsideredElevation = this.coords[0].meta.ele;
+        let cumulativeElevationGain = 0;
+        let cumulativeElevationLoss = 0;
+        
+        // distance
+        let lastPoint = [this.coords[0].lat, this.coords[0].lng];
+        let cumulativeDistance = 0;
+        
+
+        if ( this.doTrackCalc) {
+            this.coords.forEach((point, index) => {
+                let curElevation = point.meta.ele;
+                
+                if ( typeof(curElevation === 'number') && curElevation > 0.01){ // filter elevation data // TODO: setting
+                    let elevationDelta = curElevation - lastConsideredElevation;
+
+                    if ( Math.abs(elevationDelta) > this.eleSmoothing ) {
+                        elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
+                        elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
+                    }
+                    lastConsideredElevation = curElevation;
+
+                    let curPoint = [point.lat, point.lng];
+                    let curDist = 1000 * this.calcCrow(lastPoint[0], lastPoint[1], curPoint[0], curPoint[1]);
+                    if (Math.abs(curDist) > this.distSmoothing) {
+                        cumulativeDistance += curDist;
+                    }
+                    lastPoint = curPoint;
+                }
+            });
+
+            this.tracklen = cumulativeDistance.toString(); 
+            this.ascent = cumulativeElevationGain.toString();
+            this.descent = cumulativeElevationLoss.toString();
+            info = 'Dist: '+ cumulativeDistance/1000 +' km, Gain: '+ cumulativeElevationGain +' Hm, Loss: '+ cumulativeElevationLoss+' Hm';  
+
+        } else {
+            let distKm = this.gpxTracks.get_distance() / 1000;
+            let distKmRnd = distKm.toFixed(1);
+            let eleGain = this.gpxTracks.get_elevation_gain().toFixed(1);
+            let eleLoss = this.gpxTracks.get_elevation_loss().toFixed(1);
+            info = 'Dist: '+distKmRnd+' km, Gain: '+ eleGain+' Hm, Loss: '+eleLoss+' Hm';   
+        }
+
+        return info;
     }
 
 }
