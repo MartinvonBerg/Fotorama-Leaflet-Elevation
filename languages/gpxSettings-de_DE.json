@@ -22,12 +22,12 @@
         "info": "GPX-Datei hochladen: Track-Punkte mit Höhe=0 ignorieren. Notwendig für einige Geräte, weil sie 0 als Höhendaten schreiben, wenn die GPX-Genauigkeit nicht ausreicht"
     },
     "param3": {
-        "text": "Min. Distanz zur Verringerung der Trackpunkte [m]",
+        "text": "Min. Distanz zur Verringerung der Trackpunkte [m]* *ACHTUNG: Werte werden unterschiedlich gewichtet!",
         "description": "Min. Abstand der Trackpunkte in Metern (am besten 25 m für jede Art von Bergsteigen)",
         "info": "Min. Abstand der Trackpunkte in Metern (am besten 25 m für jede Art von Bergsteigen)"
     },
     "param4": {
-        "text": "Glättung Höhendaten [m]",
+        "text": "Glättung Höhendaten [m]* *ACHTUNG: Werte werden unterschiedlich gewichtet!",
         "description": "Min. Höhe zwischen Trackpunkten in Metern. Wird nur für Track-Statistik verwendet. Am besten ist 4",
         "info": "Min. Höhe zwischen Trackpunkten in Metern. Wird nur für Track-Statistik verwendet. Am besten ist 4"
     },

@@ -201,6 +201,7 @@ class LeafletElevation extends LeafletMap {
             q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
             q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';
             try {
+                // TODO: the event.track_info is working for one track but empty for multiple tracks
                 q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = event.track_info.distance.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
                 q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
                 q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";

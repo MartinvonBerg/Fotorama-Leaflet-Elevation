@@ -23,8 +23,8 @@ class LeafletChartJs extends LeafletMap {
     leafletTrackID = 0;
     chart = {};
     track = [];
-    trackStartColour = '#ff0000';// TODO: setting and trackwidth
-    trackColours = []; // TODO: setting all same colours
+    trackStartColour = '#ff0000';
+    trackColours = [];
     allBounds =[];
     currentTrack = 0;
 
@@ -32,6 +32,7 @@ class LeafletChartJs extends LeafletMap {
         super(number, elementOnPage, center=null, zoom=null);
 
         // generate the track colors
+        this.trackStartColour = pageVarsForJs[number].sw_options.trackcolour ?? '#ff0000';
         this.trackColours = this.calculateEquallyDistributedColors(this.trackStartColour, this.pageVariables.ngpxfiles);
 
         // store the map object
@@ -77,8 +78,8 @@ class LeafletChartJs extends LeafletMap {
             aspRatio : pageVarsForJs[number].mapaspect * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
             chartAnimation : true, // always, no setting
             showChartHeader : false, // always, no setting
-            padding : 22, // TODO: setting
-            followSlider: this.track.length > 1 ? false : true // TODO: setting
+            padding : pageVarsForJs[number].sw_options.chartjspadding,
+            followSlider: false // this.track.length > 1 ? false : true // whether the image position should be shown in chartjs with moving tooltip. for future use
         }
 
         // show chart with the first track

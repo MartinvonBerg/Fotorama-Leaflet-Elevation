@@ -7,9 +7,9 @@
         "info": "Zeige das Höhendiagramm"
     },
     "param12": {
-        "text": "Farbthema für das Höhendiagramm",
+        "text": "Farbthema für das Höhendiagramm*",
         "values": {
-            "martin-theme": "Martin",
+            "martin-theme": "Martin*",
             "lime-theme": "Limette",
             "steelblue-theme": "Stahlblau",
             "purple-theme": "Lila",
@@ -17,7 +17,7 @@
             "red-theme": "Rot",
             "magenta-theme": "Magenta",
             "lightblue-theme": "Hellblau",
-            "custom-theme": "Custom"
+            "custom-theme": "Custom*"
         },
         "description": "Farbthema für das Höhendiagramm. Martin-Theme ist mein spezielles Theme. Das Custom-Theme ist in den Farben anpassbar",
         "info": "Farbthema für das Höhendiagramm. Martin-Theme ist mein spezielles Theme. Das Custom-Theme ist in den Farben anpassbar"
@@ -33,7 +33,7 @@
         "info": "Hintergrundfarbe für die Höhentabelle"
     },
     "param9": {
-        "text": "Höhe des Höhendiagramms in px",
+        "text": "Höhe des Diagramms in px",
         "description": "Höhe des Höhendiagramms in px (wird ggf. bei responsive angepasst)",
         "info": "Höhe des Höhendiagramms in px (wird ggf. bei responsive angepasst)"
     },

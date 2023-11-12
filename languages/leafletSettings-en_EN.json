@@ -20,12 +20,12 @@
     },
     "param12": {
         "label": "colour_theme_for_leaflet_elevation_1",
-        "text": "Colour Theme for Leaflet Elevation",
+        "text": "Colour Theme for Leaflet Elevation*",
         "class": "leaflet_row",
         "custom_data": "custom12",
         "type": "select",
         "values": {
-            "martin-theme": "Martin",
+            "martin-theme": "Martin*",
             "lime-theme": "Lime",
             "steelblue-theme": "Steelblue",
             "purple-theme": "Purple",
@@ -33,7 +33,7 @@
             "red-theme": "Red",
             "magenta-theme": "Magenta",
             "lightblue-theme": "Lightblue",
-            "custom-theme": "Custom"
+            "custom-theme": "Custom*"
         },
         "default": "martin-theme",
         "description": "",
@@ -43,7 +43,7 @@
     "param11": {
         "label": "chart_fill_color",
         "text": "Chart fill Colour (only for Custom)",
-        "class": "common_row",
+        "class": "leaflet_row",
         "custom_data": "custom11",
         "type": "color",
         "values": "#FF0000",
@@ -55,7 +55,7 @@
     "param10": {
         "label": "chart_background_color",
         "text": "Chart Background Colour (only for Custom)",
-        "class": "common_row",
+        "class": "leaflet_row",
         "custom_data": "custom10",
         "type": "color",
         "values": "#FF0000",
@@ -63,6 +63,20 @@
         "description": "Background Colour for the Elevation Chart",
         "shortcode": "chart_background_color",
         "info": "Background Colour for the Elevation Chart"
+    },
+    "param15": {
+        "label": "chartjspadding",
+        "text": "Padding of Chart in px*",
+        "class": "leaflet_row",
+        "custom_data": "custom14",
+        "type": "number",
+        "values": 20,
+        "default": 20,
+        "min": 0,
+        "max": 50,
+        "description": "",
+        "shortcode": "chartjspadding",
+        "info": "Padding of Chart in px (from border to chart canvas)"
     },
     "param9": {
         "label": "height_of_chart_11",

@@ -7,17 +7,17 @@
         "info": "Mostra grafico altimetrico"
     },
     "param12": {
-        "text": "Tema colore per il grafico di elevazione",
+        "text": "Tema colore per il grafico di elevazione*",
         "values": {
-            "martin-theme": "Martin",
-            "lime-theme": "lime",
-            "steelblue-theme": "steel blue",
-            "purple-theme": "purple",
-            "yellow-theme": "giallo",
-            "red-theme": "red",
-            "magenta-theme": "magenta",
+            "martin-theme": "Martin*",
+            "lime-theme": "Lime",
+            "steelblue-theme": "Steel blue",
+            "purple-theme": "Purple",
+            "yellow-theme": "Giallo",
+            "red-theme": "Red",
+            "magenta-theme": "Magenta",
             "lightblue-theme": "Light blue",
-            "custom-theme": "personalizzato"
+            "custom-theme": "Personalizzato*"
         },
         "description": "tema di colore per il grafico dell'altitudine. Il tema Martin è il mio tema personalizzato. Il tema personalizzato è personalizzabile nei colori",
         "info": "Tema dei colori per il grafico dell'altitudine. Il tema Martin è il mio tema speciale. Il tema personalizzato è personalizzabile nei colori."
@@ -33,7 +33,7 @@
         "info": "Colore di sfondo del diagramma di quota"
     },
     "param9": {
-        "text": "Altezza del diagramma altimetrico in px",
+        "text": "Altezza del diagramma in px",
         "description": "Altezza del diagramma altimetrico in px (verrà regolata se reattiva)",
         "info": "Altezza del grafico dell'altezza in px (sarà adattata se responsive)"
     }, 

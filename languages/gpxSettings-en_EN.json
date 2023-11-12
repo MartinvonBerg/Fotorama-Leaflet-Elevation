@@ -58,7 +58,7 @@
     },
     "param3": {
         "label": "gpx_smooth",
-        "text": "Distance Smooth",
+        "text": "Distance Smooth [m]* *Values are weighted differently!",
         "class": "gpx_row",
         "custom_data": "custom1",
         "type": "number",
@@ -72,7 +72,7 @@
     },
     "param4": {
         "label": "gpx_elesmooth",
-        "text": "Elevation Smooth",
+        "text": "Elevation Smooth [m]* *Values are weighted differently!",
         "class": "gpx_row",
         "custom_data": "custom2",
         "type": "number",

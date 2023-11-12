@@ -20,8 +20,8 @@ class gpxTrackClass {
     gpxTracks = {}
     asyncLoading = false;
     number = -1;
-    eleSmoothing = 4; // value in meters // TODO: setting. take from admin panel
-    distSmoothing = 5; // value in meters // TODO: setting. Do not take from admin panel. Or give a hint.
+    eleSmoothing = 4; // value in meters // setting. take from admin panel
+    distSmoothing = 5; // value in meters // setting. take from admin panel.
     doTrackCalc = true; // no setting. always calc track statistics if not in file because leafelet-gpx is too inaccurate.
     trackNumber = 0;
     pageVariables = [];
@@ -32,6 +32,9 @@ class gpxTrackClass {
     constructor(number, mapobject, tracks, trackNumber, trackColour = '#ff0000') {
         this.tracks = tracks;
         this.pageVariables = pageVarsForJs[number];
+        this.distSmoothing = parseInt(this.pageVariables.sw_options.gpx_distsmooth);
+        this.eleSmoothing = parseInt(this.pageVariables.sw_options.gpx_elesmooth);
+        this.number = number;
         this.mapobject = mapobject;
         this.trackNumber = trackNumber;
         this.trackColour = trackColour;
@@ -46,7 +49,7 @@ class gpxTrackClass {
             async: this.asyncLoading,
             polyline_options: {
                 color: this.trackColour,
-                weight: 4, // TODO: setting
+                weight: parseInt(this.pageVariables.sw_options.trackwidth),
             },
             
             marker_options: {

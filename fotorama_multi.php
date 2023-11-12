@@ -118,8 +118,11 @@ function showmulti($attr, $content = null)
 		'sw_button_color'	=> $fotorama_elevation_options['sw_button_color'] ?? 'white', // swiper button color in CSS name or value
 		'chart_fill_color'		=> $fotorama_elevation_options['chart_fill_color'] ?? 'white',
 		'chart_background_color'=> $fotorama_elevation_options['chart_background_color'] ?? 'gray',
-		'charttype'			=> $fotorama_elevation_options['charttype'] ??  'chartjs', 
-		//'nav' 				=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', 'false' // funktioniert nicht: andere Werte als thums zeigen nicht alle Bilder im Slider!
+		'charttype'			=> $fotorama_elevation_options['charttype'] ??  'chartjs',
+		'chartjspadding'	=> $fotorama_elevation_options['chartjspadding'] ?? '22',
+		'trackwidth'		=> $fotorama_elevation_options['trackwidth'] ?? '3',
+		'trackcolour'		=> $fotorama_elevation_options['trackcolour'] ?? '#ff0000',
+		//'nav' 			=> $fotorama_elevation_options['nav'] ?? 'thumbs', // Default: 'dots', 'thumbs', 'false' // funktioniert nicht: andere Werte als thums zeigen nicht alle Bilder im Slider!
 		'navposition' 		=> $fotorama_elevation_options['navposition'] ?? 'bottom', // 'top'
 		'navwidth' 			=> $fotorama_elevation_options['navwidth'] ?? '100', // in percent
 		'f_thumbwidth' 		=> $fotorama_elevation_options['f_thumbwidth'] ?? '100', // in pixels
@@ -272,6 +275,10 @@ function showmulti($attr, $content = null)
 		'chart_fill_color'		=> $chart_fill_color,
 		'chart_background_color'=> $chart_background_color,
 		'minrowwidth'			=> $minrowwidth,
+		'chartjspadding'		=> $chartjspadding,
+		'trackwidth'			=> $trackwidth,
+		'trackcolour'			=> $trackcolour,
+		// for masonry
 		// special parameters for masonry
 		'mm_fslightbox'			=> $mm_fslightbox,
 		'mm_gutterX'			=> $mm_gutterx,
@@ -281,7 +288,10 @@ function showmulti($attr, $content = null)
 		'mm_ultiGutter'			=> $mm_ultiGutter,
 		'mm_dialogHeader'		=> $mm_dialogHeader,
 		// responsive image sizes
-		'image_sizes'			=> $fotorama_elevation_options['image_sizes']
+		'image_sizes'			=> $fotorama_elevation_options['image_sizes'],
+		// gpx parsing for javascript
+		'gpx_distsmooth'		=> $fotorama_elevation_options["gpx_smooth"],
+		'gpx_elesmooth' 		=> $fotorama_elevation_options["gpx_elesmooth"]
 	];
 		
 	// Generate html for Slider images for javascript-rendering

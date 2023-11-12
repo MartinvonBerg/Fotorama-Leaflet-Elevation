@@ -22,12 +22,12 @@
         "info": "Carica file GPX: Ignora i punti di traccia con altitudine=0. Necessario per alcuni dispositivi perché scrivono 0 come dati di elevazione se la precisione GPX non è sufficiente"
     }, 
     "param3": {
-        "text": "Distanza minima per ridurre i punti traccia [m]",
+        "text": "Distanza minima per ridurre i punti traccia [m]* *I valori sono ponderati in modo diverso!",
         "description": "Distanza minima per ridurre i punti traccia [m] (25 m è la migliore per qualsiasi tipo di alpinismo)",
         "info": "Distanza minima per ridurre i punti traccia [m] (25 m è la migliore per qualsiasi tipo di alpinismo)"
     },
     "param4": {
-        "text": "Attenuazione dei dati di altitudine [m]",
+        "text": "Attenuazione dei dati di altitudine [m]* *I valori sono ponderati in modo diverso!",
         "description": "Altitudine minima tra i punti della traccia in metri. Utilizzato solo per le statistiche della traccia. La migliore è 4",
         "info": "Altitudine minima tra i punti della traccia in metri. Utilizzato solo per le statistiche della traccia. La migliore è 4"
     },
