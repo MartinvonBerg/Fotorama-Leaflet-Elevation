@@ -13,7 +13,7 @@ namespace mvbplugins\fotoramamulti;
 class fotoramaSitemaps
 {
 	protected $thumbs;
-	protected $requiregps = true;
+	protected $requiregps = 'false';
 	protected $up_url;
 	protected $up_dir;
 	protected $doSitemap = false;
@@ -39,7 +39,7 @@ class fotoramaSitemaps
 
 		if ( $fotorama_elevation_options !== false) {
 			$this->doSitemap  = $fotorama_elevation_options['doYoastXmlSitemap_16'] === 'true';
-			$this->requiregps = $fotorama_elevation_options['images_with_gps_required_5'] === 'true';
+			$this->requiregps = $fotorama_elevation_options['images_with_gps_required_5'];
 			$this->addPermalink = $fotorama_elevation_options['useCDN_13'] === 'true';
 		}
 		$this->thumbs = THUMBSDIR;
@@ -92,6 +92,13 @@ class fotoramaSitemaps
 				} else {
 					$reqgps = $this->requiregps;
 				}
+
+				if (array_key_exists('filefilter', $atts)) {
+					$filefilter = $atts['filefilter'];
+				} else {
+					$filefilter = '';
+				}
+
 
 				// only proceed if shortcode contains a path to image files
 				if (array_key_exists('imgpath', $atts)) {
