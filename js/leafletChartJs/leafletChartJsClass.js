@@ -73,10 +73,10 @@ class LeafletChartJs extends LeafletMap {
             chartHeight : pageVarsForJs[number].chartheight,
             pageVariables : pageVarsForJs[number],
             // responsive
-            responsive : true, // TODO: setting
+            responsive : true, // always, no setting
             aspRatio : pageVarsForJs[number].mapaspect * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
-            chartAnimation : true, // TODO: setting
-            showChartHeader : false, // TODO: setting
+            chartAnimation : true, // always, no setting
+            showChartHeader : false, // always, no setting
             padding : 22, // TODO: setting
             followSlider: this.track.length > 1 ? false : true // TODO: setting
         }

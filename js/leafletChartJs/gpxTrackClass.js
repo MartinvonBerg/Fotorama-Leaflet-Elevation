@@ -48,19 +48,16 @@ class gpxTrackClass {
                 color: this.trackColour,
                 weight: 4, // TODO: setting
             },
-            /*
+            
             marker_options: {
                 startIconUrl: this.pageVariables.imagepath +'/pin-icon-start.png',
                 endIconUrl: this.pageVariables.imagepath +'/pin-icon-end.png',
-                shadowUrl: this.pageVariables.imagepath +'/pin-shadow.png'
+                shadowUrl: this.pageVariables.imagepath +'/pin-shadow.png',
+                iconSize: [16, 22],
+                iconAnchor: [8, 22],
+                shadowSize: [16, 22],
+                shadowAnchor: [8, 22],
             }
-            */
-            marker_options: {
-                startIconUrl: '', // TODO: setting
-                endIconUrl: '',// TODO: setting 
-                shadowUrl: '' // TODO: setting
-            }
-
         }).addTo(this.mapobject.map);
         
         this.elev_data = this.gpxTracks.get_elevation_data(); // no function here to get the gpx data
@@ -187,7 +184,7 @@ class gpxTrackClass {
             this.coords.forEach((point, index) => {
                 let curElevation = point.meta.ele;
                 
-                if ( typeof(curElevation === 'number') && curElevation > 0.01){ // filter elevation data // TODO: setting
+                if ( typeof(curElevation === 'number') ){
                     let elevationDelta = curElevation - lastConsideredElevation;
 
                     if ( Math.abs(elevationDelta) > this.eleSmoothing ) {

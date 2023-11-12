@@ -1,0 +1,12 @@
+GPX-File-Parsing
+eleSmoothing = 4; // value in meters // TODO: setting. take from admin panel
+distSmoothing = 5; // value in meters // TODO: setting. Do not take from admin panel. Or give a hint.
+
+GPX-Track in Map
+weight: 4, // TODO: setting fpr track width. if so use it also leaf-ele
+trackStartColour = '#ff0000';// TODO: setting and trackwidth
+trackColours = []; // TODO: setting all same colours
+
+Chartjs look an behaviour
+padding : 22, // TODO: setting. padding in chartjs
+followSlider : // TODO: setting. show tooltip in charts where the current image is only for one track
