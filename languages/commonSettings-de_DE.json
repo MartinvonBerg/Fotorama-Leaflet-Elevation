@@ -92,9 +92,9 @@
         "info": "Farbe des Thumbnail-Rahmens als CSS-Name oder HEX-Wert mit führendem #"
     },
     "param17": {
-        "text": "Übergangsdauer in ms",
-        "description": "Dauer des Dia-Übergangs in ms",
-        "info": "Dauer des Dia-Übergangs in ms"
+        "text": "Dauer Dia-Wechsel in ms",
+        "description": "Dauer des Dia-Wechsels in ms",
+        "info": "Dauer des Dia-Wechsels in ms"
     },
     "param21": {
         "text": "Permalink hinzufügen",

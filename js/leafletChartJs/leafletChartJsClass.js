@@ -49,7 +49,7 @@ class LeafletChartJs extends LeafletMap {
 
         // set the bounds for the map. handling of parameter showalltracks is ignored here.
         let maxBounds = this.findMaxBounds(this.allBounds);
-        super.setBounds(maxBounds); // TODO : bounds are not correctly set leaflet-overlay-pane
+        super.setBounds(maxBounds); // bounds might not correctly set leaflet-overlay-pane
         mapthis.map.fitBounds(maxBounds);
         mapthis.map.currentTrack = this.currentTrack;
 

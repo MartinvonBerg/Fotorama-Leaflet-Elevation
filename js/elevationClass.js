@@ -130,7 +130,7 @@ class LeafletElevation extends LeafletMap {
                     distanceMarkers: { lazy: true, distance: false, direction: false }, // direction creates the black arrows
                     hotline: true, // the coloured line. One color only if false
                     polyline: {
-                        weight: 3.111, // TODO: create a parameter for this? This changes the lineWidth. Mind that the original leaflet-elevation.js was changed for that.
+                        weight: 0.9*parseInt(this.pageVariables.sw_options.trackwidth), // This changes the lineWidth. Mind that the original leaflet-elevation.js was changed for that.
                     },
                     waypoints: false,
                     wptLabels: false,
@@ -201,7 +201,7 @@ class LeafletElevation extends LeafletMap {
             q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
             q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';
             try {
-                // TODO: the event.track_info is working for one track but empty for multiple tracks
+                // the event.track_info is working for one track but empty for multiple tracks. Track_info is provided by leaflet-elevation.js.
                 q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = event.track_info.distance.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
                 q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
                 q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";

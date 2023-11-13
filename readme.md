@@ -214,6 +214,9 @@ Process and save the file with the Button at the bottom.
 
 3. Usage
     - see above.
+
+4. TODO & Bugs w.r.t to Leaflet Elevation
+    - The track statistics is not updated if more than one track is shown in one map and the statistics is calculated by leaflet-elevation.js. The event.track_info is working for the first track but empty for the other tracks. Workaround: Upload the tracks (gpx-files) via the admin-panel and activate the setting 'Reduce GPX-File'. This will add statistics to the reduced GPX-file which is used on the page / post.
       
 
 # Tile Server for Leaflet Map Tiles

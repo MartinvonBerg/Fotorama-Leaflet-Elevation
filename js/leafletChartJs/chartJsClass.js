@@ -10,7 +10,6 @@
 import {ChartJS as Chart} from './chartJSwrapper.js'; // this is 15.6 kB or 31.8% smaller (compressed download size)
 import './ChartJsClass.css';
 
-// TODO: performance from https://www.chartjs.org/docs/latest/general/performance.html
 
 export { chartJsClass };
 
@@ -94,6 +93,7 @@ class chartJsClass {
    */
   prepareChartData(gpxdata) {
     const labels = gpxdata.map(point => point[0]);
+    //labels = labels.map(a => a.toFixed(6));
     const data = gpxdata.map(point => point[1]);
     return {
       data,
@@ -140,6 +140,8 @@ class chartJsClass {
       
       options: {
         onHover: this.handleChartHover,
+        //parsing: true, // false does not work with gpx data. 
+        //normalized: false,
         animation: this.chartAnimation,
         interaction: {
           intersect: false,
