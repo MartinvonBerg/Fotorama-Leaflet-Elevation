@@ -6,6 +6,11 @@
         "description": "Mostra grafico altimetrico",
         "info": "Mostra grafico altimetrico"
     },
+    "param14": {
+        "text": "Tipo di carta altimetrica",
+        "description": "Selezione del tipo di grafico da Leaflet-Elevation o Chart.js",
+        "info": "Selezione del tipo di grafico da Leaflet-Elevation o Chart.js"
+    },
     "param12": {
         "text": "Tema colore per il grafico di elevazione*",
         "values": {
@@ -23,20 +28,35 @@
         "info": "Tema dei colori per il grafico dell'altitudine. Il tema Martin è il mio tema speciale. Il tema personalizzato è personalizzabile nei colori."
     }, 
     "param11": {
-        "text": "Colore di riempimento del grafico (solo personalizzato)",
+        "text": "Colore di riempimento del grafico (solo personalizzato)*",
         "description": "Colore per riempire l'area sotto il profilo altimetrico",
         "info": "Colore per riempire l'area sotto il profilo altimetrico"
     }, 
     "param10": {
-        "text": "Colore di sfondo del grafico (solo per l'uso personalizzato)",
+        "text": "Colore di sfondo del grafico (solo per l'uso personalizzato)*",
         "description": "Colore di sfondo per il diagramma altimetrico",
         "info": "Colore di sfondo del diagramma di quota"
     },
+    "param15": {
+        "text": "Padding del grafico in px*",
+        "description": "Padding del grafico chart.js in px (dal bordo all'area del grafico)",
+        "info": "Imbottitura del grafico.js in px (dal bordo all'area del grafico)"
+    },
     "param9": {
-        "text": "Altezza del diagramma in px",
+        "text": "Altezza del diagramma in px*",
         "description": "Altezza del diagramma altimetrico in px (verrà regolata se reattiva)",
         "info": "Altezza del grafico dell'altezza in px (sarà adattata se responsive)"
     }, 
+    "param16": {
+        "text": "Larghezza della traccia GPX in px*",
+        "description": "Larghezza della traccia GPX in px",
+        "info": "Larghezza della traccia GPX in px"
+    },
+    "param17": {
+        "text": "Colore della (prima) traccia GPX*",
+        "description": "Colore della (prima) traccia, definito da un nome CSS valido in hex",
+        "info": "Colore della (prima) traccia, definito da un nome CSS valido in esadecimale"
+    },
     "param1": {
         "text": "Link di download per i file GPX",
         "description": "crea link di download per i file GPX",

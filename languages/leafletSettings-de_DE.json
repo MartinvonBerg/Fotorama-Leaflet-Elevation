@@ -6,6 +6,11 @@
         "description": "Zeige das Höhendiagramm",
         "info": "Zeige das Höhendiagramm"
     },
+    "param14": {
+        "text": "Typ Höhendiagramm",
+        "description": "Auswahl des Diagrammtyps aus Leaflet-Elevation oder Chart.js",
+        "info": "Auswahl des Diagrammtyps aus Leaflet-Elevation oder Chart.js"
+    },
     "param12": {
         "text": "Farbthema für das Höhendiagramm*",
         "values": {
@@ -23,19 +28,34 @@
         "info": "Farbthema für das Höhendiagramm. Martin-Theme ist mein spezielles Theme. Das Custom-Theme ist in den Farben anpassbar"
     },
     "param11": {
-        "text": "Diagrammfüllfarbe (nur für Custom)",
+        "text": "Diagrammfüllfarbe (nur für Custom)*",
         "description": "Farbe zum Füllen des Bereichs unter dem Höhenprofil",
         "info": "Farbe zum Füllen des Bereichs unter dem Höhenprofil"
     },
     "param10": {
-        "text": "Diagramm-Hintergrundfarbe (nur für Custom)",
+        "text": "Diagramm-Hintergrundfarbe (nur für Custom)*",
         "description": "Hintergrundfarbe für das Höhendiagramm",
         "info": "Hintergrundfarbe für die Höhentabelle"
     },
+    "param15": {
+        "text": "Padding des Diagramms in px*",
+        "description": "Padding des chart.js Diagramms in px (vom Rand zur Diagrammfläche)",
+        "info": "Padding des chart.js Diagramms in px (vom Rand zur Diagrammfläche)"
+    },
     "param9": {
-        "text": "Höhe des Diagramms in px",
+        "text": "Höhe des Diagramms in px*",
         "description": "Höhe des Höhendiagramms in px (wird ggf. bei responsive angepasst)",
         "info": "Höhe des Höhendiagramms in px (wird ggf. bei responsive angepasst)"
+    },
+    "param16": {
+        "text": "Breite GPX-Track in px*",
+        "description": "Breite des GPX-Track in px",
+        "info": "Breite des GPX-Track in px"
+    },
+    "param17": {
+        "text": "Farbe (erster) GPX-Track*",
+        "description": "Farbe des (ersten) Tracks, definiert durch einen gültigen CSS-Namen in Hex",
+        "info": "Farbe des (ersten) Tracks, definiert durch einen gültigen CSS-Namen in Hex"
     },
     "param1": {
         "text": "Download-Link für GPX-Dateien",

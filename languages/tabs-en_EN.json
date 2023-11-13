@@ -4,7 +4,7 @@
     "slug": "slider-map-chart",
     "namespace": "fotoramamulti",
     "title": "Settings for Slider + Leaflet-Map + Chart Plugin",
-    "subtitle": "Settings for the Slider + Leaflet-Map + Chart Plugin that are used for every page or post where the Plugin is used. (Almost) All settings can be overwritten by parameters of the shortcode. Settings marked with * are (also) used in the Javascript of chart.js.",
+    "subtitle": "Settings for the Slider + Leaflet-Map + Chart Plugin that are used for every page or post where the Plugin is used. (Almost) All settings can be overwritten by parameters of the shortcode. Settings marked with * are also or only used by chart.js.",
     "showParametersPage": true,
     "parametersTitle": "Parameters",
     "tabs": [
