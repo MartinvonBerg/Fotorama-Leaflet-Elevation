@@ -1,5 +1,5 @@
 /*!
-	LeafletMapClass V 0.24.0
+	LeafletMapClass V 0.25.0
 	license: GPL 2.0
 	Martin von Berg
 */

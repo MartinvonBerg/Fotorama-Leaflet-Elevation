@@ -1,6 +1,6 @@
 {
 	"name": "fotorama-multi",
-	"version": "0.24.0",
+	"version": "0.25.0",
 	"description": "Provide settings for the Fotorama-Elevation shortcode by a Gutenberg block",
 	"author": "Martin von Berg",
 	"license": "GPL-2.0",
@@ -18,7 +18,7 @@
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^5.43.0",
 		"@typescript-eslint/parser": "^5.43.0",
-		"@wordpress/scripts": "^22.3.0",
+		"@wordpress/scripts": "^18.0.1",
 		"css-loader": "^6.7.1",
 		"eslint": "^8.27.0",
 		"eslint-config-standard": "^17.0.0",

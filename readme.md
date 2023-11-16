@@ -10,7 +10,7 @@
 - [Upgrade Notice](#upgrade-notice)
 - [Usage](#usage)
 - [Image Preparation and Usage of the Fotorama-Slider](#image-preparation-and-usage-of-the-fotorama-slider)
-- [Usage of Leaflet Elevation](#usage-of-leaflet-elevation)
+- [Usage of Leaflet Elevation and Chart.js](#usage-of-leaflet-elevation)
 - [Tile Server for Leaflet Map Tiles](#tile-server-for-leaflet-map-tiles)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Translation, i18n](#translation--i18n)
@@ -26,9 +26,7 @@
 
 WordPress-Plugin to show a responsive Image Slider with images located in a separate FOLDER on your server or even in the WordPress Media Library. A thumbnail bar could be shown together with the image slider. Fotorama or Swiper is used for the slider. The Fotorama slider only works with JPG- or WEBP-Files an not with videos. Swiper works with Videos, too.
 
-**NEW** Show a simple Masonry Gallery with your images from a dedicated Folder! Use only once per page if you like the info popup window.
-
-Optionally a Leaflet map is shown. This map shows the GPS-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation is used for that). The map moves synchronously to the slider, e.g. it is centred to the GPS-Position of the currently shown image. Under the map a height-chart of the GPX-track with its statistics is shown. The image slider may be used more than once per page. 
+Optionally a Leaflet map is shown. This map shows the GPS-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation or chart.js is used for that). The map moves synchronously to the slider, e.g. it is centred to the GPS-Position of the currently shown image. Under the map a height-chart of the GPX-track with its statistics is shown. The image slider may be used more than once per page. 
 
 The Plugin is fully responsive (lazy loading, srcset if images are in WP-MediaLibrary) and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap (Currently not tested!) and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode for Fotorama (desktop only) and in the slider for Swiper. With Swiper Slider the images may be shown in fullscreen mode with **Simple Lightbox with fslight** (another plugin from me, available as WP-Plugin: https://de.wordpress.org/plugins/simple-lightbox-fslight/)
 
@@ -83,13 +81,14 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 1. **! Important !** Download the plugin as **Release** from github to a local *.zip - file.
 2. Install the zipped Plugin to the WordPress-Plugin-Page (Upload zip in Admin-Backend). 
 3. Activate the plugin through the 'Plugins' menu in Admin-Area of WordPress
-4. The Admin settings are initialised with reasonable values. Change the settings in the "Fotorama-Elevation" page for preferred settings.
+4. The Admin settings are initialised with reasonable values. Change the settings in the "Slider-Map-Chart" page for preferred settings.
 5. Done!
 
 # Update or De-Installation
 
 **NEW** : Save your plugin-settings to a JSON File on your local machine for later use e.g. if you want to deinstall the plugin for testing purposes. After that:
 
+0. Save your settings from the Admin Panel if you wish to reinstall the plugin later on.
 1. Deactivate the plugin in Admin-Area of WordPress.
 2. Optional if you use the Map-Tile-Server: save your .htaccess file from the plugin directory. Otherwise changes will be lost.
 3. Optional for clean Update: Delete the Plugin-in. Stop here for De-Installation. Hint: The WordPress-Database is cleaned upon de-installation. The Custom-Fields are removed from your database! So, all settings are lost!
@@ -97,13 +96,15 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 
 # Upgrade Notice 
 
-Upgrade to WordPress 6.4 and PHP 8.1+ is highly recommended! PHP 8.1.x is even better!
-Due to the error corrections it is highly recommended to upgrade the Plugin to 0.18.x! Thank's for your patience. With version update to 0.15.x all settings have to be done once again. But only once. Sorry for that! This won't be the case for future updates!
+Upgrade to WordPress 6.4 and PHP 8.1+ is highly recommended! PHP 8.2.x is even better!
+Due to the error corrections it is highly recommended to upgrade the Plugin to 0.25.x! Thank's for your patience. 
 
 </br>
 
 # Usage Hints
 
+- You habe problems with other Plugins using Leaflet : Use Chart.js only!
+- MiniMasonry is experimental! It is very slow.
 - Image and GPX-track preparation: see below, but mind that this part of the readme is not completely up to date.
 - Shortcode:  `[gpxview]`   **Use the shortcode as often you want per page or post! No interference between shortcodes.**
 - Parameters of the shortcode: <em>Parameter="Value"</em>. See the table in Admin-Settings for the parameters. Separate the parameters by at least one space between.
@@ -195,7 +196,7 @@ Process and save the file with the Button at the bottom.
     - mixture of images with and without GPS-data and the option showmap="true" and requiregps="false" causes JS-errors. No standard use case. User should set showmap="false" for that case.
     - for images without thumbnail the hover on the map is wrong, pointing to a non existing image. 
 
-# Usage of Leaflet Elevation
+# Usage of Leaflet Elevation or Chart.js
 1. Preparation  (optional)
 
     Resize the GPX-Tracks with GPSBabel in a Batch-File (Windows-code):
@@ -271,7 +272,7 @@ The language setting is done in the browser of the client. So, there are no *.po
 I also provided a translation for the PHP-strings 'Start address' and 'Download' underneath the map. Unfortunately, I realized too late, that this is useless if the page is cached. 
 
 ## Backend
-The translation of the backend was started partially only. A small part of the GPX-section is translated to german. The remainder not! That's quite a work. 
+The backend is fully translated to DE and IT. The translation is provided in JSON-files and it is very easy to add your language. No need to use PO-Edit Software. 
 
 </br>
 
@@ -300,51 +301,16 @@ This plugin uses the great work from:
 - MediaWiki for the PHP-Code to extract EXIF-Meta from Webp images (https://doc.wikimedia.org/mediawiki-core/1.27.3/php/WebP_8php_source.html)
 - Swiper.js Slider: Great! Thank you for that: https://swiperjs.com/
 - MiniMasronry js Gallery: Simple, fast and good performance: https://github.com/Spope/MiniMasonry.js/
-
-# Note for Developers
-- unit tests
-    - Meaningful tests with PHPunit and BrainMonkey are done. Meaningful means that functions / methods that would have needed mock-ups to a great extent were not tested. Means that functions that make use of lots of or sophisticated WP-functions are not tested. Testing these would require the re-design of WP-functions in BrainMonkey what is simply not efficient and useful.
-- integration tests
-    - done on my local test suite and on my live site 
-- system tests
-    - done on my local test suite and on my live site
-    - I'm using an external Python script with selenium to "click" through all pages and posts, capture all error messages and warnings, do screen shots and compare these automatically with previous versions and compare  html-sources with previous sources. Quite useful a automated test to detect hidden errors.
-    - interference with other plugins:
-        - All PHP code runs in separate namespaces
-        - JS is wrapped in a self invoking function call and only executed if the dedicated div-id is found on the page.
-        - CSS might be a problem, as I did not us SCSS, CASS or less to generate really separated CSS-classes.
-        - I'm using the following plugins on my site: (output of the REST-API to list all plugins)
-        ```JSON
-        [
-            {"name":"Admin Columns"}, 
-            {"name":"Antispam Bee"},
-            {"name":"Asset CleanUp: Page Speed Booster"}, // This is extensively used to unload unused plugin code!
-            {"name":"Cache Enabler"},
-            {"name":"Duplicate Page and Post"},
-            {"name":"Easy Table of Contents"},
-            {"name":"Ext_REST_Media_Lib"}, // Plugin from me
-            {"name":"Fotorama-Multi"}, // Plugin from me
-            {"name":"Gmedia Gallery"},
-            {"name":"Gutenberg"},
-            {"name":"WebP Express"},
-            {"name":"wp-front-albums"}, // Plugin from me
-            {"name":"wp-recent-post-slider"}, // Plugin from me
-            {"name":"wp-special-functions"}, // Plugin from me
-            {"name":"wp_post_map_view_simple"}, // Plugin from me
-            {"name":"Yoast SEO"}
-        ]
-        ```
-
-- WP coding guidelines
-    - Following WP coding guidelines is essential. I realized this too late, so I coded different. The WP code linter shows hundreds of error messages. Coding guidelines have to be used from the beginning of the project.  
-- PHP-check with phpcs in Visual Studio Code:
-    ``` 
-    phpcs -n -p . --standard=PHPCompatibility --runtime-set testVersion 7.0-
-    ```
-- jquery migrate was used to update fotorama to the jquery version 3.5.1 that is currently used by WordPress. Some js code raises the "add passive event listener warning" which doesn't interfere the execution.
-- leaflet-elevation and d3.js: I only managed to have leaflet-elevation running with V5.x of d3.js and not with 6.x. This causes too many error messages. Hopefully raruto will fix that in a later version of leaflet-elevation. Hi did so now, but my code is not compatible. So, I keep d3.js with version V5.16.0.
+- Chart.js: A really great, free charting Library!
+- Lust but not least: Many thanks to Norbert S. for testing!
 
 # Changelog
+
+= 0.25.0 = 16.11.2023
+- NEW: Add chart.js as faster and lighter alternative to leaflet-elevation. Include settings for chart.js.
+- Update JS libraries: Swiper (11.0.4), leaflet (1.9.4), chart.js (4.4.0). Remove Cube effect to Swiper
+- BUGFIX: remove Bug in generation of YOAST-XML-Sitemap.
+- BUGFIX: remove Bug in parsing of GPX-Tracks. (use of translation was wrong)
 
 = 0.24.0 =
 29.10.2023: PHP: Escaping for echo finalized. Translation completed ( .htaccess test output ). Tileserver.php minor changes. Unused funtions in fm_functions.php out commented.
