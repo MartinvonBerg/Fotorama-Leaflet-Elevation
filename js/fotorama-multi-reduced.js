@@ -125,14 +125,17 @@
 
                 // update markers on the map if the active image changes
                 document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
-                    // move map
-                    allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ); // change only
+                    // move map only if object is available (added for slow connections)
+                    if (typeof(allMaps[e.detail.slider]) === 'object'){
+                        // move map only for desktop devices. TODO: add setting for that?
+                        ! isMobile ? allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ) : null; // change only
 
-                    // remove old markers - on change only. 
-                    allMaps[ e.detail.slider ].unSetActiveMarker();
+                        // remove old markers - on change only. 
+                        allMaps[ e.detail.slider ].unSetActiveMarker();
 
-                    // mark now the marker for the active image --> 
-                    allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
+                        // mark now the marker for the active image --> 
+                        allMaps[ e.detail.slider ].setActiveMarker( e.detail.newslide );
+                    }
                 });
 
                 // update markers on the map if the active image changes

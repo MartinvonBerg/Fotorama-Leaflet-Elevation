@@ -330,8 +330,8 @@ final class SwiperClass
 			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $this->options['imgpath'], $thumbsdir );
 			$phpimgdata[$this->imgnr-1]['id'] = $this->imgnr;
 			$phpimgdata[$this->imgnr-1]['title'] = $alttext; 
-			$phpimgdata[$this->imgnr-1]['coord'][0] = round( $data['lat'], 6 );
-			$phpimgdata[$this->imgnr-1]['coord'][1] = round( $data['lon'], 6 );
+			$phpimgdata[$this->imgnr-1]['coord'][0] = $data['lat'] ? round( $data['lat'], 6 ) : null;
+			$phpimgdata[$this->imgnr-1]['coord'][1] = $data['lon'] ? round( $data['lon'], 6 ) : null;
 			$phpimgdata[$this->imgnr-1]['permalink'] = $data['permalink'] ?? '';
             $phpimgdata[$this->imgnr-1]['mime'] = $data['type'] ?? '';
 			

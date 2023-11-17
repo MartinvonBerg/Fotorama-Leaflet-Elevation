@@ -48,8 +48,9 @@ class fotoramaSitemaps
 		$this->up_url = gpxview_get_upload_dir('baseurl');  // upload_url
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
 
-		if ($this->doSitemap)
+		if ($this->doSitemap) {
 			add_filter('wpseo_sitemap_urlimages', [$this, 'fm_add_wpseo_xml_sitemap_images'], 10, 2);
+		}
 	}
 
 	/**
