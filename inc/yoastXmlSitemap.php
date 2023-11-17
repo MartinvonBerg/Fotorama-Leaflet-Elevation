@@ -49,7 +49,7 @@ class fotoramaSitemaps
 		$this->up_dir = wp_get_upload_dir()['basedir'];     // upload_dir
 
 		if ($this->doSitemap) {
-			add_filter('wpseo_sitemap_urlimages', [$this, 'fm_add_wpseo_xml_sitemap_images'], 10, 2);
+			add_filter('wpseo_sitemap_urlimages', [$this, 'fm_add_wpseo_xml_sitemap_images'], 9, 2);
 		}
 	}
 
@@ -71,73 +71,69 @@ class fotoramaSitemaps
 		$p = get_post($post_id);
 		$content = $p->post_content;
 
-		// Search now for fotorama shortcode.
-		$has_fotorama = has_shortcode($content, 'gpxview');
+		// Search now for fotorama shortcode and get all the shortcodes from the content
 		$pattern = "\[\s?gpxview\s.*\]";
+		preg_match_all('/' . $pattern . '/i', $content, $matches);
+		$all_shortcodes = $matches[0];
+			
+		// loop through all fotorama shortcodes
+		foreach ($all_shortcodes as $shortcode) {
 
-		// get all the shortcodes from the content
-		if ($has_fotorama) {
-			preg_match_all('/' . $pattern . '/i', $content, $matches);
-			$all_shortcodes = $matches[0];
+			// extract parameters from shortcode
+			$shortcode = \str_replace(']', '', $shortcode);
+			$atts = \shortcode_parse_atts(($shortcode));
+			if ($atts === '') $atts = [];
 
-			// loop through all shortcodes
-			foreach ($all_shortcodes as $shortcode) {
+			if (array_key_exists('requiregps', $atts)) {
+				$reqgps = $atts['requiregps'];
+			} else {
+				$reqgps = $this->requiregps;
+			}
 
-				// extract parameters from shortcode
-				$shortcode = \str_replace(']', '', $shortcode);
-				$atts = \shortcode_parse_atts(($shortcode));
-				if ($atts === '') $atts = [];
-
-				if (array_key_exists('requiregps', $atts)) {
-					$reqgps = $atts['requiregps'];
-				} else {
-					$reqgps = $this->requiregps;
-				}
-
-				if (array_key_exists('filefilter', $atts)) {
-					$filefilter = $atts['filefilter'];
-				} else {
-					$filefilter = '';
-				}
+			if (array_key_exists('filefilter', $atts)) {
+				$filefilter = $atts['filefilter'];
+			} else {
+				$filefilter = '';
+			}
 
 
-				// only proceed if shortcode contains a path to image files
-				if (array_key_exists('imgpath', $atts)) {
-					$imgpath = $this->up_dir . '/' . $atts['imgpath'];   // path to the images-url in uploads directory
-					$imageurl = $this->up_url . '/' . $atts['imgpath'];  // url to the images-url in uploads directory
+			// only proceed if shortcode contains a path to image files
+			if (array_key_exists('imgpath', $atts)) {
+				$imgpath = $this->up_dir . '/' . $atts['imgpath'];   // path to the images-url in uploads directory
+				$imageurl = $this->up_url . '/' . $atts['imgpath'];  // url to the images-url in uploads directory
 
-					// Loop through all webp- and jpg-files in the given folder, and get the required data
-					require_once __DIR__ . '/readImageFolder.php'; 
-					$folder = new ReadImageFolder($imgpath, $this->thumbs, $imageurl, $reqgps, 'true');
-					$folderImages = $folder->getImagesForGallery( 'asc' );
-					$folder = null;
+				// Loop through all webp- and jpg-files in the given folder, and get the required data
+				require_once __DIR__ . '/readImageFolder.php'; 
+				$folder = new ReadImageFolder($imgpath, $this->thumbs, $imageurl, $reqgps, 'true');
+				$folderImages = $folder->getImagesForGallery( 'asc' );
+				$folder = null;
 
-					// loop through all images and append to output array. skip image if already in.
-					foreach ($folderImages as $item) {
-						
-						$newimage = [];
-						if ($item['wpid'] > 0 && $this->addPermalink === true) {
-							$newimage['src'] = \get_the_permalink( $item['wpid']);
-						} else {
-							$newimage['src'] = $imageurl . '/' . $item['file'] . $item['extension'];
-						}
+				// loop through all images and append to output array. skip image if already in.
+				foreach ($folderImages as $item) {
+					
+					$newimage = [];
+					if ($item['wpid'] > 0 && $this->addPermalink === true) {
+						$newimage['src'] = \get_the_permalink( $item['wpid']);
+					} else {
+						$newimage['src'] = $imageurl . '/' . $item['file'] . $item['extension'];
+					}
 
-						if (!empty($item['title'])) {
-							$newimage['title'] = strip_tags($item['title']);
-						}
-						if (!empty($item['alt'])) {
-							$newimage['alt'] = strip_tags($item['alt']);
-						}
+					if (!empty($item['title'])) {
+						$newimage['title'] = strip_tags($item['title']);
+					}
+					if (!empty($item['alt'])) {
+						$newimage['alt'] = strip_tags($item['alt']);
+					}
 
-						// append the image only if it is not in the array yet. It is maybe used twice or more on the page.
-						$key = array_search($newimage['src'], array_column($images, 'src'));
-						if ($key === false) {
-							$images[] = $newimage;
-						}
+					// append the image only if it is not in the array yet. It is maybe used twice or more on the page.
+					$key = array_search($newimage['src'], array_column($images, 'src'));
+					if ($key === false) {
+						$images[] = $newimage;
 					}
 				}
 			}
 		}
+
 		return $images;
 	}
 }

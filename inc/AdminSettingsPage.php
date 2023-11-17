@@ -115,14 +115,14 @@ class AdminSettingsPage {
 						break;
 
 					case 'path':
-						$args[$param['label']] = $this->my_sanitize_path( $args[$param['label']] );
+						$args[$param['label']] = $this->my_sanitize_path( $args[$param['label']] ?? '' );
 						break;
 
 					case 'text':
 						if ( $param['label'] === 'autoplay') {
-							$args[$param['label']] = $this->my_sanitize_autoplay( $args[$param['label']], array('false', 'true', array('integer', 0, 5000) ) );
+							$args[$param['label']] = $this->my_sanitize_autoplay( $args[$param['label']] ?? '', array('false', 'true', array('integer', 0, 5000) ) );
 						} else {
-							$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] );
+							$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] ?? '' );
 						}
 						break;
 
@@ -131,7 +131,7 @@ class AdminSettingsPage {
 						break;
 
 					case 'select':
-						$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] );
+						$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] ?? '');
 						break;
 
 					case 'color':
