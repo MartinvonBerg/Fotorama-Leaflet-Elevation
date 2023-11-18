@@ -131,7 +131,7 @@
                 document.querySelector('#'+sliderSel+ m).addEventListener('sliderchange', function waschanged(e) {
                     // move map only if object is available (added for slow connections)
                     if (typeof(allMaps[e.detail.slider]) === 'object'){
-                        // move map only for desktop devices. TODO: add setting for that?
+                        // move map only if settings is set
                         moveMapOnSlideChange ? allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ) : null;
 
                         // remove old markers - on change only. 

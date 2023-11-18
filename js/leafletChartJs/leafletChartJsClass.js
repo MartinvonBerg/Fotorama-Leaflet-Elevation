@@ -80,6 +80,9 @@ class LeafletChartJs extends LeafletMap {
             showChartHeader : false, // always, no setting
             padding : pageVarsForJs[number].sw_options.chartjspadding,
             followSlider: false // this.track.length > 1 ? false : true // whether the image position should be shown in chartjs with moving tooltip. for future use
+            // add an option for parsing gpx data here. 
+            // Mit parsing müssen aber alle handler, events u.s.w an die neue Datenstruktur angepasst werden! Mit Fallunterscheidung! 
+            // Die Optimierung spart ca. 10% der Skriptlaufzeit, wenn nur ein Track angezeigt wird. Also ca. 20ms .. 25 ms.
         }
 
         // show chart with the first track
