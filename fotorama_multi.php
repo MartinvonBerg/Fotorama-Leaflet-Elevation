@@ -466,6 +466,7 @@ EOF;
 		'ignorezeroes' => $fotorama_elevation_options['gpx_ignore_zero_elev'],
 		'mapheight' => $mapheight,
 		'mapaspect' => $mapaspect,
+		'preventMapMove' => $fotorama_elevation_options['preventMapMove'] ?? 'all',
 		'chartheight' => $chartheight,
 		'showalltracks' => $showalltracks,
 		'mapcenter' => $mapcenter,

@@ -93,12 +93,20 @@ class chartJsClass {
    */
   prepareChartData(gpxdata) {
     const labels = gpxdata.map(point => point[0]);
-    //labels = labels.map(a => a.toFixed(6));
     const data = gpxdata.map(point => point[1]);
     return {
       data,
       labels
     };
+    // improve performance with
+    //labels = labels.map(a => a.toFixed(6));
+    /*
+    let result = [];
+
+    for (let i = 0; i < data.length; i++) {
+      result[i] = {x: labels[i], y: data[i]};
+    }
+    */
   }
 
   /**
@@ -108,7 +116,7 @@ class chartJsClass {
     this.chartData = {
       labels: this.elevationData.labels,
       datasets: [{
-        data: this.elevationData.data,
+        data: this.elevationData.data, // change this for performance to result from prepareChartData {x: labels[i], y: data[i]}
         fill: true,
         borderColor: this.diagrBorderColor,
         borderWidth: 1,
@@ -121,18 +129,14 @@ class chartJsClass {
   }
 
   /**
-   * configure, initi and show the elevation profile as line chart using chart.js
-   * uses: this.elementOnPage, this.elevationData
-   * neu: this.gradient -> theme, this.ctx, diagrBorderColor, diagrFillColor, chartBackgroundColor, chartDefaultColor.
+   * configure, init and show the elevation profile as line chart using chart.js
    * 
    */
   drawElevationProfile() {
         
-    const chartData = this.chartData;
-   
     const config = {
       type: 'line',
-      data: chartData,
+      data: this.chartData,
       
       plugins: [{
         beforeInit: (chart) => this.setAxesMinMax(chart)},
@@ -140,8 +144,8 @@ class chartJsClass {
       
       options: {
         onHover: this.handleChartHover,
-        //parsing: true, // false does not work with gpx data. 
-        //normalized: false,
+        //parsing: false, // false for performance 
+        //normalized: true, // true for performance
         animation: this.chartAnimation,
         interaction: {
           intersect: false,
@@ -226,7 +230,7 @@ class chartJsClass {
     // set the factor for the Altitude difference
     let diff = maxHeight - minHeight;
     let factor = 100;
-    if (diff <= 100.0) {factor = 10} else {factor = 100};
+    if (diff <= 500.0) {factor = 10} else {factor = 100};
 
     chart.options.scales.x.min = Math.min(...chart.data.labels);
     chart.options.scales.x.max = Math.max(...chart.data.labels);

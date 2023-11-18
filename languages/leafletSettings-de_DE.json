@@ -83,6 +83,16 @@
         "description": "Wählen Sie, welche Karte zuerst angezeigt werden soll. OpenTopoMap kann sehr langsam sein!",
         "info": "Wählen Sie, welche Karte zuerst angezeigt werden soll. OpenTopoMap kann sehr langsam sein!"
     },
+    "param18": {
+        "text": "Karte folgt Slider",
+        "values": {
+            "no": "Immer",
+            "all": "Nie",
+            "mobile": "Nur Desktop"
+        },
+        "description": "Whether to follow the Map on Slide Change",
+        "info": "Whether to follow the Map on Slide Change"
+    },
     "param5": {
         "text": "Lokalen Tileserver für Karte verwenden",
         "description": "ACHTUNG: Datei .htaccess noch nicht geprüft!",

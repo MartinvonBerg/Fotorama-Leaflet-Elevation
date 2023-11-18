@@ -716,7 +716,7 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'showchart',
 			'info' => 'Show the elevation Chart. Or not.',
 		],
-		'param14' => [ // TODO translate
+		'param14' => [
 			'label' => 'charttype',
 			'text' => 'Elevation Chart Type',
 			'class' => 'leaflet_row',
@@ -879,6 +879,18 @@ final class FotoramaElevationAdmin
 			'description' => '',
 			'shortcode' => 'mapselector',
 			'info' => 'Choose which map should be shown first. OpenTopoMap might be slow!',
+		],
+		'param18' => [
+			'label' => 'preventMapMove', // 'no', 'all', 'mobile'
+			'text' => 'Follow the Map on Slide Change',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom18',
+			'type' => 'select',
+			'values' => ['no' => 'On all Devices', 'all' => 'Not at all', 'mobile' => 'Only on Desktop'],
+			'default' => 'Yes',
+			'description' => 'Whether to follow the Map on Slide Change',
+			'shortcode' => '',
+			'info' => 'Whether to follow the Map on Slide Change',
 		],
 		'param5' => [
 			'label' => 'use_tile_server',

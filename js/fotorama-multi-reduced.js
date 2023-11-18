@@ -16,6 +16,10 @@
                 
         // map and chart var. The var is intentional here.
         let allMaps = [ numberOfBoxes-1 ];
+        let moveMapOnSlideChange = true; // 'no', 'all', 'mobile'
+        if ((pageVarsForJs[0].preventMapMove === 'all') || (pageVarsForJs[0].preventMapMove === 'mobile' && isMobile)) {
+            moveMapOnSlideChange = false;
+        }
         
         // do it for all shortcodes on the page or post
         for (let m = 0; m < numberOfBoxes; m++) {
@@ -128,7 +132,7 @@
                     // move map only if object is available (added for slow connections)
                     if (typeof(allMaps[e.detail.slider]) === 'object'){
                         // move map only for desktop devices. TODO: add setting for that?
-                        ! isMobile ? allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ) : null; // change only
+                        moveMapOnSlideChange ? allMaps[e.detail.slider].mapFlyTo( pageVarsForJs[e.detail.slider].imgdata[e.detail.newslide ]['coord'] ) : null;
 
                         // remove old markers - on change only. 
                         allMaps[ e.detail.slider ].unSetActiveMarker();

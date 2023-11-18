@@ -6,8 +6,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     # Change only the next line according to your server 
-    RewriteBase /wp-content/plugins/fotorama_multi/leaflet_map_tiles/
-    #RewriteBase /wordpress/wp-content/plugins/fotorama_multi-2023-08-30/leaflet_map_tiles/
+    #RewriteBase /wp-content/plugins/fotorama_multi/leaflet_map_tiles/
+    RewriteBase /wordpress/wp-content/plugins/fotorama_multi-2023-08-30/leaflet_map_tiles/
     # Do not change after this line
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d

@@ -83,6 +83,16 @@
         "description": "Scegliere quale mappa visualizzare per prima. OpenTopoMap può essere molto lento!",
         "info": "Scegliere quale mappa visualizzare per prima. OpenTopoMap può essere molto lento!"
     },
+    "param18": {
+        "text": "La mappa segue il slider",
+        "values": {
+            "no": "Sempre",
+            "all": "Mai",
+            "mobile": "Solo desktop"
+        },
+        "description": "Se seguire la mappa al cambio di slide",
+        "info": "Se seguire la mappa al cambio di slide"
+    },
     "param5": {
         "text": "Usa il tile server locale per la mappa",
         "description": "ATTENZIONE: File .htaccess non ancora controllato!",
