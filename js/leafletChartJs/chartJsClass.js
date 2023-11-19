@@ -92,8 +92,8 @@ class chartJsClass {
    * @returns {object} An object containing two arrays: data and labels.
    */
   prepareChartData(gpxdata) {
-    const labels = gpxdata.map(point => point[0]);
-    const data = gpxdata.map(point => point[1]);
+    const labels = gpxdata.map(point => point[0]); // performance
+    const data = gpxdata.map(point => point[1]); // performance
     return {
       data,
       labels
@@ -133,13 +133,57 @@ class chartJsClass {
    * 
    */
   drawElevationProfile() {
+    // source for this https://stackoverflow.com/questions/70112637/draw-a-horizontal-and-vertical-line-on-mouse-hover-in-chart-js
+    const plugin = {
+      id: 'crosshair',
+      defaults: {
+          width: 1,
+          color: '#FF4949',
+          dash: [3, 3],
+      },
+      afterInit: (chart, args, opts) => {
+        chart.crosshair = {
+          x: 0,
+          y: 0,
+        }
+      },
+      afterEvent: (chart, args) => {
+        const {inChartArea} = args
+        const {type,x,y} = args.event
+  
+        chart.crosshair = {x, y, draw: inChartArea}
+        chart.draw()
+      },
+      beforeDatasetsDraw: (chart, args, opts) => {
+        const {ctx} = chart
+        const {top, bottom, left, right} = chart.chartArea
+        const {x, y, draw} = chart.crosshair
+        if (!draw) return
+  
+        ctx.save()
+        
+        ctx.beginPath()
+        ctx.lineWidth = opts.width
+        ctx.strokeStyle = opts.color
+        ctx.setLineDash(opts.dash)
+        ctx.moveTo(x, bottom)
+        ctx.lineTo(x, top)
+        ctx.moveTo(left, y)
+        ctx.lineTo(right, y)
+        ctx.stroke()
+        
+        ctx.restore()
+      }
+    }
         
     const config = {
       type: 'line',
       data: this.chartData,
       
       plugins: [{
-        beforeInit: (chart) => this.setAxesMinMax(chart)},
+        beforeInit: (chart) => this.setAxesMinMax(chart)
+        },
+        plugin
       ],
       
       options: {
@@ -208,6 +252,9 @@ class chartJsClass {
                 return this.i18n('Altitude') +': ' + tooltipItem[0].parsed.y.toFixed(0) + ' m' ;
               },
             }
+          },
+          crosshair: {
+            color: 'black', // TODO : set color to track colour??
           }
         }
       }
@@ -224,18 +271,18 @@ class chartJsClass {
    * @param {object} chart 
    */
   setAxesMinMax(chart) {
-    let maxHeight = Math.max(...chart.data.datasets[0].data);
-    let minHeight = Math.min(...chart.data.datasets[0].data);
+    let maxHeight = Math.max(...chart.data.datasets[0].data); // performance
+    let minHeight = Math.min(...chart.data.datasets[0].data); // performance
 
     // set the factor for the Altitude difference
     let diff = maxHeight - minHeight;
     let factor = 100;
     if (diff <= 500.0) {factor = 10} else {factor = 100};
 
-    chart.options.scales.x.min = Math.min(...chart.data.labels);
-    chart.options.scales.x.max = Math.max(...chart.data.labels);
-    chart.options.scales.y.max = Math.ceil(maxHeight/factor)*factor; 
-    chart.options.scales.y.min = Math.floor(minHeight/factor)*factor;
+    chart.options.scales.x.min = Math.min(...chart.data.labels); // performance
+    chart.options.scales.x.max = Math.max(...chart.data.labels); // performance
+    chart.options.scales.y.max = Math.ceil(maxHeight/factor)*factor;  // performance
+    chart.options.scales.y.min = Math.floor(minHeight/factor)*factor; // performance
   }
 
   /**

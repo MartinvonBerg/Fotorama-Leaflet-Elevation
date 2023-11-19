@@ -121,7 +121,7 @@ class LeafletChartJs extends LeafletMap {
     
       let maxBounds = mapBoundsArray[0]; // Initialize with the first bounds in the array
     
-      for (let i = 1; i < mapBoundsArray.length; i++) {
+      for (let i = 1; i < mapBoundsArray.length; i++) { // performance
         const currentBounds = mapBoundsArray[i];
     
         // Compare the latitude and longitude values to find the maximum bounds

@@ -448,6 +448,7 @@ class LeafletMap {
     /**
      * Create the Leaflet Map Markers for the images of fotorama slider.
      * @param {array} markers
+     * @param {boolean} fit fit the map to the leaflet map markers for the images shown in slider
      */
     createFotoramaMarkers(markers, fit=true) {
         let { marker, j, testgroup } = this.createMarkers(markers);
@@ -562,31 +563,28 @@ class LeafletMap {
 
     /**
      * set new Bounds of Map according to the shown Markers and already predefined bounds.
-     * @param {number} mapNumber number of the current map
      * @param {object} markergroup group of markery as leaflet markergroup
      */
     setBoundsToMarkers( markergroup ) {
-        let _bounds = [];
+        let oldbounds = this.bounds;
+        let newbounds = [];
 
-        if ( (typeof(this.bounds) !== 'undefined') && ('_northEast' in this.bounds) && ('_southWest' in this.bounds) ) {
-            _bounds = this.bounds; // bounds bereits definiert
+        if ( markergroup instanceof L.LayerGroup ) {
+            newbounds = markergroup.getBounds().pad(0.1);
         } else {
-            try {
-                _bounds = markergroup.getBounds().pad(0.1);
-            } catch (e) {
-                // nothing
-            }
+            newbounds = oldbounds;
         }
 
-        if ( (_bounds.length !== 0) && (_bounds instanceof L.LatLngBounds) ) {
-            this.map.fitBounds(_bounds);
+        // fit map to bounds and set zoom level
+        if ( (newbounds.length !== 0) && (newbounds instanceof L.LatLngBounds) ) {
+            this.map.fitBounds(newbounds);
             // set the max zoom level for markers exactly on the same postion
             let curzoom = this.map.getZoom();
             if ( curzoom == this.maxZoomValue ) {
-                this.map.fitBounds(_bounds, {maxZoom : 13});
+                this.map.fitBounds(newbounds, {maxZoom : this.maxZoomValue});
             }
         }
-        return _bounds;
+        return newbounds;
     }
 
     // update marker on click

@@ -116,7 +116,7 @@
                     import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
                         allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
                         // create the markers on the map
-                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata );
+                        allMaps[m].createFotoramaMarkers( pageVarsForJs[m].imgdata, false );
                     })
                 } else {
                     import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
@@ -159,7 +159,7 @@
         } // end for m maps
         
         // function for map resizing for responsive devices
-        window.addEventListener('load', resizer, false );
+        //window.addEventListener('load', resizer, false );
         //window.addEventListener('resize', resizer, false );
         
         /**
@@ -196,7 +196,7 @@
                     // skip boundary setting for boxmap that doesn't have a map
                     if ( ! isNaN(ratioMap)) {
                         let _group = allMaps[m].getFeatureGroup( allMaps[m].mrk );
-                        allMaps[m].bounds = allMaps[m].setBoundsToMarkers(m, _group);
+                        allMaps[m].bounds = allMaps[m].setBoundsToMarkers(_group);
                     } 
                 }
             }

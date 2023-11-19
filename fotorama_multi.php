@@ -118,7 +118,7 @@ function showmulti($attr, $content = null)
 		'sw_button_color'	=> $fotorama_elevation_options['sw_button_color'] ?? 'white', // swiper button color in CSS name or value
 		'chart_fill_color'		=> $fotorama_elevation_options['chart_fill_color'] ?? 'white',
 		'chart_background_color'=> $fotorama_elevation_options['chart_background_color'] ?? 'gray',
-		'charttype'			=> $fotorama_elevation_options['charttype'] ??  'chartjs',
+		'charttype'			=> $fotorama_elevation_options['charttype'] ??  'ele',
 		'chartjspadding'	=> $fotorama_elevation_options['chartjspadding'] ?? '22',
 		'trackwidth'		=> $fotorama_elevation_options['trackwidth'] ?? '3',
 		'trackcolour'		=> $fotorama_elevation_options['trackcolour'] ?? '#ff0000',
@@ -162,6 +162,11 @@ function showmulti($attr, $content = null)
 	), $attr));
 
 	$mapcenter = explode(',',$mapcenter);
+
+	// handle old shortcodes
+	if ( $charttype === 'chartjs' && ($eletheme !== "martin-theme" && $eletheme !== "custom-theme") ) {
+		$eletheme = 'martin-theme';
+	}
 
 	// Detect Language of the client request
 	if ( array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER) ) {

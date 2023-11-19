@@ -121,7 +121,7 @@ class gpxTrackClass {
         let index = -1;
 
         //let startTime = performance.now();
-        for (let i = 0; i < n; i++) {
+        for (let i = 0; i < n; i++) { // performance
             let newdist = this.calcCrow(point.lat, point.lng, this.coords[i].lat, this.coords[i].lng);
 
             if (newdist < dist) {
