@@ -31,7 +31,16 @@ $useWebp = true;
 $error = false;
 
 // partition the request code
+if ($_GET["tile"] === 'testfile.webp') {
+	http_response_code(302);
+	echo('local htaccess is working');
+	return;
+}
+
 $req = preg_split('/(\/|\.)/', $_GET["tile"]);
+if ( \count($req) !== 5 ) {
+	return;
+}
 $req[4] = \strtolower($req[4]);
 
 $tileServers = array(
@@ -78,12 +87,6 @@ foreach ($tileServers as $key => $entry) {
 	}
 }
 
-if ($_GET["tile"] === 'testfile.webp') {
-	http_response_code(302);
-	echo('local htaccess is working');
-	return;
-}
-
 if ( $tile==='' || ! \is_numeric( $req[1]) || ! \is_numeric( $req[2]) || ! \is_numeric( $req[3]) || !( ($req[4] === 'webp') || ($req[4] === 'png') || ($req[4] === 'jpg') || ($req[4] === 'jpeg') )) {
 	http_response_code(404);
 	echo('request denied');
@@ -113,7 +116,7 @@ elseif ( $allowed )
 { // fallback if the file is still not available
 
 	// check if dir exists if not create it
-	if (! \is_dir($localDir)) mkdir($localDir, 0777, true);
+	if ( !\file_exists($localDir) && !\is_dir($localDir) ) \mkdir($localDir, 0777, true);
 	// set original Filename 
 	// note: file operations are not checked for errors. The assumption is that this operations work as expected.
 	$tileFile = $localDir . $ds . $tileServers[$tile]["file"] . '.' . $tileServers[$tile]['ext'];
