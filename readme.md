@@ -38,7 +38,7 @@ The Admin panel gives an overview of all shortcode parameters and allow to set t
 
 **NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
 
-**The Plugin runs from WordPress 5.9 - 6.4.x and PHP 7.4.2 - 8.2.0**
+**The Plugin runs from WordPress 5.9 - 6.5.x and PHP 7.4.2 - 8.2.0**
 
 </br>
 
@@ -96,7 +96,7 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 
 # Upgrade Notice 
 
-Upgrade to WordPress 6.4 and PHP 8.1+ is highly recommended! PHP 8.2.x is even better!
+Upgrade to WordPress 6.5 and PHP 8.1+ is highly recommended! PHP 8.2.x is even better!
 Due to the error corrections it is highly recommended to upgrade the Plugin to 0.25.x! Thank's for your patience. 
 
 </br>
