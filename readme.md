@@ -306,7 +306,7 @@ This plugin uses the great work from:
 
 # Changelog
 
-= 0.26.0 = 21.04.2023
+= 0.26.0 = 21.04.2024
 Added an option to show the users location on the leaflet Map. Updated swiper.js and chart.js. Minor PHP Bugfixes.
 
 = 0.25.0 = 16.11.2023
