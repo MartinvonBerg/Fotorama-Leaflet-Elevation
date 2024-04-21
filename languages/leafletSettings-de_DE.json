@@ -112,5 +112,10 @@
         "text": "Seitenverhältnis der Karte",
         "description": "Seitenverhältnis der Leaflet-Karte (wird für responsive verwendet)",
         "info": "Seitenverhältnis der Leaflet-Karte (wird für responsive verwendet)"
+    },
+    "param19": {
+        "text": "Zeige Locate Button",
+        "description": "Zeige Button auf der Karte, um die Position des Benutzers zu zeigen.",
+        "info": "Zeige Button auf der Karte, um die Position des Benutzers zu zeigen."
     }
 }

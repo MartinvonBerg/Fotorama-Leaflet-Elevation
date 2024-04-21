@@ -1,5 +1,5 @@
 /*!
-	LeafletMapClass V 0.25.0
+	LeafletMapClass V 0.26.0
 	license: GPL 2.0
 	Martin von Berg
 */
@@ -16,6 +16,7 @@ import './leaflet-ui/leaflet-ui-short.js'; // translation works without this, to
 import '../node_modules/leaflet/dist/leaflet.css'; // always use the original file
 import './leafletMapClass.css';
 import './fullscreen/Control.FullScreen.css';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 
 export {LeafletMap};
 
@@ -98,6 +99,7 @@ class LeafletMap {
         this.elementOnPage = elementOnPage;
         this.pageVariables = pageVarsForJs[number];
         this.#isMobile = (/iphone|ipod|android|webos|ipad|iemobile|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+        this.showLocateButton = this.pageVariables.showLocateButton === 'true';
         this.useLocalTiles = this.pageVariables.useTileServer === 'true';
         this.useWebpTiles = this.pageVariables.convertTilesToWebp === 'true';
 
@@ -415,6 +417,12 @@ class LeafletMap {
         // create Map selector top right 
         this.controlLayer = L.control.layers(this.baseLayers, null, this.opts.layersControl.options);
         this.controlLayer.addTo(this.map);
+
+        if ( this.showLocateButton ) {
+            import(/* webpackChunkName: "ControlLocate" */ 'leaflet.locatecontrol').then( () => {
+                L.control.locate().addTo(this.map);
+            })
+        }
     }
 
     setFullscreenButton() {

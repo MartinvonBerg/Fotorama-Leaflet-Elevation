@@ -5,7 +5,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: slider, leaflet map, height chart, responsive, tile server
 Requires at least: 5.9
 Tested up to: 6.5
-Stable tag: 0.25.0
+Stable tag: 0.26.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -85,6 +85,9 @@ The Plugin runs from WordPress 5.9.x - 6.5.x and PHP 7.4.3 - 8.2.0.
 None for the moment.
 
 == Changelog ==
+
+= 0.26.0 =
+Added an option to show the users location on the leaflet Map. Updated swiper.js and chart.js. Minor PHP Bugfixes.
 
 = 0.25.0 =
 First Version for WordPress.org. See complete history in Github: https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation/blob/before_chartjs/readme.md

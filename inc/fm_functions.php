@@ -492,6 +492,7 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 	}
 
 	// get width and height data
+	/** @disregard */
 	$sizeinfo = \wp_getimagesize( $file );
 	if ($sizeinfo !== false) {
 		$data['height'] = $sizeinfo[1];

@@ -852,19 +852,15 @@ function binrevert (string $binary) :string
 			$val = dechex( \intval( $binary ) ) ;
 			$bin = '0x' . \strtoupper( sprintf('%02s', $val ) );
 			return $bin;
-			break;
 		case 2:
 			$val = dechex( unpack( 'v', $binary )[1]);
 			$bin = '0x' . \strtoupper( sprintf('%04s', $val ) );
 			return $bin;
-			break;
 		case 4:
 			$val = dechex( unpack( 'V', $binary )[1]);
 			$bin = '0x' . \strtoupper( sprintf('%08s', $val ) );
 			return $bin;
-			break;
 		default:
 			return '0x00';
-			break;
 	}
 }

@@ -306,6 +306,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.26.0 = 21.04.2023
+Added an option to show the users location on the leaflet Map. Updated swiper.js and chart.js. Minor PHP Bugfixes.
+
 = 0.25.0 = 16.11.2023
 - NEW: Add chart.js as faster and lighter alternative to leaflet-elevation. Include settings for chart.js.
 - Update JS libraries: Swiper (11.0.4), leaflet (1.9.4), chart.js (4.4.0). Remove Cube effect to Swiper

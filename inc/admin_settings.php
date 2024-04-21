@@ -945,6 +945,18 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'mapaspect',
 			'info' => 'Aspect ratio of Map Element on Page (used for responsiveness)',
 		],
+		'param19' => [
+			'label' => 'show_locate_button',
+			'text' => 'Show Geo locate Button',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom19',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Show Geo locate Button on the Map in order to centre the Map to user location.',
+			'shortcode' => '', // none!
+			'info' => 'Show Geo locate Button on the Map in order to centre the Map to user location.',
+		],
 	];
 
 	private $no_admin_settings = [

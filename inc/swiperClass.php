@@ -13,7 +13,7 @@ namespace mvbplugins\fotoramamulti;
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * @since      0.12.0
- * @version    0.25.0
+ * @version    0.26.0
  */
 
 
@@ -43,7 +43,7 @@ class myElement extends \DOMElement {
  * Class to ease the generation of DOM Elements in HTML.
  * Provides a funtion to ses the root of the DOM.
  */
-class myDocument extends \DOMDocument {
+class myDocument extends DOMDocument {
     function setRoot($name) { 
        return $this->appendChild(new myElement($name));
     }
@@ -117,7 +117,6 @@ final class SwiperClass
     /**
      * Get the generated HTML and pass it to the caller.
      *
-     * @param  array $attributes All attributes passed from the shortcode.
      * @return string The generated html code as string.
      */
     public function getSliderHtml()
