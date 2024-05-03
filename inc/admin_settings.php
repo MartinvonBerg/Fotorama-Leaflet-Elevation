@@ -125,11 +125,11 @@ final class FotoramaElevationAdmin
 			'label' => 'gpx_smooth',
 			'text' => 'Distance Smooth',
 			'class' => 'gpx_row',
-			'custom_data' => 'custom1',
-			'type' => 'number',
+			'custom_data' => 'custom3',
+			'type' => 'range',
 			'values' => 25, // default value
 			'default' => 25,
-			'min' => 1,
+			'min' => 0,
 			'max' => 10000,
 			'description' => 'Min. Distance of Track Points in Meters (25m best for mountaineering of any kind)',
 			'shortcode' => '',
@@ -139,13 +139,29 @@ final class FotoramaElevationAdmin
 			'label' => 'gpx_elesmooth',
 			'text' => 'Elevation Smooth',
 			'class' => 'gpx_row',
-			'custom_data' => 'custom2',
-			'type' => 'number',
+			'custom_data' => 'custom4',
+			'type' => 'range',
 			'values' => 4, // default value
 			'default' => 4,
-			'min' => 1,
+			'min' => 0,
 			'max' => 50,
+			'step' => 0.1,
 			'description' => 'Min. Elevation between Track Points in Meters. Used for Statistics Calc only. Best is 4.',
+			'shortcode' => '',
+			'info' => '',
+		],
+		'param7' => [
+			'label' => 'gpx_filter',
+			'text' => 'Filter GPX Height Data',
+			'class' => 'gpx_row',
+			'custom_data' => 'custom7',
+			'type' => 'range',
+			'values' => 0.1, // default value
+			'default' => 0.1,
+			'min' => 0,
+			'max' => 2,
+			'step' => 0.01,
+			'description' => 'Use a Low Pass Fiter for the GPX Height Data.',
 			'shortcode' => '',
 			'info' => '',
 		],
@@ -1198,6 +1214,15 @@ final class FotoramaElevationAdmin
 		// append $no_admin_settings to show in info page
 		$this->translateSettingsArray('no_admin_settings');
 		$this->allSettings[ $i ] = $this->no_admin_settings;
+
+		// enque the javascript for the admin page.
+		add_action( 'admin_enqueue_scripts', array( $this, 'fm_admin_scripts_enqueue' ) );
+	}
+
+	public function fm_admin_scripts_enqueue() {
+		// enque the javascript for the admin page.
+		$plugin_path = plugins_url('/', __DIR__);
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/admin/fm_admin.js', ['jquery'], '0.26.0', true);
 	}
 
 	/**
@@ -1329,6 +1354,17 @@ final class FotoramaElevationAdmin
 						foreach($this->tabs['tabs'] as $currentTab) {
 							if ( $tab === $currentTab['slug'] ) {
 								$this->allSettingsClasses[ $i ]->show_options_page_html();
+							}
+							// special code here for GPX file filtering
+							if ( $currentTab['setting'] === 'gpxSettings' ) {
+								?>
+								<p id="text1">not loaded</p>
+								<div id="coord">no data</div>
+								<div id="parent" class="parent">
+								<canvas id="canvas1" class="canvas"></canvas>
+								<canvas id="canvas2" class="canvas"></canvas>
+								</div>
+								<?php
 							}
 							$i++;
 						}

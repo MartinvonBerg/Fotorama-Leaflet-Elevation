@@ -130,6 +130,10 @@ class AdminSettingsPage {
 						$args[$param['label']] = \strval( filter_var( $args[$param['label']], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION ) );
 						break;
 
+					case 'range':
+						$args[$param['label']] = \strval( filter_var( $args[$param['label']], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION ) );
+						break;
+
 					case 'select':
 						$args[$param['label']] = $this->my_sanitize_text( $args[$param['label']] ?? '');
 						break;
@@ -183,6 +187,24 @@ class AdminSettingsPage {
 			<?php
 		}
 	}
+
+	function range_callback( array $args ) {
+		// Get the value of the setting we've registered with register_setting()
+		$options = get_option( $this->settings['options'] );
+
+		if ( $this->settings[ $args['param']]['type'] === 'range') {
+			$current = isset( $options[$args['label_for']] ) ? $options[$args['label_for']] : '';
+			$step = \array_key_exists('step',$this->settings[ $args['param'] ]) ? $this->settings[ $args['param']]['step'] : ''
+			?>
+			<input type="range" min="<?php echo esc_attr( $this->settings[ $args['param']]['min']) ?>" max="<?php echo esc_attr( $this->settings[ $args['param']]['max']) ?>" step="<?php echo esc_attr( $step ) ?>" 
+                name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr($args['label_for']) ?>]"
+				id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+				value="<?php echo esc_attr( $current ); ?>">
+			<label> <?php echo esc_attr($current) ?> / Min: <?php echo esc_attr( $this->settings[ $args['param']]['min']) ?>, Max: <?php echo esc_attr( $this->settings[ $args['param']]['max']) ?></label>
+			<?php
+		}
+	}
+
 
 	function checkbox_callback( array $args ) {
 		// Get the value of the setting we've registered with register_setting()
@@ -309,7 +331,6 @@ class AdminSettingsPage {
 	 * Provides a download link or a help text based on whether the settings file exists.
 	 *
 	 * @param array $args An array of arguments.
-	 * @throws None
 	 * @return void
 	 */
 	function download_callback ( array $args ) :void {
