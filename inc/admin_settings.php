@@ -97,6 +97,18 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'gpxfile',
 			'info' => 'Used for uploading only. Define the file in your shortcode, too!. File with gpx-track, e.g: ../wordpress/wp-content/uploads/gpx/test.gpx. Use comma seperated list for multiple file: "f1.gpx, f2.gpx, f3.gpx"',
 		],
+		'param6' => [ 
+			'label' => 'gpx_overwrite',
+			'text' => 'Overwrite GPX-File',
+			'class' => 'gpx_row',
+			'custom_data' => 'custom6',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Overwrite existing GPX-File',
+			'shortcode' => '',
+			'info' => '',
+		],
 		'param2' => [ // general
 			'label' => 'gpx_reduce',
 			'text' => 'Reduce GPX-File',
@@ -129,8 +141,8 @@ final class FotoramaElevationAdmin
 			'type' => 'range',
 			'values' => 25, // default value
 			'default' => 25,
-			'min' => 0,
-			'max' => 10000,
+			'min' => 1,
+			'max' => 1000,
 			'description' => 'Min. Distance of Track Points in Meters (25m best for mountaineering of any kind)',
 			'shortcode' => '',
 			'info' => '',
@@ -143,7 +155,7 @@ final class FotoramaElevationAdmin
 			'type' => 'range',
 			'values' => 4, // default value
 			'default' => 4,
-			'min' => 0,
+			'min' => 1,
 			'max' => 50,
 			'step' => 0.1,
 			'description' => 'Min. Elevation between Track Points in Meters. Used for Statistics Calc only. Best is 4.',
@@ -162,18 +174,6 @@ final class FotoramaElevationAdmin
 			'max' => 2,
 			'step' => 0.01,
 			'description' => 'Use a Low Pass Fiter for the GPX Height Data.',
-			'shortcode' => '',
-			'info' => '',
-		],
-		'param6' => [ 
-			'label' => 'gpx_overwrite',
-			'text' => 'Overwrite GPX-File',
-			'class' => 'gpx_row',
-			'custom_data' => 'custom6',
-			'type' => 'checkbox',
-			'values' => '',
-			'default' => 'false',
-			'description' => 'Overwrite existing GPX-File',
 			'shortcode' => '',
 			'info' => '',
 		],
@@ -1219,10 +1219,16 @@ final class FotoramaElevationAdmin
 		add_action( 'admin_enqueue_scripts', array( $this, 'fm_admin_scripts_enqueue' ) );
 	}
 
+	/**
+	 * Enqueues the JavaScript and CSS styles for the admin page showing the gpx tab.
+	 *
+	 * @return void
+	 */
 	public function fm_admin_scripts_enqueue() {
 		// enque the javascript for the admin page.
 		$plugin_path = plugins_url('/', __DIR__);
-		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/admin/fm_admin.js', ['jquery'], '0.26.0', true);
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.26.0', true);
+		wp_enqueue_style('fm-admin-gpx', $plugin_path . 'css/fm_admin_gpx.css',[] ,'0.26.0' ,'all');
 	}
 
 	/**
@@ -1354,17 +1360,20 @@ final class FotoramaElevationAdmin
 						foreach($this->tabs['tabs'] as $currentTab) {
 							if ( $tab === $currentTab['slug'] ) {
 								$this->allSettingsClasses[ $i ]->show_options_page_html();
-							}
-							// special code here for GPX file filtering
-							if ( $currentTab['setting'] === 'gpxSettings' ) {
-								?>
-								<p id="text1">not loaded</p>
-								<div id="coord">no data</div>
-								<div id="parent" class="parent">
-								<canvas id="canvas1" class="canvas"></canvas>
-								<canvas id="canvas2" class="canvas"></canvas>
-								</div>
-								<?php
+							
+								// special code here for GPX file filtering
+								if ( $currentTab['setting'] === 'gpxSettings' ) {
+									?>
+									<p id="gpx_text1">not loaded</p>
+									<div id="gpx_coord">no data</div>
+									<div id="gpx_canvas_parent" class="gpx_canvas_parent">
+									<canvas id="gpx_canvas1" class="gpx_canvas"></canvas>
+									<canvas id="gpx_canvas2" class="gpx_canvas"></canvas>
+									</div>
+									<?php
+									$this->listFiles(get_option('fm_gpx_options')['path_to_gpx_files_2']);
+									
+								}
 							}
 							$i++;
 						}
@@ -1526,5 +1535,34 @@ final class FotoramaElevationAdmin
 			}
 		}
 		return false;
+	}
+
+	private function listFiles( $folder ) {
+		$upload_dir = wp_upload_dir()['basedir'];
+		$upload_dir = $upload_dir . '/' . $folder . '/';
+		$upload_url = wp_upload_dir()['baseurl'];
+		$files = list_files( $upload_dir );
+		$files2 = scandir( $upload_dir, \SCANDIR_SORT_DESCENDING );
+		
+		$files3 = glob($upload_dir . '*.gpx');
+		usort($files, function($a, $b) {
+			return filemtime($b) - filemtime($a);
+		});
+		
+		$dateFormat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+
+		$outHtml = '<table id="fm-gpx-file-table"><tr><td>All Files in: ' . $upload_url . '/' . $folder . '</td>';
+		$outHtml .= '<td>' . ' Size / kB ' . '</td>';
+		$outHtml .= '<td>' . ' Date' . '</td>';
+		$outHtml .= '</tr>';
+
+		foreach ( $files3 as $file ) {
+			$basefile = basename( $file );
+			$outHtml .= '<tr><td>' . $basefile . '</td>';
+			$outHtml .= '<td>' . number_format_i18n( filesize( $file ) / 1024, 1) . '</td>';
+			$outHtml .= '<td>' . wp_date( $dateFormat, \filemtime($file) ) . '</td>';
+			$outHtml .= '</tr>';
+		}
+		echo $outHtml . '</table>'; 
 	}
 }

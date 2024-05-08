@@ -1,0 +1,46 @@
+[package]
+name = "admin_rust_wasm"
+version = "0.26.0"
+authors = ["MartinvonBerg <mail@mvb1.de>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+console_error_panic_hook = { version = "0.1.7", optional = true }
+wasm-bindgen = "0.2.92"
+js-sys = "0.3.69"
+wasm-bindgen-futures = "0.4.42"
+#reqwest = "*"
+plotters = "^0.3.5"
+#wee_alloc = "0.4.5"
+web-sys = { version = "0.3.69", features = ["HtmlCanvasElement","console"] }
+plotters-canvas = "^0.3.0"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.34"
+
+[profile.release]
+strip = true 
+opt-level = "z"  # Optimize for size.
+lto = true
+codegen-units = 1
+panic = 'abort'     # Abort on panic
+debug = false
+
+[profile.dev]
+opt-level = 0
+debug = true
+split-debuginfo = '...'  # Platform-specific.
+strip = "none"
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false

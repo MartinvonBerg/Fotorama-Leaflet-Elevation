@@ -1,0 +1,10 @@
+change the rust filter for gpx data for extrema : 4019954525848670.gpx with minimum
+update the PHP filter to work like the rust filter
+
+synchronize cursors with JS based on array data
+correct cursor positions for small admin menu
+change info text above canvases
+
+add a nice file Table with admin class WP_List_Table https://developer.wordpress.org/reference/classes/wp_list_table/
+    info: filename, size, upload date, parsed yes/no, elevation data, statistics, starting point like in frontend
+update table after a new file was uploaded

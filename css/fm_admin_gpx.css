@@ -1,0 +1,29 @@
+#gpx_coord {
+    opacity: 0;
+    background-color: rgb(121, 172, 238);
+    position: absolute;
+    top: 0;
+    left: 0px;
+    color : black;
+    cursor : crosshair;
+    pointer-events: none;
+  }
+
+  .gpx_canvas_parent {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 10px;
+  }
+
+  .gpx_canvas {
+    --canvas-width : 500;
+    width: calc(var(--canvas-width) * 1.0px);  
+    height: calc(var(--canvas-width) * 0.8px);
+    
+    max-width: calc(var(--canvas-width) * 1.0px);
+    min-width: calc(var(--canvas-width) / 2 * 1.0px);
+    
+    max-height: calc(var(--canvas-width) * 0.8px);
+    min-height: calc(var(--canvas-width) * 0.4px);
+  }

@@ -196,11 +196,12 @@ class AdminSettingsPage {
 			$current = isset( $options[$args['label_for']] ) ? $options[$args['label_for']] : '';
 			$step = \array_key_exists('step',$this->settings[ $args['param'] ]) ? $this->settings[ $args['param']]['step'] : ''
 			?>
+			<input type="checkbox" name="<?php echo esc_attr( $args['label_for'] ); ?>_enable" value="enable" id="<?php echo esc_attr( $args['label_for'] ); ?>_enable" checked>
 			<input type="range" min="<?php echo esc_attr( $this->settings[ $args['param']]['min']) ?>" max="<?php echo esc_attr( $this->settings[ $args['param']]['max']) ?>" step="<?php echo esc_attr( $step ) ?>" 
                 name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr($args['label_for']) ?>]"
 				id="<?php echo esc_attr( $args['label_for'] ); ?>" 
 				value="<?php echo esc_attr( $current ); ?>">
-			<label> <?php echo esc_attr($current) ?> / Min: <?php echo esc_attr( $this->settings[ $args['param']]['min']) ?>, Max: <?php echo esc_attr( $this->settings[ $args['param']]['max']) ?></label>
+			<label> <span id="<?php echo esc_attr( $args['label_for'] ); ?>_val"><?php echo esc_attr($current)?></span> / Min: <?php echo esc_attr( $this->settings[ $args['param']]['min']) ?>, Max: <?php echo esc_attr( $this->settings[ $args['param']]['max']) ?></label>
 			<?php
 		}
 	}
@@ -259,6 +260,7 @@ class AdminSettingsPage {
 			$optset = \array_key_exists( $args['label_for'], $options ) ? $options[ $args['label_for'] ] : '';
 			$path = $this->settings[ $args['param']]['type'] === 'path' ? $path = $this->uploadDirectory . '/' . $options[ $args['label_for'] ]: '';
 			$label = $this->settings[ $args['param']]['type'] === 'text' ? $this->settings[ $args['param']]['description'] : '';
+			$url = wp_get_upload_dir()['baseurl'] . '/' . $optset;
 			
 			if ( \key_exists('pattern',$this->settings[ $args['param']])) {
 				$pattern = 'pattern="'.$this->settings[ $args['param']]['pattern'].'"';
@@ -279,6 +281,7 @@ class AdminSettingsPage {
 					<?php if ($pattern!=='') echo  esc_attr($pattern); ?>>
 					<label><?php echo esc_attr($label);?></label>
 					<p><?php echo esc_attr($path);?></p>
+					<p id="wp-upload-path"><?php echo esc_attr($url);?></p>
 			<?php
 		}
 	}
@@ -317,6 +320,7 @@ class AdminSettingsPage {
 
 			?>
 			<input class="file-input"
+					id="file-input"
 					type="file"
 					name="uploadedfile" style='width:400px;'
 					accept="<?php echo esc_attr( $this->settings[ $args['param']]['accept'] );?>">
@@ -506,7 +510,7 @@ class AdminSettingsPage {
 				}
 
 				if( $result )  {
-					$temp = '"'. $name_file . '" ' . __('successful', 'fotoramamulti' ) . '! </br>' . $values;
+					$temp = '"<span id="fm-gpx-file">'. $name_file . '</span>" ' . __('successful', 'fotoramamulti' ) . '! </br>' . $values;
 				} else {
 					$temp = ". " . __('Error during File processing', 'fotoramamulti' ) . ' ! ' . $values;
 				}
