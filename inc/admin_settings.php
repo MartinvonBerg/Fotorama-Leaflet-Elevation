@@ -1369,6 +1369,7 @@ final class FotoramaElevationAdmin
 									<div id="gpx_canvas_parent" class="gpx_canvas_parent">
 									<canvas id="gpx_canvas1" class="gpx_canvas"></canvas>
 									<canvas id="gpx_canvas2" class="gpx_canvas"></canvas>
+									<div id="gpx_canvas4" style="width:500px;height:500px;"></div>
 									</div>
 									<?php
 									$this->listFiles(get_option('fm_gpx_options')['path_to_gpx_files_2']);

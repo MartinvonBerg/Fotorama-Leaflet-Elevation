@@ -27,7 +27,8 @@
   },
   "homepage": "https://github.com/rustwasm/create-wasm-app#readme",
   "dependencies": {
-    "admin_rust_wasm": "file:../pkg"
+    "admin_rust_wasm": "file:../pkg",
+    "plotly.js-dist": "^2.33.0"
   },
   "devDependencies": {
     "@webpack-cli/serve": "^2.x.x",

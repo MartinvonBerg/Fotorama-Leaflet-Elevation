@@ -1,4 +1,7 @@
 import { AllGpxStats, get_array } from "../pkg/admin_rust_wasm.js";
+import plotly from "plotly.js-dist";
+import {mean, std} from "mathjs"
+import KalmanFilter from "kalman-filter";
 
 let esm = 4.5;
 let esmStore = 4.5;
@@ -16,6 +19,9 @@ let elevs = [];
 let dists = [];
 let lats = [];
 let lons = [];
+let newlats = [];
+let newlons = [];
+let selectedRow = null;
 
 const hashCode = (str) => [...str].reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
 
@@ -53,8 +59,18 @@ let tempContext;
 filesTable.addEventListener("click", (event) => {
     const target = event.target;
     const row = target.closest('tr');
-    const clickedFile = row.querySelector('td').innerText;
+    // skip if header was clicked
+    if (row.previousSibling === null) { return; }
 
+    // remove highlight for previously selected row
+    if (selectedRow !== null) selectedRow.style.removeProperty("background-color");
+
+    // highlight current row
+    row.style.backgroundColor = "yellow"
+    selectedRow = row;
+
+    // get file name and pas it to showGpxFileOnCanvas
+    const clickedFile = row.querySelector('td').innerText;
     showGpxFileOnCanvas(clickedFile);
 })
 
@@ -157,16 +173,28 @@ async function parseInputFile() {
         checksum = hashCode(newFile); 
         //console.log("New Length: ", fileLength, "Checksum: ", checksum);
     } 
-   
+    out = {}; elevs = []; dists = []; lats = []; lons = []; newlats = []; newlons = [];
     out = await stats.get_url(esm, dsm, fileLength, filter);
     elevs = get_array( out.eleptr, out.npts );
     dists = get_array( out.disptr, out.npts );
     lats = get_array( out.latptr, out.npts );
     lons = get_array( out.lonptr, out.npts );
+
+    // TODO: clean lats, lons arrays
+    for (let i = 0; i < lats.length; i++) {
+        if (lats[i] > 1e-2 && lons[i] > 1e-2) {
+            newlats.push(lats[i]);
+            newlons.push(lons[i]);
+        }
+    }
+
     canvas1.setAttribute("data-info", "drawn");
     canvas2.setAttribute("data-info", "drawn");
     tempCanvas = null;
     tempContext = null;
+    //showCurrentTrackStatistics(dists);
+    const kfiltered = kalmFilter(newlats, newlons);
+    showGpxTracks(kfiltered, newlats, newlons);
     
     if (out == undefined) {
         text1.innerHTML = "Parsing File: <bold style='font-weight: bold'>" + filePath + "</bold> Size: " + parseFloat(fileSize).toFixed(1) + " kB<br>with: EleSm: " 
@@ -240,7 +268,7 @@ function onMouseMove(event) {
         let [dataX, dataY] = getCoords(event, canvas1, 0, xmax, ymin, ymax);
         let index = parseInt(dataX * N / dist);
         let [cvX, cvY] = getPosOnCanvasFromIndex(canvas2, lons[index], lats[index]);
-        addToCanvas('gpx_canvas2', 'X', cvX, cvY);
+        addToCanvas('gpx_canvas2', ' X ' + index, cvX, cvY);
         
 
         if (dataX != null && dataY != null) {
@@ -338,17 +366,31 @@ function showGpxFileOnCanvas(file=null) {
             //console.log('The file has been loaded successfully.');
             stats.file_content = retrievedText;
             fileLength = retrievedText.length;
+            out = {}; elevs = []; dists = []; lats = []; lons = []; newlats = []; newlons = [];
             out = await stats.get_url(0.0, 0.0, fileLength, 0.0);
             elevs = get_array( out.eleptr, out.npts );
             dists = get_array( out.disptr, out.npts );
             lats = get_array( out.latptr, out.npts );
             lons = get_array( out.lonptr, out.npts );
+
+            // TODO: clean lats, lons arrays
+            for (let i = 0; i < lats.length; i++) {
+                if (lats[i] > 1e-2 && lons[i] > 1e-2) {
+                    newlats.push(lats[i]);
+                    newlons.push(lons[i]);
+                }
+            }
+
             canvas1.setAttribute("data-info", "drawn");
             canvas2.setAttribute("data-info", "drawn");
             tempCanvas = null;
             tempContext = null;
             text1.innerHTML = infoText + "<strong>" + lastFileResult + "</strong>" + "<br> Input Elements will have no Effect.";
             text1.setAttribute("data-info", "uploaded-drawn");
+            // show statistics on the gpx_canvas3
+            //showCurrentTrackStatistics(dists);
+            const kfiltered = kalmFilter(newlats, newlons);
+            showGpxTracks(kfiltered, newlats, newlons);
             }
         }
 }
@@ -435,4 +477,130 @@ function getPosOnCanvasFromIndex(canvas, curlon, curlat) {
     const y = CyRangeInPx - ((curlat - minLatitude) * yRatio) + Cymin;
 
     return [x, y];
+}
+
+function showCurrentTrackStatistics(data) {
+
+    let newdata = [].slice.call(data);
+    let curmean = mean(newdata);
+    let curstd = std(newdata);
+    let min1 = curmean - 3*curstd;
+    let max1 = curmean + 3*curstd;
+    let min2 = curmean - 6*curstd;
+    let max2 = curmean + 6*curstd;
+
+    let TESTER = document.getElementById('gpx_canvas3');
+	plotly.newPlot( TESTER, [{
+	    x: data,
+	    type: 'histogram',}],
+        {
+        xaxis: {title: "Distance [m]"},
+        yaxis: {title: "Frequency"},
+        shapes: [
+            {
+                type: 'line',
+                x0: curmean,
+                y0: -10,
+                x1: curmean,
+                y1: 10,
+                line: {
+                color: 'red',
+                width: 2,
+                dash: 'dot'
+                },},
+            {
+                type: 'line',
+                x0: min1,
+                y0: -10,
+                x1: min1,
+                y1: 10,
+                line: {
+                    color: 'red',
+                    width: 2,
+                    dash: 'dot'
+                },},
+            {
+                type: 'line',
+                x0: min2,
+                y0: -10,
+                x1: min2,
+                y1: 10,
+                line: {
+                    color: 'red',
+                    width: 2,
+                    dash: 'dot'
+            },},
+            {
+                type: 'line',
+                x0: max1,
+                y0: -10,
+                x1: max1,
+                y1: 10,
+                line: {
+                    color: 'red',
+                    width: 2,
+                    dash: 'dot'
+                },},
+            {
+                type: 'line',
+                x0: max2,
+                y0: -10,
+                x1: max2,
+                y1: 10,
+                line: {
+                    color: 'red',
+                    width: 2,
+                    dash: 'dot'
+                },},
+          ],
+        title: "Current Track Statistics",
+        }
+    );
+
+    const dataSortedWithIndexes = newdata
+        .map((f, i) => ({
+            floatNumber: f,
+            index: i, // <-- original index
+        }));
+}
+
+function kalmFilter(lats, lons) {
+    let kfilt = new KalmanFilter.KalmanFilter({observation: 2});
+    let obs = [];
+
+    for (let i = 0; i < lats.length; i++) {
+        obs.push([lats[i], lons[i]]);
+    }
+
+    return kfilt.filterAll(obs);
+}
+
+function showGpxTracks(kfiltered, lons, lats) {
+    let kfx = [];
+    let kfy = [];
+
+    for (let i = 0; i < kfiltered.length; i++) {
+        kfx.push(kfiltered[i][0]); 
+        kfy.push(kfiltered[i][1]);
+    }
+
+    let TESTER = document.getElementById('gpx_canvas4');
+
+    plotly.newPlot( TESTER, 
+        [{
+            x: lats,
+            y: lons,
+            type: 'scatter',
+        },
+        {
+            x: kfy,
+            y: kfx,
+            type: 'scatter',
+        }],
+        {
+        xaxis: {title: "lons"},
+        yaxis: {title: "lats"},
+        title: "GPX Tracks compared",
+        }
+    );
 }
