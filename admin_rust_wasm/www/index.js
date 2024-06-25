@@ -2,6 +2,7 @@ import { AllGpxStats, get_array } from "../pkg/admin_rust_wasm.js";
 import plotly from "plotly.js-dist";
 import {mean, std} from "mathjs"
 import KalmanFilter from "kalman-filter";
+import { defined } from "chart.js/helpers";
 
 let esm = 4.5;
 let esmStore = 4.5;
@@ -22,6 +23,7 @@ let lons = [];
 let newlats = [];
 let newlons = [];
 let selectedRow = null;
+let allMaps = [];
 
 const hashCode = (str) => [...str].reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
 
@@ -72,6 +74,7 @@ filesTable.addEventListener("click", (event) => {
     // get file name and pas it to showGpxFileOnCanvas
     const clickedFile = row.querySelector('td').innerText;
     showGpxFileOnCanvas(clickedFile);
+    showGpxFileOnLeaflet(clickedFile);
 })
 
 input.addEventListener("change", () => {
@@ -345,6 +348,8 @@ function getCoords(event, canvas, xmin, xmax, ymin, ymax) {
 }
 
 window.addEventListener('load', showGpxFileOnCanvas(null) );
+window.addEventListener('load', showGpxFileOnLeaflet(null) );
+
 
 function showGpxFileOnCanvas(file=null) {
     let lastFileResult = file;
@@ -393,6 +398,38 @@ function showGpxFileOnCanvas(file=null) {
             showGpxTracks(kfiltered, newlats, newlons);
             }
         }
+}
+
+function showGpxFileOnLeaflet(file=null) {
+    let lastFileResult = file;
+    let infoText = "";
+    let lastFile = "";
+    
+    if (lastFileResult == null) {
+        lastFileResult = document.getElementById('fm-gpx-file')?.innerText || "";
+        lastFile = uploadPath + '/' + lastFileResult;
+        infoText = "Uploaded File: ";
+    } else {
+        lastFile = uploadPath + '/' + file;
+        infoText = "File in Table: ";
+    }
+    
+    // load the file
+    if (lastFile != "") {
+        pageVarsForJs[0]['tracks']['track_0']['url'] = lastFile;
+        if ( allMaps[0] != 'undefined' && ( allMaps[0] != null ) ) {
+            allMaps[0].map.remove();
+            allMaps[0].chart.chart.destroy()
+            //allMaps[0].controlElevation.clear();
+        }
+        import(/* webpackChunkName: "leaflet_chartjs" */'../../js/leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
+            allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0 );
+        })
+        //import(/* webpackChunkName: "elevation-admin" */'../../js/elevationClass.js').then( (LeafletElevation) => {
+            //allMaps[0] = [];
+            //allMaps[0] = new LeafletElevation.LeafletElevation(0, 'boxmap' + 0 );            
+        //});
+    }
 }
 
 function addToCanvas(canvasId, text, x=20, y=20, fontSize = 10, fontFamily = 'Arial') {

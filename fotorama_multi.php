@@ -486,7 +486,7 @@ EOF;
 		'showLocateButton' => $fotorama_elevation_options['show_locate_button'], // new option for $showLocateButton,
  	);
 
-	 if ( isset($charttype) && $charttype === 'chartjs') {
+	if ( isset($charttype) && $charttype === 'chartjs') {
 		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.26.0', true);
 	} else {
 		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.26.0', true);

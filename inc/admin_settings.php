@@ -1227,8 +1227,28 @@ final class FotoramaElevationAdmin
 	public function fm_admin_scripts_enqueue() {
 		// enque the javascript for the admin page.
 		$plugin_path = plugins_url('/', __DIR__);
-		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.26.0', true);
+		wp_enqueue_script('fotorama_admin',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.26.0', true);
 		wp_enqueue_style('fm-admin-gpx', $plugin_path . 'css/fm_admin_gpx.css',[] ,'0.26.0' ,'all');
+
+		/* enque the javascript for the standard page too.
+		if ( isset($charttype) && $charttype === 'chartjs') {
+			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.26.0', true);
+		} else {
+			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.26.0', true);
+		}
+		*/
+		$tracks['track_0']['url'] = ''; // $gpx_url . $f;
+		$tracks['track_0']['info'] = ''; //(string) $gpxdata->metadata->desc[0];
+
+		$pageVarsForJs[0] = [
+			'ngpxfiles'  => 1,
+			'tracks' => $tracks,
+			'eletheme' => 'lime-theme', // TODO
+			'chartheight' => 200, // TODO
+			'sw_options' => ['trackwidth' => 2], // TODO
+			'imagepath' => $plugin_path . 'images/', 
+		];
+		wp_localize_script('fotorama_admin', 'pageVarsForJs', $pageVarsForJs);
 	}
 
 	/**
@@ -1362,15 +1382,43 @@ final class FotoramaElevationAdmin
 								$this->allSettingsClasses[ $i ]->show_options_page_html();
 							
 								// special code here for GPX file filtering
+								/*<p id="gpx_text1">not loaded</p>
+									<div id="gpx_coord">no data</div>
+									<div id="gpx_canvas_parent" class="gpx_canvas_parent">
+										<canvas id="gpx_canvas1" class="gpx_canvas"></canvas>
+										<canvas id="gpx_canvas2" class="gpx_canvas"></canvas>
+										<div id="gpx_canvas4" style="width:500px;height:500px;"></div>	
+									</div>
+									*/
+								// TODO get the options for leaflet elevation here
 								if ( $currentTab['setting'] === 'gpxSettings' ) {
 									?>
 									<p id="gpx_text1">not loaded</p>
 									<div id="gpx_coord">no data</div>
 									<div id="gpx_canvas_parent" class="gpx_canvas_parent">
-									<canvas id="gpx_canvas1" class="gpx_canvas"></canvas>
-									<canvas id="gpx_canvas2" class="gpx_canvas"></canvas>
-									<div id="gpx_canvas4" style="width:500px;height:500px;"></div>
+										<canvas id="gpx_canvas1" class="gpx_canvas"></canvas>
+										<canvas id="gpx_canvas2" class="gpx_canvas"></canvas>
+										<div id="gpx_canvas4" style="width:500px;height:500px;"></div>	
 									</div>
+									<div id="multifotobox0" class="mfoto_grid">
+									<div id="boxmap0" class="boxmap">
+										<div id="map0" class="leafmap" style="max-height:400px;aspect-ratio:1.5"></div> 
+										<div class="chartjs-profile-container" id="chartjs-profile-container0" style="height:200px;"><canvas id="fm-elevation-chartjs0" style="width:100%;height:100%"></canvas></div>";
+				
+										<!--div id="elevation-div0" style="height:200px;"></div-->
+										<div id="data-summary0" class="data-summary">
+											<span class="totlen">
+												<span class="summarylabel"> </span>
+												<span class="summaryvalue">0</span></span>
+											<span class="gain">
+												<span class="summarylabel"> </span>
+												<span class="summaryvalue">0</span></span>
+											<span class="loss">
+												<span class="summarylabel"> </span>
+												<span class="summaryvalue">0</span></span>
+										</div>
+									</div>
+									</div><!--div id=multifotobox0-->
 									<?php
 									$this->listFiles(get_option('fm_gpx_options')['path_to_gpx_files_2']);
 									
