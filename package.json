@@ -36,6 +36,7 @@
 	},
 	"dependencies": {
 		"@raruto/leaflet-elevation": "^2.x",
+		"@we-gold/gpxjs": "^1.0.10",
 		"chart.js": "^4.4.x",
 		"kalman-filter": "^2.3.0",
 		"leaflet": "^1.9.x",

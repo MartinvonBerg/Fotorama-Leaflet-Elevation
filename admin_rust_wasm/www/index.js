@@ -1,8 +1,7 @@
-import { AllGpxStats, get_array } from "../pkg/admin_rust_wasm.js";
-import plotly from "plotly.js-dist";
-import {mean, std} from "mathjs"
-import KalmanFilter from "kalman-filter";
-import { defined } from "chart.js/helpers";
+import { parseGPX } from "@we-gold/gpxjs"
+
+// TODO : change to IIFE and load wo bootstrap, cleanup
+// TODO : ursache für JS fehler bei onhover chart und map finden
 
 let esm = 4.5;
 let esmStore = 4.5;
@@ -10,6 +9,7 @@ let dsm = 0.025;
 let dsmStore = 0.025;
 let filter = 0.5;
 let filterStore = 0.5;
+let gpx_reduce = true;
 let fileLength = 0;
 let checksum = 0;
 let filePath = "";
@@ -47,20 +47,24 @@ const filtsel = document.querySelector("#gpx_filter");
 const filtval = document.querySelector("#gpx_filter_val");
 const filterenable = document.querySelector("#gpx_filter_enable");
 
-const stats = new AllGpxStats(); 
+//const stats = new AllGpxStats(); 
+const stats = {};
 class Chart {};
 
-let chart1 = null;
-let chart2 = null;
+//let chart1 = null;
+//let chart2 = null;
 
-let uploadPath = document.getElementById('wp-upload-path').innerText;
+let uploadPath = document.getElementById('wp-upload-path').innerText + '/';
 const filesTable = document.getElementById('fm-gpx-file-table');
 let tempCanvas;
 let tempContext;
 
-filesTable.addEventListener("click", (event) => {
-    const target = event.target;
-    const row = target.closest('tr');
+// define all Event listeners --------------------
+
+// show the clicked gpx-file from server. Use the complete path on server.
+filesTable.addEventListener("click", (event) => {  
+    // get the clicked row
+    const row = event.target.closest('tr');
     // skip if header was clicked
     if (row.previousSibling === null) { return; }
 
@@ -71,19 +75,97 @@ filesTable.addEventListener("click", (event) => {
     row.style.backgroundColor = "yellow"
     selectedRow = row;
 
-    // get file name and pas it to showGpxFileOnCanvas
-    const clickedFile = row.querySelector('td').innerText;
-    showGpxFileOnCanvas(clickedFile);
-    showGpxFileOnLeaflet(clickedFile);
-})
-
-input.addEventListener("change", () => {
-    stats.file_content = 'NULL';
+    // get clicked file name and prepare file load
+    let clickedFile = row.querySelector('td').innerText;
+    
+    // set the global variables
+    stats.file_content = null;
+    newFile = "";
+    fileLength = 0;
     checksum = 0;
-    parseInputFile();
+    if ( uploadPath === '' ) {
+        uploadPath = document.getElementById('wp-upload-path').innerText + '/';
+    }
+    text1.innerHTML = "File: " + clickedFile;
+    clickedFile = uploadPath + clickedFile;
+    
+    // load the file to string stats.file_content. This is similar in all Event handlers.
+    loadFileToString(clickedFile, 'filelist').then( () => {
+        // do not filter the file. Show as saved on server 
+        if ( stats.file_content !== null && checksum != 0) {
+            showGpxFileOnLeaflet();
+
+            // show statistics as saved in file or calculated, Show hint not filtered. Show hint if no statsitics in file
+            parseGpxString(text1);
+        }
+    })
+
 })
 
-esmsel.addEventListener("input", () => {
+filesTable.addEventListener("onwheel", (event) => {
+    // TODO : implement
+})
+
+// show the last saved gpx-file. Use the complete path on server.
+window.addEventListener('load', (event) => {
+
+    let lastFileResult = document.getElementById('fm-gpx-file')?.innerText || "";
+    
+    if (lastFileResult == "" || lastFileResult == null) {
+        return;
+    } else {
+        text1.innerHTML = "File: " + lastFileResult;
+        lastFileResult = uploadPath + lastFileResult;
+    
+        // load the file to string stats.file_content. This is similar in all Event handlers.
+        loadFileToString(lastFileResult, 'onload').then( () => {
+            // do not filter the file. Show as saved on server 
+            if ( stats.file_content !== null && checksum != 0) {
+                showGpxFileOnLeaflet();
+
+                // get statistics as saved in file , Show hint not filtered. Show hint if no statsitics in file
+                parseGpxString(text1);
+                
+            }
+        })
+    }
+}) 
+
+// show the selected file. Use the preloaded content from the fakepath as xml-string
+input.addEventListener("change", (event) => { 
+    // set the global variables
+    stats.file_content = null;
+    newFile = "";
+    fileLength = 0;
+    checksum = 0;
+    uploadPath = '';
+
+    if (input.files[0].name === null || input.files.length === 0) { 
+        return;
+    } else {
+        text1.innerHTML = "File: " + input.files[0].name;
+        // load the file to string 
+        // load the file to string stats.file_content. This is similar in all Event handlers.
+        loadFileToString('no-filepath-required-here', 'input').then( () => {
+            // do not filter the file. Show as saved on server 
+            if ( stats.file_content !== null && checksum != 0) {
+                // filter the file and return as xml-string to global variable newFile
+                newFile = filterGPXTrack(stats.file_content);
+
+                // show filtered file
+                showGpxFileOnLeaflet();
+                
+                // show other results like statistics after filtering
+                parseGpxString(text1);
+            }
+        })
+    }
+    
+})
+
+
+// ---------- listeners for file filter inputs
+esmsel.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
     esm = esmsel.value;
     esmStore = esm;
 
@@ -93,10 +175,12 @@ esmsel.addEventListener("input", () => {
         esm = 0.0;
     }
     esmval.innerHTML = esm + " m";
-    parseInputFile();
+
+    // filter the file and return as xml-string to global variable newFile
+    filterEventListener();
 })
 
-dsmsel.addEventListener("input", () => {
+dsmsel.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
     dsm = dsmsel.value / 1000;
     dsmStore = dsm;
 
@@ -106,10 +190,11 @@ dsmsel.addEventListener("input", () => {
         dsm = 0.0;
     }
     dsmval.innerHTML = dsm * 1000 + " m";
-    parseInputFile();
+    // filter the file and return as xml-string to global variable newFile
+    filterEventListener();
 })
 
-filtsel.addEventListener("input", () => {
+filtsel.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
     filter = filtsel.value;
     filterStore = filter;
 
@@ -119,43 +204,395 @@ filtsel.addEventListener("input", () => {
         filter = 0.0;
     }
     filtval.innerHTML = filter;
-    parseInputFile();
+    // filter the file and return as xml-string to global variable newFile
+    filterEventListener();
 })
 
-filterenable.addEventListener("input", () => {
+filterenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
     
     if (filterenable.checked) {
         filter = filterStore;
     } else {
         filter = 0.0;
     }
-    parseInputFile();
+    // filter the file and return as xml-string to global variable newFile
+    filterEventListener();
 })
 
-esmenable.addEventListener("input", () => {
+esmenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
 
     if (esmenable.checked) {
         esm = esmStore;
     } else {
         esm = 0.0;
     }
-    parseInputFile();
+    // filter the file and return as xml-string to global variable newFile
+    filterEventListener();
 })
 
-dsmenable.addEventListener("input", () => {
+dsmenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
 
     if (dsmenable.checked) {
         dsm = dsmStore;
     } else {
         dsm = 0.0;
     }
-    parseInputFile();
+    // filter the file and return as xml-string to global variable newFile
+    filterEventListener();
 })
+
+function filterEventListener() {
+    // filter the file and return as xml-string to global variable newFile
+    if (newFile === "") {
+        text1.innerHTML = "No file selected";
+        return;
+    }
+    newFile = filterGPXTrack(stats.file_content);
+
+    // show filtered file
+    showGpxFileOnLeaflet();
+    
+    // show other results like statistics after filtering
+    parseGpxString(text1);
+
+    // TODO: write the filtered file to server: either by REST-API or AJAX
+}
+// End: define all Event listeners --------------------
+
+
+/**
+ * Asynchronously loads a file to a string based on the provided file path and trigger origin.
+ *
+ * @param {string} filePath - The path to the file to be loaded.
+ * @param {string} triggerorigin - The origin that triggers the file loading process.
+ * 
+ * @global {object} input - The file input DOM element
+ * 
+ * The following global variables are set:
+ * @global {object} stats.file_content - The content of the file as string in an object
+ * @global {string} newFile - The content of the file as string equaly to stats.file_content
+ * @global {number} fileLength - The length of the file
+ * @global {number} checksum - The checksum of the file
+ * 
+ * @return {boolean} Returns true if the file is successfully loaded to a string, else false.
+ */
+async function loadFileToString(filePath='', triggerorigin='none') {
+
+    if (filePath === '' || filePath == null || triggerorigin == 'none' || triggerorigin == '') {
+        return false;
+
+    } else if ( (checksum == 0 || stats.file_content == null) && (triggerorigin == 'filelist' || triggerorigin == 'onload') ) {
+        // load the file to string and set the global variable for the file content
+        newFile = await fetch(filePath).then(response => response.text());
+
+    } else if ( (checksum == 0 || stats.file_content == null) && triggerorigin == 'input') {
+        // load the file to string and set the global variable for the file content
+        const file = input.files[0];
+        newFile = await file.text();
+
+    } else {
+        return false;
+    }
+
+    // set the global variables
+    stats.file_content = newFile;
+    fileLength = newFile.length;
+    checksum = hashCode(newFile);
+
+    return true;
+}
+
+/**
+ * Parses the GPX string and returns the parsed file or an error if there was one.
+ * 
+ * @global {string} newFile - The content of the file as string equaly to stats.file_content or filtered result
+ * @global {number} fileSize - The length of the file
+ *
+ * @return {[null, Error] | [{object}, null]} An object containing the parsed file or an error message.
+ */
+function parseGpxString(element) {
+    
+    let NTrkPts = 0;
+    let NRtePts = 0;
+    let NWayPts = 0;
+    let fileName = "";
+
+    const getFileName = (innerHTML) => {
+        const regex = /File: ([^<]+)/;
+        const match = innerHTML.match(regex);
+        return match ? match[1] : null;
+    }
+
+    // set the global fileSize
+    fileSize = new Blob([newFile]).size / 1024;
+
+    // parse the GPX file as stored in global variable newfile
+    // TODO: parse only if current filtered file was not parsed yet
+    const [parsedFile, error] = parseGPX(newFile);
+
+    if (error) {
+        element.innerHTML = "Error parsing loaded GPXFile as XML: " + error;
+        return error;
+    } else {
+        parsedFile.tracks.forEach(element => {
+            NTrkPts += element.points.length;
+        });
+
+        parsedFile.routes.forEach(element => {
+            NRtePts += element.points.length;
+        });
+
+        parsedFile.waypoints.forEach(element => {
+            NWayPts += element.points.length;
+        });
+        fileName = getFileName(element.innerHTML); 
+        element.innerHTML = "<strong>File: " + fileName + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
+        + "<br>Stats in File: " + parsedFile.metadata.description 
+        + "<br>N Tracks: " + parsedFile.tracks.length + " / with N Points: " + NTrkPts
+        + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: " + NRtePts
+        + "<br>N Waypoints: " + parsedFile.waypoints.length + " / with N Points: " + NWayPts
+        return parsedFile;
+    }
+}
+
+/**
+ * Displays a GPX file on a Leaflet map. If a file is not provided, it retrieves the file name from the 'fm-gpx-file' element 
+ * and constructs the file path using the 'uploadPath' variable. It then retrieves the current filter settings and filters 
+ * the GPX track with those settings. The filtered track is written as a string to the 'lastFile' variable. 
+ * The function then loads the file and displays it on a Leaflet map. If a Leaflet map already exists, it is removed. 
+ * If a Chart.js chart exists, it is destroyed. The function also imports the LeafletChartJsClass module and creates a new LeafletChartJs object.
+ *
+ * @param {string} file - The path to the GPX file or the content as string to display. Defaults to null.
+ * 
+ * @globel {string} newFile - The content of the file as string equaly to stats.file_content or filtered result
+ * @global {string} pageVarsForJs[0]['tracks']['track_0']['url'] : The path to the GPX file to display or the content of file as xml formatted string.
+ * @global {object} allMaps[0] : The Leaflet map object.
+ * 
+ * @return {void} This function does not return a value.
+ */
+function showGpxFileOnLeaflet(file=null) {
+
+    // load the file
+    if (file == null) {
+        pageVarsForJs[0]['tracks']['track_0']['url'] = newFile;
+    } else {
+        pageVarsForJs[0]['tracks']['track_0']['url'] = file;
+    }
+
+
+    if ( allMaps[0] != 'undefined' && ( allMaps[0] != null ) ) {
+        try {
+            allMaps[0].map.remove(); // leaflet map
+        } catch (error) {
+            console.log(error);
+        }
+        
+        try {
+            allMaps[0].chart.chart.destroy(); // chartjs
+            // rework for not understood behaviour of destroy funtion on canvas
+            allMaps[0].chart.elementOnPage.width = allMaps[0].chart.elementOnPage.clientWidth;
+        } catch (error) {
+            console.log(error);
+        }
+        //allMaps[0].controlElevation.clear(); // elevation
+    }
+    import(/* webpackChunkName: "leaflet_chartjs" */'../../js/leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
+        allMaps[0] = [];
+        LeafletChartJs.LeafletChartJs.count = 0;
+        LeafletChartJs.LeafletChartJs.numberOfMaps = null;
+        allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0 );
+    })
+    //import(/* webpackChunkName: "elevation-admin" */'../../js/elevationClass.js').then( (LeafletElevation) => {
+        //allMaps[0] = [];
+        //LeafletElevation.LeafletElevation.count = 0;
+        //LeafletElevation.LeafletElevation.numberOfMaps = null;
+        //allMaps[0] = new LeafletElevation.LeafletElevation(0, 'boxmap' + 0 );            
+    //});
+
+}
+
+function filterGPXTrack(fileContent) {
+    let info = '';
+    let newFileContent = '';
+
+    //elevation
+    let lastConsideredElevation = 0;
+    let cumulativeElevationGain = 0;
+    let cumulativeElevationLoss = 0;
+    
+    // distance
+    let lastConsideredPoint = [0, 0];
+    let cumulativeDistance = 0;
+
+    // set all arrays to empty
+    elevs = [];
+    dists = [];
+    lats = [];
+    lons = [];
+
+    getCurrentFilterSettings();
+
+    // parse the GPX file as stored in global variable newfile
+    // TODO: parse only if current filtered file was not parsed yet
+    const [parsedFile, error] = parseGPX(fileContent);
+
+    if (error) {
+        element.innerHTML = "Error parsing loaded GPXFile as XML: " + error;
+        return error;
+
+    // parse and combine tracks and routes to one track if gpx_reduce is checked. Skip the Waypoints.
+    } else if (gpx_reduce) {
+        parsedFile.tracks.forEach(element => {
+            lastConsideredElevation = element.points[0].elevation;
+            lastConsideredPoint = [element.points[0].latitude, element.points[0].longitude];
+            // TODO: point mit Höhe = 0 ignorieren, falls einstellung gesetzt
+            // TODO: höhendaten und coords filtern: Wie? Beide Kalman? 
+            element.points.forEach(point => {
+                
+                let elevationDelta = point.elevation - lastConsideredElevation;
+                if ( Math.abs(elevationDelta) > esm ) {
+                    elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
+                    elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
+                    lastConsideredElevation = point.elevation;
+                }
+
+                let curPoint = [point.latitude, point.longitude];
+                let curDist = 1000 * calcdistance(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
+                if (Math.abs(curDist) > dsm) {
+                    cumulativeDistance += curDist;
+                    lastConsideredPoint = curPoint;
+                    elevs.push(point.elevation);
+                    dists.push(curDist);
+                    lats.push(point.latitude);
+                    lons.push(point.longitude);
+                }
+                
+            });
+
+            info = 'Dist: '+ (cumulativeDistance/1000).toFixed(1) +' km, Gain: '+ cumulativeElevationGain.toFixed(0) +' Hm, Loss: '+ cumulativeElevationLoss.toFixed(0) +' Hm';
+            });
+        
+        // skip the routes currently; TODO: implement
+        parsedFile.routes.forEach(element => {});
+
+        newFileContent = createGpxHeader() + createGpxMeta( parsedFile.metadata.name, info, parsedFile.metadata.time ) + createGpxTrack(parsedFile.metadata.name, lats, lons, elevs) + createGpxFooter();
+        
+        return newFileContent;
+
+    // else : return the original file
+    } else {
+        return fileContent;
+    }
+}
+
+/**
+ * Retrieves the current filter settings from the UI and updates the `pageVarsForJs` object.
+ * 
+ * @global {object} pageVarsForJs[0]['tracks']['track_0']['info'] 
+ * @global {object} pageVarsForJs[0]['sw_options']['gpx_distsmooth' / 'gpx_elesmooth']
+ *
+ * @return {void}
+ */
+function getCurrentFilterSettings() {
+    gpx_reduce = document.getElementById("gpx_reduce").checked;
+    
+    if (gpx_reduce) {
+        // get the filter values
+        dsm = parseInt( document.getElementById("gpx_smooth").value );
+        if ( ! dsmenable.checked) dsm = 0.0;
+        pageVarsForJs[0]['sw_options']['gpx_distsmooth'] = dsm;
+        
+        esm = parseFloat( document.getElementById("gpx_elesmooth").value );
+        if ( ! esmenable.checked) esm = 0.0;
+        pageVarsForJs[0]['sw_options']['gpx_elesmooth'] = esm;
+    } else {
+        // reset the filter values
+        pageVarsForJs[0]['sw_options']['gpx_distsmooth'] = 0.0;
+        dsm = 0.0;
+        pageVarsForJs[0]['sw_options']['gpx_elesmooth'] = 0.0;
+        esm = 0.0;
+    }
+}
+
+/**
+ * Calculates the distance between two coordinates by using the haversine formula (in km).
+ * @param {number} lat1 - Latitude of the first location.
+ * @param {number} lon1 - Longitude of the first location.
+ * @param {number} lat2 - Latitude of the second location.
+ * @param {number} lon2 - Longitude of the second location.
+ * @returns {number} - The distance between the two coordinates in km.
+ */
+function calcdistance(lat1, lon1, lat2, lon2) {
+    const r = 12742; // 6371 * 2
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
+
+    const dLat = Math.sin((toRadians(lat2) - toRadians(lat1)) / 2);
+    const dLon = Math.sin((toRadians(lon2) - toRadians(lon1)) / 2);
+
+    const a = dLat * dLat + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * dLon * dLon;
+    const d = r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return d;
+}
+
+function createGpxHeader() {
+    let header = "";
+    header += '<?xml version="1.0" encoding="UTF-8"?>';
+    header += '<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">';
+ 
+    return header;
+}
+
+function createGpxMeta(fileName, info, time, bounds=null) {
+    let meta = "";
+  
+    meta += '<metadata>';
+    meta += '<name>' + fileName + '</name>';
+    meta += '<desc>' + info + '</desc>';
+    meta += '<time>' + time + '</time>';
+    if (bounds != null) meta += '<bounds minlat="'+ bounds.minlat +'" minlon="'+ bounds.minlon +'" maxlat="'+ bounds.maxlat +'" maxlon="'+ bounds.maxlon+'"/>';
+    meta += '</metadata>';
+ 
+    return meta;
+}
+
+function createGpxTrack(name, lats, lons, elevs) {
+    if (lats.length != lons.length || lats.length != elevs.length || lats.length != lons.length) {
+        return "";
+    }
+
+    let track = "";
+    track += '<trk>';
+    track += '<name>'+ name +'</name>';
+    track += '<trkseg>\n';
+
+    for (let i = 0; i < lats.length; i++) {
+        track += '<trkpt lat="'+ lats[i] +'" lon="'+ lons[i] +'">';
+        track += '<ele>'+ elevs[i] +'</ele>';
+        track += '</trkpt>\n';
+    }
+    
+    track += '</trkseg>';
+    track += '</trk>';
+ 
+    return track;
+}
+
+function createGpxFooter() {
+    let footer = "";
+    footer += '</gpx>';
+ 
+    return footer;
+}
+
+
+// Unused functions ---------------------------------------------------------------
 
 /**
  * Asynchronously parses the input file and updates the webpage based on the file content and various calculations.
  *
  */
+/*
 async function parseInputFile() {
     
     if (input.file === null || input.files.length === 0) {
@@ -209,24 +646,28 @@ async function parseInputFile() {
          + parseFloat(out.dist).toFixed(2)  + " km <br>N Points: " + out.npts + "<br>Bounds: " + out.minlat + ", " + out.minlon + ", " + out.maxlat + ", " + out.maxlon ;
     }
 }
+*/
 
 // ----------------------------------------------------
 // If you only use `npm` you can simply
 // import { Chart } from "wasm-demo" and remove `setup` call from `bootstrap.js`.
 /** This function is used in `bootstrap.js` to setup imports. */
 export function setup(WasmChart) {
-    Chart = WasmChart;
-    setupCanvas();
-    window.addEventListener("resize", () => {setupCanvas();parseInputFile();});
-    window.addEventListener("mousemove", onMouseMove);
+    //Chart = WasmChart;
+    //setupCanvas();
+    //window.addEventListener("resize", () => {setupCanvas();parseInputFile();});
+    //window.addEventListener("mousemove", onMouseMove);
 }
 
 /** Setup canvas to properly handle high DPI and redraw current plot. */
+/*
 function setupCanvas() {
-    if (text1.attributes.getNamedItem("data-info") != null) {
+    if (text1 != null && text1.attributes.getNamedItem("data-info") != null) {
         if (text1.attributes.getNamedItem("data-info").value == "uploaded-drawn") {
             return;
         }
+    } else {
+        return;
     }
 
     let aspectRatio = canvas1.clientWidth / canvas1.clientHeight;
@@ -256,8 +697,9 @@ function setupCanvas() {
         canvas2.height = canvas2.clientHeight;
     }
 }
-
+*/
 /** Update displayed coordinates. */
+/*
 function onMouseMove(event) {
     var text = "";
     let N = out.npts;
@@ -303,7 +745,7 @@ function onMouseMove(event) {
         coord.style.opacity = 0;
     }
 }
-
+*/
 /**
  * Calculates the coordinates of a mouse event on a canvas.
  *
@@ -315,6 +757,7 @@ function onMouseMove(event) {
  * @param {number} ymax - The maximum y value.
  * @return {Array<number|null>} An array containing the x and y coordinates of the mouse event, or [null, null] if the coordinates are outside the specified range.
  */
+/*
 function getCoords(event, canvas, xmin, xmax, ymin, ymax) {
     // rust canvas settings (not synchronized!)
     let margin = 10; // px
@@ -346,11 +789,10 @@ function getCoords(event, canvas, xmin, xmax, ymin, ymax) {
     
     return [dataX, dataY];
 }
+*/
+//window.addEventListener('load', showGpxFileOnCanvas(null) );
 
-window.addEventListener('load', showGpxFileOnCanvas(null) );
-window.addEventListener('load', showGpxFileOnLeaflet(null) );
-
-
+/*
 function showGpxFileOnCanvas(file=null) {
     let lastFileResult = file;
     let infoText = "";
@@ -361,7 +803,7 @@ function showGpxFileOnCanvas(file=null) {
     } else {
         infoText = "File in Table: ";
     }
-    let lastFile = uploadPath + '/' + lastFileResult;
+    let lastFile = uploadPath + lastFileResult;
     //console.log("uploadPath: " + lastFileResult);
     // load the file
     if (lastFileResult != "") {
@@ -399,39 +841,9 @@ function showGpxFileOnCanvas(file=null) {
             }
         }
 }
+*/
 
-function showGpxFileOnLeaflet(file=null) {
-    let lastFileResult = file;
-    let infoText = "";
-    let lastFile = "";
-    
-    if (lastFileResult == null) {
-        lastFileResult = document.getElementById('fm-gpx-file')?.innerText || "";
-        lastFile = uploadPath + '/' + lastFileResult;
-        infoText = "Uploaded File: ";
-    } else {
-        lastFile = uploadPath + '/' + file;
-        infoText = "File in Table: ";
-    }
-    
-    // load the file
-    if (lastFile != "") {
-        pageVarsForJs[0]['tracks']['track_0']['url'] = lastFile;
-        if ( allMaps[0] != 'undefined' && ( allMaps[0] != null ) ) {
-            allMaps[0].map.remove();
-            allMaps[0].chart.chart.destroy()
-            //allMaps[0].controlElevation.clear();
-        }
-        import(/* webpackChunkName: "leaflet_chartjs" */'../../js/leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
-            allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0 );
-        })
-        //import(/* webpackChunkName: "elevation-admin" */'../../js/elevationClass.js').then( (LeafletElevation) => {
-            //allMaps[0] = [];
-            //allMaps[0] = new LeafletElevation.LeafletElevation(0, 'boxmap' + 0 );            
-        //});
-    }
-}
-
+/*
 function addToCanvas(canvasId, text, x=20, y=20, fontSize = 10, fontFamily = 'Arial') {
     
     // Get the existing canvas element
@@ -479,11 +891,11 @@ function addToCanvas(canvasId, text, x=20, y=20, fontSize = 10, fontFamily = 'Ar
     // Restore the context state to its original settings
     context.restore();
 }
-
+*/
 // Write a Function to calculate the position of a pixel on an existing html canvas that shows GPS positions
 // in a rectangular bounding box. The Pixel Position should be extracted from the array with coordinates where
 // the index gives the current coordinates in the array.
-
+/*
 function getPosOnCanvasFromIndex(canvas, curlon, curlat) {
     
     // rust canvas settings (not synchronized!)
@@ -515,7 +927,8 @@ function getPosOnCanvasFromIndex(canvas, curlon, curlat) {
 
     return [x, y];
 }
-
+*/
+/*
 function showCurrentTrackStatistics(data) {
 
     let newdata = [].slice.call(data);
@@ -600,7 +1013,8 @@ function showCurrentTrackStatistics(data) {
             index: i, // <-- original index
         }));
 }
-
+*/
+/*
 function kalmFilter(lats, lons) {
     let kfilt = new KalmanFilter.KalmanFilter({observation: 2});
     let obs = [];
@@ -611,7 +1025,8 @@ function kalmFilter(lats, lons) {
 
     return kfilt.filterAll(obs);
 }
-
+*/
+/*
 function showGpxTracks(kfiltered, lons, lats) {
     let kfx = [];
     let kfy = [];
@@ -641,3 +1056,4 @@ function showGpxTracks(kfiltered, lons, lats) {
         }
     );
 }
+*/

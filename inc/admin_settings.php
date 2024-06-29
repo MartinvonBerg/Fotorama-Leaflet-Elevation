@@ -1243,9 +1243,16 @@ final class FotoramaElevationAdmin
 		$pageVarsForJs[0] = [
 			'ngpxfiles'  => 1,
 			'tracks' => $tracks,
-			'eletheme' => 'lime-theme', // TODO
-			'chartheight' => 200, // TODO
-			'sw_options' => ['trackwidth' => 2], // TODO
+			'eletheme' => 'custom-theme', // TODO
+			'chartheight' => 300, // TODO
+			'mapheight' => 400, // TODO
+			'mapaspect' => 2, // TODO
+			'sw_options' => [
+				'trackwidth' => 2,
+				'gpx_distsmooth' => $this->gpxSettings["param3"]['values'],
+				'gpx_elesmooth' => $this->gpxSettings["param4"]['values'],
+				'chart_animation' => false
+			], // TODO
 			'imagepath' => $plugin_path . 'images/', 
 		];
 		wp_localize_script('fotorama_admin', 'pageVarsForJs', $pageVarsForJs);
@@ -1392,19 +1399,15 @@ final class FotoramaElevationAdmin
 									*/
 								// TODO get the options for leaflet elevation here
 								if ( $currentTab['setting'] === 'gpxSettings' ) {
+									// TODO : show map and chart as grid?
 									?>
-									<p id="gpx_text1">not loaded</p>
-									<div id="gpx_coord">no data</div>
-									<div id="gpx_canvas_parent" class="gpx_canvas_parent">
-										<canvas id="gpx_canvas1" class="gpx_canvas"></canvas>
-										<canvas id="gpx_canvas2" class="gpx_canvas"></canvas>
-										<div id="gpx_canvas4" style="width:500px;height:500px;"></div>	
-									</div>
+									
 									<div id="multifotobox0" class="mfoto_grid">
 									<div id="boxmap0" class="boxmap">
 										<div id="map0" class="leafmap" style="max-height:400px;aspect-ratio:1.5"></div> 
-										<div class="chartjs-profile-container" id="chartjs-profile-container0" style="height:200px;"><canvas id="fm-elevation-chartjs0" style="width:100%;height:100%"></canvas></div>";
-				
+										<div class="chartjs-profile-container" id="chartjs-profile-container0" style="height:200px;">
+											<canvas id="fm-elevation-chartjs0" style="width:100%;height:100%"></canvas>
+										</div>
 										<!--div id="elevation-div0" style="height:200px;"></div-->
 										<div id="data-summary0" class="data-summary">
 											<span class="totlen">
@@ -1419,6 +1422,7 @@ final class FotoramaElevationAdmin
 										</div>
 									</div>
 									</div><!--div id=multifotobox0-->
+									<p id="gpx_text1">not loaded</p>
 									<?php
 									$this->listFiles(get_option('fm_gpx_options')['path_to_gpx_files_2']);
 									

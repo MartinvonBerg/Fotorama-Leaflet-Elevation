@@ -53,7 +53,7 @@ class LeafletChartJs extends LeafletMap {
         mapthis.map.fitBounds(maxBounds);
         mapthis.map.currentTrack = this.currentTrack;
 
-        // start chartjs pars
+        // start chartjs parameters
         this.coords = this.track[this.currentTrack].coords; // for catchChartEvent
         this.leafletTrackID = this.track[this.currentTrack].gpxTracks._leaflet_id; // for catchChartEvent
               
@@ -75,8 +75,8 @@ class LeafletChartJs extends LeafletMap {
             pageVariables : pageVarsForJs[number],
             // responsive
             responsive : true, // always, no setting
-            aspRatio : pageVarsForJs[number].mapaspect * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
-            chartAnimation : true, // always, no setting
+            aspRatio : pageVarsForJs[number].mapaspect, // * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
+            chartAnimation : pageVarsForJs[number].sw_options.chart_animation===false? false : true, // always, no setting
             showChartHeader : false, // always, no setting
             padding : pageVarsForJs[number].sw_options.chartjspadding,
             followSlider: false // this.track.length > 1 ? false : true // whether the image position should be shown in chartjs with moving tooltip. for future use
@@ -87,7 +87,7 @@ class LeafletChartJs extends LeafletMap {
 
         // show chart with the first track
         this.chart = new chartJsClass( this.track[this.currentTrack].elev_data, chartOptions );
-
+        // handle empty chart if something went wrong
         if ( this.isObjEmpty(this.chart.chart) ) {
             this.chart = null;
             return;
@@ -114,6 +114,12 @@ class LeafletChartJs extends LeafletMap {
       });
     }
 
+    /**
+     * Finds the maximum bounds from an array of map bounds.
+     *
+     * @param {Array<L.LatLngBounds>} mapBoundsArray - An array of map bounds.
+     * @return {L.LatLngBounds|null} The maximum bounds from the array, or null if the array is empty or invalid.
+     */
     findMaxBounds(mapBoundsArray) {
       if (!Array.isArray(mapBoundsArray) || mapBoundsArray.length === 0) {
         return null; // Return null for an empty or invalid array
@@ -134,10 +140,29 @@ class LeafletChartJs extends LeafletMap {
       return maxBounds;
     }
 
+    /**
+     * Checks if an object is empty.
+     *
+     * @param {Object} obj - The object to check.
+     * @return {boolean} Returns true if the object is empty, false otherwise.
+     */
     isObjEmpty (obj) {
         return Object.values(obj).length === 0 && obj.constructor === Object;
     }
 
+    /**
+     * Sets the active marker on the map and triggers a tooltip on the chart if the chart is following the slider.
+     *
+     * @param {number} markerNumber - The index of the marker to set as active.
+     * 
+     * @global {object} this.chart
+     * @global {boolean} this.chart.options.followSlider
+     * @global {method} this.chart.triggerTooltip()
+     * @global {object} this.mrk[...]._latlng
+     * @global {number} this.currentTrack[...].getIndexForCoords()
+     * 
+     * @return {void} This function does not return anything.
+     */
     setActiveMarker(markerNumber){
         super.setActiveMarker(markerNumber);
         if (this.chart === null || markerNumber === undefined || this.chart.options.followSlider !== true) return;
@@ -150,8 +175,13 @@ class LeafletChartJs extends LeafletMap {
 
     /**
      * Create a single marker on the map with myIcon2.
+     * @param {array} pos [50.505, 30.57]
      * @param {string} markertext text to show on hover over marker.
-     * @param {array} pos [50.505, 30.57] 
+     * 
+     * @global {object} this.theMarker
+     * @global {object} this.map
+     * 
+     * @return {void}
      */
     createSingleMarker(pos, markertext) {
         if (this.theMarker != undefined) {
@@ -164,12 +194,27 @@ class LeafletChartJs extends LeafletMap {
         //this.mapFlyTo(pos);
     }
 
+    /**
+     * Remove a single marker from the map.
+     * @global {object} this.theMarker
+     * @global {object} this.map
+     * 
+     * @return {void} TODO : shold return the result as boolean
+     */
     removeSingleMarker() {
         if (this.theMarker != undefined) {
             this.map.removeLayer(this.theMarker);
         };
     }
 
+    /**
+     * Catches the 'hoverchart' event and updates the marker on the map accordingly.
+     * 
+     * @global {object} this is used as classThis
+     *
+     * @param {string} div - The ID of the element to attach the event listeners to.
+     * @return {void} This function does not return anything.
+     */
     catchChartEvent(div) {
         let classThis = this;
 

@@ -34,21 +34,21 @@ class chartJsClass {
   chartData = {};
 
   /**
-   * 
    * init the class with first track in linedata and the options
+   * 
    * @param {object} linedata linedata from gpxTrackClass
    * @param {object} options the options as array
-   *  @param {int} options.number the number of the chart on the page
-   *  @param {string} options.divID the ID of the DIV or canvas to draw the chart in
-   *  @param {string} options.theme
-   *  @param {string}options.CssBackgroundColor
-   *  @param {string} options.chart_fill_color
-   *  @param {int} options.chartHeight
-   *  @param {array} options.pageVariables the array of pageVariables passed by php
-   *  @param {boolean} options.responsive
-   *  @param {number} options.aspRatio
-   *  @param {boolean} options.chartAnimation animate the elevation chart, or not.
-   *  @param {boolean} options.showChartHeader
+   * @param {int} options.number the number of the chart on the page
+   * @param {string} options.divID the ID of the DIV or canvas to draw the chart in
+   * @param {string} options.theme
+   * @param {string}options.CssBackgroundColor
+   * @param {string} options.chart_fill_color
+   * @param {int} options.chartHeight
+   * @param {array} options.pageVariables the array of pageVariables passed by php: needs .tracks[...].info
+   * @param {boolean} options.responsive
+   * @param {number} options.aspRatio
+   * @param {boolean} options.chartAnimation animate the elevation chart, or not.
+   * @param {boolean} options.showChartHeader
    * @return {void|undefined} return undefined if init fails.
    */
   constructor(linedata, options) {
@@ -82,6 +82,12 @@ class chartJsClass {
     this.drawElevationProfile();
   }
 
+  /**
+   * Checks if an object is empty.
+   *
+   * @param {Object} obj - The object to check.
+   * @return {boolean} Returns true if the object is empty, false otherwise.
+   */
   isObjEmpty (obj) {
     return Object.values(obj).length === 0 && obj.constructor === Object;
   }
@@ -111,6 +117,14 @@ class chartJsClass {
 
   /**
    * set the chart data to show in elevation profile
+   * 
+   * @global {object} this.elevationData.labels
+   * @global {object} this.elevationData.data
+   * @global {string} this.diagrFillColor
+   * @global {string} this.diagrBorderColor
+   * 
+   * @global {object} this.chartData : is set and returned by this function
+   * @returns {void}
    */
   setChartData() {
     this.chartData = {
@@ -287,7 +301,18 @@ class chartJsClass {
 
   /**
    * Write the track statistics data to the dom element when the elevation data was loaded
+   * 
+   * @global {array} this.pageVariables.tracks['track_<number>'].info
+   * @global {number} this.number
+   * @global {method} this.i18n()
+   * 
+   * @global {number} this.tracklen : is set by this function
+   * @global {number} this.ascent : is set by this function
+   * @global {number} this.descent : is set by this function
+   * 
    * @param {int} number
+   * 
+   * @returns {void}
    */
   setTrackStatistics(number = 0) {
     // get the trace info from the gpx-file
@@ -317,7 +342,10 @@ class chartJsClass {
 
   // ------------ start theme functions -------------------
   /**
-   * set the aspect ratio of the chart according to aspect ratio of parent div
+   * set the aspect ratio of the chart according to aspect ratio of map div
+   * @global {object} this.options.aspRatio / .chartHeight / .responsive
+   * @global {object} this.elementOnPage.parentElement
+   * 
    * @returns boolean success of the setting or not
    */
   setAspRatioParentDiv() {
@@ -328,13 +356,19 @@ class chartJsClass {
       let aspRatio = this.options.aspRatio.toFixed(2);
       parent.removeAttribute('style');
       parent.style.aspectRatio = aspRatio;
+      this.options.aspRatio = aspRatio;
+      parent.style.height = this.options.chartHeight + 'px';
       return true; 
     }
   }
 
   /**
    * set the colors and gradient, for the selected theme.
-   * @param {string} theme the selected theme
+   * 
+   * @global {object} this.<all theme properties>
+   * @param {string} theme the selected theme [martin-theme, custom-theme, default]
+   * 
+   * @returns {void}
    */
   setTheme (theme) {
     let textLineColor = '';
@@ -383,7 +417,7 @@ class chartJsClass {
 
   /**
     * update CSS rules that are used according to the options and client
-    * uses this.CssBackgroundColor, this.elementDiv
+    * @global {object} this.CssBackgroundColor, this.elementDiv
     */
   updateCSS() {
     const style = document.createElement('style');
@@ -395,7 +429,9 @@ class chartJsClass {
    * get the color with the best color contrast
    * source: https://codepen.io/davidhalford/pen/AbKBNr
    * @param {string} hex the hex color value
-   * @returns 
+   * @throws {Error} if the hex color is invalid
+   * 
+   * @returns {string} returns either black (#000000) or white (#ffffff) as the best contrast color depending on the calculated brightness threshold of the input color.
    */
   getBestContrastTextColor(hex) {
     if (hex[0] === '#') {
@@ -423,7 +459,11 @@ class chartJsClass {
 
   /**
    * set the gradient for the elevation profile
-   * uses: this.ctx, this.gradient
+   * 
+   * @global {object} this.ctx 
+   * @global {object} this.gradient 
+   * @global {boolean} this.options.showChartHeader
+   * @global {number} this.elementOnPage.offsetHeight
    */
   setGradient() {
     /*** Gradient http://jsfiddle.net/4vobe59a/***/ 
@@ -470,7 +510,9 @@ class chartJsClass {
   }
   
   /**
-   * show the tooltip on the chart.js 
+   * show the tooltip on the chart.js
+   * @global {object} this.chart.tooltip / .chartArea / .update()
+   * 
    * @param {int} pos the index of the lat-long value in the chart data.
    */
   triggerTooltip(pos) {
