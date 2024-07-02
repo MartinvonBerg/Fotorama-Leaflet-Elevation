@@ -142,7 +142,9 @@ class AdminSettingsPage {
 						$args[$param['label']] = \sanitize_hex_color( $args[$param['label']]);
 						break;
 				}
-				if ( $args[$param['label']] === null || $args[$param['label']] === '') $args[$param['label']] = $param['default'];
+				if ( !\array_key_exists($param['label'], $args ) || $args[$param['label']] === null || $args[$param['label']] === '') {
+					$args[$param['label']] = $param['default'];
+				}
 
 			}
 		}

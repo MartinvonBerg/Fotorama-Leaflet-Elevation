@@ -1422,7 +1422,10 @@ final class FotoramaElevationAdmin
 										</div>
 									</div>
 									</div><!--div id=multifotobox0-->
-									<p id="gpx_text1">not loaded</p>
+									<p id="gpx_text1">not loaded<br>Stats<br>N<br>N<br>N</p>
+									<div id="gpx_canvas3" style="width:500px;height:500px;"></div>
+									<div id="gpx_canvas4" style="width:500px;height:500px;"></div>
+									
 									<?php
 									$this->listFiles(get_option('fm_gpx_options')['path_to_gpx_files_2']);
 									
