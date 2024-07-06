@@ -522,19 +522,21 @@ class chartJsClass {
     if (tooltip.getActiveElements().length > 0) {
       tooltip.setActiveElements([], {x: 0, y: 0});
     }
-    
-    tooltip.setActiveElements([
+    try {
+      tooltip.setActiveElements([
+        {
+          datasetIndex: 0,
+          index: pos,
+        }, 
+      ],
       {
-        datasetIndex: 0,
-        index: pos,
-      }, 
-    ],
-    {
-      x: (chartArea.left + chartArea.right) / 2,
-      y: (chartArea.top + chartArea.bottom) / 2,
-    });
-    
-    this.chart.update();
+        x: (chartArea.left + chartArea.right) / 2,
+        y: (chartArea.top + chartArea.bottom) / 2,
+      });
+      this.chart.update();
+    } catch (error) {
+      //console.log(error);
+    }
   }
 
   /** 

@@ -227,6 +227,8 @@ class gpxTrackClass {
     calcGpxTrackdata() {
         let info = '';
 
+        if ( this.coords.length == 0 ) return 'No Data found';
+
         //elevation
         let lastConsideredElevation = this.coords[0].meta.ele;
         let cumulativeElevationGain = 0;

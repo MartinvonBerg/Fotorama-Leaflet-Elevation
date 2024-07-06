@@ -133,6 +133,21 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'ignorezeroes',
 			'info' => 'Ignore Track Points with Zero Elevation in Chart. Necessary for some devices, because they write "0" as Elevation Data if GPX accuracy is not sufficient',
 		],
+		'param7' => [
+			'label' => 'gpx_filter',
+			'text' => 'Filter GPX Height Data',
+			'class' => 'gpx_row',
+			'custom_data' => 'custom7',
+			'type' => 'range',
+			'values' => 3, // default value
+			'default' => 3,
+			'min' => 0.5,
+			'max' => 10.0,
+			'step' => 0.5,
+			'description' => 'Use a Low Pass Fiter for the GPX Height Data.',
+			'shortcode' => '',
+			'info' => '',
+		],
 		'param3' => [
 			'label' => 'gpx_smooth',
 			'text' => 'Distance Smooth',
@@ -162,21 +177,21 @@ final class FotoramaElevationAdmin
 			'shortcode' => '',
 			'info' => '',
 		],
-		'param7' => [
-			'label' => 'gpx_filter',
-			'text' => 'Filter GPX Height Data',
+		'param8' => [
+			'label' => 'simplify_tolerance',
+			'text' => 'Tolerance for Simplify',
 			'class' => 'gpx_row',
-			'custom_data' => 'custom7',
+			'custom_data' => 'custom8',
 			'type' => 'range',
-			'values' => 0.1, // default value
-			'default' => 0.1,
-			'min' => 0,
-			'max' => 2,
-			'step' => 0.01,
-			'description' => 'Use a Low Pass Fiter for the GPX Height Data.',
+			'values' => 0.000, // default value
+			'default' => 0.000,
+			'min' => 0.0,
+			'max' => 0.1,
+			'step' => 0.001,
+			'description' => 'Tolerance for Simplify filter',
 			'shortcode' => '',
-			'info' => '',
-		],
+			'info' => 'Tolerance for Simplify filter',
+		]
 	];
 
 	private $commonSettings = [
@@ -1399,9 +1414,7 @@ final class FotoramaElevationAdmin
 									*/
 								// TODO get the options for leaflet elevation here
 								if ( $currentTab['setting'] === 'gpxSettings' ) {
-									// TODO : show map and chart as grid?
 									?>
-									
 									<div id="multifotobox0" class="mfoto_grid">
 									<div id="boxmap0" class="boxmap">
 										<div id="map0" class="leafmap" style="max-height:400px;aspect-ratio:1.5"></div> 
@@ -1420,12 +1433,10 @@ final class FotoramaElevationAdmin
 												<span class="summarylabel"> </span>
 												<span class="summaryvalue">0</span></span>
 										</div>
+										<p id="gpx_text1">not loaded<br>Stats<br>N<br>N<br>N</p>
 									</div>
 									</div><!--div id=multifotobox0-->
-									<p id="gpx_text1">not loaded<br>Stats<br>N<br>N<br>N</p>
-									<div id="gpx_canvas3" style="width:500px;height:500px;"></div>
-									<div id="gpx_canvas4" style="width:500px;height:500px;"></div>
-									
+
 									<?php
 									$this->listFiles(get_option('fm_gpx_options')['path_to_gpx_files_2']);
 									

@@ -37,7 +37,7 @@
         "info": "Vorhandene GPX-Datei überschreiben"
     },
     "param7": {
-        "text": "Filter anwenden ACHTUNG: Checkbox wird nicht gespeichert!",
+        "text": "Statistik-Filter anwenden ACHTUNG: Checkbox wird nicht gespeichert!",
         "description": "Den Filter anwenden (Statistik, Vereinfachtung)",
         "info": "Den Filter anwenden (Statistik, Vereinfachtung)"
     }

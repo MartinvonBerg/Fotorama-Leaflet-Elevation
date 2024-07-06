@@ -380,7 +380,7 @@ class AdminSettingsPage {
 
 		?>
 		<div class="wrap">
-			<form action="options.php" method="post" <?php if ( $this->hasFileInput === true) { echo 'enctype="multipart/form-data"';} ?>>
+			<form action="options.php" method="post" <?php if ( $this->hasFileInput === true) { echo 'id="fotoramamulti-gpx-form" enctype="multipart/form-data"';} ?>>
 				<?php
 				// output save settings button
 				//submit_button();
@@ -491,39 +491,50 @@ class AdminSettingsPage {
 		// get and generate file names and upload directory if not exists
 		$file = $_FILES['uploadedfile']['name'];
 		$path = $this->uploadDirectory . '/' . $option['path_to_gpx_files_2']; 
-		$complete = $path . '/' . $file;
+		$completePath = $path . '/' . $file;
 		if( ! is_dir($path) ) { mkdir($path , 0777); }
+
+		// get the filtered file content
+		$filteredFileContent = $_POST['filteredFileContent'];
 
 		// store gpx-file. The mime-type for the gpx-file is not checked here. Any text-file would be accepted. Mime-types are not consistent.
 		if ($file !== '') {
 
-			if (! is_file($complete) || ($overwrite) ) {
+			if ( !is_file($completePath) || $overwrite ) {
 				$name_file = $_FILES['uploadedfile']['name'];
 				$tmp_name = $_FILES['uploadedfile']['tmp_name']; 
 
-				if ($parsegpxfile) {
+				if ($parsegpxfile && $filteredFileContent === '') {
 					$gpxParser = new parseGpxFile();
 					$values = $gpxParser->parsegpx ($tmp_name, $path, $name_file, $smooth, $elesmooth, $ignoreZeroElev);
 					$gpxParser = null;
 					$result = strpos($values, 'Skip') === false;
-				} else {
+				} elseif ($filteredFileContent !== '') {
+					// save string as file to path
+					$filteredFileContent = str_replace('\"','"',$filteredFileContent);
+					// TODO: check for valid XML-GPX-File. Get the desc in meta and add to values.
+					$result = \file_put_contents( $completePath, $filteredFileContent);
+					// generate the output message
+					$values = intval($result/1024) . ' kB ' . __('saved', 'fotoramamulti' );
+				}
+				else {
 					$values = __('File not touched', 'fotoramamulti' ) .'!';
 					$result = move_uploaded_file( $tmp_name, $path. '/'.$name_file );
 				}
 
 				if( $result )  {
-					$temp = '"<span id="fm-gpx-file">'. $name_file . '</span>" ' . __('successful', 'fotoramamulti' ) . '! </br>' . $values;
+					$resultMessage = '"<span id="fm-gpx-file">'. $name_file . '</span>" ' . __('successful', 'fotoramamulti' ) . '! </br>' . $values;
 				} else {
-					$temp = ". " . __('Error during File processing', 'fotoramamulti' ) . ' ! ' . $values;
+					$resultMessage = ". " . __('Error during File processing', 'fotoramamulti' ) . ' ! ' . $values;
 				}
 
-			} else { $temp = __('File alread exists', 'fotoramamulti' )  .'!'; }
+			} else { $resultMessage = __('File alread exists', 'fotoramamulti' )  .'!'; }
 
 		} else { 
-			$temp = __('No Filename given', 'fotoramamulti' ) . '!';
+			$resultMessage = __('No Filename given', 'fotoramamulti' ) . '!';
 		}
 
-		$option['gpxfile'] = $temp;
+		$option['gpxfile'] = $resultMessage;
 		return $option;
 	}
 

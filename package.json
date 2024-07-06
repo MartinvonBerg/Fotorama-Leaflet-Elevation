@@ -38,6 +38,7 @@
 		"@raruto/leaflet-elevation": "^2.x",
 		"@we-gold/gpxjs": "^1.0.10",
 		"chart.js": "^4.4.x",
+		"jdbscan": "^1.0.0",
 		"kalman-filter": "^2.3.0",
 		"leaflet": "^1.9.x",
 		"leaflet.locatecontrol": "^0.79.x",
@@ -45,6 +46,7 @@
 		"minimasonry": "^1.3.1",
 		"plotly.js-dist": "^2.33.0",
 		"screenfull": "^6.0.2",
+		"simplify-js": "^1.2.4",
 		"swiper": "^11.x"
 	}
 }

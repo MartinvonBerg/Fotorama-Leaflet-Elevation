@@ -98,8 +98,12 @@ class LeafletChartJs extends LeafletMap {
 
         let classThis = this;
         document.getElementById('map'+number).addEventListener('mouseoverpath', function charthover(e) {
+          try {
             classThis.chart.triggerTooltip(e.detail.index);
             classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele.toFixed(1) + " m</p>");
+          } catch (error) {
+            //console.log(error);
+          }
         });
 
         document.getElementById('map'+number).addEventListener('changetrack', function charthover(e) {
@@ -190,7 +194,11 @@ class LeafletChartJs extends LeafletMap {
 
         let myDivIcon = L.divIcon({className: 'div-icon-height', html: markertext, bgPos: [0, 40]});
         //L.marker(pos, { icon: myDivIcon, pane: 'heightmarker', autoPanOnFocus: false } ).addTo(this.map);
-        this.theMarker = L.marker(pos, { icon: myDivIcon, autoPanOnFocus: false } ).addTo(this.map);
+        try {
+          this.theMarker = L.marker(pos, { icon: myDivIcon, autoPanOnFocus: false } ).addTo(this.map);
+        } catch (error) {
+          //console.log(error);
+        }
         //this.mapFlyTo(pos);
     }
 
@@ -231,7 +239,7 @@ class LeafletChartJs extends LeafletMap {
                }
             });
            
-            if (GpxLayerNumber > -1 && classThis.controlLayer._layerControlInputs[GpxLayerNumber].checked) {
+            if (xval !== undefined && GpxLayerNumber > -1 && classThis.controlLayer._layerControlInputs[GpxLayerNumber].checked) {
                 classThis.createSingleMarker([xval.lat, xval.lng], "<p>" + xval.meta.ele.toFixed(1) + " m</p>")
             } else {
                 classThis.removeSingleMarker();

@@ -1,10 +1,16 @@
 import { parseGPX } from "@we-gold/gpxjs";
 import plotly from "plotly.js-dist";
 import {mean, std} from "mathjs";
+import simplify from "simplify-js";
 
 (function (window, document, undefined) {
-    // TODO : ursache für JS fehler bei onhover chart und map finden
     "use strict";
+    // todo: generate file name in parsed string if there is none given! Write it to meta
+    // TODO: add event listener for gpx_reduce click
+    // TODO: updated chart.js and swiper.js. : only minor changes, should work.
+    // clean-up. performance improvements.
+    // TODO: Test with WP 6.6
+    // update readme with new features
 
     let esm = 4.5;
     let esmStore = 4.5;
@@ -12,6 +18,8 @@ import {mean, std} from "mathjs";
     let dsmStore = 0.025;
     let filter = 0.5;
     let filterStore = 0.5;
+    let simplTol = 0.001;
+    let simplTolStore = 0.001;
     let gpx_reduce = true;
     let fileLength = 0;
     let ignoreZeroElevs = true;
@@ -29,9 +37,11 @@ import {mean, std} from "mathjs";
     let origtdelta = [];
     let origSpeedH = [];
     let origSpeed3D = [];
+    let removedPoints = [];
   
     let selectedRow = null;
     let allMaps = [];
+    let bounds = null;
 
     const input = document.querySelector(".file-input");
     const text1 = document.querySelector("#gpx_text1");
@@ -49,12 +59,26 @@ import {mean, std} from "mathjs";
     const filtval = document.querySelector("#gpx_filter_val");
     const filterenable = document.querySelector("#gpx_filter_enable");
 
+    const simplsel = document.querySelector("#simplify_tolerance");
+    const simplval = document.querySelector("#simplify_tolerance_val");
+    const simplenable = document.querySelector("#simplify_tolerance_enable");
+
     const stats = {};
     const hashCode = (str) => [...str].reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
 
     let uploadPath = document.getElementById('wp-upload-path').innerText + '/';
 
-    
+    // form Data Event handler. This writes the filtered file to the server on click
+    document.querySelector("form").addEventListener('formdata', (e) => {
+
+        const formData = e.formData; 
+        if ( newFile !== "" ) {
+            formData.append('filteredFileContent', newFile);
+        } else {
+            formData.append('filteredFileContent', "");
+        }
+    });
+
     // define all Event listeners --------------------
 
     // show the clicked gpx-file from server. Use the complete path on server.
@@ -252,20 +276,23 @@ import {mean, std} from "mathjs";
         if (filterenable.checked) {
             filter = filterStore;
         } else {
-            filter = 0.0;
+            filter = 100.0;
         }
         filtval.innerHTML = filter;
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
 
-    filterenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
-        
-        if (filterenable.checked) {
-            filter = filterStore;
+    simplsel.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
+        simplTol = simplsel.value;
+        simplTolStore = parseFloat(simplTol);
+
+        if (simplenable.checked) {
+            simplTol = simplTolStore;
         } else {
-            filter = 0.0;
+            simplTol = 0.0;
         }
+        simplval.innerHTML = simplTol;
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
@@ -292,6 +319,28 @@ import {mean, std} from "mathjs";
         filterEventListener();
     })
 
+    filterenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
+        
+        if (filterenable.checked) {
+            filter = filterStore;
+        } else {
+            filter = 0.0;
+        }
+        // filter the file and return as xml-string to global variable newFile
+        filterEventListener();
+    })
+
+    simplenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
+        
+        if (simplenable.checked) {
+            simplTol = simplTolStore;
+        } else {
+            simplTol = 0.0;
+        }
+        // filter the file and return as xml-string to global variable newFile
+        filterEventListener();
+    })
+
     function filterEventListener() {
         // filter the file and return as xml-string to global variable newFile
         if (newFile === "") {
@@ -300,13 +349,17 @@ import {mean, std} from "mathjs";
         }
         newFile = filterGPXTrack(stats.file_content);
 
+        // store the old bounds, if any
+        if (bounds !== null) {
+            bounds = allMaps[0].map.getBounds();
+        }
+
         // show filtered file
         showGpxFileOnLeaflet();
         
         // show other results like statistics after filtering
         parseGpxString(text1);
 
-        // TODO: write the filtered file to server: either by REST-API or AJAX
     }
     // End: define all Event listeners --------------------
 
@@ -360,6 +413,7 @@ import {mean, std} from "mathjs";
         }
 
         // set the global variables
+        bounds = null;
         stats.file_content = newFile;
         fileLength = newFile.length;
         checksum = hashCode(newFile);
@@ -447,6 +501,8 @@ import {mean, std} from "mathjs";
         if ( allMaps[0] != 'undefined' && ( allMaps[0] != null ) ) {
             try {
                 allMaps[0].map.remove(); // leaflet map
+                allMaps[0].map.off();
+                allMaps[0].map.invalidateSize();
             } catch (error) {
                 console.log(error);
             }
@@ -465,6 +521,10 @@ import {mean, std} from "mathjs";
             LeafletChartJs.LeafletChartJs.count = 0;
             LeafletChartJs.LeafletChartJs.numberOfMaps = null;
             allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0 );
+            if (bounds != null) {
+                allMaps[0].map.fitBounds(bounds);
+            }
+            bounds = allMaps[0].map.getBounds();
         })
         //import(/* webpackChunkName: "elevation-admin" */'../../js/elevationClass.js').then( (LeafletElevation) => {
             //allMaps[0] = [];
@@ -555,30 +615,45 @@ import {mean, std} from "mathjs";
                 });
             });
             
-            // skip the routes currently; TODO: implement : remove points with zero elevation and calc speed values
+            // skip the routes currently; TODO: implement
             parsedFile.routes.forEach(element => {});
 
             // filter the originals. show the result of the first simplification
             // statistics 
-            let meanSpeedH = 3*mean(origSpeedH); // TODO: number 3 should be a parameter?
-            let meanDist3D = 3*mean(origSpeed3D); // TODO: number 3 should be a parameter?
+            let meanSpeedH = filter*mean(origSpeedH); 
+            let meanDist3D = filter*mean(origSpeed3D); // best is 3
             let newSpdH = [];
             let newDst3D = [];
             let minlat = 180;
             let maxlat = -180;
             let minlon = 180;
             let maxlon = -180;
+            let statfilter = filterenable.checked;
+            let newIndexI = 0;
 
-            // remove the elements in the array that are greater than mean + 3*std
-            for (let i = 0; i < origSpeedH.length; i++) {
-                if ( (origSpeedH[i] < meanSpeedH) && (origSpeed3D[i] < meanDist3D)) {
+            // remove the elements in the arrays: newSpdH and newDst3D that are greater than meanSpeedH and meanDist3D if the filter is enabled
+            // write also to elevs, dists, lats, lons
+            outerLoop: for (let i = 0; i < origSpeedH.length; i++) {
+                if ( statfilter && (origSpeedH[i] < meanSpeedH) && (origSpeed3D[i] < meanDist3D) ) {
+                    
+                    let lastRemovedPoint = removedPoints[removedPoints.length-1];
+                    if ( i-1 == lastRemovedPoint ) {
+                        
+                        for (let k= i; k < lastRemovedPoint+10; k++) { // TODO : number 10 should be a parameter?
+                            if ( origSpeedH[k] >= meanSpeedH || origSpeed3D[k] >= meanDist3D ) {
+                                newIndexI = k; // don't add +1 here because outerLoop for adds +1 as well at the beginning
+                                i = newIndexI;
+                                continue outerLoop;
+                            }
+                        }
+                    }
+                    
                     newSpdH.push(origSpeedH[i]);
                     newDst3D.push(origSpeed3D[i]);
-                    // create new arrays with the filtered elements for lats, lons, elevs. These are stored in newFileContent
-                    //elevs.push( origelevs[i]);
-                    //dists.push( origdists[i]);
-                    //lats.push ( origlats[i]);
-                    //lons.push ( origlons[i]);
+                    elevs.push( origelevs[i]);
+                    dists.push( origdists[i]);
+                    lats.push ( origlats[i]);
+                    lons.push ( origlons[i]);
                     // calc the geo bounds of the filtered track
                     if (origlats[i] > maxlat) {
                         maxlat = origlats[i];
@@ -592,7 +667,31 @@ import {mean, std} from "mathjs";
                     if (origlons[i] < minlon) {
                         minlon = origlons[i];
                     }
-                } 
+                } else if ( !statfilter ) {
+                    newSpdH.push(origSpeedH[i]);
+                    newDst3D.push(origSpeed3D[i]);
+                    elevs.push( origelevs[i]);
+                    dists.push( origdists[i]);
+                    lats.push ( origlats[i]);
+                    lons.push ( origlons[i]);
+                    // calc the geo bounds of the filtered track
+                    if (origlats[i] > maxlat) {
+                        maxlat = origlats[i];
+                    }
+                    if (origlats[i] < minlat) {
+                        minlat = origlats[i];
+                    }
+                    if (origlons[i] > maxlon) {
+                        maxlon = origlons[i];
+                    }
+                    if (origlons[i] < minlon) {
+                        minlon = origlons[i];
+                    }
+                } else if ( statfilter ) {
+                    // store the removed points in an array
+                    removedPoints.push(i);
+
+                }
             }
             let bounds = {
                 minlat: minlat,
@@ -601,36 +700,57 @@ import {mean, std} from "mathjs";
                 maxlon: maxlon
             };
 
-            showCurrentTrackStatistics(newDst3D);
-            showGpxStatistics(origdists, newSpdH, newDst3D);
+            //showCurrentTrackStatistics(newDst3D);
+            //showGpxStatistics(origdists, newSpdH, newDst3D);
 
             // apply simplify.js
-            // TODO: Implement
+            if (simplTol > 0.0) {
+                let points = [];
+
+                for (let i = 0; i < lats.length; i++) {
+                    points[i] = {x: lats[i], y: lons[i], z: elevs[i]};
+                }
+                let highQuality = true;
+                
+                points = simplify(points, simplTol/100, highQuality);
+
+                lats = [];
+                lons = [];
+                elevs = [];
+                for (let i = 0; i < points.length; i++) {
+                    lats[i] = points[i].x;
+                    lons[i] = points[i].y;
+                    elevs[i] = points[i].z;
+                }
+            }
 
             // calc new stats and write result to new file content
-            let length = origelevs.length;
-            lastConsideredElevation = origelevs[0];
-            lastConsideredPoint = [origlats[0], origlons[0]];
+            let length = elevs.length;
+            lastConsideredElevation = elevs[0];
+            lastConsideredPoint = [lats[0], lons[0]];
 
             for (let i = 0; i < length; i++) {
 
-                let elevationDelta = origelevs[i] - lastConsideredElevation;
+                let elevationDelta = elevs[i] - lastConsideredElevation;
                     if ( Math.abs(elevationDelta) > esm ) {
                         elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
                         elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
-                        lastConsideredElevation = origelevs[i];
+                        lastConsideredElevation = elevs[i];
                     }
                 
-                let curPoint = [origlats[i], origlons[i]];
+                let curPoint = [lats[i], lons[i]];
                 let curDist = 1000 * calcdistance(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
                     
                 if (Math.abs(curDist) > dsm) {
                     cumulativeDistance += curDist;
                     lastConsideredPoint = curPoint;
-                    elevs.push( origelevs[i]);
-                    dists.push( origdists[i]);
-                    lats.push ( origlats[i]);
-                    lons.push ( origlons[i]);
+                    
+                } else {
+                    // remove current element with index i from the arrays
+                    elevs.splice(i, 1); // 2nd parameter means remove one item only
+                    dists.splice(i, 1); // 2nd parameter means remove one item only
+                    lats.splice(i, 1); // 2nd parameter means remove one item only
+                    lons.splice(i, 1); // 2nd parameter means remove one item only
                 }
             };
 
@@ -666,12 +786,22 @@ import {mean, std} from "mathjs";
             esm = parseFloat( document.getElementById("gpx_elesmooth").value );
             if ( ! esmenable.checked) esm = 0.0;
             pageVarsForJs[0]['sw_options']['gpx_elesmooth'] = esm;
+
+            filter = parseFloat( document.getElementById("gpx_filter").value );
+            if ( ! filterenable.checked) filter = 100.0;
+            //pageVarsForJs[0]['tracks']['track_0']['info']['filter'] = filter;
+
+            simplTol = parseFloat( document.getElementById("simplify_tolerance").value );
+            if ( ! simplenable.checked) simplTol = 0.0;
+            //pageVarsForJs[0]['tracks']['track_0']['info']['simplTol'] = simplTol;
         } else {
             // reset the filter values
             pageVarsForJs[0]['sw_options']['gpx_distsmooth'] = 0.0;
             dsm = 0.0;
             pageVarsForJs[0]['sw_options']['gpx_elesmooth'] = 0.0;
             esm = 0.0;
+            filter = 100.0;
+            simplTol = 0.0;
         }
     }
 
@@ -725,8 +855,8 @@ import {mean, std} from "mathjs";
 
     function createGpxHeader() {
         let header = "";
-        header += '<?xml version="1.0" encoding="UTF-8"?>';
-        header += '<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">';
+        header += '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
+        header += '<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="Fotorama-Upload" >\n';
     
         return header;
     }
@@ -734,12 +864,12 @@ import {mean, std} from "mathjs";
     function createGpxMeta(fileName, info, time, bounds=null) {
         let meta = "";
     
-        meta += '<metadata>';
-        meta += '<name>' + fileName + '</name>';
-        meta += '<desc>' + info + '</desc>';
-        meta += '<time>' + time + '</time>';
-        if (bounds != null) meta += '<bounds minlat="'+ bounds.minlat +'" maxlat="'+ bounds.maxlat +'" minlon="'+ bounds.minlon +'" maxlon="'+ bounds.maxlon+'"/>';
-        meta += '</metadata>';
+        meta += '<metadata>\n';
+        if (fileName != '') meta += '<name>' + fileName + '</name>\n';
+        if (info != '') meta += '<desc>' + info + '</desc>\n';
+        if (time != '') meta += '<time>' + time + '</time>\n';
+        if (bounds != null) meta += '<bounds minlat="'+ bounds.minlat +'" maxlat="'+ bounds.maxlat +'" minlon="'+ bounds.minlon +'" maxlon="'+ bounds.maxlon+'"/>\n';
+        meta += '</metadata>\n';
     
         return meta;
     }
@@ -850,12 +980,13 @@ import {mean, std} from "mathjs";
             title: "Current Track Statistics",
             }
         );
-    
+        /*
         const dataSortedWithIndexes = newdata
             .map((f, i) => ({
                 floatNumber: f,
                 index: i, // <-- original index
             }));
+        */
     }
 
     function showGpxStatistics(dists, stats1, stats2) {
