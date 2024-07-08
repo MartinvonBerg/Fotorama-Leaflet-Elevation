@@ -18,8 +18,8 @@
     },
     "param5": {
         "text": "Track-Punkte mit Höhe=0 ignorieren.",
-        "description": "GPX-Datei hochladen: Track-Punkte mit Höhe=0 ignorieren. Notwendig für einige Geräte, weil sie 0 als Höhendaten schreiben, wenn die GPX-Genauigkeit nicht ausreicht",
-        "info": "GPX-Datei hochladen: Track-Punkte mit Höhe=0 ignorieren. Notwendig für einige Geräte, weil sie 0 als Höhendaten schreiben, wenn die GPX-Genauigkeit nicht ausreicht"
+        "description": "Track-Punkte mit Höhe=0 ignorieren. Notwendig für einige Geräte, weil sie 0 als Höhendaten schreiben, wenn die GPX-Genauigkeit nicht ausreicht",
+        "info": "Track-Punkte mit Höhe=0 ignorieren. Notwendig für einige Geräte, weil sie 0 als Höhendaten schreiben, wenn die GPX-Genauigkeit nicht ausreicht"
     },
     "param3": {
         "text": "Min. Distanz zur Verringerung der Trackpunkte [m]* ACHTUNG: Checkbox wird nicht gespeichert!",

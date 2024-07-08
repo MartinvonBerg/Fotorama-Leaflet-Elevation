@@ -1,14 +1,16 @@
 import { parseGPX } from "@we-gold/gpxjs";
-import plotly from "plotly.js-dist";
-import {mean, std} from "mathjs";
+//import plotly from "plotly.js-dist";
+//import { mean } from "mathjs";
 import simplify from "simplify-js";
+import createGpxFileAsString from "./createGpxFileAsString";
+import { calcdistance, calc3DDistance } from "./distance";
+import { fromHTML} from "./fromHTML";
 
 (function (window, document, undefined) {
     "use strict";
-    // todo: generate file name in parsed string if there is none given! Write it to meta
-    // TODO: add event listener for gpx_reduce click
-    // TODO: updated chart.js and swiper.js. : only minor changes, should work.
-    // clean-up. performance improvements.
+    
+    // TODO: add cluster reduction. maybe later.
+    // TODO: update chart.js and swiper.js. : only minor changes, should work.
     // TODO: Test with WP 6.6
     // update readme with new features
 
@@ -63,6 +65,9 @@ import simplify from "simplify-js";
     const simplval = document.querySelector("#simplify_tolerance_val");
     const simplenable = document.querySelector("#simplify_tolerance_enable");
 
+    const gpxReduceEnable = document.getElementById("gpx_reduce");
+    const ignoreZeroElevsEnable = document.getElementById("gpx_ignore_zero_elev");
+
     const stats = {};
     const hashCode = (str) => [...str].reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
 
@@ -107,6 +112,7 @@ import simplify from "simplify-js";
             uploadPath = document.getElementById('wp-upload-path').innerText + '/';
         }
         text1.innerHTML = "File: " + clickedFile + "<br>Stats<br>N<br>N<br>N";
+        stats.fileName = clickedFile;
         clickedFile = uploadPath + clickedFile;
         
         // load the file to string stats.file_content. This is similar in all Event handlers.
@@ -166,6 +172,7 @@ import simplify from "simplify-js";
             uploadPath = document.getElementById('wp-upload-path').innerText + '/';
         }
         text1.innerHTML = "File: " + clickedFile + "<br>Stats<br>N<br>N<br>N";
+        stats.fileName = clickedFile;
         clickedFile = uploadPath + clickedFile;
 
         // load the file to string stats.file_content. This is similar in all Event handlers. Do not filter
@@ -190,6 +197,7 @@ import simplify from "simplify-js";
             return;
         } else {
             text1.innerHTML = "File: " + lastFileResult + "<br>Stats<br>N<br>N<br>N";
+            stats.fileName = lastFileResult;
             lastFileResult = uploadPath + lastFileResult;
         
             // load the file to string stats.file_content. This is similar in all Event handlers.
@@ -226,7 +234,11 @@ import simplify from "simplify-js";
                 // do not filter the file. Show as saved on server 
                 if ( stats.file_content !== null && checksum != 0) {
                     // filter the file and return as xml-string to global variable newFile
-                    newFile = filterGPXTrack(stats.file_content);
+                    newFile = filterGPXTrack(stats.file_content, input.files[0].name);
+                    if( newFile === null ) {
+                        alert("Error loading File")
+                        return;
+                    }
 
                     // show filtered file
                     showGpxFileOnLeaflet();
@@ -254,7 +266,7 @@ import simplify from "simplify-js";
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
-
+    
     dsmsel.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
         dsm = dsmsel.value / 1000;
         dsmStore = dsm;
@@ -268,7 +280,7 @@ import simplify from "simplify-js";
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
-
+    
     filtsel.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
         filter = filtsel.value;
         filterStore = filter;
@@ -296,47 +308,29 @@ import simplify from "simplify-js";
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
-
-    esmenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
-
-        if (esmenable.checked) {
-            esm = esmStore;
-        } else {
-            esm = 0.0;
-        }
+    
+    // ---------- listeners for esm, dsm, filter, simplTol inputs
+    function handleEnableClick(storedValue, enableCheckbox, globalValue) {
+        enableCheckbox.addEventListener("input", () => {
+            globalValue = enableCheckbox.checked ? storedValue : 0.0;
+            filterEventListener();
+        });
+    }
+    
+    handleEnableClick(esmStore, esmenable, esm);
+    handleEnableClick(dsmStore, dsmenable, dsm);
+    handleEnableClick(filterStore, filterenable, filter);
+    handleEnableClick(simplTolStore, simplenable, simplTol);
+    
+    // ---------- listeners for reduce, ignoreZeroElevs inputs
+    gpxReduceEnable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
+        gpx_reduce = document.getElementById("gpx_reduce").checked;
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
 
-    dsmenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
-
-        if (dsmenable.checked) {
-            dsm = dsmStore;
-        } else {
-            dsm = 0.0;
-        }
-        // filter the file and return as xml-string to global variable newFile
-        filterEventListener();
-    })
-
-    filterenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
-        
-        if (filterenable.checked) {
-            filter = filterStore;
-        } else {
-            filter = 0.0;
-        }
-        // filter the file and return as xml-string to global variable newFile
-        filterEventListener();
-    })
-
-    simplenable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
-        
-        if (simplenable.checked) {
-            simplTol = simplTolStore;
-        } else {
-            simplTol = 0.0;
-        }
+    ignoreZeroElevsEnable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
+        ignoreZeroElevs = document.getElementById("gpx_ignore_zero_elev").checked;
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
@@ -347,7 +341,9 @@ import simplify from "simplify-js";
             text1.innerHTML = "No file selected";
             return;
         }
-        newFile = filterGPXTrack(stats.file_content);
+        newFile = filterGPXTrack(stats.file_content, stats.fileName);
+
+        if( newFile === null ) {return;}
 
         // store the old bounds, if any
         if (bounds !== null) {
@@ -402,10 +398,13 @@ import simplify from "simplify-js";
         } else if ( (checksum == 0 || stats.file_content == null) && (triggerorigin == 'filelist' || triggerorigin == 'onload') ) {
             // load the file to string and set the global variable for the file content
             newFile = await fetch(filePath).then(response => response.text());
+            // get filename from the filePath
+            stats.fileName = filePath.split('\\').pop().split('/').pop();
 
         } else if ( (checksum == 0 || stats.file_content == null) && triggerorigin == 'input') {
             // load the file to string and set the global variable for the file content
             const file = input.files[0];
+            stats.fileName = input.files[0].name;
             newFile = await file.text();
 
         } else {
@@ -416,7 +415,11 @@ import simplify from "simplify-js";
         bounds = null;
         stats.file_content = newFile;
         fileLength = newFile.length;
+        fileSize = new Blob([newFile]).size / 1024;
         checksum = hashCode(newFile);
+
+        // parse the file now
+        [stats.parsedFile, stats.parseError] = parseGPX(newFile);
 
         return true;
     }
@@ -427,7 +430,7 @@ import simplify from "simplify-js";
      * @global {string} newFile - The content of the file as string equaly to stats.file_content or filtered result
      * @global {number} fileSize - The length of the file
      *
-     * @return {[null, Error] | [{object}, null]} An object containing the parsed file or an error message.
+     * @return {null | {object}} An object containing the parsed file or null on error.
      */
     function parseGpxString(element) {
         
@@ -463,13 +466,44 @@ import simplify from "simplify-js";
             parsedFile.waypoints.forEach(element => {
                 NWayPts += element.points.length;
             });
+            if (NTrkPts + NRtePts == 0) { error = new Error("No points found in GPX file"); }
+        }
+
+        if (error) {
+            element.innerHTML = "Error parsing loaded GPXFile as XML: " + error;
+            return null;
+        } else {
             fileName = getFileName(element.innerHTML); 
             element.innerHTML = "<strong>File: " + fileName + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
             + "<br>Stats in File: " + parsedFile.metadata.description 
             + "<br>N Tracks: " + parsedFile.tracks.length + " / with N Points: " + NTrkPts
             + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: " + NRtePts
-            + "<br>N Waypoints: " + parsedFile.waypoints.length + " / with N Points: " + NWayPts
+            + "<br>N Waypoints: " + parsedFile.waypoints.length + " / with N Points: " + NWayPts;
+
+            if (!parsedFile.metadata.name) {parsedFile.metadata.name = fileName};
             return parsedFile;
+        }
+    }
+
+    function checkParsedFile(parsedFile) {
+        if (parsedFile == null) {
+            return true;
+        } 
+
+        let count = 0;
+
+        parsedFile.tracks.forEach(element => {
+            count += element.points.length;
+        });
+
+        parsedFile.routes.forEach(element => {
+            count += element.points.length;
+        });
+
+        if (count == 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -482,7 +516,7 @@ import simplify from "simplify-js";
      *
      * @param {string} file - The path to the GPX file or the content as string to display. Defaults to null.
      * 
-     * @globel {string} newFile - The content of the file as string equaly to stats.file_content or filtered result
+     * @global {string} newFile - The content of the file as string equaly to stats.file_content or filtered result
      * @global {string} pageVarsForJs[0]['tracks']['track_0']['url'] : The path to the GPX file to display or the content of file as xml formatted string.
      * @global {object} allMaps[0] : The Leaflet map object.
      * 
@@ -503,6 +537,10 @@ import simplify from "simplify-js";
                 allMaps[0].map.remove(); // leaflet map
                 allMaps[0].map.off();
                 allMaps[0].map.invalidateSize();
+                const map0Element = fromHTML('<div id="map0" class="leafmap" style="max-height:400px;aspect-ratio:1.5"></div>');
+                let boxmap = document.getElementById('boxmap0');
+                boxmap.removeChild(boxmap.children[0]);
+                boxmap.insertBefore( map0Element, boxmap.firstChild)
             } catch (error) {
                 console.log(error);
             }
@@ -514,28 +552,19 @@ import simplify from "simplify-js";
             } catch (error) {
                 console.log(error);
             }
-            //allMaps[0].controlElevation.clear(); // elevation
+            
         }
         import(/* webpackChunkName: "leaflet_chartjs" */'../../js/leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
             allMaps[0] = [];
             LeafletChartJs.LeafletChartJs.count = 0;
             LeafletChartJs.LeafletChartJs.numberOfMaps = null;
             allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0 );
-            if (bounds != null) {
-                allMaps[0].map.fitBounds(bounds);
-            }
+            if (bounds != null && bounds.isValid()) { allMaps[0].map.fitBounds(bounds); }
             bounds = allMaps[0].map.getBounds();
         })
-        //import(/* webpackChunkName: "elevation-admin" */'../../js/elevationClass.js').then( (LeafletElevation) => {
-            //allMaps[0] = [];
-            //LeafletElevation.LeafletElevation.count = 0;
-            //LeafletElevation.LeafletElevation.numberOfMaps = null;
-            //allMaps[0] = new LeafletElevation.LeafletElevation(0, 'boxmap' + 0 );            
-        //});
-
     }
 
-    function filterGPXTrack(fileContent) {
+    function filterGPXTrack(fileContent, fileName=null) {
         let info = '';
         let newFileContent = '';
 
@@ -552,7 +581,7 @@ import simplify from "simplify-js";
         let lastConsideredTime = 0;
         let tDelta = 0;
 
-        // set all arrays to empty
+        // set all global arrays to empty
         elevs = [];
         dists = [];
         lats = [];
@@ -564,15 +593,26 @@ import simplify from "simplify-js";
         origtdelta = [];
         origSpeedH = [];
         origSpeed3D = [];
+        let sumOrigSpeedH = 0;
+        let sumOrigSpeed3D = 0;
 
         getCurrentFilterSettings();
 
         // parse the GPX file as stored in global variable newfile
-        const [parsedFile, error] = parseGPX(fileContent);
+        let lengthFileContent = fileContent.length;
+        let parsedFile, error;
+        if (lengthFileContent === fileLength) {
+            // file unchanged;
+            parsedFile = stats.parsedFile;
+            error = stats.error;
+        } else {
+            [parsedFile, error] = parseGPX(fileContent);
+        }
+        if (!error) { error = checkParsedFile(parsedFile); }
 
         if (error) {
-            element.innerHTML = "Error parsing loaded GPXFile as XML: " + error;
-            return error;
+            text1.innerHTML = "Error parsing loaded GPXFile as XML: " + error;
+            return null;
 
         // parse and combine tracks and routes to one track if gpx_reduce is checked. Skip the Waypoints.
         } else if (gpx_reduce) {
@@ -590,7 +630,7 @@ import simplify from "simplify-js";
                     
                     let curPoint = [point.latitude, point.longitude];
                     let curDist = 1000 * calcdistance(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
-                    let curDist3D = 1000 * calculate3DDistance(lastConsideredPoint[0], lastConsideredPoint[1], lastConsideredElevation, curPoint[0], curPoint[1], point.elevation);
+                    let curDist3D = 1000 * calc3DDistance(lastConsideredPoint[0], lastConsideredPoint[1], lastConsideredElevation, curPoint[0], curPoint[1], point.elevation);
                     
                     // save the original values
                     tDelta = (point.time.getHours()*3600 + point.time.getMinutes()*60 + point.time.getSeconds() 
@@ -605,9 +645,11 @@ import simplify from "simplify-js";
 
                     let SpeedH = Math.abs(point.elevation - lastConsideredElevation); // /tDelta ? Math.abs(point.elevation - lastConsideredEleStats)/tDelta : 0.0;
                     origSpeedH.push(SpeedH);
+                    sumOrigSpeedH += SpeedH;
 
                     let Speed3D = curDist3D; // /tDelta ? curDist3D/tDelta : 0.0;
                     origSpeed3D.push(Speed3D);
+                    sumOrigSpeed3D += Speed3D;
 
                     lastConsideredTime = point.time;
                     lastConsideredElevation = point.elevation;
@@ -620,8 +662,8 @@ import simplify from "simplify-js";
 
             // filter the originals. show the result of the first simplification
             // statistics 
-            let meanSpeedH = filter*mean(origSpeedH); 
-            let meanDist3D = filter*mean(origSpeed3D); // best is 3
+            let meanSpeedH = filter * sumOrigSpeed3D / origSpeedH.length; //*mean(origSpeedH); 
+            let meanDist3D = filter * sumOrigSpeed3D / origSpeed3D.length; //*mean(origSpeed3D); // best is 3
             let newSpdH = [];
             let newDst3D = [];
             let minlat = 180;
@@ -633,7 +675,8 @@ import simplify from "simplify-js";
 
             // remove the elements in the arrays: newSpdH and newDst3D that are greater than meanSpeedH and meanDist3D if the filter is enabled
             // write also to elevs, dists, lats, lons
-            outerLoop: for (let i = 0; i < origSpeedH.length; i++) {
+            let origLength = origSpeedH.length;
+            outerLoop: for (let i = 0; i < origLength; i++) {
                 if ( statfilter && (origSpeedH[i] < meanSpeedH) && (origSpeed3D[i] < meanDist3D) ) {
                     
                     let lastRemovedPoint = removedPoints[removedPoints.length-1];
@@ -706,8 +749,8 @@ import simplify from "simplify-js";
             // apply simplify.js
             if (simplTol > 0.0) {
                 let points = [];
-
-                for (let i = 0; i < lats.length; i++) {
+                let length = lats.length;
+                for (let i = 0; i < length; i++) {
                     points[i] = {x: lats[i], y: lons[i], z: elevs[i]};
                 }
                 let highQuality = true;
@@ -717,7 +760,8 @@ import simplify from "simplify-js";
                 lats = [];
                 lons = [];
                 elevs = [];
-                for (let i = 0; i < points.length; i++) {
+                length = points.length;
+                for (let i = 0; i < length; i++) {
                     lats[i] = points[i].x;
                     lons[i] = points[i].y;
                     elevs[i] = points[i].z;
@@ -755,8 +799,9 @@ import simplify from "simplify-js";
             };
 
             info = 'Dist: '+ (cumulativeDistance/1000).toFixed(1) +' km, Gain: '+ cumulativeElevationGain.toFixed(0) +' Hm, Loss: '+ cumulativeElevationLoss.toFixed(0) +' Hm';
-                
-            newFileContent = createGpxHeader() + createGpxMeta( parsedFile.metadata.name, info, parsedFile.metadata.time) + createGpxTrack(parsedFile.metadata.name, lats, lons, elevs) + createGpxFooter();
+            
+            if (!parsedFile.metadata.name) { parsedFile.metadata.name = fileName; }
+            newFileContent = createGpxFileAsString( parsedFile.metadata.name, info, parsedFile.metadata.time,  lats, lons, elevs, bounds);
             return newFileContent;
 
         // else : return the original file
@@ -803,224 +848,6 @@ import simplify from "simplify-js";
             filter = 100.0;
             simplTol = 0.0;
         }
-    }
-
-    /**
-     * Calculates the distance between two coordinates by using the haversine formula (in km).
-     * @param {number} lat1 - Latitude of the first location.
-     * @param {number} lon1 - Longitude of the first location.
-     * @param {number} lat2 - Latitude of the second location.
-     * @param {number} lon2 - Longitude of the second location.
-     * @returns {number} - The distance between the two coordinates in km.
-     */
-    function calcdistance(lat1, lon1, lat2, lon2) {
-        const r = 12742; // 6371 * 2
-        const toRadians = (degrees) => degrees * (Math.PI / 180);
-
-        const dLat = Math.sin((toRadians(lat2) - toRadians(lat1)) / 2);
-        const dLon = Math.sin((toRadians(lon2) - toRadians(lon1)) / 2);
-
-        const a = dLat * dLat + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * dLon * dLon;
-        const d = r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return d;
-    }
-
-    /**
-     * Calculates the distance between two coordinates by using the haversine formula (in km) including altitude.
-     * @param {number} lat1 - Latitude of the first location.
-     * @param {number} lon1 - Longitude of the first location.
-     * @param {number} alt1 - Altitude of the first location in Meters.
-     * 
-     * @param {number} lat2 - Latitude of the second location.
-     * @param {number} lon2 - Longitude of the second location.
-     * @param {number} alt2 - Altitude of the second location in Meters.
-     * 
-     * @returns {number} - The distance between the two coordinates in km.
-     */
-    function calculate3DDistance(lat1, lon1, alt1=0, lat2, lon2, alt2=0) {
-        const r = 12742000; // 6371 * 2
-        const toRadians = (degrees) => degrees * (Math.PI / 180);
-
-        const dLat = Math.sin((toRadians(lat2) - toRadians(lat1)) / 2);
-        const dLon = Math.sin((toRadians(lon2) - toRadians(lon1)) / 2);
-
-        const a = dLat * dLat + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * dLon * dLon;
-        const d = r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // m
-            
-        const distance = Math.sqrt( Math.pow(d, 2) + Math.pow(alt2 - alt1, 2) );
-        
-        return distance / 1000.0;
-    }
-
-    function createGpxHeader() {
-        let header = "";
-        header += '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
-        header += '<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="Fotorama-Upload" >\n';
-    
-        return header;
-    }
-
-    function createGpxMeta(fileName, info, time, bounds=null) {
-        let meta = "";
-    
-        meta += '<metadata>\n';
-        if (fileName != '') meta += '<name>' + fileName + '</name>\n';
-        if (info != '') meta += '<desc>' + info + '</desc>\n';
-        if (time != '') meta += '<time>' + time + '</time>\n';
-        if (bounds != null) meta += '<bounds minlat="'+ bounds.minlat +'" maxlat="'+ bounds.maxlat +'" minlon="'+ bounds.minlon +'" maxlon="'+ bounds.maxlon+'"/>\n';
-        meta += '</metadata>\n';
-    
-        return meta;
-    }
-
-    function createGpxTrack(name, lats, lons, elevs) {
-        if (lats.length != lons.length || lats.length != elevs.length || lats.length != lons.length) {
-            return "";
-        }
-
-        let track = "";
-        track += '<trk>';
-        track += '<name>'+ name +'</name>';
-        track += '<trkseg>\n';
-
-        for (let i = 0; i < lats.length; i++) {
-            track += '<trkpt lat="'+ lats[i] +'" lon="'+ lons[i] +'">';
-            track += '<ele>'+ elevs[i] +'</ele>';
-            track += '</trkpt>\n';
-        }
-        
-        track += '</trkseg>';
-        track += '</trk>';
-    
-        return track;
-    }
-
-    function createGpxFooter() {
-        let footer = "";
-        footer += '</gpx>';
-    
-        return footer;
-    }
-
-    function showCurrentTrackStatistics(data) {
-
-        let newdata = [].slice.call(data);
-        let curmean = mean(newdata);
-        let curstd = std(newdata);
-        let min1 = curmean - 3*curstd;
-        let max1 = curmean + 3*curstd;
-        let min2 = curmean - 6*curstd;
-        let max2 = curmean + 6*curstd;
-    
-        let TESTER = document.getElementById('gpx_canvas3');
-        plotly.newPlot( TESTER, [{
-            x: data,
-            type: 'histogram',}],
-            {
-            xaxis: {title: "Distance [m]"},
-            yaxis: {title: "Frequency"},
-            shapes: [
-                {
-                    type: 'line',
-                    x0: curmean,
-                    y0: -10,
-                    x1: curmean,
-                    y1: 10,
-                    line: {
-                    color: 'red',
-                    width: 2,
-                    dash: 'dot'
-                    },},
-                /*{
-                    type: 'line',
-                    x0: min1,
-                    y0: -10,
-                    x1: min1,
-                    y1: 10,
-                    line: {
-                        color: 'red',
-                        width: 2,
-                        dash: 'dot'
-                    },},
-                {
-                    type: 'line',
-                    x0: min2,
-                    y0: -10,
-                    x1: min2,
-                    y1: 10,
-                    line: {
-                        color: 'red',
-                        width: 2,
-                        dash: 'dot'
-                },},*/
-                {
-                    type: 'line',
-                    x0: max1,
-                    y0: -10,
-                    x1: max1,
-                    y1: 10,
-                    line: {
-                        color: 'red',
-                        width: 2,
-                        dash: 'dot'
-                    },},
-                {
-                    type: 'line',
-                    x0: max2,
-                    y0: -10,
-                    x1: max2,
-                    y1: 10,
-                    line: {
-                        color: 'red',
-                        width: 2,
-                        dash: 'dot'
-                    },},
-              ],
-            title: "Current Track Statistics",
-            }
-        );
-        /*
-        const dataSortedWithIndexes = newdata
-            .map((f, i) => ({
-                floatNumber: f,
-                index: i, // <-- original index
-            }));
-        */
-    }
-
-    function showGpxStatistics(dists, stats1, stats2) {
-        // generate an array of x values for plotting with incrementing values
-        let xval = [];
-        for (let i = 0; i < dists.length; i++) {
-            xval.push(i);
-        }
-        /*
-        let xval = [];
-        let start = dists[0];
-        for (let i = 0; i < dists.length; i++) {
-            start = dists[i] + xval[i-1] || 0;
-            xval.push(start);
-        }
-        */
-        let TESTER = document.getElementById('gpx_canvas4');
-    
-        plotly.newPlot( TESTER, 
-            [{
-                x: xval,
-                y: stats1,
-                type: 'scatter',
-            },
-            {
-                x: xval,
-                y: stats2,
-                type: 'scatter',
-            }],
-            {
-            xaxis: {title: "some"},
-            yaxis: {title: "stats"},
-            }
-        );
     }
 
 })(window, document);

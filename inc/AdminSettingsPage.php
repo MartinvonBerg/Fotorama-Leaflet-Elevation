@@ -198,7 +198,7 @@ class AdminSettingsPage {
 			$current = isset( $options[$args['label_for']] ) ? $options[$args['label_for']] : '';
 			$step = \array_key_exists('step',$this->settings[ $args['param'] ]) ? $this->settings[ $args['param']]['step'] : ''
 			?>
-			<input type="checkbox" name="<?php echo esc_attr( $args['label_for'] ); ?>_enable" value="enable" id="<?php echo esc_attr( $args['label_for'] ); ?>_enable" checked>
+			<input type="checkbox" name="<?php echo esc_attr( $args['label_for'] ); ?>_enable" value="enable" id="<?php echo esc_attr( $args['label_for'] ); ?>_enable">
 			<input type="range" min="<?php echo esc_attr( $this->settings[ $args['param']]['min']) ?>" max="<?php echo esc_attr( $this->settings[ $args['param']]['max']) ?>" step="<?php echo esc_attr( $step ) ?>" 
                 name="<?php echo esc_attr( $this->settings['options'])?>[<?php echo esc_attr($args['label_for']) ?>]"
 				id="<?php echo esc_attr( $args['label_for'] ); ?>" 
