@@ -42,6 +42,8 @@ function enqueue_fslightbox()
 
 // add the style for the grid to ALL headers!
 add_action('wp_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
+add_action('admin_head', '\mvbplugins\fotoramamulti\fotorama_multi_styles', 100);
+
 /**
  * Generate the inline style for the CSS-Grid. Identical for all shortcodes!
  *

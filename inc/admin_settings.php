@@ -1190,6 +1190,7 @@ final class FotoramaElevationAdmin
 	private $allSettingsClasses = [];
 	private $allSettings = [];
 	public $dashboardLanguage = '';
+	private $leaflet_settings = [];
 
 
 	public function __construct()
@@ -1229,6 +1230,8 @@ final class FotoramaElevationAdmin
 		// append $no_admin_settings to show in info page
 		$this->translateSettingsArray('no_admin_settings');
 		$this->allSettings[ $i ] = $this->no_admin_settings;
+		$this->leaflet_settings = \array_merge( get_option('fm_leaflet_options') );
+	
 
 		// enque the javascript for the admin page.
 		add_action( 'admin_enqueue_scripts', array( $this, 'fm_admin_scripts_enqueue' ) );
@@ -1258,16 +1261,16 @@ final class FotoramaElevationAdmin
 		$pageVarsForJs[0] = [
 			'ngpxfiles'  => 1,
 			'tracks' => $tracks,
-			'eletheme' => 'custom-theme', // TODO
-			'chartheight' => 300, // TODO
-			'mapheight' => 400, // TODO
-			'mapaspect' => 2, // TODO
+			'eletheme' => $this->leaflet_settings["colour_theme_for_leaflet_elevation_1"], //'custom-theme',
+			'chartheight' => intval( $this->leaflet_settings["height_of_chart_11"] ), // 300,
+			'mapheight' => intval( $this->leaflet_settings["height_of_map_10"] ), // 400,
+			'mapaspect' => floatval( $this->leaflet_settings["aspect_ratio_of_map"] ), // 2,
 			'sw_options' => [
-				'trackwidth' => 2,
+				'trackwidth' => intval( $this->leaflet_settings["trackwidth"] ), // 2,
 				'gpx_distsmooth' => $this->gpxSettings["param3"]['values'],
 				'gpx_elesmooth' => $this->gpxSettings["param4"]['values'],
 				'chart_animation' => false
-			], // TODO
+			],
 			'imagepath' => $plugin_path . 'images/', 
 		];
 		wp_localize_script('fotorama_admin', 'pageVarsForJs', $pageVarsForJs);
@@ -1412,29 +1415,31 @@ final class FotoramaElevationAdmin
 										<div id="gpx_canvas4" style="width:500px;height:500px;"></div>	
 									</div>
 									*/
-								// TODO get the options for leaflet elevation here
+								// and use the options for leaflet elevation here
 								if ( $currentTab['setting'] === 'gpxSettings' ) {
 									?>
 									<div id="multifotobox0" class="mfoto_grid">
-									<div id="boxmap0" class="boxmap">
-										<div id="map0" class="leafmap" style="max-height:400px;aspect-ratio:1.5"></div> 
-										<div class="chartjs-profile-container" id="chartjs-profile-container0" style="height:200px;">
-											<canvas id="fm-elevation-chartjs0" style="width:100%;height:100%"></canvas>
+										<div id="boxmap0" class="boxmap">
+											<div id="map0" class="leafmap" style="max-height:<?php echo $this->leaflet_settings["height_of_map_10"]; ?>px;aspect-ratio:<?php echo $this->leaflet_settings["aspect_ratio_of_map"]; ?>"></div> 
 										</div>
-										<!--div id="elevation-div0" style="height:200px;"></div-->
-										<div id="data-summary0" class="data-summary">
-											<span class="totlen">
-												<span class="summarylabel"> </span>
-												<span class="summaryvalue">0</span></span>
-											<span class="gain">
-												<span class="summarylabel"> </span>
-												<span class="summaryvalue">0</span></span>
-											<span class="loss">
-												<span class="summarylabel"> </span>
-												<span class="summaryvalue">0</span></span>
+										<div>
+											<div class="chartjs-profile-container" id="chartjs-profile-container0" style="height:<?php echo $this->leaflet_settings["height_of_chart_11"]; ?>px;">
+												<canvas id="fm-elevation-chartjs0" style="width:100%;height:100%"></canvas>
+											</div>
+											<!--div id="elevation-div0" style="height:200px;"></div-->
+											<div id="data-summary0" class="data-summary">
+												<span class="totlen">
+													<span class="summarylabel"> </span>
+													<span class="summaryvalue">0</span></span>
+												<span class="gain">
+													<span class="summarylabel"> </span>
+													<span class="summaryvalue">0</span></span>
+												<span class="loss">
+													<span class="summarylabel"> </span>
+													<span class="summaryvalue">0</span></span>
+											</div>
+											<p id="gpx_text1">not loaded<br>Stats<br>N<br>N<br>N</p>
 										</div>
-										<p id="gpx_text1">not loaded<br>Stats<br>N<br>N<br>N</p>
-									</div>
 									</div><!--div id=multifotobox0-->
 
 									<?php

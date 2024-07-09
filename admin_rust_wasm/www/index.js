@@ -1,6 +1,4 @@
 import { parseGPX } from "@we-gold/gpxjs";
-//import plotly from "plotly.js-dist";
-//import { mean } from "mathjs";
 import simplify from "simplify-js";
 import createGpxFileAsString from "./createGpxFileAsString";
 import { calcdistance, calc3DDistance } from "./distance";
@@ -8,11 +6,6 @@ import { fromHTML} from "./fromHTML";
 
 (function (window, document, undefined) {
     "use strict";
-    
-    // TODO: add cluster reduction. maybe later.
-    // TODO: update chart.js and swiper.js. : only minor changes, should work.
-    // TODO: Test with WP 6.6
-    // update readme with new features
 
     let esm = 4.5;
     let esmStore = 4.5;

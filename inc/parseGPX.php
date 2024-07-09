@@ -121,14 +121,16 @@ final class parseGpxFile {
             $newTrack->recalculateStats();
 
             if ( $newTrack->stats->cumulativeElevationGain === null && $newTrack->stats->cumulativeElevationLoss === null && $newTrack->stats->distance === null ) {
-                $desc = 'No elevation or distance data in reduced route or track of GPX-File. Skipped'; // TODO
+                /* translators: This is an error message and should not be translated */
+                $desc = 'No elevation or distance data in reduced route or track of GPX-File. Skipped';
                 return $desc;
             }
 
             // Calc the new number of points
             $pointsafter = \sizeof( $newTrack->segments[0]->points );
             if ( $pointsafter === 0 ) {
-                $desc = 'File Skipped. No points in reduced track: ' . $desc . '. Please upload without reduction.'; // TODO
+                /* translators: This is an error message and should not be translated */
+                $desc = 'File Skipped. No points in reduced track: ' . $desc . '. Please upload without reduction.';
                 return $desc;
             }
 
@@ -156,7 +158,8 @@ final class parseGpxFile {
             $desc .= ', ' . __('Points', 'fotoramamulti')   . ': '  . number_format_i18n($pointsbefore, 0) . ' / ' . number_format_i18n($pointsafter, 0);
             $desc .= ' (' . __('before / after', 'fotoramamulti') . '): ';
         } else {
-            $desc = 'No routes or tracks in GPX-File. Skipped'; // TODO
+            /* translators: This is an error message and should not be translated */
+            $desc = 'No routes or tracks in GPX-File. Skipped';
         }
         
         return $desc;

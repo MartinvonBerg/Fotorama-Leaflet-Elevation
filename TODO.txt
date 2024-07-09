@@ -22,3 +22,7 @@
 ---- WordPress.org Upload:
             - übersetzung in ES, FR ergänzen
 
+// TODO: Test with WP 6.6
+// update readme with new features
+// index.js in gpx-admin TODO: add cluster reduction. maybe later. import jDBScan from "jdbscan";
+// index.js in gpx-admin TODO: implement routes in gpx-tracks

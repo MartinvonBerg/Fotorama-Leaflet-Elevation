@@ -512,10 +512,20 @@ class AdminSettingsPage {
 				} elseif ($filteredFileContent !== '') {
 					// save string as file to path
 					$filteredFileContent = str_replace('\"','"',$filteredFileContent);
-					// TODO: check for valid XML-GPX-File. Get the desc in meta and add to values.
-					$result = \file_put_contents( $completePath, $filteredFileContent);
-					// generate the output message
-					$values = intval($result/1024) . ' kB ' . __('saved', 'fotoramamulti' );
+					// check for valid XML-File.
+					libxml_use_internal_errors(true);
+					$gpxParser = simplexml_load_string($filteredFileContent);
+					$result = count(libxml_get_errors()) == 0;
+					libxml_clear_errors();
+
+					if ($result) {
+						// Get the desc in meta and add to values. 
+						$result = \file_put_contents( $completePath, $filteredFileContent);
+						// generate the output message
+						$values = 'GPX-Meta: ' . $gpxParser->metadata->desc . ' / ' . intval($result/1024) . ' kB ' . __('saved', 'fotoramamulti' );
+					 } else {
+						$values = 'XML-Error';
+					 }
 				}
 				else {
 					$values = __('File not touched', 'fotoramamulti' ) .'!';
