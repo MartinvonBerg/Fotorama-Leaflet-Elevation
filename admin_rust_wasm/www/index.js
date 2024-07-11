@@ -665,8 +665,15 @@ import { fromHTML} from "./fromHTML";
                 });
             });
             
-            // skip the routes currently; TODO: implement
-            parsedFile.routes.forEach(element => {});
+            // skip the routes currently; TODO: implement. But how to do that? Append after track? Keep as different track?
+            parsedFile.routes.forEach(element => {
+                element.points.forEach(point => {
+                    // ignore / skip points with zero elevation and go to next point
+                    if ( ignoreZeroElevs && (Math.abs(point.elevation) < 0.01) ) {
+                        return; // is practically the same as continue
+                    }
+                });
+            });
 
             // filter the originals. show the result of the first simplification
             // statistics 
