@@ -135,7 +135,7 @@ final class FotoramaElevationAdmin
 		],
 		'param7' => [
 			'label' => 'gpx_filter',
-			'text' => 'Filter GPX Height Data',
+			'text' => 'Filter GPX Height Data !Checkbox is not stored in DB!',
 			'class' => 'gpx_row',
 			'custom_data' => 'custom7',
 			'type' => 'range',
@@ -150,7 +150,7 @@ final class FotoramaElevationAdmin
 		],
 		'param3' => [
 			'label' => 'gpx_smooth',
-			'text' => 'Distance Smooth',
+			'text' => 'Distance Smooth !Checkbox is not stored in DB!',
 			'class' => 'gpx_row',
 			'custom_data' => 'custom3',
 			'type' => 'range',
@@ -164,7 +164,7 @@ final class FotoramaElevationAdmin
 		],
 		'param4' => [
 			'label' => 'gpx_elesmooth',
-			'text' => 'Elevation Smooth',
+			'text' => 'Elevation Smooth !Checkbox is not stored in DB!',
 			'class' => 'gpx_row',
 			'custom_data' => 'custom4',
 			'type' => 'range',
@@ -179,7 +179,7 @@ final class FotoramaElevationAdmin
 		],
 		'param8' => [
 			'label' => 'simplify_tolerance',
-			'text' => 'Tolerance for Simplify',
+			'text' => 'Tolerance for Simplify !Checkbox is not stored in DB!',
 			'class' => 'gpx_row',
 			'custom_data' => 'custom8',
 			'type' => 'range',
@@ -1245,14 +1245,14 @@ final class FotoramaElevationAdmin
 	public function fm_admin_scripts_enqueue() {
 		// enque the javascript for the admin page.
 		$plugin_path = plugins_url('/', __DIR__);
-		wp_enqueue_script('fotorama_admin',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.26.0', true);
-		wp_enqueue_style('fm-admin-gpx', $plugin_path . 'css/fm_admin_gpx.css',[] ,'0.26.0' ,'all');
+		wp_enqueue_script('fotorama_admin',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.27.0', true);
+		wp_enqueue_style('fm-admin-gpx', $plugin_path . 'css/fm_admin_gpx.css',[] ,'0.27.0' ,'all');
 
 		/* enque the javascript for the standard page too.
 		if ( isset($charttype) && $charttype === 'chartjs') {
-			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.26.0', true);
+			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.27.0', true);
 		} else {
-			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.26.0', true);
+			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.27.0', true);
 		}
 		*/
 		$tracks['track_0']['url'] = ''; // $gpx_url . $f;

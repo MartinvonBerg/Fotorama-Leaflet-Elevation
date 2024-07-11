@@ -58,7 +58,7 @@
     },
     "param3": {
         "label": "gpx_smooth",
-        "text": "Distance Smooth [m]* *Values are weighted differently!",
+        "text": "Distance Smooth [m]* !Checkbox is not stored in DB!",
         "class": "gpx_row",
         "custom_data": "custom1",
         "type": "number",
@@ -72,7 +72,7 @@
     },
     "param4": {
         "label": "gpx_elesmooth",
-        "text": "Elevation Smooth [m]* *Values are weighted differently!",
+        "text": "Elevation Smooth [m]* !Checkbox is not stored in DB!",
         "class": "gpx_row",
         "custom_data": "custom2",
         "type": "number",

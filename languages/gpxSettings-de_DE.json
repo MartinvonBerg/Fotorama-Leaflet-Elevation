@@ -40,5 +40,10 @@
         "text": "Statistik-Filter anwenden ACHTUNG: Checkbox wird nicht gespeichert!",
         "description": "Den Filter anwenden (Statistik, Vereinfachtung)",
         "info": "Den Filter anwenden (Statistik, Vereinfachtung)"
+    },
+    "param8": {
+        "text": "Toleranz für Simplify.js ACHTUNG: Checkbox wird nicht gespeichert!",
+        "description": "Toleranz für Simplify.js",
+        "info": "Toleranz für Simplify.js"
     }
 }

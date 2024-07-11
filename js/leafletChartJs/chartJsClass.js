@@ -1,5 +1,5 @@
 /*!
-  chartJsClass 0.26.0
+  chartJsClass 0.27.0
   license: GPL 2.0
   Martin von Berg
 */

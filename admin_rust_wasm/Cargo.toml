@@ -1,6 +1,6 @@
 [package]
 name = "admin_rust_wasm"
-version = "0.26.0"
+version = "0.27.0"
 authors = ["MartinvonBerg <mail@mvb1.de>"]
 edition = "2021"
 

@@ -1,5 +1,5 @@
 -Aufgaben-liste für das Plugin
--	PHP:    TODO entferne das custom_field "fm_header_link" bringt nix für performance! 
+-	PHP:    entferne das custom_field "fm_header_link" bringt nix für performance! 
                     wird nicht mehr erzeugt und nicht in post geschrieben.
                     + TODO: Altbestand wird (noch) nicht bereinigt. 
                     Der Header wird nicht mehr erzeugt
@@ -8,7 +8,9 @@
 -			--- return false ist als Rückgabewert bei Funktionen teilweise falsch
 -			--- Typisierung: Methoden-Signater und class attribute typisieren und in jedem File declare(strict_types = 1); in die 1. Zeile setzen
 - JS:
--           - TOOD: update aller JS bibliotheken.
+-           - update aller JS bibliotheken. (v.a. leaflet-elevation)
+            - index.js in gpx-admin: add cluster reduction. maybe later. import jDBScan from "jdbscan";
+            - index.js in gpx-admin: implement routes in gpx-tracks. 
 ---- Swiper
 -			-- script loader in den header mit media query: Getestet, bring bzgl. lighthouse nichts.
 -			-- Einstellung Swiper Thumbnails: Eigentlich fertig. Besser als so geht es nicht. Object-fit ändert nichts an der Darstellung. Hochformatbilder sind ein Problem! Daher nicht nutzen.
@@ -21,7 +23,3 @@
             -- Masonry entfernen ? Dafür gibt es bessere Plugins. Nicht Thema des Plugins.
 ---- WordPress.org Upload:
             - übersetzung in ES, FR ergänzen
-
-// update readme with new features
-// index.js in gpx-admin TODO: add cluster reduction. maybe later. import jDBScan from "jdbscan";
-// index.js in gpx-admin TODO: implement routes in gpx-tracks

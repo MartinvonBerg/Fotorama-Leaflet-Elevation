@@ -4,8 +4,8 @@ Contributors: martinvonberg
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CQA6XZ7LUMBJQ
 Tags: slider, leaflet map, height chart, responsive, tile server
 Requires at least: 5.9
-Tested up to: 6.5
-Stable tag: 0.26.0
+Tested up to: 6.6
+Stable tag: 0.27.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -72,7 +72,7 @@ Yes, here it is:
 - Enjoy.
 
 = Which WordPress and PHP versions are supported?
-The Plugin runs from WordPress 5.9.x - 6.5.x and PHP 7.4.3 - 8.2.0.
+The Plugin runs from WordPress 5.9.x - 6.6.x and PHP 7.4.3 - 8.2.0.
 
 == Screenshots ==
 1. Example Front End Output
@@ -82,9 +82,15 @@ The Plugin runs from WordPress 5.9.x - 6.5.x and PHP 7.4.3 - 8.2.0.
 5. Back end IT 
 
 == Upgrade Notice ==
-None for the moment.
+No Upgrade required. Only if you want the new GPX-Track filtering.
 
 == Changelog ==
+
+= 0.27.0 =
+Update chart.js and swiper.js to latest versions.
+Added Functionality to Admin - GPX-Tracks:
+The Map + Track for the selected GPX-Track is shown on the Admin Page. Several filter options (statistics with mean height and speed change, Distance smoothing and simplify.js) were added. The GPX-File is now filtered in the browser and with Button Click "Save" sent as filtered file via http(s) to the server. The server-side (backend) from WP just stores the file now.
+Due to the new Functionality several bugs and inconsitencies were removed. Mainl in leafletChartJs-Files and in the AdminSettingsPage.php and admin_settings.php. The function was started with WebAssembly and Rust but later skipped, so the files are still in the repository. The translations in ./languages/*.json were updated for German only.
 
 = 0.26.0 =
 Added an option to show the users location on the leaflet Map. Updated swiper.js and chart.js. Minor PHP Bugfixes.

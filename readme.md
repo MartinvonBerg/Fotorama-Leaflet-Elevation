@@ -38,7 +38,7 @@ The Admin panel gives an overview of all shortcode parameters and allow to set t
 
 **NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
 
-**The Plugin runs from WordPress 5.9 - 6.5.x and PHP 7.4.2 - 8.2.0**
+**The Plugin runs from WordPress 5.9 - 6.6.x and PHP 7.4.2 - 8.2.0**
 
 </br>
 
@@ -96,8 +96,8 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 
 # Upgrade Notice 
 
-Upgrade to WordPress 6.5 and PHP 8.1+ is highly recommended! PHP 8.2.x is even better!
-Due to the error corrections it is highly recommended to upgrade the Plugin to 0.25.x! Thank's for your patience. 
+Upgrade to WordPress 6.6 and PHP 8.1+ is highly recommended! PHP 8.2.x is even better!
+No Upgrade required. Only if you want the new GPX-Track filtering. 
 
 </br>
 
@@ -134,7 +134,10 @@ Due to the error corrections it is highly recommended to upgrade the Plugin to 0
 - Elevation Smooth: Min. Elevation between Track-Points in Meters. Used in Statistics Calc only. Best is 4.
 - Overwrite GPX-Track: Well, self explanatory.
 - Button "Save GPX-File" : Save the settings GPX-File upload and / or the file itself!
-- NOTE to parameter 'showalltracks': It is required to use the above setting 'GPX-Parsing' activated for showalltracks to work.  
+- NOTE to parameter 'showalltracks': It is required to use the above setting 'GPX-Parsing' activated for showalltracks to work.
+- Added Functionality to Admin - GPX-Tracks:
+The Map + Track for the selected GPX-Track is shown on the Admin Page. Several filter options (statistics with mean height and speed change, Distance smoothing and simplify.js) were added. The GPX-File is now filtered in the browser and with Button Click "Save" sent as filtered file via http(s) to the server. The server-side (backend) from WP just stores the file now.
+Due to the new Functionality several bugs and inconsitencies were removed. Mainl in leafletChartJs-Files and in the AdminSettingsPage.php and admin_settings.php. The function was started with WebAssembly and Rust but later skipped, so the files are still in the repository. The translations in ./languages/*.json were updated for German only.
 
 Process and save the file with the Button at the bottom.
 
@@ -302,9 +305,17 @@ This plugin uses the great work from:
 - Swiper.js Slider: Great! Thank you for that: https://swiperjs.com/
 - MiniMasronry js Gallery: Simple, fast and good performance: https://github.com/Spope/MiniMasonry.js/
 - Chart.js: A really great, free charting Library!
+- simplify.js : https://mourner.github.io/simplify-js/ Great!
+- gpxjs: https://github.com/We-Gold/gpxjs Great!
 - Lust but not least: Many thanks to Norbert S. for testing!
 
 # Changelog
+
+= 0.27.0 = 11.07.2024
+Update chart.js and swiper.js to latest versions.
+Added Functionality to Admin - GPX-Tracks:
+The Map + Track for the selected GPX-Track is shown on the Admin Page. Several filter options (statistics with mean height and speed change, Distance smoothing and simplify.js) were added. The GPX-File is now filtered in the browser and with Button Click "Save" sent as filtered file via http(s) to the server. The server-side (backend) from WP just stores the file now.
+Due to the new Functionality several bugs and inconsitencies were removed. Mainl in leafletChartJs-Files and in the AdminSettingsPage.php and admin_settings.php. The function was started with WebAssembly and Rust but later skipped, so the files are still in the repository. The translations in ./languages/*.json were updated for German only.
 
 = 0.26.0 = 21.04.2024
 Added an option to show the users location on the leaflet Map. Updated swiper.js and chart.js. Minor PHP Bugfixes.
