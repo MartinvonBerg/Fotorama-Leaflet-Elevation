@@ -353,7 +353,7 @@ class chartJsClass {
       return false;
     } else {
       let parent = this.elementOnPage.parentElement;
-      let aspRatio = this.options.aspRatio.toFixed(2);
+      let aspRatio = parseFloat(this.options.aspRatio).toFixed(2);
       parent.removeAttribute('style');
       parent.style.aspectRatio = aspRatio;
       this.options.aspRatio = aspRatio;
