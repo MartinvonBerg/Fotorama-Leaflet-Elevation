@@ -1443,7 +1443,7 @@ final class FotoramaElevationAdmin
 									</div><!--div id=multifotobox0-->
 
 									<?php
-									$this->listFiles(get_option('fm_gpx_options')['path_to_gpx_files_2']);
+									if ( array_key_exists("showtable", $_GET) && $_GET["showtable"] === "" ) $this->listFiles(get_option('fm_gpx_options')['path_to_gpx_files_2']);
 									
 								}
 							}

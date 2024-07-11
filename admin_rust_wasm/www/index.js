@@ -62,7 +62,15 @@ import { fromHTML} from "./fromHTML";
     const ignoreZeroElevsEnable = document.getElementById("gpx_ignore_zero_elev");
 
     const stats = {};
-    const hashCode = (str) => [...str].reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
+    //const hashCode = (str) => [...str].reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
+    function hashCode(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = ((hash << 5) - hash) + str.charCodeAt(i);
+          hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    }
 
     let uploadPath = document.getElementById('wp-upload-path').innerText + '/';
 
@@ -80,106 +88,110 @@ import { fromHTML} from "./fromHTML";
     // define all Event listeners --------------------
 
     // show the clicked gpx-file from server. Use the complete path on server.
-    filesTable.addEventListener("click", (event) => {  
-        // get the clicked row
-        const row = event.target.closest('tr');
-        // skip if header was clicked
-        if (row.previousSibling === null) { return; }
+    if ( filesTable !== null ) {
 
-        // remove highlight for previously selected row
-        if (selectedRow !== null) selectedRow.style.removeProperty("background-color");
+        filesTable.addEventListener("click", (event) => {  
+            // get the clicked row
+            const row = event.target.closest('tr');
+            // skip if header was clicked
+            if (row.previousSibling === null) { return; }
 
-        // highlight current row
-        row.style.backgroundColor = "yellow"
-        selectedRow = row;
+            // remove highlight for previously selected row
+            if (selectedRow !== null) selectedRow.style.removeProperty("background-color");
 
-        // get clicked file name and prepare file load
-        let clickedFile = row.querySelector('td').innerText;
-        
-        // set the global variables
-        stats.file_content = null;
-        newFile = "";
-        fileLength = 0;
-        checksum = 0;
-        if ( uploadPath === '' ) {
-            uploadPath = document.getElementById('wp-upload-path').innerText + '/';
-        }
-        text1.innerHTML = "File: " + clickedFile + "<br>Stats<br>N<br>N<br>N";
-        stats.fileName = clickedFile;
-        clickedFile = uploadPath + clickedFile;
-        
-        // load the file to string stats.file_content. This is similar in all Event handlers.
-        loadFileToString(clickedFile, 'filelist').then( () => {
-            // do not filter the file. Show as saved on server 
-            if ( stats.file_content !== null && checksum != 0) {
-                showGpxFileOnLeaflet();
+            // highlight current row
+            row.style.backgroundColor = "yellow"
+            selectedRow = row;
 
-                // show statistics as saved in file or calculated, Show hint not filtered. Show hint if no statsitics in file
-                parseGpxString(text1);
-            }
-        })
-
-    })
-
-    filesTable.addEventListener("mouseleave", () => {
-        document.body.classList.remove('stop-scrolling');
-    })
-
-    filesTable.addEventListener("mousewheel", (event) => {
-        
-        let row;
-        if (selectedRow == null) return;
-
-        event.preventDefault();
-        document.body.classList.add('stop-scrolling');
-                
-        if (event.deltaY > 0) {
-            // scroll down
-            // get the row below the current.
-            if (selectedRow.nextSibling === null) { return; }
-            row = selectedRow.nextSibling;
-           
-        } else {
-            // scroll up
-            // get the row above the current.
-            if (selectedRow.previousSibling === null || selectedRow.previousSibling.previousSibling === null) { return; }
-            row = selectedRow.previousSibling;
+            // get clicked file name and prepare file load
+            let clickedFile = row.querySelector('td').innerText;
             
-        }
-        // remove highlight for previously selected row
-        selectedRow.style.removeProperty("background-color");
-
-        // highlight current row
-        row.style.backgroundColor = "yellow"
-        selectedRow = row;
-        
-        // get file from new row
-        let clickedFile = row.querySelector('td').innerText;
-
-        // set the global variables
-        stats.file_content = null;
-        newFile = "";
-        fileLength = 0;
-        checksum = 0;
-        if ( uploadPath === '' ) {
-            uploadPath = document.getElementById('wp-upload-path').innerText + '/';
-        }
-        text1.innerHTML = "File: " + clickedFile + "<br>Stats<br>N<br>N<br>N";
-        stats.fileName = clickedFile;
-        clickedFile = uploadPath + clickedFile;
-
-        // load the file to string stats.file_content. This is similar in all Event handlers. Do not filter
-        loadFileToString(clickedFile, 'filelist').then( () => {
-            // do not filter the file. Show as saved on server 
-            if ( stats.file_content !== null && checksum != 0) {
-                showGpxFileOnLeaflet();
-
-                // show statistics as saved in file or calculated, Show hint not filtered. Show hint if no statsitics in file
-                parseGpxString(text1);
+            // set the global variables
+            stats.file_content = null;
+            newFile = "";
+            fileLength = 0;
+            checksum = 0;
+            if ( uploadPath === '' ) {
+                uploadPath = document.getElementById('wp-upload-path').innerText + '/';
             }
+            text1.innerHTML = "File: " + clickedFile + "<br>Stats<br>N<br>N<br>N";
+            stats.fileName = clickedFile;
+            clickedFile = uploadPath + clickedFile;
+            
+            // load the file to string stats.file_content. This is similar in all Event handlers.
+            loadFileToString(clickedFile, 'filelist').then( () => {
+                // do not filter the file. Show as saved on server 
+                if ( stats.file_content !== null && checksum != 0) {
+                    showGpxFileOnLeaflet();
+
+                    // show statistics as saved in file or calculated, Show hint not filtered. Show hint if no statsitics in file
+                    parseGpxString(text1);
+                }
+            })
+
         })
-        
-    })
+
+        filesTable.addEventListener("mouseleave", () => {
+            document.body.classList.remove('stop-scrolling');
+        })
+
+        filesTable.addEventListener("mousewheel", (event) => {
+            
+            let row;
+            if (selectedRow == null) return;
+
+            event.preventDefault();
+            document.body.classList.add('stop-scrolling');
+                    
+            if (event.deltaY > 0) {
+                // scroll down
+                // get the row below the current.
+                if (selectedRow.nextSibling === null) { return; }
+                row = selectedRow.nextSibling;
+            
+            } else {
+                // scroll up
+                // get the row above the current.
+                if (selectedRow.previousSibling === null || selectedRow.previousSibling.previousSibling === null) { return; }
+                row = selectedRow.previousSibling;
+                
+            }
+            // remove highlight for previously selected row
+            selectedRow.style.removeProperty("background-color");
+
+            // highlight current row
+            row.style.backgroundColor = "yellow"
+            selectedRow = row;
+            
+            // get file from new row
+            let clickedFile = row.querySelector('td').innerText;
+
+            // set the global variables
+            stats.file_content = null;
+            newFile = "";
+            fileLength = 0;
+            checksum = 0;
+            if ( uploadPath === '' ) {
+                uploadPath = document.getElementById('wp-upload-path').innerText + '/';
+            }
+            text1.innerHTML = "File: " + clickedFile + "<br>Stats<br>N<br>N<br>N";
+            stats.fileName = clickedFile;
+            clickedFile = uploadPath + clickedFile;
+
+            // load the file to string stats.file_content. This is similar in all Event handlers. Do not filter
+            loadFileToString(clickedFile, 'filelist').then( () => {
+                // do not filter the file. Show as saved on server 
+                if ( stats.file_content !== null && checksum != 0) {
+                    showGpxFileOnLeaflet();
+
+                    // show statistics as saved in file or calculated, Show hint not filtered. Show hint if no statsitics in file
+                    parseGpxString(text1);
+                }
+            })
+            
+        })
+
+    }
 
     // show the last saved gpx-file. Use the complete path on server.
     window.addEventListener('load', (event) => {
@@ -226,7 +238,7 @@ import { fromHTML} from "./fromHTML";
             loadFileToString('no-filepath-required-here', 'input').then( () => {
                 // do not filter the file. Show as saved on server 
                 if ( stats.file_content !== null && checksum != 0) {
-                    // filter the file and return as xml-string to global variable newFile
+                    // filter the file and return as xml-string to global variable newFile and show other results like statistics after filtering
                     newFile = filterGPXTrack(stats.file_content, input.files[0].name);
                     if( newFile === null ) {
                         alert("Error loading File")
@@ -235,9 +247,6 @@ import { fromHTML} from "./fromHTML";
 
                     // show filtered file
                     showGpxFileOnLeaflet();
-                    
-                    // show other results like statistics after filtering
-                    parseGpxString(text1);
                 }
             })
         }
@@ -317,23 +326,24 @@ import { fromHTML} from "./fromHTML";
     
     // ---------- listeners for reduce, ignoreZeroElevs inputs
     gpxReduceEnable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
-        gpx_reduce = document.getElementById("gpx_reduce").checked;
+        gpx_reduce = gpxReduceEnable.checked;
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
 
     ignoreZeroElevsEnable.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
-        ignoreZeroElevs = document.getElementById("gpx_ignore_zero_elev").checked;
+        ignoreZeroElevs = ignoreZeroElevsEnable.checked;
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
 
     function filterEventListener() {
-        // filter the file and return as xml-string to global variable newFile
+        
         if (newFile === "") {
             text1.innerHTML = "No file selected";
             return;
         }
+        // filter the file and return as xml-string to global variable newFile and show other results like statistics after filtering
         newFile = filterGPXTrack(stats.file_content, stats.fileName);
 
         if( newFile === null ) {return;}
@@ -345,10 +355,6 @@ import { fromHTML} from "./fromHTML";
 
         // show filtered file
         showGpxFileOnLeaflet();
-        
-        // show other results like statistics after filtering
-        parseGpxString(text1);
-
     }
     // End: define all Event listeners --------------------
 
@@ -442,7 +448,16 @@ import { fromHTML} from "./fromHTML";
         fileSize = new Blob([newFile]).size / 1024;
 
         // parse the GPX file as stored in global variable newfile
-        const [parsedFile, error] = parseGPX(newFile);
+        // do not parse again. This only called after loading a new file.
+        let parsedFile, error;
+        if (fileSize > 0) {
+            // file unchanged;
+            parsedFile = stats.parsedFile;
+            error = stats.error;
+        } else {
+            [parsedFile, error] = parseGPX(newFile);
+        }
+        if (!error) { error = checkParsedFile(parsedFile); }
 
         if (error) {
             element.innerHTML = "Error parsing loaded GPXFile as XML: " + error;
@@ -575,17 +590,17 @@ import { fromHTML} from "./fromHTML";
         let tDelta = 0;
 
         // set all global arrays to empty
-        elevs = [];
-        dists = [];
-        lats = [];
-        lons = [];
-        origelevs = [];
-        origdists = [];
-        origlats = [];
-        origlons = [];
-        origtdelta = [];
-        origSpeedH = [];
-        origSpeed3D = [];
+        elevs.length = 0;
+        dists.length = 0;
+        lats.length = 0;
+        lons.length = 0;
+        origelevs.length = 0;
+        origdists.length = 0;
+        origlats.length = 0;
+        origlons.length = 0;
+        origtdelta.length = 0;
+        origSpeedH.length = 0;
+        origSpeed3D.length = 0;
         let sumOrigSpeedH = 0;
         let sumOrigSpeed3D = 0;
 
@@ -626,15 +641,15 @@ import { fromHTML} from "./fromHTML";
                     let curDist3D = 1000 * calc3DDistance(lastConsideredPoint[0], lastConsideredPoint[1], lastConsideredElevation, curPoint[0], curPoint[1], point.elevation);
                     
                     // save the original values
-                    tDelta = (point.time.getHours()*3600 + point.time.getMinutes()*60 + point.time.getSeconds() 
-                        - (lastConsideredTime.getHours()*3600 + lastConsideredTime.getMinutes()*60 + lastConsideredTime.getSeconds() ));
+                    //tDelta = (point.time.getHours()*3600 + point.time.getMinutes()*60 + point.time.getSeconds() 
+                    //    - (lastConsideredTime.getHours()*3600 + lastConsideredTime.getMinutes()*60 + lastConsideredTime.getSeconds() ));
                     
                     origelevs.push(point.elevation);
                     origlats.push(point.latitude);
                     origlons.push(point.longitude);
 
                     origdists.push(curDist);
-                    origtdelta.push(tDelta);
+                    //origtdelta.push(tDelta);
 
                     let SpeedH = Math.abs(point.elevation - lastConsideredElevation); // /tDelta ? Math.abs(point.elevation - lastConsideredEleStats)/tDelta : 0.0;
                     origSpeedH.push(SpeedH);
@@ -750,9 +765,7 @@ import { fromHTML} from "./fromHTML";
                 
                 points = simplify(points, simplTol/100, highQuality);
 
-                lats = [];
-                lons = [];
-                elevs = [];
+                lats.length = 0; lons.length = 0; elevs.length = 0;
                 length = points.length;
                 for (let i = 0; i < length; i++) {
                     lats[i] = points[i].x;
@@ -791,14 +804,25 @@ import { fromHTML} from "./fromHTML";
                 }
             };
 
-            info = 'Dist: '+ (cumulativeDistance/1000).toFixed(1) +' km, Gain: '+ cumulativeElevationGain.toFixed(0) +' Hm, Loss: '+ cumulativeElevationLoss.toFixed(0) +' Hm';
-            
             if (!parsedFile.metadata.name) { parsedFile.metadata.name = fileName; }
+            info = 'Dist: '+ (cumulativeDistance/1000).toFixed(1) +' km, Gain: '+ cumulativeElevationGain.toFixed(0) +' Hm, Loss: '+ cumulativeElevationLoss.toFixed(0) +' Hm';
+
+            // add the result of local parsing here. That is faster
+            length = elevs.length;
+            text1.innerHTML = "<strong>File: " + parsedFile.metadata.name + "</strong>" + " / Size: " + ((509 + length*65)/1024).toFixed(1) + " kB"
+            + "<br>Stats in File: " + info 
+            + "<br>N Tracks: " + parsedFile.tracks.length + " / with N Points: " + length
+            + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: 0"
+            + "<br>N Waypoints: " + parsedFile.waypoints.length + " / with N Points: 0";
+
+            
             newFileContent = createGpxFileAsString( parsedFile.metadata.name, info, parsedFile.metadata.time,  lats, lons, elevs, bounds);
             return newFileContent;
 
         // else : return the original file
         } else {
+            text1.innerHTML = "<strong>File: " + parsedFile.metadata.name + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
+            + "<br>Stats in File: No Stats generated"; 
             return fileContent;
         }
     }
@@ -812,24 +836,24 @@ import { fromHTML} from "./fromHTML";
      * @return {void}
      */
     function getCurrentFilterSettings() {
-        gpx_reduce = document.getElementById("gpx_reduce").checked;
-        ignoreZeroElevs = document.getElementById("gpx_ignore_zero_elev").checked;
+        gpx_reduce = gpxReduceEnable.checked;
+        ignoreZeroElevs = ignoreZeroElevsEnable.checked;
         
         if (gpx_reduce) {
             // get the filter values
-            dsm = parseInt( document.getElementById("gpx_smooth").value );
+            dsm = parseInt( dsmsel.value );
             if ( ! dsmenable.checked) dsm = 0.0;
             pageVarsForJs[0]['sw_options']['gpx_distsmooth'] = dsm;
             
-            esm = parseFloat( document.getElementById("gpx_elesmooth").value );
+            esm = parseFloat( esmsel.value );
             if ( ! esmenable.checked) esm = 0.0;
             pageVarsForJs[0]['sw_options']['gpx_elesmooth'] = esm;
 
-            filter = parseFloat( document.getElementById("gpx_filter").value );
+            filter = parseFloat( filtsel.value );
             if ( ! filterenable.checked) filter = 100.0;
             //pageVarsForJs[0]['tracks']['track_0']['info']['filter'] = filter;
 
-            simplTol = parseFloat( document.getElementById("simplify_tolerance").value );
+            simplTol = parseFloat( simplsel.value );
             if ( ! simplenable.checked) simplTol = 0.0;
             //pageVarsForJs[0]['tracks']['track_0']['info']['simplTol'] = simplTol;
         } else {

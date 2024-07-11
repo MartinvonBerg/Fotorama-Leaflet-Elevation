@@ -522,7 +522,7 @@ class AdminSettingsPage {
 						// Get the desc in meta and add to values. 
 						$result = \file_put_contents( $completePath, $filteredFileContent);
 						// generate the output message
-						$values = 'GPX-Meta: ' . $gpxParser->metadata->desc . ' / ' . intval($result/1024) . ' kB ' . __('saved', 'fotoramamulti' );
+						$values = 'GPX-Meta: ' . $gpxParser->metadata->desc . ' / ' . __('saved', 'fotoramamulti' ) .': ' . intval($result/1024) . ' kB';
 					 } else {
 						$values = 'XML-Error';
 					 }

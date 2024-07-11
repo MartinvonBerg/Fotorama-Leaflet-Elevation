@@ -8,7 +8,7 @@
  */
 export function calcdistance(lat1, lon1, lat2, lon2) {
     const r = 12742; // 6371 * 2
-    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    const toRadians = (degrees) => degrees * 0.017453292519943295; //(Math.PI / 180);
 
     const dLat = Math.sin((toRadians(lat2) - toRadians(lat1)) / 2);
     const dLon = Math.sin((toRadians(lon2) - toRadians(lon1)) / 2);
@@ -32,8 +32,8 @@ export function calcdistance(lat1, lon1, lat2, lon2) {
  * @returns {number} - The distance between the two coordinates in km.
  */
 export function calc3DDistance(lat1, lon1, alt1=0, lat2, lon2, alt2=0) {
-    const r = 12742000; // 6371 * 2
-    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    const r = 12742; // 6371 * 2
+    const toRadians = (degrees) => degrees * 0.017453292519943295; //(Math.PI / 180);
 
     const dLat = Math.sin((toRadians(lat2) - toRadians(lat1)) / 2);
     const dLon = Math.sin((toRadians(lon2) - toRadians(lon1)) / 2);
@@ -43,5 +43,5 @@ export function calc3DDistance(lat1, lon1, alt1=0, lat2, lon2, alt2=0) {
         
     const distance = Math.sqrt( Math.pow(d, 2) + Math.pow(alt2 - alt1, 2) );
     
-    return distance / 1000.0;
+    return distance;
 }

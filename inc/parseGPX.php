@@ -152,7 +152,7 @@ final class parseGpxFile {
 
             // GPX output
             $complete = $path . '/' . $newfile;
-            $gpx_file->save($complete, \phpGPX\phpGPX::XML_FORMAT);
+            $gpx_file->save($complete, phpGPX::XML_FORMAT);
             $sizeafter = \filesize($complete) / 1024;
             $desc .= ', ' . __('Filesize', 'fotoramamulti') . ': '  . number_format_i18n(  $sizebefore, 0) . ' / ' . number_format_i18n($sizeafter,   0) . ' kB';
             $desc .= ', ' . __('Points', 'fotoramamulti')   . ': '  . number_format_i18n($pointsbefore, 0) . ' / ' . number_format_i18n($pointsafter, 0);
