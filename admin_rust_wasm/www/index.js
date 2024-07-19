@@ -4,8 +4,14 @@ import createGpxFileAsString from "./createGpxFileAsString";
 import { calcdistance, calc3DDistance } from "./distance";
 import { fromHTML} from "./fromHTML";
 
+
 (function (window, document, undefined) {
     "use strict";
+
+    let activeTab = document.getElementsByClassName("nav-tab-active")[0].innerHTML.includes("GPX") ? true : false;
+    if (!activeTab) {
+        return;
+    }
 
     let esm = 4.5;
     let esmStore = 4.5;
@@ -37,6 +43,7 @@ import { fromHTML} from "./fromHTML";
     let selectedRow = null;
     let allMaps = [];
     let bounds = null;
+    let chart = 'chartjs'; //pageVarsForJs[0].charttype; statistics is not correct with elevation
 
     const input = document.querySelector(".file-input");
     const text1 = document.querySelector("#gpx_text1");
@@ -62,8 +69,15 @@ import { fromHTML} from "./fromHTML";
     const ignoreZeroElevsEnable = document.getElementById("gpx_ignore_zero_elev");
 
     const stats = {};
-    //const hashCode = (str) => [...str].reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
+    
+    /**
+     * A description of the entire function.
+     *
+     * @param {string} str - the string to be hashed
+     * @return {string} the hash value of the string
+     */
     function hashCode(str) {
+        // replaces: const hashCode = (str) => [...str].reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
           hash = ((hash << 5) - hash) + str.charCodeAt(i);
@@ -122,7 +136,9 @@ import { fromHTML} from "./fromHTML";
             loadFileToString(clickedFile, 'filelist').then( () => {
                 // do not filter the file. Show as saved on server 
                 if ( stats.file_content !== null && checksum != 0) {
-                    showGpxFileOnLeaflet();
+                    let gjson = stats.parsedFile.toGeoJSON();
+                    //gjson = addInfoToGeoJSON(gjson, stats.parsedFile);
+                    showGpxFileOnLeaflet(gjson);
 
                     // show statistics as saved in file or calculated, Show hint not filtered. Show hint if no statsitics in file
                     parseGpxString(text1);
@@ -182,7 +198,9 @@ import { fromHTML} from "./fromHTML";
             loadFileToString(clickedFile, 'filelist').then( () => {
                 // do not filter the file. Show as saved on server 
                 if ( stats.file_content !== null && checksum != 0) {
-                    showGpxFileOnLeaflet();
+                    let gjson = stats.parsedFile.toGeoJSON();
+                    //gjson = addInfoToGeoJSON(gjson, stats.parsedFile);
+                    showGpxFileOnLeaflet(gjson);
 
                     // show statistics as saved in file or calculated, Show hint not filtered. Show hint if no statsitics in file
                     parseGpxString(text1);
@@ -194,7 +212,7 @@ import { fromHTML} from "./fromHTML";
     }
 
     // show the last saved gpx-file. Use the complete path on server.
-    window.addEventListener('load', (event) => {
+    window.addEventListener('load', () => {
 
         let lastFileResult = document.getElementById('fm-gpx-file')?.innerText || "";
         
@@ -218,10 +236,18 @@ import { fromHTML} from "./fromHTML";
             })
         }
         updateCSS();
+
+        if ( chart == 'ele' ) {
+            try {
+                document.getElementById('chartjs-profile-container0').remove();
+            } catch (error) {
+                console.log(error);
+            }
+        };
     }) 
 
     // show the selected file. Use the preloaded content from the fakepath as xml-string
-    input.addEventListener("change", (event) => { 
+    input.addEventListener("change", () => { 
         // set the global variables
         stats.file_content = null;
         newFile = "";
@@ -253,7 +279,7 @@ import { fromHTML} from "./fromHTML";
         
     })
 
-    // ---------- listeners for file filter inputs
+    // ---------- listeners for filter Value inputs
     esmsel.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
         esm = esmsel.value;
         esmStore = esm;
@@ -311,14 +337,13 @@ import { fromHTML} from "./fromHTML";
         filterEventListener();
     })
     
-    // ---------- listeners for esm, dsm, filter, simplTol inputs
+    // ---------- listeners for esm, dsm, filter, simplTol enable inputs
     function handleEnableClick(storedValue, enableCheckbox, globalValue) {
         enableCheckbox.addEventListener("input", () => {
-            globalValue = enableCheckbox.checked ? storedValue : 0.0;
+            globalValue = enableCheckbox.checked ? storedValue : globalValue; // functional change
             filterEventListener();
         });
     }
-    
     handleEnableClick(esmStore, esmenable, esm);
     handleEnableClick(dsmStore, dsmenable, dsm);
     handleEnableClick(filterStore, filterenable, filter);
@@ -357,7 +382,25 @@ import { fromHTML} from "./fromHTML";
         showGpxFileOnLeaflet();
     }
     // End: define all Event listeners --------------------
+    /*
+    function addInfoToGeoJSON(geojson, parsedFile) {
+        parsedFile.tracks.forEach(element => {
+            // find feature in geojson
+            // add type to feature
+            // add name to feature, if available
+        });
 
+        parsedFile.routes.forEach(element => {
+            
+        });
+
+        parsedFile.waypoints.forEach(element => {
+            
+        });
+
+        return geojson;
+    }
+    */
     function updateCSS() {
         // add inline CSS 
 	
@@ -471,9 +514,8 @@ import { fromHTML} from "./fromHTML";
                 NRtePts += element.points.length;
             });
 
-            parsedFile.waypoints.forEach(element => {
-                NWayPts += element.points.length;
-            });
+            NWayPts += parsedFile.waypoints.length;
+            
             if (NTrkPts + NRtePts == 0) { error = new Error("No points found in GPX file"); }
         }
 
@@ -539,7 +581,7 @@ import { fromHTML} from "./fromHTML";
             pageVarsForJs[0]['tracks']['track_0']['url'] = file;
         }
 
-
+        // reset the leaflet and chart divs in dom
         if ( allMaps[0] != 'undefined' && ( allMaps[0] != null ) ) {
             try {
                 allMaps[0].map.remove(); // leaflet map
@@ -552,24 +594,54 @@ import { fromHTML} from "./fromHTML";
             } catch (error) {
                 console.log(error);
             }
+
+            if ( chart == 'ele' ) {
+                try {
+                    document.getElementById('chartjs-profile-container0').remove();
+                } catch (error) {
+                    console.log(error);
+                }
+            }
             
             try {
-                allMaps[0].chart.chart.destroy(); // chartjs
-                // rework for not understood behaviour of destroy funtion on canvas
-                allMaps[0].chart.elementOnPage.width = allMaps[0].chart.elementOnPage.clientWidth;
+                if (chart == 'chartjs') {
+                    allMaps[0].chart.chart.destroy(); // chartjs
+                    // rework for not understood behaviour of destroy funtion on canvas
+                    allMaps[0].chart.elementOnPage.width = allMaps[0].chart.elementOnPage.clientWidth;
+                } else {
+                    allMaps[0].controlElevation.clear()
+                    let all = document.querySelectorAll("[id^='elevation-']");
+                    all.forEach(element => {
+                        element.remove();
+                    });
+                }
+                
             } catch (error) {
                 console.log(error);
             }
             
         }
-        import(/* webpackChunkName: "leaflet_chartjs" */'../../js/leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
-            allMaps[0] = [];
-            LeafletChartJs.LeafletChartJs.count = 0;
-            LeafletChartJs.LeafletChartJs.numberOfMaps = null;
-            allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0 );
-            if (bounds != null && bounds.isValid()) { allMaps[0].map.fitBounds(bounds); }
-            bounds = allMaps[0].map.getBounds();
-        })
+
+        // load the leaflet map and height chart
+        if (chart == 'chartjs') {
+            import(/* webpackChunkName: "leaflet_chartjs" */'../../js/leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
+                allMaps[0] = [];
+                LeafletChartJs.LeafletChartJs.count = 0;
+                LeafletChartJs.LeafletChartJs.numberOfMaps = null;
+                allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0 );
+                if (bounds != null && bounds.isValid()) { allMaps[0].map.fitBounds(bounds); }
+                bounds = allMaps[0].map.getBounds();
+            })
+        } else {
+            import(/* webpackChunkName: "elevation-admin" */'../../js/elevationClass.js').then( (LeafletElevation) => {
+                allMaps[0] = [];
+                LeafletElevation.LeafletElevation.count = 0;
+                LeafletElevation.LeafletElevation.numberOfMaps = null;
+                allMaps[0] = new LeafletElevation.LeafletElevation(0, 'boxmap' + 0 );  
+                if (bounds != null && bounds.isValid()) { allMaps[0].map.fitBounds(bounds); }
+                bounds = allMaps[0].map.getBounds();          
+            });
+        }
     }
 
     function filterGPXTrack(fileContent, fileName=null) {

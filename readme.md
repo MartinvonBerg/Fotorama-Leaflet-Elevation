@@ -312,7 +312,7 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.27.0 = 11.07.2024
-Update chart.js and swiper.js to latest versions.
+Update chart.js, swiper.js and gpx.js to latest versions. Added coords-functions to gpx.js.
 Added Functionality to Admin - GPX-Tracks:
 The Map + Track for the selected GPX-Track is shown on the Admin Page. Several filter options (statistics with mean height and speed change, Distance smoothing and simplify.js) were added. The GPX-File is now filtered in the browser and with Button Click "Save" sent as filtered file via http(s) to the server. The server-side (backend) from WP just stores the file now.
 Due to the new Functionality several bugs and inconsitencies were removed. Mainl in leafletChartJs-Files and in the AdminSettingsPage.php and admin_settings.php. The function was started with WebAssembly and Rust but later skipped, so the files are still in the repository. The translations in ./languages/*.json were updated for German only.

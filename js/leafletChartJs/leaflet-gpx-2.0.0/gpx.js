@@ -103,15 +103,10 @@ L.GPX = L.FeatureGroup.extend({
     this._layers = {};
     this._prepare_markers(options.markers);
     this._init_info();
-    this.coords = [];
 
     if (gpx) {
       this._parse(gpx, options, this.options.async);
     }
-  },
-
-  get_coords() {
-    return this.coords;
   },
 
   get_duration_string: function(duration, hidems) {
@@ -605,7 +600,6 @@ L.GPX = L.FeatureGroup.extend({
 
     // add track
     var l = new L.Polyline(coords, this._extract_styling(line, base_style, polyline_options));
-    this.coords = coords;
     this.fire('addline', { line: l, element: line });
     layers.push(l);
 

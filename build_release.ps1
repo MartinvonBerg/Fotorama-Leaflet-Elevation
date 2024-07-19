@@ -17,6 +17,12 @@ npm run build
 npx webpack --config .\webpack.config.js
 npx webpack --config .\webpack.chartjs-config.js
 
+# change path to .\admin_rust_wasm\www
+Set-Location .\admin_rust_wasm\www
+npx webpack --config .\webpack.admin.js
+# change the path back
+Set-Location ..\..
+
 # create swiper bundle
 #npx webpack --config .\webpack.swiper.js
 

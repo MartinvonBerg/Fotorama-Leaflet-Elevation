@@ -28,6 +28,7 @@
   "homepage": "https://github.com/rustwasm/create-wasm-app#readme",
   "dependencies": {
     "admin_rust_wasm": "file:../pkg",
+    "fast-xml-parser": "^4.4.0",
     "plotly.js-dist": "^2.33.0"
   },
   "devDependencies": {

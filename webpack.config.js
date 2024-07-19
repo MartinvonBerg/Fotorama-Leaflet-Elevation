@@ -1,6 +1,6 @@
 //const webpack = require('webpack');
 const path = require('path');
-let _mode = 'development';
+let _mode = 'production';
 
 // create bundle for fotorama
 module.exports = [

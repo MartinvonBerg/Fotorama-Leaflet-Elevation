@@ -39,39 +39,193 @@ class gpxTrackClass {
      * @param {string} [trackColour='#ff0000'] - The track colour to be assigned to the instance. Defaults to '#ff0000'.
      */
     constructor(number, mapobject, tracks, trackNumber, trackColour = '#ff0000') {
-        this.tracks = tracks;
+        
         this.pageVariables = pageVarsForJs[number];
         this.distSmoothing = parseInt(this.pageVariables.sw_options.gpx_distsmooth);
         this.eleSmoothing = parseFloat(this.pageVariables.sw_options.gpx_elesmooth);
-        this.number = number;
         this.mapobject = mapobject;
         this.trackNumber = trackNumber;
         this.trackColour = trackColour;
-        this.showTrack(this.trackNumber);
+        this.trackurl = tracks['track_'+ trackNumber.toString() ].url; // set track url : might be url or string in xml format
+
+        if (this.#getTrackType(this.trackurl) === 'geojson') {
+            this.trackName = this.trackurl.properties.name;
+            this.showGeoJson();
+        }
+        else {
+            this.showTrack(); // define a new function if the track data contains geojson.
+        }
+    }
+
+    #getTrackType(input) {
+
+        if (typeof(input) === 'string' && input.substr(0,1)==='<') { // direct XML has to start with a <
+            return 'xml'
+        } 
+        else if (typeof(input) === 'object') {
+            return 'geojson';
+        }
+        else {
+            return 'url';
+        }
+    }
+
+    /**
+     * Define Icons for the leaflet map.
+     * @param {string} path 
+     * @param {string} iconpng 
+     * @param {string} shadowpng 
+     * @returns {object} icon leaflet.icon-object-type
+     */
+    #setIcon(path, iconpng, shadowpng) {
+        let icon = L.icon({ 
+            iconUrl: path + iconpng,
+            iconSize: [16, 22],
+            iconAnchor: [8, 22],
+            //popupAnchor: [0, -16],
+            shadowUrl: path + shadowpng,
+            shadowSize: [16, 22],
+            shadowAnchor: [8, 22],
+        });
+        return icon;
+    }
+
+    #handleMouseOver(e) {
+        if ( e.type === 'mouseover' && (this.trackNumber == this.mapobject.currentTrack ) ) {
+            // get id in coords. triggerEvent
+            const changed = new CustomEvent('mouseoverpath', {
+                detail: {
+                    name: 'mouseoverpath',
+                    track: this.trackNumber, // different
+                    position: e.latlng,
+                    index: this.getIndexForCoords(e.latlng),
+                }
+              });
+              e.layer._map._container.dispatchEvent(changed);
+
+        } else if ( e.type === 'mouseover' && (this.trackNumber != this.mapobject.currentTrack ) ) {
+            const changed = new CustomEvent('changetrack', {
+                detail: {
+                    name: 'changetrack',
+                    newtrack: this.trackNumber,
+                }
+              });
+              e.layer._map._container.dispatchEvent(changed);
+        }
+    }
+
+    showGeoJson() {
+        let coords = [];
+        let elevs = [];
+        let layers = [];
+        /*
+        const trackLayer = new L.LayerGroup();
+        const routeLayer = new L.LayerGroup();
+        const wptLayer = new L.LayerGroup();
+
+        function onEachFeature(feature, layer) {
+            switch (feature.geometry.type) {
+                // TODO: how to differ tracks and routes?
+                case 'Point':
+                    wptLayer.addLayer(layer);
+                    break;
+                case 'LineString':
+                    trackLayer.addLayer(layer);
+                    break;
+                default: //case 'Point':
+                    routeLayer.addLayer(layer);
+                    break;
+            }
+        }
+        */
+        // showGeoJson(); on the map
+        L.Icon.Default.prototype.options.imagePath = this.pageVariables.imagepath;
+        this.gpxTracks = new L.geoJSON(this.trackurl, { // loads from url or parses xml directly
+           // options 
+           //onEachFeature: onEachFeature,
+        });
+        this.gpxTracks.setStyle({color :this.trackColour, stroke: parseInt(this.pageVariables.sw_options.trackwidth)});
+        layers.push(this.gpxTracks);
+
+        // get the data this.elev_data, this.coords
+        let i = 0;
+        this.trackurl.features[0].geometry.coordinates.forEach(element => {
+            let newElem = {
+                "lat": element[1],
+                "lng": element[0],
+                "meta": {
+                    "time": null,
+                    "ele": element[2],
+                    "hr": null,
+                    "cad": null,
+                    "atemp": null,
+                    "speed": 0
+                }
+            };
+            coords.push(newElem);
+            
+            let newelev = [
+                i, // dist from null, also as string
+                element[2],
+                i.toFixed(2) + " km, " + element[2].toFixed(0) + " m",
+                ];
+            elevs.push(newelev);
+            i+=1;
+        });
+        this.coords = coords;
+        this.elev_data = elevs;
+
+        // show start and end markers
+        this.myIcon1 = this.#setIcon(this.pageVariables.imagepath, 'pin-icon-start.png', 'pin-shadow.png');
+        this.myIcon2 = this.#setIcon(this.pageVariables.imagepath, 'pin-icon-end.png', 'pin-shadow.png');
+        
+        let marker1 = new L.marker(coords[0], { icon: this.myIcon1 });
+        marker1.addTo(this.gpxTracks);
+        layers.push(marker1);
+
+        let marker2 = new L.marker(coords[coords.length-1], { icon: this.myIcon2 });
+        marker2.addTo(this.gpxTracks);
+        layers.push(marker2);
+
+        this.gpxTracks.addTo(this.mapobject.map);
+
+        // this.setTrackInfo(); // set track statistics
+        this.gpxTracks._info = {};
+        this.gpxTracks._info.desc = this.trackurl.properties.description || "";
+        this.setTrackInfo();
+
+        // set track name and bounds in leaflet
+        this.mapobject.controlLayer.addOverlay(this.gpxTracks, this.trackName);
+        this.mapobject.bounds = this.gpxTracks.getBounds();
+        this.bounds = this.mapobject.bounds;
+
+        // handle mouseover : same in both functions : seperate
+        this.gpxTracks.on('mouseover', (event) =>this.#handleMouseOver(event))
     }
 
     /**
      * Shows a GPX-track on the leaflet map. (in Principle as part of the constructor).
      * Uses all class variables.
      *
-     * @param {number} trackNumber - The number of the track to be shown.
      * @return {void} This function does not return anything.
      */
-    showTrack( trackNumber ) {
-        this.trackurl = this.tracks['track_'+ trackNumber.toString() ].url; // set track url : might be url or string in xml format
+    showTrack() {
 
         // show first track on map. track color, width, tooltip font color, background color
-        this.gpxTracks = new L.GPX(this.trackurl, {
+        this.gpxTracks = new L.GPX(this.trackurl, { // loads from url or parses xml directly
             async: this.asyncLoading,
             polyline_options: {
                 color: this.trackColour,
                 weight: parseInt(this.pageVariables.sw_options.trackwidth),
             },
-            
+            markers: {
+                startIcon: this.pageVariables.imagepath +'/pin-icon-start.png',
+                endIcon: this.pageVariables.imagepath +'/pin-icon-end.png',
+            },
             marker_options: {
-                startIconUrl: this.pageVariables.imagepath +'/pin-icon-start.png',
-                endIconUrl: this.pageVariables.imagepath +'/pin-icon-end.png',
-                shadowUrl: this.pageVariables.imagepath +'/pin-shadow.png',
+                //startIconUrl: this.pageVariables.imagepath +'/pin-icon-start.png',
+                //endIconUrl: this.pageVariables.imagepath +'/pin-icon-end.png',
+                //shadowUrl: this.pageVariables.imagepath +'/pin-shadow.png',
                 iconSize: [16, 22],
                 iconAnchor: [8, 22],
                 shadowSize: [16, 22],
@@ -83,40 +237,15 @@ class gpxTrackClass {
         this.coords = this.gpxTracks.get_coords();
 
         // set info
+        this.trackName = this.gpxTracks._info.name;
         this.setTrackInfo();
       
         this.mapobject.controlLayer.addOverlay(this.gpxTracks, this.gpxTracks._info.name);
-        //this.mapobject.map.fitBounds(this.gpxTracks.getBounds(), {padding: [150, 150]});
         this.mapobject.bounds = this.gpxTracks.getBounds();
         this.bounds = this.mapobject.bounds;
 
-        let classThis = this;
-        this.gpxTracks.on('mouseover', function(e) {
-            if ( e.type === 'mouseover' && (classThis.trackNumber == classThis.mapobject.currentTrack ) ) {
-                // let thecoords = e.propagatedFrom.latlngs;
-                // get id in coords. triggerEvent
-                // classThis.trackNumber : is the hovered track // classThis.mapobject.currentTrack : ist the current track
-                const changed = new CustomEvent('mouseoverpath', {
-                    detail: {
-                        name: 'mouseoverpath',
-                        track: this._info.name,
-                        position: e.latlng,
-                        index: classThis.getIndexForCoords(e.latlng),
-                    }
-                  });
-            
-                  this._map._container.dispatchEvent(changed);
-            } else if ( e.type === 'mouseover' && (classThis.trackNumber != classThis.mapobject.currentTrack ) ) {
-                const changed = new CustomEvent('changetrack', {
-                    detail: {
-                        name: 'changetrack',
-                        newtrack: classThis.trackNumber,
-                    }
-                  });
-            
-                  this._map._container.dispatchEvent(changed);
-            }
-        })
+        // handle mouseover
+        this.gpxTracks.on('mouseover', (event) =>this.#handleMouseOver(event));
     }
 
     /**

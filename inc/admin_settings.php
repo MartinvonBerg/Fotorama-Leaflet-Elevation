@@ -1262,6 +1262,7 @@ final class FotoramaElevationAdmin
 			'ngpxfiles'  => 1,
 			'tracks' => $tracks,
 			'eletheme' => $this->leaflet_settings["colour_theme_for_leaflet_elevation_1"], //'custom-theme',
+			'charttype' => $this->leaflet_settings["charttype"],
 			'chartheight' => intval( $this->leaflet_settings["height_of_chart_11"] ), // 300,
 			'mapheight' => intval( $this->leaflet_settings["height_of_map_10"] ), // 400,
 			'mapaspect' => floatval( $this->leaflet_settings["aspect_ratio_of_map"] ), // 2,
