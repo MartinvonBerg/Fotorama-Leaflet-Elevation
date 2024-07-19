@@ -9,7 +9,7 @@ module.exports = {
     path: path.resolve(__dirname, '../../build/fm_admin'),
     
   },
-  mode: "development",
+  mode: "production",
   //plugins: [
   //  new CopyWebpackPlugin(['index.html'])
   //],
