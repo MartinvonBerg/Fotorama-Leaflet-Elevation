@@ -3,7 +3,7 @@ use js_sys::Float64Array;
 
 mod dist;
 use dist::*;
-mod func_plot;
+//mod func_plot;
 //extern crate web_sys;
 
 // A macro to provide `println!(..)`-style syntax for `console.log` logging.
@@ -42,8 +42,8 @@ pub struct AllGpxStats2 {
     latptr: *mut f64,
     lonptr: *mut f64,
     npts: i32,
-    chart1: Chart,
-    chart2: Chart,
+    //chart1: Chart,
+    //chart2: Chart,
 }
 
 #[wasm_bindgen]	
@@ -65,19 +65,14 @@ impl AllGpxStats2 {
             latptr: std::ptr::null_mut(),
             lonptr: std::ptr::null_mut(),
             npts: 0,
-            chart1: Chart::new(),
-            chart2: Chart::new(),
+            //chart1: Chart::new(),
+            //chart2: Chart::new(),
         }
     }
     
     #[wasm_bindgen(getter)]
     pub fn asc(&self) -> f64 {
         self.asc
-    }
-
-    #[wasm_bindgen(setter)]
-    pub fn set_asc(&mut self, asc: f64) {
-        self.asc = asc;
     }
     
     #[wasm_bindgen(getter)]
@@ -144,7 +139,7 @@ impl AllGpxStats2 {
     pub fn lonptr(&self) -> *mut f64 {
         self.lonptr
     }
-    
+    /* 
     #[wasm_bindgen(getter)]
     pub fn chart1(&self) -> Chart {
         Chart { convert: Box::new(|_| None) }
@@ -154,7 +149,7 @@ impl AllGpxStats2 {
     pub fn chart2(&self) -> Chart {
         Chart { convert: Box::new(|_| None) }
     }
-    
+    */
 }
 
 #[wasm_bindgen]
@@ -205,21 +200,21 @@ impl AllGpxStats {
         let ptr3: *mut f64 = lats.as_mut_ptr();
         let ptr4: *mut f64 = lons.as_mut_ptr();
 
-        let info: String = format!("Asc: {:.1} m / Desc: {:.1} m / Dist: {:.1} km / Npts: {}", asc, desc, dist, n);
-        let chart1 = Chart::gpx("gpx_canvas1", "test", info, ptr2, ptr1, n as usize, 0., dist, minele, maxele).unwrap();
-        let chart2 = Chart::gpx("gpx_canvas2", "track", "Map".to_string(), ptr4, ptr3, n as usize, minlon, maxlon, minlat, maxlat ).unwrap();
+        //let info: String = format!("Asc: {:.1} m / Desc: {:.1} m / Dist: {:.1} km / Npts: {}", asc, desc, dist, n);
+        //let chart1 = Chart::gpx("gpx_canvas1", "test", info, ptr2, ptr1, n as usize, 0., dist, minele, maxele).unwrap();
+        //let chart2 = Chart::gpx("gpx_canvas2", "track", "Map".to_string(), ptr4, ptr3, n as usize, minlon, maxlon, minlat, maxlat ).unwrap();
     
         let test = AllGpxStats2 { asc: asc, desc: desc, min: minele, max: maxele, dist: dist, minlat: minlat, minlon: minlon, maxlat: maxlat, maxlon: maxlon, 
-            eleptr:ptr1, disptr:ptr2, latptr:ptr3, lonptr:ptr4, npts: n, chart1: chart1, chart2: chart2 };
+            eleptr:ptr1, disptr:ptr2, latptr:ptr3, lonptr:ptr4, npts: n };
         test
     }
 }
 
 
 // ------------------ plotters-part ---------------------------
-/// Type alias for the result of a drawing function.
-pub type DrawResult<T> = Result<T, Box<dyn std::error::Error>>;
-
+// Type alias for the result of a drawing function.
+//pub type DrawResult<T> = Result<T, Box<dyn std::error::Error>>;
+/*
 /// Result of screen to chart coordinates conversion.
 #[wasm_bindgen]
 pub struct Point {
@@ -266,3 +261,4 @@ impl Chart {
         (self.convert)((x, y)).map(|(x, y)| Point { x, y })
     }
 }
+    */

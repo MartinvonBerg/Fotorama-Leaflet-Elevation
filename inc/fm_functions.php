@@ -433,6 +433,11 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 			$data['exposure_time'] = '--';
 		}
 
+		// correct the focal_length_in_35mm for full frame cameras
+		if (isset($data['focal_length']) && $data['focal_length_in_35mm'] == '--') {
+			$data['focal_length_in_35mm'] = $data['focal_length'];
+		}
+
 	} else if (($ext === '.mp4') || ($ext === '.m4v') || ($ext === '.webm') || ($ext === '.ogv') || ($ext === '.wmv') || ($ext === '.flv')) {
 		// check if poster file is available.
 		$pext = '.' . pathinfo($file, PATHINFO_EXTENSION);

@@ -51,7 +51,10 @@ function getJpgMetadata( string $filename ) : array
 	if (isset($Exif["EXIF"]["FocalLengthIn35mmFilm"])) {
 	//if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
 		$focal = $Exif["EXIF"]["FocalLengthIn35mmFilm"];
-	} else {
+	} else if (isset($Exif["EXIF"]["FocalLength"])) {
+		$focal = intval( $Exif["EXIF"]["FocalLength"], 10);
+	}
+	 else {
 		$focal = '--';
 	}
 
