@@ -111,7 +111,7 @@ module.exports = [
 },
 // main js script
 {
-  entry: ['./js/fotorama-multi-reduced.js', './js/fotoramaClass.js'],
+  entry: ['./js/fm_main.js', './js/fotoramaClass.js'],
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'release/js'),

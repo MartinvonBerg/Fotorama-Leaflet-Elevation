@@ -14,7 +14,7 @@
         // slider variables
         let allSliders = [ numberOfBoxes-1 ];
                 
-        // map and chart var. The var is intentional here.
+        // map and chart var.
         let allMaps = [ numberOfBoxes-1 ];
         let moveMapOnSlideChange = true; // 'no', 'all', 'mobile'
         if ((pageVarsForJs[0].preventMapMove === 'all') || (pageVarsForJs[0].preventMapMove === 'mobile' && isMobile)) {
@@ -54,7 +54,6 @@
                     allSliders[m] = new SliderFotorama.SliderFotorama(m, sliderSel + m );
                     allSliders[m].defSlider(); 
                 })
-
             } else if ( hasSwiper ) {
                 sliderSel = 'swiper';
                 import(/* webpackChunkName: "swiper" */'./swiperClass.js').then( (SliderSwiper) => {
@@ -68,9 +67,8 @@
                     allSliders[m] = new MiniMasonryWrap.MiniMasonryWrap(m, sliderSel + m );
                     //allSliders[m].defSlider();
                 })
-            } else {
-                  // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
-                  if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
+            } else if ( parseInt(pageVarsForJs[m].ngpxfiles) === 0 ) {
+                    // no fotorama, no gpx-track: get and set options for maps without gpx-tracks. only one marker to show.
                     let center = pageVarsForJs[m].mapcenter;
                     let zoom = pageVarsForJs[m].zoom;
                     let text = pageVarsForJs[m].markertext;
@@ -80,18 +78,17 @@
                         allMaps[m].createSingleMarker(text);
                     })                    
                     
-                } else if ( hasLeafElev ) {
+            } else if ( hasLeafElev ) {
                     // no slider, one or more gpx-tracks: only leaflet elevation chart to show. This is true if there is a gpx-track provided.
                     // initiate the leaflet map
                     import(/* webpackChunkName: "elevation" */'./elevationClass.js').then( (LeafletElevation) => {
                         allMaps[m] = new LeafletElevation.LeafletElevation(m, 'boxmap' + m );
                     })
-                } else {
-                    // only map with gpx-tracks and eventually a chart.
+            } else { // hasChartJS
+                    // no slider, only map with gpx-tracks and eventually a chart. chartjs shall be used.
                     import(/* webpackChunkName: "leaflet_chartjs" */'./leafletChartJs/leafletChartJsClass.js').then( (LeafletChartJs) => {
                         allMaps[m] = new LeafletChartJs.LeafletChartJs(m, 'boxmap' + m );
                     })
-                } 
             }
             
             // define map and chart
@@ -166,6 +163,7 @@
          * Resize the map div on load or resize of the browser window.
          * Show / hide the caption depending on window size.
          */
+        
         function resizer(event) {
             // hide the fotorama caption on small screens
             if( isMobile && hasFotorama) {

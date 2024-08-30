@@ -31,92 +31,124 @@ class LeafletChartJs extends LeafletMap {
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
 
+        this.initMap().then(() => {
+          this.initChart();
+        }).then(() => {
+          this.handleEvents();
+        }).catch((error) => {
+          console.log('Error in LeafletChartJs: ' + error);
+        });
+    };
+
+    async initMap() {
         // generate the track colors
+        let number = this.number;
         this.trackStartColour = pageVarsForJs[number].sw_options.trackcolour ?? '#ff0000';
         this.trackColours = this.calculateEquallyDistributedColors(this.trackStartColour, this.pageVariables.ngpxfiles);
-
-        // store the map object
-        let mapthis = {};
-        mapthis = this; 
 
         // generate all tracks on the map 
         for (const [key, track] of Object.entries( this.pageVariables.tracks )) {
             let trackNumber = parseInt(key.replace(/\D/g,''));
-            this.track[trackNumber] = new gpxTrackClass( number, mapthis, this.pageVariables.tracks, trackNumber, this.trackColours[trackNumber] );
+            this.track[trackNumber] = await this.createTrack(number, trackNumber);
             // get all bounds from all tracks
-            this.allBounds[trackNumber] = this.track[trackNumber].bounds;
+            if ( this.track[trackNumber].bounds !== null && this.track[trackNumber].bounds.isValid() ) {
+              this.allBounds[trackNumber] = this.track[trackNumber].bounds;
+            } else if ( this.bounds ) {
+              this.allBounds[trackNumber] = this.bounds;
+            } 
         };
 
         // set the bounds for the map. handling of parameter showalltracks is ignored here.
         let maxBounds = this.findMaxBounds(this.allBounds);
-        if (maxBounds.isValid()) {
+        if (maxBounds !== null && maxBounds.isValid()) {
           super.setBounds(maxBounds); // bounds might not correctly set leaflet-overlay-pane
-          mapthis.map.fitBounds(maxBounds);
+          this.map.fitBounds(maxBounds);
         }
-        mapthis.map.currentTrack = this.currentTrack;
+        this.map.currentTrack = this.currentTrack; 
+    };
 
-        // start chartjs parameters
-        this.coords = this.track[this.currentTrack].coords; // for catchChartEvent
-        this.leafletTrackID = this.track[this.currentTrack].gpxTracks._leaflet_id; // for catchChartEvent
-              
-        // show line chart with first track. example: https://jsfiddle.net/Geoapify/2pjhyves/
-        let div = 'fm-elevation-chartjs'+number; // do not handle the empty element here if not chart should be shown. This causes errors.
+    async createTrack(number, trackNumber) {
+      return new gpxTrackClass(number, this, this.pageVariables.tracks, trackNumber, this.trackColours[trackNumber]);
+    };
 
-        let chartOptions = {
-            // set i18n for chart (map is done in parent class 'leafletMapClass')
-            // set the CSS, styling for the chart 
-            // set the units for the chart and statistics
-            // set the responsive options for the chart
-            number : number,
-            divID : div,
-            // theme color options
-            theme : pageVarsForJs[number].eletheme,
-            CssBackgroundColor : pageVarsForJs[number].sw_options.chart_background_color,
-            chart_fill_color :  pageVarsForJs[number].sw_options.chart_fill_color,
-            chartHeight : pageVarsForJs[number].chartheight,
-            pageVariables : pageVarsForJs[number],
-            // responsive
-            responsive : true, // always, no setting
-            aspRatio : pageVarsForJs[number].mapaspect, // * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
-            chartAnimation : pageVarsForJs[number].sw_options.chart_animation===false? false : true, // always, no setting
-            showChartHeader : false, // always, no setting
-            padding : pageVarsForJs[number].sw_options.chartjspadding,
-            followSlider: false // this.track.length > 1 ? false : true // whether the image position should be shown in chartjs with moving tooltip. for future use
-            // add an option for parsing gpx data here. 
-            // Mit parsing müssen aber alle handler, events u.s.w an die neue Datenstruktur angepasst werden! Mit Fallunterscheidung! 
-            // Die Optimierung spart ca. 10% der Skriptlaufzeit, wenn nur ein Track angezeigt wird. Also ca. 20ms .. 25 ms.
+    findMaxBounds(bounds) {
+      let maxBounds = null;
+      for (const track of Object.values(bounds)) {
+        if (track !== null && track.isValid()) {
+          maxBounds = (maxBounds === null) ? track : maxBounds.extend(track);
         }
+      }
+      return maxBounds;
+    };
 
-        // show chart with the first track
-        this.chart = new chartJsClass( this.track[this.currentTrack].elev_data, chartOptions );
-        // handle empty chart if something went wrong
-        if ( this.isObjEmpty(this.chart.chart) ) {
-            this.chart = null;
-            return;
+    initChart() {
+      // ----------- start chartjs parameters
+      let number = this.number;
+      this.coords = this.track[this.currentTrack].coords; // for catchChartEvent
+      this.leafletTrackID = this.track[this.currentTrack].gpxTracks._leaflet_id; // for catchChartEvent
+            
+      // show line chart with first track. example: https://jsfiddle.net/Geoapify/2pjhyves/
+      let div = 'fm-elevation-chartjs'+number; // do not handle the empty element here if not chart should be shown. This causes errors.
+
+      let chartOptions = {
+          // set i18n for chart (map is done in parent class 'leafletMapClass')
+          // set the CSS, styling for the chart 
+          // set the units for the chart and statistics
+          // set the responsive options for the chart
+          number : number,
+          divID : div,
+          // theme color options
+          theme : pageVarsForJs[number].eletheme,
+          CssBackgroundColor : pageVarsForJs[number].sw_options.chart_background_color,
+          chart_fill_color :  pageVarsForJs[number].sw_options.chart_fill_color,
+          chartHeight : pageVarsForJs[number].chartheight,
+          pageVariables : pageVarsForJs[number],
+          // responsive
+          responsive : true, // always, no setting
+          aspRatio : pageVarsForJs[number].mapaspect, // * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
+          chartAnimation : pageVarsForJs[number].sw_options.chart_animation===false? false : true, // always, no setting
+          showChartHeader : false, // always, no setting
+          padding : pageVarsForJs[number].sw_options.chartjspadding,
+          followSlider: false // this.track.length > 1 ? false : true // whether the image position should be shown in chartjs with moving tooltip. for future use
+          // add an option for parsing gpx data here. 
+          // Mit parsing müssen aber alle handler, events u.s.w an die neue Datenstruktur angepasst werden! Mit Fallunterscheidung! 
+          // Die Optimierung spart ca. 10% der Skriptlaufzeit, wenn nur ein Track angezeigt wird. Also ca. 20ms .. 25 ms.
+      }
+
+      // show chart with the first track
+      this.chart = new chartJsClass( this.track[this.currentTrack].elev_data, chartOptions );
+      // handle empty chart if something went wrong
+      if ( this.isObjEmpty(this.chart.chart) ) {
+          this.chart = null;
+          return;
+      }
+    }
+
+    handleEvents() {
+      // update the slider if the marker on the map was clicked
+      let number = this.number;
+      let div = 'fm-elevation-chartjs'+number;
+      this.catchChartEvent(div);
+
+      let classThis = this;
+      document.getElementById('map'+number).addEventListener('mouseoverpath', function charthover(e) {
+        try {
+          classThis.chart.triggerTooltip(e.detail.index);
+          classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele.toFixed(1) + " m</p>");
+        } catch (error) {
+          //console.log(error);
         }
-        
-        // update the slider if the marker on the map was clicked
-        this.catchChartEvent(div);
+      });
 
-        let classThis = this;
-        document.getElementById('map'+number).addEventListener('mouseoverpath', function charthover(e) {
-          try {
-            classThis.chart.triggerTooltip(e.detail.index);
-            classThis.createSingleMarker(e.detail.position, "<p>" + classThis.coords[e.detail.index].meta.ele.toFixed(1) + " m</p>");
-          } catch (error) {
-            //console.log(error);
-          }
-        });
-
-        document.getElementById('map'+number).addEventListener('changetrack', function charthover(e) {
-          classThis.currentTrack = e.detail.newtrack;
-          let newdata = classThis.chart.prepareChartData(classThis.track[classThis.currentTrack].elev_data)
-          classThis.chart.chart.data.datasets[0].data = newdata.data;
-          classThis.chart.chart.data.labels = newdata.labels;
-          classThis.chart.setAxesMinMax(classThis.chart.chart)
-          classThis.chart.chart.update();
-          classThis.chart.setTrackStatistics(classThis.currentTrack);
-          classThis.coords = classThis.track[classThis.currentTrack].coords;
+      document.getElementById('map'+number).addEventListener('changetrack', function charthover(e) {
+        classThis.currentTrack = e.detail.newtrack;
+        let newdata = classThis.chart.prepareChartData(classThis.track[classThis.currentTrack].elev_data)
+        classThis.chart.chart.data.datasets[0].data = newdata.data;
+        classThis.chart.chart.data.labels = newdata.labels;
+        classThis.chart.setAxesMinMax(classThis.chart.chart)
+        classThis.chart.chart.update();
+        classThis.chart.setTrackStatistics(classThis.currentTrack);
+        classThis.coords = classThis.track[classThis.currentTrack].coords;
       });
     }
 
@@ -127,7 +159,7 @@ class LeafletChartJs extends LeafletMap {
      * @return {L.LatLngBounds|null} The maximum bounds from the array, or null if the array is empty or invalid.
      */
     findMaxBounds(mapBoundsArray) {
-      if (!Array.isArray(mapBoundsArray) || mapBoundsArray.length === 0) {
+      if ( mapBoundsArray[0] === null || !Array.isArray(mapBoundsArray) || mapBoundsArray.length === 0) {
         return null; // Return null for an empty or invalid array
       }
     
@@ -171,7 +203,7 @@ class LeafletChartJs extends LeafletMap {
      */
     setActiveMarker(markerNumber){
         super.setActiveMarker(markerNumber);
-        if (this.chart === null || markerNumber === undefined || this.chart.options.followSlider !== true) return;
+        if (this.isObjEmpty(this.chart) || markerNumber === undefined || this.chart.options.followSlider !== true) return;
 
         // get index for chartpos for pos of markernumber
         let coords = this.mrk[markerNumber]._latlng

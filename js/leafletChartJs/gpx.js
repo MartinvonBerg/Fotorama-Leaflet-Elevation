@@ -337,6 +337,43 @@ L.GPX = L.FeatureGroup.extend({
     req.send(null);
   },
 
+  _load_xml_new: function(url, cb, options, async) {
+    if (async === undefined) async = this.options.async;
+    if (options === undefined) options = this.options;
+
+    // If async is false, handle the fetch synchronously using async/await
+    if (async === false) {
+        (async () => {
+            try {
+                const response = await fetch(url, { headers: { 'Content-Type': 'text/xml' } });
+                if (response.ok) {
+                    const responseXML = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(responseXML, "text/xml");
+                    cb(xmlDoc, options);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        })();
+    } else {
+        // For async true, continue using fetch promises
+        fetch(url, { headers: { 'Content-Type': 'text/xml' } })
+            .then(response => {
+                if (response.ok) return response.text();
+                throw new Error('Network response was not ok');
+            })
+            .then(responseXML => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(responseXML, "text/xml");
+                cb(xmlDoc, options);
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+    }
+  },
+
   _parse: function(input, options, async) {
     var _this = this;
     var cb = function(gpx, options) {

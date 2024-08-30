@@ -6,7 +6,7 @@ let _mode = 'production';
 module.exports = [
 {
   target: ['web','es2017'],
-  entry: ['./js/fotorama-multi-reduced.js'],
+  entry: ['./js/fm_main.js'],
   output: {
     filename: 'fm_[name].js',
     chunkFilename: 'fm_[name].js',
