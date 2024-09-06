@@ -36,7 +36,7 @@
  * rendered on the Leaflet map.
  */
 
-var L = L || require('leaflet');
+'use strict';
 
 var _MAX_POINT_INTERVAL_MS = 15000;
 var _SECOND_IN_MILLIS = 1000;
@@ -103,20 +103,10 @@ L.GPX = L.FeatureGroup.extend({
     this._layers = {};
     this._prepare_markers(options.markers);
     this._init_info();
-    this.coords = [];
-    this.trk_types = [];
 
     if (gpx) {
       this._parse(gpx, options, this.options.async);
     }
-  },
-
-  get_coords() {
-    return this.coords.flat();
-  },
-
-  get_trk_types() {
-    return this.trk_types;
   },
 
   get_duration_string: function(duration, hidems) {
@@ -305,7 +295,7 @@ L.GPX = L.FeatureGroup.extend({
         });
       } else if (typeof(value) === 'string') {
         markers[key] = iconize(value);
-      } else if (typeof(value) === 'object') {
+      } else if (typeof(value) === 'object' && value !== null) {
         markers[key] = this._prepare_markers(value);
       }
     });
@@ -330,14 +320,18 @@ L.GPX = L.FeatureGroup.extend({
     if (async == undefined) async = this.options.async;
     if (options == undefined) options = this.options;
 
+    var _this = this;
     var req = new window.XMLHttpRequest();
     req.open('GET', url, async);
     try {
       req.overrideMimeType('text/xml'); // unsupported by IE
     } catch(e) {}
-    req.onreadystatechange = function() {
-      if (req.readyState != 4) return;
-      if(req.status == 200) cb(req.responseXML, options);
+    req.onloadend = function() {
+      if (req.status == 200) {
+        cb(req.responseXML, options);
+      } else {
+        _this.fire('error', { err: 'Error fetching resource: ' + url });
+      }
     };
     req.send(null);
   },
@@ -610,16 +604,8 @@ L.GPX = L.FeatureGroup.extend({
 
     // add track
     var l = new L.Polyline(coords, this._extract_styling(line, base_style, polyline_options));
-    this.coords.push(coords);
     this.fire('addline', { line: l, element: line });
     layers.push(l);
-
-    let subarray = [];
-    subarray['type'] = line.getElementsByTagName('type')[0].innerHTML;
-    subarray['len'] = coords.length;
-    subarray['colour'] = polyline_options.color;
-    this.trk_types.push(subarray);
-    
 
     if (options.markers.startIcon) {
       // add start pin
@@ -713,9 +699,3 @@ L.GPX = L.FeatureGroup.extend({
     return deg * Math.PI / 180;
   }
 });
-
-if (typeof module === 'object' && typeof module.exports === 'object') {
-  module.exports = L;
-} else if (typeof define === 'function' && define.amd) {
-  define(L);
-}

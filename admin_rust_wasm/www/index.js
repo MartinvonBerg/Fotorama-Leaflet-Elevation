@@ -425,10 +425,15 @@ import { fromHTML} from "./fromHTML";
      * @global {object} input - The file input DOM element
      * 
      * The following global variables are set:
-     * @global {object} stats.file_content - The content of the file as string in an object
+     * @global {string} stats.file_content - The content of the file as string in an object
      * @global {string} newFile - The content of the file as string equaly to stats.file_content
      * @global {number} fileLength - The length of the file
      * @global {number} checksum - The checksum of the file
+     * @global {string} stats.fileName - The name of the file
+     * @global {number} bounds - the bounds of the track for the map view
+     * @global {number} fileSize - The size of the file
+     * @global {object} stats.parsedFile - The parsed file as an object, parsed by parseGPX
+     *  @global {object} stats.parseError - The parse error as an object, parsed by parseGPX
      * 
      * @return {boolean} Returns true if the file is successfully loaded to a string, else false.
      */
@@ -550,11 +555,7 @@ import { fromHTML} from "./fromHTML";
             count += element.points.length;
         });
 
-        if (count == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return count == 0;
     }
 
     /**
@@ -574,7 +575,7 @@ import { fromHTML} from "./fromHTML";
      */
     function showGpxFileOnLeaflet(file=null) {
 
-        // load the file
+        // set the single file
         if (file == null) {
             pageVarsForJs[0]['tracks']['track_0']['url'] = newFile;
         } else {
@@ -704,7 +705,7 @@ import { fromHTML} from "./fromHTML";
                 
                 element.points.forEach(point => {
                     // ignore / skip points with zero elevation and go to next point
-                    if ( ignoreZeroElevs && (Math.abs(point.elevation) < 0.01) ) {
+                    if ( !('elevation' in point) || (ignoreZeroElevs && (Math.abs(point.elevation) < 0.01)) ) {
                         return; // is practically the same as continue
                     }
                     
@@ -894,8 +895,9 @@ import { fromHTML} from "./fromHTML";
             + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: 0"
             + "<br>N Waypoints: " + parsedFile.waypoints.length + " / with N Points: 0";
 
-            
-            newFileContent = createGpxFileAsString( parsedFile.metadata.name, info, parsedFile.metadata.time,  lats, lons, elevs, bounds);
+            let type = '';
+            if (parsedFile.tracks[0].type) { type = parsedFile.tracks[0].type; }
+            newFileContent = createGpxFileAsString( parsedFile.metadata.name, info, type, parsedFile.metadata.time,  lats, lons, elevs, bounds);
             return newFileContent;
 
         // else : return the original file

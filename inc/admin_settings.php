@@ -1268,6 +1268,7 @@ final class FotoramaElevationAdmin
 			'mapaspect' => floatval( $this->leaflet_settings["aspect_ratio_of_map"] ), // 2,
 			'sw_options' => [
 				'trackwidth' => intval( $this->leaflet_settings["trackwidth"] ), // 2,
+				'trackcolour' => $this->leaflet_settings["trackcolour"],
 				'gpx_distsmooth' => $this->gpxSettings["param3"]['values'],
 				'gpx_elesmooth' => $this->gpxSettings["param4"]['values'],
 				'chart_animation' => false

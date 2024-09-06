@@ -4,7 +4,11 @@
 	Martin von Berg
 */
 // load gpx tracks and provide data, name and statistics
-import './gpx.js'
+
+//import './gpx.js'
+import { leafletGpxWrapper } from './leafletGpxWrapper.js';
+import { calculateEquallyDistributedColors } from '../libs/colorLib.js'
+import { calcDist, calcDist3D } from '../libs/gpxCalcLib.js';
 
 export {gpxTrackClass};
 
@@ -51,15 +55,22 @@ class gpxTrackClass {
         if (this.#getTrackType(this.trackurl) === 'geojson') {
             this.trackName = this.trackurl.properties.name;
             this.showGeoJson();
+        } else if (this.#getTrackType(this.trackurl) === 'xml') {
+            this.showXmlTrack();
         }
         else {
-            this.showTrack(); // define a new function if the track data contains geojson.
+            this.showTrack(); 
         }
     }
 
+    /** Get the type of the track.
+     * 
+     * @param {string|object} input 
+     * @returns {string} 'geojson', 'xml' or 'url'
+     */
     #getTrackType(input) {
 
-        if (typeof(input) === 'string' && input.substr(0,1)==='<') { // direct XML has to start with a <
+        if (typeof input === 'string' && input.startsWith('<')) { // direct XML has to start with a <
             return 'xml'
         } 
         else if (typeof(input) === 'object') {
@@ -114,6 +125,16 @@ class gpxTrackClass {
         }
     }
 
+    /**
+     * showGeoJson() - function to show the track on the map
+     * @description
+     * This function is called once when the track is loaded and should be 
+     * called again when the track is changed from the chart.
+     * It shows the track on the map and adds markers for the start and end of the track.
+     * It also sets the track statistics and track name in the leaflet control layer.
+     * @param {none} - no parameters
+     * @returns {none} - no return values
+     */
     showGeoJson() {
         let coords = [];
         let elevs = [];
@@ -204,20 +225,65 @@ class gpxTrackClass {
     }
 
     /**
-     * Shows a GPX-track on the leaflet map. (in Principle as part of the constructor).
-     * Uses all class variables.
+     * Shows a preloaded XML GPX-track on the leaflet map. 
+     * @global {object} this
+     * @global {string} this.trackurl - the preloaded GPX-track as xml string
+     * @global {string} this.trackColour - the (starting) color of the trac(s)
+     * @global {number} this.pageVariables.sw_options.trackwidth - the width of the track
      *
      * @return {void} This function does not return anything.
      */
-    showTrack() {
+    showXmlTrack() {
+        console.log('showXmlTrack');
+        // get number of tracks from xml
+        let TypesInTrack = []; //this.trackurl.match(/\<type\>.*\<\/type\>/g) // TODO get text only 
+        const resultSet = new Set();
 
-        // show first track on map. track color, width, tooltip font color, background color
-        this.gpxTracks = new L.GPX(this.trackurl, { // loads from url or parses xml directly
-            async: this.asyncLoading,
-            polyline_options: {
+        for (const match of this.trackurl.matchAll(/<type>(.*?)<\/type>/g)) {
+            console.log(match[1]); // Gibt nacheinander "desiredContent1" und "desiredContent2" aus
+            TypesInTrack.push(match[1]);
+            resultSet.add(match[1]);
+          }
+
+        let nTypesInTrack = resultSet.size;
+
+        // get the number of different trayk types in the track
+        let i = 1;
+        let arr = Object.assign(...Array.from(resultSet, v => ({[v]:i++}) ) ) ;
+        // and calculate equally distributed colors
+
+        let colors = calculateEquallyDistributedColors(this.trackColour, nTypesInTrack);
+        // set polyline_options as array with different colors for each tracktype and repeat if same tracktype appears again
+        let polyline_options = [];
+        for (let i = 0; i < TypesInTrack.length; i++) {
+            let index=arr[TypesInTrack[i]];
+            polyline_options.push({
+                color: colors[index-1],
+                weight: parseInt(this.pageVariables.sw_options.trackwidth),
+            });
+        }
+        // show track on map with polyline_options
+        this.showTrack(polyline_options);
+    }
+
+    /**
+     * Shows a GPX-track from file on the leaflet map. (in Principle as part of the constructor).
+     * @global Uses all class variables.
+     *
+     * @return {void} This function does not return anything.
+     */
+    async showTrack( polyline_options = null ) {
+        console.log('showTrack in gpxTrackClass');
+        if (polyline_options == null) {
+            polyline_options = {
                 color: this.trackColour,
                 weight: parseInt(this.pageVariables.sw_options.trackwidth),
-            },
+            };
+        }
+        // show first track on map. track color, width, tooltip font color, background color
+        let options = { // loads from url or parses xml directly
+            async: this.asyncLoading,
+            polyline_options: polyline_options,
             markers: {
                 startIcon: this.pageVariables.imagepath +'/pin-icon-start.png',
                 endIcon: this.pageVariables.imagepath +'/pin-icon-end.png',
@@ -231,8 +297,10 @@ class gpxTrackClass {
                 shadowSize: [16, 22],
                 shadowAnchor: [8, 22],
             }
-        }).addTo(this.mapobject.map);
+        };
         
+        this.gpxTracks = new leafletGpxWrapper(this.trackurl, options);
+        this.gpxTracks.addTo(this.mapobject.map);
         this.elev_data = this.gpxTracks.get_elevation_data();
         this.coords = this.gpxTracks.get_coords();
 
@@ -253,7 +321,7 @@ class gpxTrackClass {
      * 
      * @global {array} this.pageVariables.tracks['track_<number>'].info
      * @global {number} this.trackNumber
-     * @global {method} this.calcGpxTrackdata()
+     * @global {method} this.calcGpxTrackInfo()
      * 
      * @returns {void}
      */
@@ -264,7 +332,7 @@ class gpxTrackClass {
         if (info[0]=='Dist:' && info[1] && info[4] && info[7]) {
             this.pageVariables.tracks['track_'+ this.trackNumber.toString() ].info = this.gpxTracks._info.desc;
         } else {
-            this.pageVariables.tracks['track_'+ this.trackNumber.toString() ].info = this.calcGpxTrackdata();
+            this.pageVariables.tracks['track_'+ this.trackNumber.toString() ].info = this.calcGpxTrackInfo();
         }
 
     }
@@ -283,7 +351,7 @@ class gpxTrackClass {
 
         //let startTime = performance.now();
         for (let i = 0; i < n; i++) { // performance
-            let newdist = this.calcCrow(point.lat, point.lng, this.coords[i].lat, this.coords[i].lng);
+            let newdist = calcDist(point.lat, point.lng, this.coords[i].lat, this.coords[i].lng);
 
             if (newdist < dist) {
                 index = i;
@@ -294,66 +362,18 @@ class gpxTrackClass {
     }
 
     /**
-     * Calculates the distance between two coordinates as the crow flies (in km).
-     * @param {number} lat1 - Latitude of the first location.
-     * @param {number} lon1 - Longitude of the first location.
-     * @param {number} lat2 - Latitude of the second location.
-     * @param {number} lon2 - Longitude of the second location.
-     * @returns {number} - The distance between the two coordinates in km.
-     */
-    calcCrow(lat1, lon1, lat2, lon2) {
-        const R = 6371; // km
-        const toRad = (degrees) => degrees * (Math.PI / 180);
-
-        const dLat = toRad(lat2 - lat1);
-        const dLon = toRad(lon2 - lon1);
-        const radLat1 = toRad(lat1);
-        const radLat2 = toRad(lat2);
-
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(radLat1) * Math.cos(radLat2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
-
-        return distance;
-    }
-
-    /**
-     * Calculates the distance between two coordinates by using the haversine formula (in km).
-     * @param {number} lat1 - Latitude of the first location.
-     * @param {number} lon1 - Longitude of the first location.
-     * @param {number} lat2 - Latitude of the second location.
-     * @param {number} lon2 - Longitude of the second location.
-     * @returns {number} - The distance between the two coordinates in km.
-     */
-    calcdistance(lat1, lon1, lat2, lon2) {
-        const r = 12742; // 6371 * 2
-        const toRadians = (degrees) => degrees * (Math.PI / 180);
-    
-        const dLat = Math.sin((toRadians(lat2) - toRadians(lat1)) / 2);
-        const dLon = Math.sin((toRadians(lon2) - toRadians(lon1)) / 2);
-    
-        const a = dLat * dLat + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * dLon * dLon;
-        const d = r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    
-        return d;
-    }
-
-    /**
      * Calculate the distance and elevation data for the track.
      * @global {object} this.coords[...].meta.ele / .lat / .lng
      * @global {number} this.distSmoothing : is used for distance smoothing in meters
      * @global {number} this.eleSmoothing : is used for elevation smoothing in meters
      * @global {boolean} this.doTrackCalc : is used to determine if the track data should be calculated
-     * @global {method} this.calcdistance : method is used
      * @global {number} this.tracklen  : is set by the function
      * @global {number} this.ascent  : is set by the function
      * @global {number} this.descent : is set by the function
      *  
      * @returns {string} 'Dist: 11 km, Gain: 22 Hm, Loss: 33 Hm' : The distance and elevation data for the track.
      */
-    calcGpxTrackdata() {
+    calcGpxTrackInfo() {
         let info = '';
 
         if ( this.coords.length == 0 ) return 'No Data found';
@@ -382,7 +402,7 @@ class gpxTrackClass {
                     lastConsideredElevation = curElevation;
 
                     let curPoint = [point.lat, point.lng];
-                    let curDist = 1000 * this.calcdistance(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
+                    let curDist = 1000 * calcDist3D(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
                     if (Math.abs(curDist) > this.distSmoothing) {
                         cumulativeDistance += curDist;
                     }
@@ -410,7 +430,7 @@ class gpxTrackClass {
                     }
 
                     let curPoint = [point.lat, point.lng];
-                    let curDist = 1000 * this.calcdistance(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
+                    let curDist = 1000 * calcDist3D(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
                     if (Math.abs(curDist) > this.distSmoothing) {
                         cumulativeDistance += curDist;
                         lastConsideredPoint = curPoint;

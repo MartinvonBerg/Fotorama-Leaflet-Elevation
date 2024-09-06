@@ -1,7 +1,7 @@
-export function createGpxFileAsString(fileName, info, time, lats, lons, elevs, bounds=null) {
+export function createGpxFileAsString(fileName, info, type, time, lats, lons, elevs, bounds=null) {
   return createGpxHeader() 
         + createGpxMeta( fileName, info, time, bounds) 
-        + createGpxTrack(fileName, lats, lons, elevs) 
+        + createGpxTrack(fileName, type, lats, lons, elevs) 
         + createGpxFooter();
 }    
 
@@ -25,13 +25,14 @@ function createGpxMeta(fileName, info, time, bounds=null) {
     return meta;
 }
 
-function createGpxTrack(name, lats, lons, elevs) {
+function createGpxTrack(name, type, lats, lons, elevs) {
     if (lats.length != lons.length || lats.length != elevs.length || lats.length != lons.length) {
         return "";
     }
 
     let track = '<trk>';
-    track += '<name>'+ name +'</name>';
+    track += '<name>'+ name +'</name>\n';
+    if (type != '') track += '<type>'+ type +'</type>\n';
     track += '<trkseg>\n';
 
     for (let i = 0; i < lats.length; i++) {
