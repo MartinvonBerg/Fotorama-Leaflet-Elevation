@@ -1,5 +1,5 @@
 /*!
-    colorLib.js 0.27.0
+    colorLib.js 0.28.0
     license: GPL 2.0
     JS color library with helper functions for color calculations and conversions. Designed as esm module
     Martin von Berg, 2024

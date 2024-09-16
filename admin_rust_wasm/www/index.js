@@ -629,7 +629,7 @@ import { fromHTML} from "./fromHTML";
                 allMaps[0] = [];
                 LeafletChartJs.LeafletChartJs.count = 0;
                 LeafletChartJs.LeafletChartJs.numberOfMaps = null;
-                allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0 );
+                allMaps[0] = new LeafletChartJs.LeafletChartJs(0, 'boxmap' + 0, false);
                 if (bounds != null && bounds.isValid()) { allMaps[0].map.fitBounds(bounds); }
                 bounds = allMaps[0].map.getBounds();
             })
@@ -893,15 +893,16 @@ import { fromHTML} from "./fromHTML";
             + "<br>Stats in File: " + info 
             + "<br>N Tracks: " + parsedFile.tracks.length + " / with N Points: " + length
             + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: 0"
-            + "<br>N Waypoints: " + parsedFile.waypoints.length + " / with N Points: 0";
+            + "<br>N Waypoints: " + parsedFile.waypoints.length;
 
             let type = '';
             if (parsedFile.tracks[0].type) { type = parsedFile.tracks[0].type; }
-            newFileContent = createGpxFileAsString( parsedFile.metadata.name, info, type, parsedFile.metadata.time,  lats, lons, elevs, bounds);
+            newFileContent = createGpxFileAsString( parsedFile.metadata.name, info, type, parsedFile.metadata.time,  lats, lons, elevs, bounds, parsedFile.waypoints);
             return newFileContent;
 
         // else : return the original file
         } else {
+            // TODO: provide correct name for leaflet layers control top right in ._info.name
             text1.innerHTML = "<strong>File: " + parsedFile.metadata.name + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
             + "<br>Stats in File: No Stats generated"; 
             return fileContent;

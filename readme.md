@@ -311,6 +311,13 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.28.0 = 16.09.2024
+Update chart.js, swiper.js and gpx.js to latest versions.
+Minor PHP Bugfixes, e.g. updated focal length extraction for full-frame cameras.
+Code refactoring of JS-common functions to libs started. Async loading started but not finished yet, and with no effect.
+Added Functionality to Admin - GPX-Tracks: Waypoints are now copied to the filtered file. (But Routes still not). The Tracks are still combined to one track.
+Preparation of coloured Multi-Sport tracks still in code, not finalized and deactivated.
+
 = 0.27.0 = 11.07.2024
 Update chart.js, swiper.js and gpx.js to latest versions. Added coords-functions to gpx.js.
 Added Functionality to Admin - GPX-Tracks:

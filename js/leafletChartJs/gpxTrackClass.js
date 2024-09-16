@@ -1,5 +1,5 @@
 /*!
-	gpxTrackClass 0.27.0
+	gpxTrackClass 0.28.0
 	license: GPL 2.0
 	Martin von Berg
 */
@@ -28,10 +28,12 @@ class gpxTrackClass {
     distSmoothing = 5; // value in meters // setting. take from admin panel.
     doTrackCalc = true; // no setting. always calc track statistics if not in file because leafelet-gpx is too inaccurate.
     trackNumber = 0;
+    trackName = '';
     pageVariables = []; // array of pageVariables passed by php. needs .sw_options.gpx_distsmooth, .sw_options.gpx_elesmooth, .sw_options.trackwidth, .imagepath, .tracks[...].info
     mapobject = {};
     trackColour = '';
     bounds = null;
+    polyline_options = [];
 
     /**
      * Constructs a new instance of the class. Sets all Class variables.
@@ -43,8 +45,9 @@ class gpxTrackClass {
      * @param {string} [trackColour='#ff0000'] - The track colour to be assigned to the instance. Defaults to '#ff0000'.
      */
     constructor(number, mapobject, tracks, trackNumber, trackColour = '#ff0000') {
-        
+        this.number = number;
         this.pageVariables = pageVarsForJs[number];
+        pageVarsForJs[number].tracks_polyline_options = [];
         this.distSmoothing = parseInt(this.pageVariables.sw_options.gpx_distsmooth);
         this.eleSmoothing = parseFloat(this.pageVariables.sw_options.gpx_elesmooth);
         this.mapobject = mapobject;
@@ -52,23 +55,36 @@ class gpxTrackClass {
         this.trackColour = trackColour;
         this.trackurl = tracks['track_'+ trackNumber.toString() ].url; // set track url : might be url or string in xml format
 
-        if (this.#getTrackType(this.trackurl) === 'geojson') {
+        // set the imagePath and size for the Leaflet default icons
+        L.Icon.Default.prototype.options.iconUrl = this.pageVariables.imagepath + 'marker-icon.png';
+        L.Icon.Default.prototype.options.shadowUrl = this.pageVariables.imagepath + 'marker-shadow.png';
+        L.Icon.Default.prototype.options.iconRetinaUrl = this.pageVariables.imagepath + 'marker-icon-2x.png';
+        L.Icon.Default.prototype.options.iconSize= [18, 24];
+        L.Icon.Default.prototype.options.iconAnchor= [9, 24];
+        L.Icon.Default.prototype.options.popupAnchor= [0, -18];
+        L.Icon.Default.prototype.options.shadowSize= [18, 24];
+        L.Icon.Default.prototype.options.shadowAnchor= [9, 24];
+
+        if (this.#getTrackUrlType(this.trackurl) === 'geojson') {
             this.trackName = this.trackurl.properties.name;
             this.showGeoJson();
-        } else if (this.#getTrackType(this.trackurl) === 'xml') {
-            this.showXmlTrack();
+        } else if (this.#getTrackUrlType(this.trackurl) === 'xml') {
+            this.#getTrackTypes();
+            this.showTrack(this.polyline_options);
+            // store the result in top global (window) var pageVarsForJs for later use
+            pageVarsForJs[number].tracks_polyline_options = this.polyline_options;
         }
         else {
             this.showTrack(); 
         }
     }
 
-    /** Get the type of the track.
+    /** Get the type of the track url input.
      * 
      * @param {string|object} input 
      * @returns {string} 'geojson', 'xml' or 'url'
      */
-    #getTrackType(input) {
+    #getTrackUrlType(input) {
 
         if (typeof input === 'string' && input.startsWith('<')) { // direct XML has to start with a <
             return 'xml'
@@ -88,9 +104,10 @@ class gpxTrackClass {
      * @param {string} shadowpng 
      * @returns {object} icon leaflet.icon-object-type
      */
-    #setIcon(path, iconpng, shadowpng) {
+    #setIcon(path, iconpng, shadowpng, retinapng='') {
         let icon = L.icon({ 
             iconUrl: path + iconpng,
+            iconRetinaUrl: path + retinapng,
             iconSize: [16, 22],
             iconAnchor: [8, 22],
             //popupAnchor: [0, -16],
@@ -160,7 +177,7 @@ class gpxTrackClass {
         }
         */
         // showGeoJson(); on the map
-        L.Icon.Default.prototype.options.imagePath = this.pageVariables.imagepath;
+        //L.Icon.Default.prototype.options.imagePath = this.pageVariables.imagepath;
         this.gpxTracks = new L.geoJSON(this.trackurl, { // loads from url or parses xml directly
            // options 
            //onEachFeature: onEachFeature,
@@ -170,6 +187,9 @@ class gpxTrackClass {
 
         // get the data this.elev_data, this.coords
         let i = 0;
+        let dist = 0;
+        let lastCoords = {};
+
         this.trackurl.features[0].geometry.coordinates.forEach(element => {
             let newElem = {
                 "lat": element[1],
@@ -184,11 +204,15 @@ class gpxTrackClass {
                 }
             };
             coords.push(newElem);
+            // calc the dist from the last element and add to total dist.
+            if (i==0) {lastCoords = newElem;}
+            dist = dist + calcDist( lastCoords.lat, lastCoords.lng, newElem.lat, newElem.lng );
+            lastCoords = newElem;
             
             let newelev = [
-                i, // dist from null, also as string
+                dist, // dist from null or beginning of the track.
                 element[2],
-                i.toFixed(2) + " km, " + element[2].toFixed(0) + " m",
+                dist.toFixed(2) + " km, " + element[2].toFixed(0) + " m",
                 ];
             elevs.push(newelev);
             i+=1;
@@ -224,56 +248,66 @@ class gpxTrackClass {
         this.gpxTracks.on('mouseover', (event) =>this.#handleMouseOver(event))
     }
 
-    /**
-     * Shows a preloaded XML GPX-track on the leaflet map. 
-     * @global {object} this
+    /** 
+     * get number of different types of tracks from xml and calculate equally distributed colors
+     * store the resulting colours, types and weigths this.polyline_options
+     * 
+     * @param {void} - no parameters
+     * @global {string} this.trackColour - the color of the track
+     * @global {number} this.pageVariables.sw_options.trackwidth
      * @global {string} this.trackurl - the preloaded GPX-track as xml string
-     * @global {string} this.trackColour - the (starting) color of the trac(s)
-     * @global {number} this.pageVariables.sw_options.trackwidth - the width of the track
-     *
-     * @return {void} This function does not return anything.
+     * 
+     * @global {object} this.polyline_options as return with stored results
+     * @return {number} number of different track types.
      */
-    showXmlTrack() {
-        console.log('showXmlTrack');
-        // get number of tracks from xml
-        let TypesInTrack = []; //this.trackurl.match(/\<type\>.*\<\/type\>/g) // TODO get text only 
+    #getTrackTypes() {
+        
+        let TypesInTrack = []; 
         const resultSet = new Set();
 
         for (const match of this.trackurl.matchAll(/<type>(.*?)<\/type>/g)) {
-            console.log(match[1]); // Gibt nacheinander "desiredContent1" und "desiredContent2" aus
             TypesInTrack.push(match[1]);
             resultSet.add(match[1]);
           }
 
         let nTypesInTrack = resultSet.size;
 
+        if (nTypesInTrack == 0) {
+            this.polyline_options[0] = {
+                color: this.trackColour,
+                weight: parseInt(this.pageVariables.sw_options.trackwidth),
+                type: 'none'
+                };
+            return 0; 
+        }
+
         // get the number of different trayk types in the track
         let i = 1;
-        let arr = Object.assign(...Array.from(resultSet, v => ({[v]:i++}) ) ) ;
+        let resultArray = Object.assign(...Array.from(resultSet, v => ({[v]:i++}) ) ) ;
+        
         // and calculate equally distributed colors
-
         let colors = calculateEquallyDistributedColors(this.trackColour, nTypesInTrack);
+
         // set polyline_options as array with different colors for each tracktype and repeat if same tracktype appears again
-        let polyline_options = [];
         for (let i = 0; i < TypesInTrack.length; i++) {
-            let index=arr[TypesInTrack[i]];
-            polyline_options.push({
+            let index=resultArray[TypesInTrack[i]];
+            this.polyline_options.push({
                 color: colors[index-1],
                 weight: parseInt(this.pageVariables.sw_options.trackwidth),
+                type:   TypesInTrack[i],
             });
         }
-        // show track on map with polyline_options
-        this.showTrack(polyline_options);
+        return nTypesInTrack-1;
     }
 
     /**
      * Shows a GPX-track from file on the leaflet map. (in Principle as part of the constructor).
      * @global Uses all class variables.
-     *
+     * @param {object} polyline_options - polyline_options for the different sub-tracks
      * @return {void} This function does not return anything.
      */
     async showTrack( polyline_options = null ) {
-        console.log('showTrack in gpxTrackClass');
+        
         if (polyline_options == null) {
             polyline_options = {
                 color: this.trackColour,
@@ -289,9 +323,6 @@ class gpxTrackClass {
                 endIcon: this.pageVariables.imagepath +'/pin-icon-end.png',
             },
             marker_options: {
-                //startIconUrl: this.pageVariables.imagepath +'/pin-icon-start.png',
-                //endIconUrl: this.pageVariables.imagepath +'/pin-icon-end.png',
-                //shadowUrl: this.pageVariables.imagepath +'/pin-shadow.png',
                 iconSize: [16, 22],
                 iconAnchor: [8, 22],
                 shadowSize: [16, 22],

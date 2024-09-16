@@ -1,18 +1,18 @@
-export function createGpxFileAsString(fileName, info, type, time, lats, lons, elevs, bounds=null) {
+export function createGpxFileAsString(fileName, info, type, time, lats, lons, elevs, bounds=null, waypoints=null) {
   return createGpxHeader() 
-        + createGpxMeta( fileName, info, time, bounds) 
+        + createGpxMeta( fileName, info, time, bounds, waypoints) 
         + createGpxTrack(fileName, type, lats, lons, elevs) 
         + createGpxFooter();
 }    
 
 function createGpxHeader() {
     let header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
-    header += '<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="Fotorama-Upload" >\n';
+    header += '<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="Slider-Map-Chart-Upload" >\n';
 
     return header;
 }
 
-function createGpxMeta(fileName, info, time, bounds=null) {
+function createGpxMeta(fileName, info, time, bounds=null, waypoints=null) {
     let meta = '<metadata>\n';
 
     if (fileName != '') meta += '<name>' + fileName + '</name>\n';
@@ -21,6 +21,12 @@ function createGpxMeta(fileName, info, time, bounds=null) {
     if (bounds != null) meta += '<bounds minlat="'+ bounds.minlat +'" maxlat="'+ bounds.maxlat +'" minlon="'+ bounds.minlon +'" maxlon="'+ bounds.maxlon+'"/>\n';
 
     meta += '</metadata>\n';
+
+    if (waypoints != null) {
+        for (let i = 0; i < waypoints.length; i++) {
+            meta += '<wpt lat="'+ waypoints[i].latitude +'" lon="'+ waypoints[i].longitude +'"><name>'+ waypoints[i].name +'</name></wpt>\n';
+        }
+    }
 
     return meta;
 }

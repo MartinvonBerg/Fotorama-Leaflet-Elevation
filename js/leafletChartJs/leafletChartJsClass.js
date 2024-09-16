@@ -28,11 +28,16 @@ class LeafletChartJs extends LeafletMap {
     trackColours = [];
     allBounds =[];
     currentTrack = 0;
+    preload = true;
 
-    constructor(number, elementOnPage, center=null, zoom=null) {
+    constructor(number, elementOnPage, preload=null, center=null, zoom=null ) {
         super(number, elementOnPage, center=null, zoom=null);
 
-        this.initMap().then(() => {
+        if (preload !== null) {
+          this.preload = preload;
+        }
+
+        this.createTrackOnMap().then(() => {
           this.initChart();
         }).then(() => {
           this.handleEvents();
@@ -41,11 +46,11 @@ class LeafletChartJs extends LeafletMap {
         });
     };
 
-    async initMap() {
-        console.log('initMap in LeafletChartJs');
+    async createTrackOnMap() {
         // generate the track colors
         let number = this.number;
         this.trackStartColour = pageVarsForJs[number].sw_options.trackcolour ?? '#ff0000';
+        // calculate track colours for the different tracks.
         this.trackColours = calculateEquallyDistributedColors(this.trackStartColour, this.pageVariables.ngpxfiles);
 
         // generate all tracks on the map 
@@ -54,8 +59,7 @@ class LeafletChartJs extends LeafletMap {
             this.track[trackNumber] = await this.createTrack(number, trackNumber).then(results => { 
               return results ;
             });
-            // get all bounds from all tracks
-            console.log('get_all_Bounds in LeafletChartJs');
+            // get all bounds from all tracks. These bounds are not available if asyncLoading is true.
             if ( this.track[trackNumber].bounds !== null && this.track[trackNumber].bounds.isValid() ) {
               this.allBounds[trackNumber] = this.track[trackNumber].bounds;
             } else if ( this.bounds ) {
@@ -73,11 +77,17 @@ class LeafletChartJs extends LeafletMap {
     };
 
     async createTrack(number, trackNumber) {
+      if ( this.preload ) {
+        let track_x = `track_${trackNumber}`;  // where x is 0, 1, 2, etc.
+        let path = this.pageVariables.tracks[track_x].url;
+        let newFile = await fetch(path).then(response => response.text());
+        this.pageVariables.tracks[track_x].url = newFile;
+      }
+
       return new gpxTrackClass(number, this, this.pageVariables.tracks, trackNumber, this.trackColours[trackNumber]);
     };
 
     initChart() {
-      console.log('initChart in LeafletChartJs');
       // ----------- start chartjs parameters
       let number = this.number;
       this.coords = this.track[this.currentTrack].coords; // for catchChartEvent
@@ -104,7 +114,7 @@ class LeafletChartJs extends LeafletMap {
           aspRatio : pageVarsForJs[number].mapaspect, // * pageVarsForJs[number].mapheight / pageVarsForJs[number].chartheight,
           chartAnimation : pageVarsForJs[number].sw_options.chart_animation===false? false : true, // always, no setting
           showChartHeader : false, // always, no setting
-          padding : pageVarsForJs[number].sw_options.chartjspadding,
+          padding : pageVarsForJs[number].sw_options.chartjspadding ? parseInt(pageVarsForJs[number].sw_options.chartjspadding) : 20,
           followSlider: false // this.track.length > 1 ? false : true // whether the image position should be shown in chartjs with moving tooltip. for future use
           // add an option for parsing gpx data here. 
           // Mit parsing müssen aber alle handler, events u.s.w an die neue Datenstruktur angepasst werden! Mit Fallunterscheidung! 
@@ -121,7 +131,6 @@ class LeafletChartJs extends LeafletMap {
     }
 
     handleEvents() {
-      console.log('handleEvents in LeafletChartJs');
       // update the slider if the marker on the map was clicked
       let number = this.number;
       let div = 'fm-elevation-chartjs'+number;

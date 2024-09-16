@@ -1,5 +1,5 @@
 /*!
-  chartJsClass 0.27.0
+  chartJsClass 0.28.0
   license: GPL 2.0
   Martin von Berg
 */
@@ -32,6 +32,8 @@ class chartJsClass {
   descent = '';
   options = {};
   chartData = {};
+  distLeft = 0; // preparation for the correct start and end of the gradient if trk types should be shown in diffferent colors.
+  distRight = 0;
 
   /**
    * init the class with first track in linedata and the options
@@ -273,7 +275,9 @@ class chartJsClass {
         }
       }
     };
-    
+    // Todo : set this.distLeft this.distRight before drawing the chart-gradient
+    //this.distLeft = this.chart.chartArea.left;
+    //this.distRight = this.elementOnPage.parentElement.offsetWidth - this.chart.chartArea.right;
     this.chart = new Chart(this.ctx, config);
 
     // set statistics for track 0. the first track is always the starting track
@@ -373,34 +377,36 @@ class chartJsClass {
   setTheme (theme) {
     let textLineColor = '';
 
+    if (theme == 'custom' && this.pageVariables.tracks_polyline_options.length > 1) {
+      theme = 'custom';
+    }
+
     switch (theme) {
       case 'martin-theme':
-        this.CssBackgroundColor = 'background: linear-gradient(0deg, rgba(58, 120, 255, 0.15) 40%, rgba(58, 114, 255, 0.87) 100%)';
-        this.updateCSS();
-        
+        this.CssBackgroundColor = 'background: linear-gradient(0deg, rgba(58, 120, 255, 0.15) 40%, rgba(58, 114, 255, 0.87) 100%)';        
         this.setGradient();
         this.diagrFillColor = this.gradient;
-
         textLineColor = 'black';
-        this.diagrBorderColor = textLineColor; 
-        this.scaleColor = textLineColor;
-        //this.chartDefaultColor = textLineColor; 
-        Chart.defaults.color = textLineColor;
         break;
 
       case 'custom-theme':
+        this.CssBackgroundColor = 'background-color:' + this.CssBackgroundColor;
         // calc best contrast color for background
         textLineColor = this.getBestContrastTextColor(this.CssBackgroundColor);
-
-        this.CssBackgroundColor = 'background-color:' + this.CssBackgroundColor;
-        this.updateCSS();
-        
         this.diagrFillColor = this.diagrFillColor + 'E0'; // add transparency to the color. Hex #00 - #FF
-                
-        this.diagrBorderColor = textLineColor; 
-        this.scaleColor = textLineColor;
-        //this.chartDefaultColor = textLineColor; 
-        Chart.defaults.color = textLineColor;
+        // change tooltip colors if background is dark
+        if (textLineColor === '#ffffff') {
+          this.tooltipBackgroundColor = 'white';
+          this.tooltipTitleColor = 'black'
+        }
+        break;
+
+      case 'custom-multi':
+        this.CssBackgroundColor = 'background-color:' + this.CssBackgroundColor;
+        // calc best contrast color for background
+        textLineColor = this.getBestContrastTextColor(this.CssBackgroundColor);
+        this.setGradient();
+        this.diagrFillColor = this.gradient;
         
         // change tooltip colors if background is dark
         if (textLineColor === '#ffffff') {
@@ -413,6 +419,11 @@ class chartJsClass {
         this.diagrFillColor = ''; // unset to default
         break;
     }
+
+    this.updateCSS();
+    this.diagrBorderColor = textLineColor; 
+    this.scaleColor = textLineColor; 
+    Chart.defaults.color = textLineColor;
   }
 
   /**
@@ -466,15 +477,45 @@ class chartJsClass {
    * @global {number} this.elementOnPage.offsetHeight
    */
   setGradient() {
-    /*** Gradient http://jsfiddle.net/4vobe59a/***/ 
-    let colorChangePercentage = this.options.showChartHeader ? 0.4 : 0.3;
+    /*** Gradient http://jsfiddle.net/4vobe59a/***/
     let currentHeight = this.elementOnPage.offsetHeight;
+    let currentWidth = this.elementOnPage.offsetWidth;
 
-    this.gradient = this.ctx.createLinearGradient(0, 0, 0, currentHeight); // top-x, top-y, bottom-x, bottom-y
-    this.gradient.addColorStop(0.0, 'rgba(235,234,235,0.98)'); // top 0 : start of gradient
-    this.gradient.addColorStop(colorChangePercentage, 'rgba(235,234,235,0.98)'); 
-    this.gradient.addColorStop(colorChangePercentage+0.1, 'rgba(212,100,14,0.95)'); 
-    this.gradient.addColorStop(1, 'rgba(212,100,14,0.95)'); // bottom 1 : end of gradient
+    //if ( pageVarsForJs[this.number].tracks_polyline_options.length <1) {
+    if (true) {
+      let colorChangePercentage = this.options.showChartHeader ? 0.4 : 0.3;
+      this.gradient = this.ctx.createLinearGradient(0, 0, 0, currentHeight); // top-x, top-y, bottom-x, bottom-y
+      this.gradient.addColorStop(0.0, 'rgba(235,234,235,0.98)'); // top 0 : start of gradient
+      this.gradient.addColorStop(colorChangePercentage, 'rgba(235,234,235,0.98)'); 
+      this.gradient.addColorStop(colorChangePercentage+0.1, 'rgba(212,100,14,0.95)'); 
+      this.gradient.addColorStop(1, 'rgba(212,100,14,0.95)'); // bottom 1 : end of gradient
+    }
+    else {
+      const nRanges = pageVarsForJs[this.number].tracks_polyline_options.length;
+      const maxIndex = pageVarsForJs[this.number].tracks_polyline_options[nRanges-1].stopIndex;
+      const colorRanges = pageVarsForJs[this.number].tracks_polyline_options;
+      this.gradient = this.ctx.createLinearGradient(this.distLeft, 0, currentWidth-this.distRight, 0); // top-x, top-y, bottom-x, bottom-y
+      let stopX = 0;
+      let tracklen = 0;
+
+      // calc track length
+      for (let i=0; i<nRanges; i++) {
+        tracklen += colorRanges[i].dist;
+      }
+      console.log('tracklen: ',tracklen);
+
+      for (let i=0; i<nRanges; i++) {
+        // Umrechnung der Indizes auf die tatsächliche Canvasbreite
+        let range = colorRanges[i];
+        let startX = stopX * 1.0001; //(range.startIndex / maxIndex);
+        stopX = startX + (range.dist / tracklen);
+        stopX = stopX > 1 ? 1 : stopX;
+        this.gradient.addColorStop(startX, range.color);
+        console.log('len: ',range.dist,'start: ',startX, 'stop: ',stopX);
+        this.gradient.addColorStop(stopX, range.color);
+      };
+    }
+    
   }
   // ------------ end theme functions -------------------
 

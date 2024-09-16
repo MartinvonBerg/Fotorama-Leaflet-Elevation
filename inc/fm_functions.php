@@ -653,7 +653,7 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 		if (is_file($gpx_dir . $f)) {
 			$tracks['track_' . $i]['url'] = $gpx_url . $f;
 			$gpxdata = simplexml_load_file( $gpx_dir . $f );
-			$tracks['track_' . $i]['info'] = (string) $gpxdata->metadata->desc[0];
+			$tracks['track_' . $i]['info'] = (string) $gpxdata->metadata->desc[0] || '';
 
 			if ($i == 0) {
 				$gpxfile .= $f;

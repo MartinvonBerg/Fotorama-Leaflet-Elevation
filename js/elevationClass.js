@@ -181,7 +181,7 @@ class LeafletElevation extends LeafletMap {
             this.controlLayer.addOverlay(event.layer, event.name );
         }
         
-        if (info) {info = info.split(' ')} else {info='';};
+        if (typeof info == 'string' && info.length > 10) {info = info.split(' ')} else {info='';};
 
         let q = document.querySelector.bind(document);
         let m = this.number;
