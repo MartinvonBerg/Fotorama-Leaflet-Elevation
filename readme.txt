@@ -5,7 +5,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: slider, leaflet map, height chart, responsive, tile server
 Requires at least: 5.9
 Tested up to: 6.6
-Stable tag: 0.27.0
+Stable tag: 0.28.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -82,9 +82,16 @@ The Plugin runs from WordPress 5.9.x - 6.6.x and PHP 7.4.3 - 8.2.0.
 5. Back end IT 
 
 == Upgrade Notice ==
-No Upgrade required. Only if you want the new GPX-Track filtering.
+No Upgrade to 0.28.0 required. Only if you want the new GPX-Track filtering.
 
 == Changelog ==
+
+= 0.28.0 = 16.09.2024
+Update chart.js, swiper.js and gpx.js to latest versions.
+Minor PHP Bugfixes, e.g. updated focal length extraction for full-frame cameras.
+Code refactoring of JS-common functions to libs started. Async loading started but not finished yet, and with no effect.
+Added Functionality to Admin - GPX-Tracks: Waypoints are now copied to the filtered file. (But Routes still not). The Tracks are still combined to one track.
+Preparation of coloured Multi-Sport tracks still in code, not finalized and deactivated.
 
 = 0.27.0 =
 Update chart.js and swiper.js to latest versions.
