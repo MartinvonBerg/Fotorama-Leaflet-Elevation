@@ -3,9 +3,9 @@ Plugin Name: Slider Map Chart
 Contributors: martinvonberg
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CQA6XZ7LUMBJQ
 Tags: slider, leaflet map, height chart, responsive, tile server
-Requires at least: 5.9
+Requires at least: 6.4
 Tested up to: 6.6
-Stable tag: 0.28.0
+Stable tag: 0.29.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -82,9 +82,14 @@ The Plugin runs from WordPress 5.9.x - 6.6.x and PHP 7.4.3 - 8.2.0.
 5. Back end IT 
 
 == Upgrade Notice ==
-No Upgrade to 0.28.0 required. Only if you want the new GPX-Track filtering.
+No Upgrade to 0.29.0 required. Only if you want the new GPX-Track filtering and / or AVIF.
 
 == Changelog ==
+
+= 0.29.0 = 16.10.2024
+Bugfix for nominatim requests for startaddress
+Added support for AVIF-Files with restrictions: only for images in swiper, not for fotorama and not for video posters or thumbnails
+Hint: chart.js (4.4.5 not updated from 4.4.4), others are up to date
 
 = 0.28.0 = 16.09.2024
 Update chart.js, swiper.js and gpx.js to latest versions.

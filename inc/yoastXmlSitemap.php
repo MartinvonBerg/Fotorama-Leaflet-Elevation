@@ -102,7 +102,7 @@ class fotoramaSitemaps
 				$imgpath = $this->up_dir . '/' . $atts['imgpath'];   // path to the images-url in uploads directory
 				$imageurl = $this->up_url . '/' . $atts['imgpath'];  // url to the images-url in uploads directory
 
-				// Loop through all webp- and jpg-files in the given folder, and get the required data
+				// Loop through all avif, webp- and jpg-files in the given folder, and get the required data
 				require_once __DIR__ . '/readImageFolder.php'; 
 				$folder = new ReadImageFolder($imgpath, $this->thumbs, $imageurl, $reqgps, 'true');
 				$folderImages = $folder->getImagesForGallery( 'asc' );

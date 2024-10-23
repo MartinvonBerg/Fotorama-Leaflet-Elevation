@@ -73,7 +73,7 @@ It is possible to reach a Google lighthouse Performance of 100 for the all value
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.9 - 6.2.2 and PHP 7.4.2 - 8.2.0
+- The plugin was tested with wordpress versions 5.9 - 6.6.2 and PHP 7.4.2 - 8.2.0
 
 # Installation
 
@@ -310,6 +310,11 @@ This plugin uses the great work from:
 - Lust but not least: Many thanks to Norbert S. for testing!
 
 # Changelog
+
+= 0.29.0 = 16.10.2024
+Bugfix for nominatim requests for startaddress
+Added support for AVIF-Files with restrictions: only for images in swiper, not for fotorama and not for video posters or thumbnails
+Hint: chart.js (4.4.5 not updated from 4.4.4), others are up to date
 
 = 0.28.0 = 16.09.2024
 Update chart.js, swiper.js and gpx.js to latest versions.

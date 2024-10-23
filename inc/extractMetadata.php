@@ -1,8 +1,23 @@
 <?php
-namespace mvbplugins\fotoramamulti;
 
-// Extract Metadata from both Webp and JPG-files. Note: The result array of the both main functions is structurally not identical.
-// Although identended this requirement was not reached. TODO for a future update. The requirement was: "The exif data a array similar to the JSON that is provided via the REST-API".
+/**
+ * Extract Metadata from AVIF, Webp and JPG-files
+ *
+ * Description: Extract Metadata from AVIF, Webp and JPG-files. Note: The result array of the both main functions is structurally not identical. Although identended this requirement was not reached. TODO for a future update. The requirement was: "The exif data a array similar to the JSON that is provided via the REST-API".
+ *
+ * Requires PHP: 8.0
+ * Requires at least: 6.2
+ * Tested up to: 6.6
+ * Version: 0.29.0
+ * Author: Martin von Berg
+ * Author URI: https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
+ * License: GPL-2.0
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * @package MediaLibrary
+ */
+
+namespace mvbplugins\fotoramamulti;
 
 const BROKEN_FILE = false; // value to store in img_metadata if error during extracting metadata.
 const MINIMUM_CHUNK_HEADER_LENGTH = 18;
@@ -15,13 +30,42 @@ const VP8X_ANIM = 2;
 const EXIF_OFFSET = 8;
 
 /**
+ * Determine the MIME type of a file based on its content.
+ * 
+ * This function checks the MIME type using the PHP built-in mime_content_type function.
+ * If the MIME type is not found or is 'application/octet-stream', it tries to determine the MIME type based on the file extension.
+ * If the file extension is 'avif', the function returns 'image/avif' as the MIME type.
+ * Converning AVIF-files, this function relies on the assumption that the file extension is correctly set to avif.
+ * 
+ * @param string $file The path to the file for which the MIME type needs to be determined.
+ * @return string The determined MIME type of the file.
+ */
+function _mime_content_type( string $file ) 
+{ 
+	$mime = '';
+	$phpMime = mime_content_type( $file );
+
+	if ( ! empty( $phpMime ) && ( strpos( $phpMime, 'image/' ) !== false) ) {
+		$mime = $phpMime;
+	} elseif (! empty( $phpMime ) && $phpMime == 'application/octet-stream' ) {
+		$path_parts = pathinfo( $file );
+		$ext = $path_parts['extension'];
+		if ( $ext == 'avif' ) {
+			$mime = 'image/avif';
+		}
+
+	}
+	return $mime;
+}
+
+/**
  * read out the required metadata from a jpg-file on the server. The result provides some more data than required.
  *
  * @param string $filename The complete path to the file in the directory.
  * @return array The exif data a array similar to the JSON that is provided via the REST-API.
  */
-function getJpgMetadata( string $filename ) : array 
-{	
+function getJpgMetadata( string $filename ) :array 
+{
 	$info = [];
 	getimagesize( $filename, $info );
 	$Exif = exif_read_data( $filename, 'ANY_TAG', true );
@@ -49,7 +93,7 @@ function getJpgMetadata( string $filename ) : array
 	$iso = $Exif["EXIF"]["ISOSpeedRatings"] ?? '--';
 	
 	if (isset($Exif["EXIF"]["FocalLengthIn35mmFilm"])) {
-	//if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
+		//if (array_key_exists('FocalLengthIn35mmFilm', $Exif["EXIF"])) {
 		$focal = $Exif["EXIF"]["FocalLengthIn35mmFilm"];
 	} else if (isset($Exif["EXIF"]["FocalLength"])) {
 		$focal = intval( $Exif["EXIF"]["FocalLength"], 10);
@@ -61,7 +105,7 @@ function getJpgMetadata( string $filename ) : array
 	// Check setting of exif-field make (the lens information, written by my Ligtroom-Plugin)
 	// alternatively I wrote lens information to the make therefore I check for make here
 	if (isset($Exif["IFD0"]["Make"])) {
-	//if (array_key_exists('Make', $Exif['IFD0'])) {
+		//if (array_key_exists('Make', $Exif['IFD0'])) {
 		$make = $Exif["IFD0"]["Make"] ?? '';
 		$make = preg_replace('/\s+/', ' ', $make);
 	} else {
@@ -74,7 +118,7 @@ function getJpgMetadata( string $filename ) : array
 	
 	// get the camera model
 	if (isset($Exif["IFD0"]["Model"])) {
-	//if (array_key_exists('Model', $Exif['IFD0'])) {
+		//if (array_key_exists('Model', $Exif['IFD0'])) {
 		$model = $Exif["IFD0"]["Model"];
 	} else {
 		$model = '';
@@ -124,9 +168,9 @@ function getJpgMetadata( string $filename ) : array
  * Only tested for Nikon D7500 images after handling with Lightroom 6.14 and converson with imagemagick. Not done for all cameras that are around.
  * Title, caption and keywords are not found in EXIF-data. These are taken from XMP-data. 
  * This keys are set in the returned array: 
- * 		credit, copyright, title, caption, camera, keywords, GPS, make, 
- * 		orientation, lens, iso, exposure-time, aperture, focal-length, created-timestamp.
- * 		alt and description are not set.
+ * credit, copyright, title, caption, camera, keywords, GPS, make, 
+ * orientation, lens, iso, exposure-time, aperture, focal-length, created-timestamp.
+ * alt and description are not set.
  *
  * @param string $filename The complete path to the file in the directory.
  * @return array The exif data array similar to the JSON that is provided via the REST-API.
@@ -144,28 +188,112 @@ function getWebpMetadata( string $filename )
 }
 
 /**
+ * Read out the required metadata from a Avif-file on the server. The result provides some more data than required.
+ * Only tested for Nikon D7500 images after handling with Lightroom 6.14 and converson with imagemagick. Not done for all cameras that are around.
+ * Title, caption and keywords are not found in EXIF-data. These are taken from XMP-data. 
+ * This keys are set in the returned array: 
+ * credit, copyright, title, caption, camera, keywords, GPS, make, 
+ * orientation, lens, iso, exposure-time, aperture, focal-length, created-timestamp.
+ * alt and description are not set.
+ * 
+ * @param string $filename The complete path to the file in the directory.
+ * @return array The exif data array similar to the JSON that is provided via the REST-API.
+ */
+function getAvifMetadata( string $filename ) 
+{	
+	$image = new \Imagick($filename);
+
+	// Metadaten abrufen (EXIF, XMP, ICC)
+	$chunks = $image->getImageProfiles('*', true); // holt alle profile
+	if ( ! $chunks ) {
+		return [];
+	}
+
+	foreach ( $chunks as $key => $chunk ) {
+		switch ( $key ) {
+			
+			case 'exif':
+				#$exif2 = file_get_contents( $filename, false, null, $chunk['start'], $chunk['start']+$chunk['size'] );
+				$new = str_replace('Exif','Exif45',$chunk);
+				$meta = get_exif_meta( $new );
+				if ( isset( $meta['copyright'] ) ) $meta['credit'] = $meta['copyright'];
+				if ( isset( $meta['camera']) && isset( $meta['lens']) ) {$meta['camera'] = $meta['camera'] . ' + ' . $meta['lens'];}
+				break;
+			case 'xmp':
+				#$xmp2 = file_get_contents( $filename, false, null, $chunk['start']+8, $chunk['start']+$chunk['size'] );
+				$p = xml_parser_create();
+				xml_parser_set_option($p,XML_OPTION_SKIP_WHITE,1);
+				xml_parse_into_struct($p, $chunk, $vals, $index);
+				xml_parser_free($p);
+				
+				$title = '';
+
+				if ( isset( $index["DC:TITLE"] ) ) {
+					$nr = (int) ($index["DC:TITLE"][1] + $index["DC:TITLE"][0]) / 2;
+					$title = $vals[ $nr ]["value"];
+				}
+				$title != '' ? $meta[ 'title' ] = $title : $meta[ 'title' ] = 'notitle';
+
+				if ( isset( $index["DC:DESCRIPTION"] ) ) {
+					$nr = (int) ($index["DC:DESCRIPTION"][1] + $index["DC:DESCRIPTION"][0]) / 2;
+					$caption = $vals[ $nr ]["value"];
+					$meta[ 'caption' ] = $caption;
+				}
+				//$caption != '' ? $meta[ 'caption' ] = $caption : $meta[ 'caption' ] = '';
+				/*
+				if ( isset( $vals[2]["attributes"]["AUX:LENS"] ) ) {
+					$lens = $vals[2]["attributes"]["AUX:LENS"];
+					$meta[ 'camera' ] = $meta[ 'camera' ] . ' + ' . $lens;
+				} else {
+					$meta[ 'camera' ] = '---';
+				}
+				*/
+				$tags = [];
+
+				if ( isset( $index["RDF:BAG"] ) ) {
+					$tagstart = $index["RDF:BAG"][0] +1;
+					$tagend   = $index["RDF:BAG"][1] -1;
+					while ( $tagstart <= $tagend ) {
+						$tag = $vals[ $tagstart ]["value"];
+						$tagstart += 1;
+						$tags[] = $tag;
+					}
+				}
+
+				$meta[ 'keywords' ] = $tags; 
+
+				break;
+		}
+	}
+	
+	$meta['meta_version'] = WEBP_VERSION;
+	return $meta;
+}
+
+/**
  * Extract EXIF and XMP metadata from a file
  *
  * @param  string $filename the file to analyse
  * @return false|array array with metadata of false on failure
  */
-function extractMetadata( string $filename ) 
+function extractMetadata( string $filename )
 {
-	
+
 	$info = findChunksFromFile( $filename, 100 ); //RiffExtractor 
 	if ( $info === false ) {
 		return false;
-    }
+	}
 
-   if ( 'WEBP' != $info['fourCC'] ) {
-	   return false;
-   }
+	if ( 'WEBP' != $info['fourCC'] ) {
+		return false;
+	}
+	
+	$metadata = extractMetadataFromChunks( $info['chunks'], $filename );
+	if ( ! $metadata ) {
+		return false;
+	}
 
-   $metadata = extractMetadataFromChunks( $info['chunks'], $filename );
-   if ( ! $metadata ) {
-	   return false;
-   }
-   return $metadata;
+	return $metadata;
 }
 
 /**
@@ -354,61 +482,61 @@ function findChunksFromFile( string $filename, int $maxChunks = -1 )
  */
 function findChunks( $file, int $maxChunks = -1 ) 
 {
-		$riff = fread( $file, 4 );
-		if ( $riff !== 'RIFF' ) {
-			return false;
+	$riff = fread( $file, 4 );
+	if ( $riff !== 'RIFF' ) {
+		return false;
+	}
+
+	// Next four bytes are fileSize
+	$fileSize = fread( $file, 4 );
+	if ( !$fileSize || strlen( $fileSize ) != 4 ) {
+		return false;
+	}
+
+	// Next four bytes are the FourCC
+	$fourCC = fread( $file, 4 );
+	if ( !$fourCC || strlen( $fourCC ) != 4 ) {
+		return false;
+	}
+
+	// Create basic info structure
+	$info = [
+		'fileSize' => unpack( 'V', $fileSize )[1],
+		'fourCC' => $fourCC,
+		'chunks' => [],
+	];
+	$numberOfChunks = 0;
+
+	// Find out the chunks
+	while ( !feof( $file ) && !( $numberOfChunks >= $maxChunks && $maxChunks >= 0 ) ) {
+		$chunkStart = ftell( $file );
+
+		$chunkFourCC = fread( $file, 4 );
+		if ( !$chunkFourCC || strlen( $chunkFourCC ) != 4 ) {
+			return $info;
 		}
- 
-		// Next four bytes are fileSize
-		$fileSize = fread( $file, 4 );
-		if ( !$fileSize || strlen( $fileSize ) != 4 ) {
-			return false;
+
+		$chunkSize = fread( $file, 4 );
+		if ( !$chunkSize || strlen( $chunkSize ) != 4 ) {
+			return $info;
 		}
- 
-		// Next four bytes are the FourCC
-		$fourCC = fread( $file, 4 );
-		if ( !$fourCC || strlen( $fourCC ) != 4 ) {
-			return false;
-		}
- 
-		// Create basic info structure
-		$info = [
-			'fileSize' => unpack( 'V', $fileSize )[1],
-			'fourCC' => $fourCC,
-			'chunks' => [],
+		$intChunkSize = unpack( 'V', $chunkSize )[1];
+
+		// Add chunk info to the info structure
+		$info['chunks'][] = [
+			'fourCC' => $chunkFourCC,
+			'start' => $chunkStart,
+			'size' => $intChunkSize
 		];
-		$numberOfChunks = 0;
- 
-		// Find out the chunks
-		while ( !feof( $file ) && !( $numberOfChunks >= $maxChunks && $maxChunks >= 0 ) ) {
-			$chunkStart = ftell( $file );
- 
-			$chunkFourCC = fread( $file, 4 );
-			if ( !$chunkFourCC || strlen( $chunkFourCC ) != 4 ) {
-				return $info;
-			}
- 
-			$chunkSize = fread( $file, 4 );
-			if ( !$chunkSize || strlen( $chunkSize ) != 4 ) {
-				return $info;
-			}
-			$intChunkSize = unpack( 'V', $chunkSize )[1];
- 
-			// Add chunk info to the info structure
-			$info['chunks'][] = [
-				'fourCC' => $chunkFourCC,
-				'start' => $chunkStart,
-				'size' => $intChunkSize
-			];
- 
-			// Uneven chunks have padding bytes
-			$padding = $intChunkSize % 2;
-			// Seek to the next chunk
-			fseek( $file, $intChunkSize + $padding, SEEK_CUR );
- 
-		}
- 
-		return $info;
+
+		// Uneven chunks have padding bytes
+		$padding = $intChunkSize % 2;
+		// Seek to the next chunk
+		fseek( $file, $intChunkSize + $padding, SEEK_CUR );
+
+	}
+
+	return $info;
 }
 
 /**
@@ -437,7 +565,7 @@ function get_exif_meta( string $buffer )
 			'comps'=> 1, // Number of components per data-field 
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
 		), 
-		/*
+		
 		'0x0131' => array(
 			'text' => 'software',
 			'type' => 2, // ascii string
@@ -452,7 +580,7 @@ function get_exif_meta( string $buffer )
 			'comps'=> 1, // Number of components per data-field 
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
 		),
-		*/
+		
 		'0x0112' => array(
 			'text' => 'orientation',
 			'type' => 3, // unsigned short
@@ -532,7 +660,7 @@ function get_exif_meta( string $buffer )
 			'comps'=> 2, // Number of components per data-field 
 			'offs' => 0, // offset for type 2, 5, 10, 12
 		),
-		/*
+	
 		'0xA431' => array(
 			'text' => 'serial',
 			'type' => 2, // ascii string
@@ -540,6 +668,7 @@ function get_exif_meta( string $buffer )
 			'comps'=> 1, // Number of components per data-field 
 			'offs' => -1, // offset for type 2, 5, 10, 12: taken from data field
 		), 
+		/*
 		'0xA433' => array(
 			'text' => 'lensmake',
 			'type' => 2, // ascii string
@@ -587,14 +716,14 @@ function get_exif_meta( string $buffer )
 		if ( array_key_exists( $piece, $tags ) ) {
 			// found one tag
 			$value_of_tag = get_meta_from_piece( $isIntel, $buffer, $bufoffs, $piece, $tags );
-			$meta_key =	$tags[ $piece ]['text'];
+			$meta_key = $tags[ $piece ]['text'];
 
 			if ( 'created_timestamp' == $meta_key) {
 				$meta[ 'DateTimeOriginal' ] = $value_of_tag;
 				$value_of_tag = strtotime ( $value_of_tag);
 			}
 			
-			if ( $value_of_tag )	
+			if ( $value_of_tag )
 				$meta[ $meta_key ] = $value_of_tag;
 		}
 		$bufoffs += 1;
@@ -765,7 +894,7 @@ function get_gps_data( string $gpsbuffer, string $buffer, bool $isIntel )
 				
 				// store the new data in array
 				$value_of_tag = $data; 
-				$meta_key =	$tags[ $piece ]['text'];
+				$meta_key = $tags[ $piece ]['text'];
 				$meta[ $meta_key ] = $value_of_tag;
 			}
 		}
@@ -792,7 +921,7 @@ function frombuffer(string $buffer, int $offset, int $length, bool $isIntel) :st
 
 	$binary = substr( $buffer, $offset, $length);
 
-	if ( $isIntel) {	
+	if ( $isIntel ) {
 		$piece = binrevert( $binary );
 	} else {
 		$piece = '0x' . strtoupper( bin2hex ( $binary ) );
@@ -855,15 +984,19 @@ function binrevert (string $binary) :string
 			$val = dechex( \intval( $binary ) ) ;
 			$bin = '0x' . \strtoupper( sprintf('%02s', $val ) );
 			return $bin;
+			
 		case 2:
 			$val = dechex( unpack( 'v', $binary )[1]);
 			$bin = '0x' . \strtoupper( sprintf('%04s', $val ) );
 			return $bin;
+			
 		case 4:
 			$val = dechex( unpack( 'V', $binary )[1]);
 			$bin = '0x' . \strtoupper( sprintf('%08s', $val ) );
 			return $bin;
+			
 		default:
 			return '0x00';
+			
 	}
 }

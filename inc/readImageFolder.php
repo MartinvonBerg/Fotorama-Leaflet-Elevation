@@ -2,7 +2,7 @@
 namespace mvbplugins\fotoramamulti;
 
 /**
- * Class to readout all image files (jpg or webp) from the give directory on the server.
+ * Class to readout all image files (avif, jpg or webp) from the give directory on the server.
  *
  * PHP version 7.3.0 - 8.0.x
  *
@@ -83,7 +83,7 @@ final class ReadImageFolder
         if ($files === false) $files = [];
 
         if ($slider==='swiper') {
-            $sorted = preg_grep('/\.(jpe?g|webp|mp4|m4v|webm|ogv|wmv|flv)$/i', $files);
+            $sorted = preg_grep('/\.(jpe?g|webp|mp4|m4v|webm|ogv|wmv|flv|avif)$/i', $files);
         } else {
             $sorted = preg_grep('/\.(jpe?g|webp)$/i', $files);
         }
@@ -227,7 +227,7 @@ final class ReadImageFolder
             // get thumbnails from subdirectory ./thumbs only
             $thumbfiles = glob($pathtocheck . '/*.*');
             if ($thumbfiles === false) $thumbfiles = [];
-            $sorted = preg_grep('/\.(jpe?g|webp)$/i', $thumbfiles);
+            $sorted = preg_grep('/\.(jpe?g|webp|avif)$/i', $thumbfiles);
             if ($sorted !== false) $this->allThumbFiles = $sorted;
         }
 
@@ -250,6 +250,7 @@ final class ReadImageFolder
                 [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, $ext);
 
                 // search for webp-thumbs if jpg-image was converted to webp. The files will never be in a subdir because if so, it was done by WordPress.
+                // TODO: is this for avif required? If someone upload jpg and converts the subsizes to AVIF? Quite unusual.
                 if (('.jpg' === $ext || '.jpeg' === $ext) && ! $thumbavail) {
                     $thumbcheck = '-' . $this->thumbwidth . 'x' . $this->thumbheight . '.webp';
                     [$thumbavail, $thumbs] = $this->checkThumbs($thumbs, $pathtocheck, $thumbcheck, '.webp');
@@ -303,18 +304,15 @@ final class ReadImageFolder
                 } else {
 
                     // get the thumb image size for aspect ratio
-                    if ( $thumbinsubdir ) {
+                    if ( $thumbinsubdir || $thumbavail ) {
                         $thumbFile = $pathtocheck . $thumbs;
-                        list($width, $height, $type, $attr) = getimagesize( $thumbFile);
-                    } elseif ( $thumbavail ) {
-                        $thumbFile = $pathtocheck . $thumbs;
-                        list($width, $height, $type, $attr) = getimagesize( $thumbFile);
                     } else { 
                         $thumbFile = $pathtocheck . $ext;
-                        list($width, $height, $type, $attr) = getimagesize( $thumbFile);
                     };
 
                     // get the thumb aspect ratio
+                    list($width, $height, $type, $attr) = wp_getimagesize( $thumbFile);
+
                     if ( $width !== null && $height !== null) {
                         $thumbAspRatio = $width / $height;
                     } else {
@@ -353,7 +351,7 @@ final class ReadImageFolder
      * @param string $thumbs the prepared but usually empty string with thumbnail string. Somewhat useless.
      * @param string $pathtocheck the path that will be checked for thumbnails
      * @param string $thumbcheck the basename of the file with thumbnails to search for
-     * @param string $ext the current extension ('jgp' or 'webp')
+     * @param string $ext the current extension ('avif', 'jgp' or 'webp')
      * @return array<bool, string> with result values for $thumbinpath and $thumbs-extension
      */
     private function checkThumbs(string $thumbs, string $pathtocheck, string $thumbcheck, string $ext)

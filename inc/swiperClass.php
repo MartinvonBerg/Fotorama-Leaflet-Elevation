@@ -13,7 +13,7 @@ namespace mvbplugins\fotoramamulti;
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * @since      0.12.0
- * @version    0.28.0
+ * @version    0.29.0
  */
 
 
@@ -159,6 +159,7 @@ final class SwiperClass
            'jpeg' => 'image/jpeg',
            'jpg' => 'image/jpeg',
            'webp' => 'image/webp',
+           'avif' => 'image/avif',
        
            // video
            'm4v' => 'video/x-m4v',

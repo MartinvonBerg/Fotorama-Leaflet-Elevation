@@ -19,6 +19,7 @@ namespace mvbplugins\fotoramamulti;
  */
 
 // TODO: cache fileage solution. What to do if files are too old?
+// TODO convert to avif for even better performance or leave as is?
 
 // get the directory ot this file which is the cachedir and define other variables
 $cacheDir = __DIR__;

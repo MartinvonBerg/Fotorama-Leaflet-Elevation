@@ -409,8 +409,8 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		$data = getJpgMetadata( $file );
 		$data['type'] = 'image';
 
-	} elseif ( '.webp' == $ext) {
-		// Pre-define values that may not be in the webp
+	} elseif ( ('.webp' == $ext) || ('.avif' == $ext) ) {
+		// Pre-define values that may not be in the webp / avif
 		$data['datesort'] = '';
 		$data['focal_length_in_35mm'] = '--';
 		$data['iso'] = '--';
@@ -421,8 +421,17 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		$data['title'] = $title;
 		$data['camera'] = '---';
 		$data['type'] = 'image';
+		$additionaldata = null;
 
-		$additionaldata = getWebpMetadata( $file );
+		switch ($ext) {
+			case '.webp':
+				$additionaldata = getWebpMetadata( $file );
+				break;
+			case '.avif':
+				$additionaldata = getAvifMetadata( $file );
+				break;
+		}
+		
 		if ( ! empty($additionaldata) ) {
 			$data = \array_merge( $data, $additionaldata);
 		}
@@ -444,7 +453,7 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 		$posterBase = \str_replace($pext,'',$file) . '-poster.';
 		$hasPoster = false;
 		$data['type'] = 'video';
-
+		// TODO: The poster is not checked for avif format.
 		if (\is_file( $posterBase . 'jpg')) {
 			$pfile = $posterBase . 'jpg';
 			$pdata = getJpgMetadata( $pfile );
@@ -512,7 +521,7 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 	// get additional data from the wp database, if it is there
 	if ($wpid > 0) {
 		
-		// general jpeg and webp
+		// general avif, jpeg and webp
 		$wpmediadata = get_post( $wpid, 'ARRAY_A');
 		$sort = get_post_meta( $wpid, 'gallery_sort', true) ?? '';
 		$alt = get_post_meta( $wpid, '_wp_attachment_image_alt', true) ?? '' ;
@@ -549,6 +558,7 @@ function getEXIFData( string $file, string $ext, int $wpid) :array
 	// Post-Processing of $data for title and alt for images not in media catalog. Only title and alt are used later on.
 	// JPG: alt and caption are empty for images not in Media-Catalog.
 	// WEBP: alt and description are empty for images not in Media-Catalog.
+	// AVIF: TODO. check wether it is like webp
 
 	// no-title -> caption -> description -> alt -> notitle.
 	if ( \key_exists('title', $data) && $data['title'] === 'notitle' ) {
@@ -682,16 +692,20 @@ function parseGPXFiles ( int $postid, string $gpxfile, string $gpx_dir, string $
 							// get the adress of the GPS-starting point, source: https://nominatim.org/release-docs/develop/api/Reverse/
 							// only done for the first track. Mind: allow_url_fopen of the server has to be ON!
 							if ( ('true' == $showadress) &&  ('1' == \ini_get('allow_url_fopen') ) ) {
-								$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de';
+								$url = 'https://nominatim.openstreetmap.org/reverse?lat=' . $lat . '&lon='. $lon . '&format=json&zoom=10&accept-language=de'; // todo use setting of website here
 								$opts = array(
 									'http'=>array(
-									'method'=>'GET',
-									'header'=>'User-Agent: PostmanRuntime/7.26.10' // just any user-agent to fake a human access
+										'method'=>'GET',
+										'header'=>'User-Agent: none' // just any user-agent to fake a human access
 									)
 								);
 								$context = stream_context_create($opts);
 								$geojson = json_decode(file_get_contents( $url , false, $context ));
-								$geoadress = (array) $geojson->address;
+								if ( $geojson !== null ) {
+									$geoadress = (array) $geojson->address;
+								} else {
+									$geoadress = [];
+								}
 								//$resp = wp_remote_get( $url );
 								//$body = \json_decode( \wp_remote_retrieve_body( $resp ) );
 								//$geoadress = (array) $body->address;

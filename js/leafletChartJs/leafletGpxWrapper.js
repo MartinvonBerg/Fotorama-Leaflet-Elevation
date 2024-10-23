@@ -1,5 +1,5 @@
 /*!
-	leafletGpxWrapper 0.28.0
+	leafletGpxWrapper 0.29.0
 	license: GPL 2.0
 	Martin von Berg, 2024
     Wrapper for Leaflet-gpx to add / innclude some additional functions
