@@ -311,6 +311,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.30.0 = 11.11.2024
+Update for AVIF-Files, Bugfixes in PHP for track statistics, minor updates
+
 = 0.29.0 = 16.10.2024
 Bugfix for nominatim requests for startaddress
 Added support for AVIF-Files with restrictions: only for images in swiper, not for fotorama and not for video posters or thumbnails
