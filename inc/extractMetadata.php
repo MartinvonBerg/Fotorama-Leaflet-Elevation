@@ -7,7 +7,7 @@
  *
  * Requires PHP: 8.0
  * Requires at least: 6.2
- * Tested up to: 6.6
+ * Tested up to: 6.7
  * Version: 0.30.0
  * Author: Martin von Berg
  * Author URI: https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
