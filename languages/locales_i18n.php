@@ -25,6 +25,7 @@ function i18n_init() {
 	$dir = dirname( \plugin_basename( __FILE__)) . '/languages/';
 	load_plugin_textdomain( 'fotoramamulti', false, $dir);
 }
+//add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\i18n_init'); // only for translations in the admin-settings page
 
 /**
  * A function that overloads the wordpress standard translate function.
@@ -34,18 +35,16 @@ function i18n_init() {
  */
 function __( string $text, $namespace = 'fotoramamulti' ) :string {
 	$lang = setDashboardLanguage();
-	$tranlated = t($text, $lang);
-	return $tranlated;
+	$translated = t($text, $lang);
+	return $translated;
 }
-
-add_action( 'plugins_loaded', 'mvbplugins\fotoramamulti\i18n_init'); // only for translations in the admin-settings page
 
 /**
  * translate strings on client request (mind: it will not work if the page or post is cached by wordpress or another cache mechanism)
  *
- * @param $string $translate the string to translate
- * @param $string $language	 the client language
- * @return $string the translated and escaped string for defined language or the original string
+ * @param string $translate the string to translate
+ * @param string $language	 the client language
+ * @return string the translated and escaped string for defined language or the original string
  */
 function t(string $translate, string $language) :string {
 	

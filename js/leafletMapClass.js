@@ -238,16 +238,16 @@ class LeafletMap {
         } 
         else 
         {
-            this.layer1 = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            this.layer1 = new L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { //{a|b|c}.tile.opentopomap.org/{z}/{x}/{y}.png
                 maxZoom: this.maxZoomValue,
                 attribution: attribs[0]
                 });
          
-            this.layer2 = new L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
+            this.layer2 = new L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { // https://tile.openstreetmap.org/{z}/{x}/{y}.png
                 maxZoom: this.maxZoomValue,
                 attribution: attribs[1] 
                 });
-            this.layer3 = new L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+            this.layer3 = new L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', { // https://{s}.tile-cyclosm.openstreetmap.fr/[cyclosm|cyclosm-lite]/{z}/{x}/{y}.png
                 maxZoom: this.maxZoomValue,
                 attribution: attribs[2]   
                 });

@@ -19,7 +19,7 @@ namespace mvbplugins\fotoramamulti;
  */
 
 // TODO: cache fileage solution. What to do if files are too old?
-// TODO convert to avif for even better performance or leave as is?
+// Note: Do notconvert to avif because performance will be worse than webp.
 
 // get the directory ot this file which is the cachedir and define other variables
 $cacheDir = __DIR__;
@@ -48,7 +48,7 @@ $tileServers = array(
 	"osm" => array(
 		"searchfor" => "osmde",
 		"localdir" 	=> "osm{$ds}{$req[1]}{$ds}{$req[2]}",
-		"server" 	=> "a.tile.openstreetmap.de/tiles/osmde/", //"tile.openstreetmap.org/", 
+		"server" 	=> "tile.openstreetmap.org/", //"tile.openstreetmap.org/", https://tile.openstreetmap.org/{z}/{x}/{y}.png
 		"tile" 		=> "{$req[1]}/{$req[2]}/{$req[3]}",
 		"file"		=> "{$req[3]}",
 		"ext" 		=> "png"

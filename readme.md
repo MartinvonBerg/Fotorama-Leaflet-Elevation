@@ -8,16 +8,15 @@
 - [Installation](#installation)
 - [Update or De-Installation](#update-or-de-installation)
 - [Upgrade Notice](#upgrade-notice)
-- [Usage](#usage)
-- [Image Preparation and Usage of the Fotorama-Slider](#image-preparation-and-usage-of-the-fotorama-slider)
-- [Usage of Leaflet Elevation and Chart.js](#usage-of-leaflet-elevation)
+- [Usage](#usage-hints)
+- [Image Preparation and Usage of the Fotorama-Slider](#image-preparation)
+- [Usage of Leaflet Elevation and Chart.js](#usage-of-leaflet-elevation-or-chartjs)
 - [Tile Server for Leaflet Map Tiles](#tile-server-for-leaflet-map-tiles)
 - [Frequently Asked Questions](#frequently-asked-questions)
-- [Translation, i18n](#translation--i18n)
+- [Translation](#translation)
   * [Frontend](#frontend)
   * [Backend](#backend)
 - [Credits](#credits)
-- [Note for Developers](#note-for-developers)
 - [Changelog](#changelog)
 
 # Description 
@@ -103,7 +102,7 @@ No Upgrade required. Only if you want the new GPX-Track filtering.
 
 # Usage Hints
 
-- You habe problems with other Plugins using Leaflet : Use Chart.js only!
+- You have problems with other Plugins using Leaflet : Use Chart.js only!
 - MiniMasonry is experimental! It is very slow.
 - Image and GPX-track preparation: see below, but mind that this part of the readme is not completely up to date.
 - Shortcode:  `[gpxview]`   **Use the shortcode as often you want per page or post! No interference between shortcodes.**
@@ -137,13 +136,18 @@ No Upgrade required. Only if you want the new GPX-Track filtering.
 - NOTE to parameter 'showalltracks': It is required to use the above setting 'GPX-Parsing' activated for showalltracks to work.
 - Added Functionality to Admin - GPX-Tracks:
 The Map + Track for the selected GPX-Track is shown on the Admin Page. Several filter options (statistics with mean height and speed change, Distance smoothing and simplify.js) were added. The GPX-File is now filtered in the browser and with Button Click "Save" sent as filtered file via http(s) to the server. The server-side (backend) from WP just stores the file now.
-Due to the new Functionality several bugs and inconsitencies were removed. Mainl in leafletChartJs-Files and in the AdminSettingsPage.php and admin_settings.php. The function was started with WebAssembly and Rust but later skipped, so the files are still in the repository. The translations in ./languages/*.json were updated for German only.
+Due to the new Functionality several bugs and inconsistencies were removed. Mainly in leafletChartJs-Files and in the AdminSettingsPage.php and admin_settings.php. The function was started with WebAssembly and Rust but later skipped, so the files are still in the repository. The translations in ./languages/*.json were updated for German only.
 
 Process and save the file with the Button at the bottom.
 
 </br>
 
 # Image Preparation 
+**NOTE ON AVIF IMAGES:**
+Although AVIF is supported by all major browsers, and I spent a lot of time to make it work for the whole bunch of my Plugins I cannot recommend to use it. After all, I compared the Google Page Speed Index and the subjective load time of the page. With AVIF Images the Page Speed Index is worse (compared 80 to 100) and the subjective load time is much longer. Additionally, the AVIF thumbnails are not shown on the Leaflet Map. And I won't fix it because it is not worth it.
+
+So, the current recommendation is to use the 'webp format.
+
 1. Preparation of Images (optional)
     - Generate Thumbnails and rescale your Images.
     I used "ImageResizer for Windows" rescaled the former full-size images and generated thumbnails. The Thumbnails have to have '_thumb', '-thumb', '200x150' or '150x150' in their filename (e.g. image1-thumb.jpg). The minimum size should be 64 x 64px. Best is 150 x 150px.
@@ -152,7 +156,7 @@ Process and save the file with the Button at the bottom.
 
 2. Preparation of Videos for Swiper
     - Videos require a small preview image for the thumbnail bar. Prepare this like the other thumbnails. Name it "video-1_thumb.jpg" (Where "video-1" could be any name for your video file).
-    - Videos should have a "poster" to be shown as preview in the slider. It is required if you want to show the videos on the map. Prepare this poster with GPS-Data like you prepare other fotos for the slider. Name it "video-1_poster.jpg" (Where "video-1" could be any name for your video file).
+    - Videos should have a "poster" to be shown as preview in the slider. It is required if you want to show the videos on the map. Prepare this poster with GPS-Data like you prepare other photos for the slider. Name it "video-1_poster.jpg" (Where "video-1" could be any name for your video file).
 
 3. Convert JPGs to WEBPs (optional) 
     To drastically reduce disk-space and download times you may use webp files. I do that conversion locally on my computer and do NOT used WP for that. I use Imagemagick for that with the following powershell commands:
@@ -252,7 +256,7 @@ Drawback: No fileage clean-up implemented. So, once stored, the tiles are used f
         add_filter( 'wpseo_sitemap_entries_per_page', 'max_entries_per_sitemap' );
     ```
 
-# Translation, i18n
+# Translation
 ## Frontend
 All (available) strings are translated from English to German, Italian, French and Spanish. 'Available' means that some tooltips of leaflet-map are not translatable. You may find the translation in the file 'fotorama_multi.js' in the function `setlang()`. Change it or add your language, if you like so. To add your language just add another array like this:
 ```JS
@@ -312,7 +316,8 @@ This plugin uses the great work from:
 # Changelog
 
 = 0.30.0 = 11.11.2024
-Update for AVIF-Files, Bugfixes in PHP for track statistics, minor updates
+Update for AVIF-Files, Bugfixes in PHP for track statistics, minor updates.
+Changed loading of translation files and tileserver for openstreetmap.org.
 
 = 0.29.0 = 16.10.2024
 Bugfix for nominatim requests for startaddress
@@ -330,7 +335,7 @@ Preparation of coloured Multi-Sport tracks still in code, not finalized and deac
 Update chart.js, swiper.js and gpx.js to latest versions. Added coords-functions to gpx.js.
 Added Functionality to Admin - GPX-Tracks:
 The Map + Track for the selected GPX-Track is shown on the Admin Page. Several filter options (statistics with mean height and speed change, Distance smoothing and simplify.js) were added. The GPX-File is now filtered in the browser and with Button Click "Save" sent as filtered file via http(s) to the server. The server-side (backend) from WP just stores the file now.
-Due to the new Functionality several bugs and inconsitencies were removed. Mainl in leafletChartJs-Files and in the AdminSettingsPage.php and admin_settings.php. The function was started with WebAssembly and Rust but later skipped, so the files are still in the repository. The translations in ./languages/*.json were updated for German only.
+Due to the new Functionality several bugs and inconsistencies were removed. Mainly in leafletChartJs-Files and in the AdminSettingsPage.php and admin_settings.php. The function was started with WebAssembly and Rust but later skipped, so the files are still in the repository. The translations in ./languages/*.json were updated for German only.
 
 = 0.26.0 = 21.04.2024
 Added an option to show the users location on the leaflet Map. Updated swiper.js and chart.js. Minor PHP Bugfixes.
@@ -342,8 +347,8 @@ Added an option to show the users location on the leaflet Map. Updated swiper.js
 - BUGFIX: remove Bug in parsing of GPX-Tracks. (use of translation was wrong)
 
 = 0.24.0 =
-29.10.2023: PHP: Escaping for echo finalized. Translation completed ( .htaccess test output ). Tileserver.php minor changes. Unused funtions in fm_functions.php out commented.
-27.10.2023: Test with WP 6.4-RC2. Cube transition in Swiper deactivated (stil usable as shortcode parameter). Does not work and did never work completely. Update of Gutenberg Block still pending. Should not be used. Removed wp_kses_post() on Admin Pages.
+29.10.2023: PHP: Escaping for echo finalized. Translation completed ( .htaccess test output ). Tileserver.php minor changes. Unused functions in fm_functions.php out commented.
+27.10.2023: Test with WP 6.4-RC2. Cube transition in Swiper deactivated (still usable as shortcode parameter). Does not work and did never work completely. Update of Gutenberg Block still pending. Should not be used. Removed wp_kses_post() on Admin Pages.
 
 = 0.23.2 =
 30.08.2023: Bugfix for File upload in Admin Section.
@@ -353,7 +358,7 @@ Added an option to show the users location on the leaflet Map. Updated swiper.js
 21.08.2023: Added translation for back-end and changed echo() and escaping html according WordPress Plugin-Guidelines.
 
 = 0.22.0 =
-09.08.2023: Test with WordPress 6.3. But not a compplete 100% test. Currently not possible.
+09.08.2023: Test with WordPress 6.3. But not a complete 100% test. Currently not possible.
 04.08.2023: BugFixes in parseGPX.php. Change gpxparser to Class. Added the combination of all included routes and tracks. Updated PHP library
             phpGPX to version 1.3.0 from 07 / 2023.
 31.07.2023: BugFix in Class ReadImageFolder for thumbnails for Videos in Subfolder. Add caption and thumbnails for Videos in fslightbox.
@@ -392,7 +397,7 @@ Added an option to show the users location on the leaflet Map. Updated swiper.js
 = 0.16.0 =
 12.02.2023: Adding a filter filter based on filenames and improved sorting function.
             Added am import / export function for plugin settings.
-            Added a simple Massonry Gallery to show images from a folder that works together with fslightbox.
+            Added a simple Masonry Gallery to show images from a folder that works together with fslightbox.
 
 = 0.15.0 =
 29.01.2023: Bug-Fix of Admin Settings for clean activation process. Cleanup /inc directory. Added an option to hide the elevation chart. Swiper CSS settings corrected for object-fit. Added margin settings in elevationClass.js to get correct height of elevation charts. Clean-up elevationClass.js. Correction of CSS-selectors for updateCSS functions in JS. Admin parameter table: settings with no shortcode added to table.

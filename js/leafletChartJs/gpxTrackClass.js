@@ -53,7 +53,7 @@ class gpxTrackClass {
         this.mapobject = mapobject;
         this.trackNumber = trackNumber;
         this.trackColour = trackColour;
-        this.trackurl = tracks['track_'+ trackNumber.toString() ].url; // set track url : might be url or string in xml format
+        this.trackurl = tracks['track_'+ trackNumber.toString() ].url; // set track url : might be url or string in xml format or geojson format.
 
         // set the imagePath and size for the Leaflet default icons
         L.Icon.Default.prototype.options.iconUrl = this.pageVariables.imagepath + 'marker-icon.png';
@@ -249,15 +249,15 @@ class gpxTrackClass {
     }
 
     /** 
-     * get number of different types of tracks from xml and calculate equally distributed colors
+     * get number of different (unique) types of tracks from xml and calculate equally distributed colors
      * store the resulting colours, types and weigths this.polyline_options
      * 
      * @param {void} - no parameters
      * @global {string} this.trackColour - the color of the track
      * @global {number} this.pageVariables.sw_options.trackwidth
-     * @global {string} this.trackurl - the preloaded GPX-track as xml string
+     * @global {string} this.trackurl - the preloaded GPX-track as xml string. Works only with xml-string.
      * 
-     * @global {object} this.polyline_options as return with stored results
+     * @global {object} this.polyline_options as return with stored results in {color, weight, type} where type is the type of the track extracted from the xml
      * @return {number} number of different track types.
      */
     #getTrackTypes() {
@@ -272,6 +272,7 @@ class gpxTrackClass {
 
         let nTypesInTrack = resultSet.size;
 
+        // handle case of no types in track are defined
         if (nTypesInTrack == 0) {
             this.polyline_options[0] = {
                 color: this.trackColour,
@@ -281,7 +282,7 @@ class gpxTrackClass {
             return 0; 
         }
 
-        // get the number of different trayk types in the track
+        // get the number of different track types in the track
         let i = 1;
         let resultArray = Object.assign(...Array.from(resultSet, v => ({[v]:i++}) ) ) ;
         
@@ -319,8 +320,8 @@ class gpxTrackClass {
             async: this.asyncLoading,
             polyline_options: polyline_options,
             markers: {
-                startIcon: this.pageVariables.imagepath +'/pin-icon-start.png',
-                endIcon: this.pageVariables.imagepath +'/pin-icon-end.png',
+                startIcon: this.pageVariables.imagepath + '/pin-icon-start.png',
+                endIcon: this.pageVariables.imagepath + '/pin-icon-end.png',
             },
             marker_options: {
                 iconSize: [16, 22],
@@ -334,6 +335,17 @@ class gpxTrackClass {
         this.gpxTracks.addTo(this.mapobject.map);
         this.elev_data = this.gpxTracks.get_elevation_data();
         this.coords = this.gpxTracks.get_coords();
+
+        // loop through all tracks parts and get the statistics
+        let i = 0;
+        this.gpxTracks.coords.forEach(element => {
+            // filter the tracks parts according to settings
+            
+            // get info for each track part and add info to polyline_options
+            this.polyline_options[i] = Object.assign(this.polyline_options[i], {info: this.calcGpxTrackInfo(element)});
+            i++;
+        }); 
+        
 
         // set info
         this.trackName = this.gpxTracks._info.name;
@@ -404,23 +416,23 @@ class gpxTrackClass {
      *  
      * @returns {string} 'Dist: 11 km, Gain: 22 Hm, Loss: 33 Hm' : The distance and elevation data for the track.
      */
-    calcGpxTrackInfo() {
+    calcGpxTrackInfo(inCoords=null) {
         let info = '';
+        let coords = inCoords ? inCoords : this.coords;
 
-        if ( this.coords.length == 0 ) return 'No Data found';
+        if ( coords.length == 0 ) return 'No Data found';
 
         //elevation
-        let lastConsideredElevation = this.coords[0].meta.ele;
+        let lastConsideredElevation = coords[0].meta.ele;
         let cumulativeElevationGain = 0;
         let cumulativeElevationLoss = 0;
         
         // distance
-        let lastConsideredPoint = [this.coords[0].lat, this.coords[0].lng];
+        let lastConsideredPoint = [coords[0].lat, coords[0].lng];
         let cumulativeDistance = 0;
         
-
-        if ( this.doTrackCalc && typeof(this.coords) === 'array' ) {
-            this.coords.forEach((point, index) => {
+        if ( this.doTrackCalc && typeof(coords) === 'array' ) {
+            coords.forEach((point, index) => {
                 let curElevation = point.meta.ele;
                 
                 if ( typeof(curElevation === 'number') ){
@@ -429,15 +441,15 @@ class gpxTrackClass {
                     if ( Math.abs(elevationDelta) > this.eleSmoothing ) {
                         elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
                         elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
+                        lastConsideredElevation = curElevation;
                     }
-                    lastConsideredElevation = curElevation;
 
                     let curPoint = [point.lat, point.lng];
                     let curDist = 1000 * calcDist3D(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
                     if (Math.abs(curDist) > this.distSmoothing) {
                         cumulativeDistance += curDist;
+                        lastConsideredPoint = curPoint;
                     }
-                    lastConsideredPoint = curPoint;
                 }
             });
 
@@ -446,8 +458,8 @@ class gpxTrackClass {
             this.descent = cumulativeElevationLoss.toString();
             info = 'Dist: '+ cumulativeDistance/1000 +' km, Gain: '+ cumulativeElevationGain +' Hm, Loss: '+ cumulativeElevationLoss+' Hm';  
 
-        } else if ( this.doTrackCalc && typeof(this.coords) === 'object' ) {
-            for (const [index, point] of Object.entries(this.coords)) {
+        } else if ( this.doTrackCalc && typeof(coords) === 'object' ) {
+            for (const [index, point] of Object.entries(coords)) {
     
                 let curElevation = point.meta.ele;
                 

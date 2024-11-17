@@ -8,15 +8,42 @@
 import './leaflet-gpx/gpx.js';
 
 
+/**
+ * This code creates an extension of the Leaflet GPX functionality (L.GPX) called leafletGpxWrapper. 
+ * The purpose of this extension is to add new capabilities to handle GPS track coordinates in a web mapping application.
+ * 
+ * @class leafletGpxWrapper
+ * @extends {L.GPX}
+ * @property {Array<Array<L.LatLng>>} coords - An array of arrays of latitude/longitude coordinates for each layer in the GPX data.
+ * @method get_coords() - Returns a flattened array of all the latitude/longitude coordinates in the GPX data.
+ */
 let leafletGpxWrapper = L.GPX.extend({
     coords: [],
     get_coords: function () { return this.coords.flat(); },
 });
 
-// hook right at the end of the initialize function. 
-// Mind that the events 'addline' and 'loaded' were already fired at this moment.
-// One could only react to this events (with .on('addline') and .on('loaded')) if asyncLoading is true, so the the track is loaded asynchronously.
-// But this does not work with the wrapper class by unknown reason.
+/**
+ * Initialization hook that processes GPX track data after loading and hooks right at the end of the initialize function. 
+ * @function addInitHook
+ * @memberof leafletGpxWrapper
+ * @description Processes loaded GPX tracks by extracting coordinates and calculating segment information
+ * 
+ * @note Events 'addline' and 'loaded' are fired before this hook when loading synchronously
+ * 
+ * @example
+ * // Hook automatically runs after GPX track loading
+ * // Performs the following:
+ * // 1. Extracts track coordinates
+ * // 2. Stores coordinates in wrapper's coords array
+ * // 3. Calculates segment boundaries for multi-track files
+ * // 4. Updates polyline options with indices and distances
+ * 
+ * @property {Array} coords - Stores extracted track coordinates
+ * @property {Object} options.polyline_options - Contains segment information including:
+ *    - startIndex: Starting index of segment
+ *    - stopIndex: Ending index of segment
+ *    - dist: Segment distance calculated from elevation points
+ */
 leafletGpxWrapper.addInitHook(function () {
     let id = this.getLayers()[0]._leaflet_id;
     let layers = this._layers[id]._layers;

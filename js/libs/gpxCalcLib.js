@@ -52,6 +52,12 @@ function calcDist3D(lat1, lon1, lat2, lon2) {
     return d;
 }
 
+/**
+ * Returns the number of unique items in a list.
+ * @param {Array} list - The list of items.
+ * @param {String|Function} keyOrFn - A string with the name of the key to use for uniqueness or a function that will be called for each item with the item as argument and must return the key to use for uniqueness.
+ * @returns {Number} - The number of unique items in the list.
+ */
 function uniqueltems(list, keyOrFn) {
 
     const resultSet = new Set();
