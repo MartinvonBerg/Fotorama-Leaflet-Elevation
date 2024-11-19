@@ -315,6 +315,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.31.0 = 18.11.2024
+Refactor JS for Admin-GPX-Panel, Filter Multi-Sport-Tracks instead of reducing to one Track
+
 = 0.30.0 = 11.11.2024
 Update for AVIF-Files, Bugfixes in PHP for track statistics, minor updates.
 Changed loading of translation files and tileserver for openstreetmap.org.
