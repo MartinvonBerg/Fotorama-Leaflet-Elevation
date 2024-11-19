@@ -5,14 +5,14 @@ export function createGpxFileAsString(fileName, info, type, time, lats, lons, el
         + createGpxFooter();
 }    
 
-function createGpxHeader() {
+export function createGpxHeader() {
     let header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
     header += '<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="Slider-Map-Chart-Upload" >\n';
 
     return header;
 }
 
-function createGpxMeta(fileName, info, time, bounds=null, waypoints=null) {
+export function createGpxMeta(fileName, info, time, bounds=null, waypoints=null) {
     let meta = '<metadata>\n';
 
     if (fileName != '') meta += '<name>' + fileName + '</name>\n';
@@ -31,7 +31,7 @@ function createGpxMeta(fileName, info, time, bounds=null, waypoints=null) {
     return meta;
 }
 
-function createGpxTrack(name, type, lats, lons, elevs) {
+export function createGpxTrack(name, type, lats, lons, elevs, descr='') {
     if (lats.length != lons.length || lats.length != elevs.length || lats.length != lons.length) {
         return "";
     }
@@ -39,6 +39,7 @@ function createGpxTrack(name, type, lats, lons, elevs) {
     let track = '<trk>';
     track += '<name>'+ name +'</name>\n';
     if (type != '') track += '<type>'+ type +'</type>\n';
+    if (descr != '') track += '<desc>'+ descr +'</desc>\n';
     track += '<trkseg>\n';
 
     for (let i = 0; i < lats.length; i++) {
@@ -49,8 +50,8 @@ function createGpxTrack(name, type, lats, lons, elevs) {
     return track;
 }
 
-function createGpxFooter() {
+export function createGpxFooter() {
     return '</gpx>';
 }
 
-export default createGpxFileAsString;
+//export {createGpxFileAsString, createGpxHeader, createGpxMeta, createGpxTrack, createGpxFooter};

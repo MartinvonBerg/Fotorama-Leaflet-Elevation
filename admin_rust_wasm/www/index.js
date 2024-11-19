@@ -1,6 +1,6 @@
 import { parseGPX } from "@we-gold/gpxjs";
 import simplify from "simplify-js";
-import createGpxFileAsString from "./createGpxFileAsString";
+import { createGpxHeader, createGpxMeta, createGpxTrack, createGpxFooter} from "./createGpxFileAsString";
 import { calcdistance, calc3DDistance } from "./distance";
 import { fromHTML} from "./fromHTML";
 
@@ -27,18 +27,6 @@ import { fromHTML} from "./fromHTML";
     let checksum = 0;
     let newFile = "";
     let fileSize = 0;
-    let elevs = [];
-    let dists = [];
-    let lats = [];
-    let lons = [];
-    let origelevs = [];
-    let origdists = [];
-    let origlats = [];
-    let origlons = [];
-    //let origtdelta = [];
-    let origSpeedH = [];
-    let origSpeed3D = [];
-    let removedPoints = [];
   
     let selectedRow = null;
     let allMaps = [];
@@ -265,7 +253,7 @@ import { fromHTML} from "./fromHTML";
                 // do not filter the file. Show as saved on server 
                 if ( stats.file_content !== null && checksum != 0) {
                     // filter the file and return as xml-string to global variable newFile and show other results like statistics after filtering
-                    newFile = filterGPXTrack(stats.file_content, input.files[0].name);
+                    [newFile, text1.innerHTML] = filterGPXTrack(stats.file_content, input.files[0].name);
                     if( newFile === null ) {
                         alert("Error loading File")
                         return;
@@ -369,7 +357,7 @@ import { fromHTML} from "./fromHTML";
             return;
         }
         // filter the file and return as xml-string to global variable newFile and show other results like statistics after filtering
-        newFile = filterGPXTrack(stats.file_content, stats.fileName);
+        [newFile, text1.innerHTML] = filterGPXTrack(stats.file_content, stats.fileName);
 
         if( newFile === null ) {return;}
 
@@ -382,25 +370,7 @@ import { fromHTML} from "./fromHTML";
         showGpxFileOnLeaflet();
     }
     // End: define all Event listeners --------------------
-    /*
-    function addInfoToGeoJSON(geojson, parsedFile) {
-        parsedFile.tracks.forEach(element => {
-            // find feature in geojson
-            // add type to feature
-            // add name to feature, if available
-        });
-
-        parsedFile.routes.forEach(element => {
-            
-        });
-
-        parsedFile.waypoints.forEach(element => {
-            
-        });
-
-        return geojson;
-    }
-    */
+    
     function updateCSS() {
         // add inline CSS 
 	
@@ -433,7 +403,7 @@ import { fromHTML} from "./fromHTML";
      * @global {number} bounds - the bounds of the track for the map view
      * @global {number} fileSize - The size of the file
      * @global {object} stats.parsedFile - The parsed file as an object, parsed by parseGPX
-     *  @global {object} stats.parseError - The parse error as an object, parsed by parseGPX
+     * @global {object} stats.parseError - The parse error as an object, parsed by parseGPX
      * 
      * @return {boolean} Returns true if the file is successfully loaded to a string, else false.
      */
@@ -529,17 +499,19 @@ import { fromHTML} from "./fromHTML";
             return null;
         } else {
             fileName = getFileName(element.innerHTML); 
-            element.innerHTML = "<strong>File: " + fileName + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
-            + "<br>Stats in File: " + parsedFile.metadata.description 
-            + "<br>N Tracks: " + parsedFile.tracks.length + " / with N Points: " + NTrkPts
-            + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: " + NRtePts
-            + "<br>N Waypoints: " + parsedFile.waypoints.length + " / with N Points: " + NWayPts;
-
             if (!parsedFile.metadata.name) {parsedFile.metadata.name = fileName};
+            element.innerHTML = generateFileInfoHtml(parsedFile, NTrkPts, NRtePts, NWayPts, fileName, fileSize);
             return parsedFile;
         }
     }
 
+    /**
+     * Checks if a parsed GPX file has any points.
+     * 
+     * @param {object} parsedFile - The parsed GPX file as an object.
+     * 
+     * @returns {boolean} true if the parsed file has no points, false else.
+     */
     function checkParsedFile(parsedFile) {
         if (parsedFile == null) {
             return true;
@@ -570,6 +542,8 @@ import { fromHTML} from "./fromHTML";
      * @global {string} newFile - The content of the file as string equaly to stats.file_content or filtered result
      * @global {string} pageVarsForJs[0]['tracks']['track_0']['url'] : The path to the GPX file to display or the content of file as xml formatted string.
      * @global {object} allMaps[0] : The Leaflet map object.
+     * @global {string} chart: The setting which chart to display.
+     * @global {object} document : The document object.
      * 
      * @return {void} This function does not return a value.
      */
@@ -577,6 +551,7 @@ import { fromHTML} from "./fromHTML";
 
         // set the single file
         if (file == null) {
+            // store the filtered track as XML-string to the global variable.
             pageVarsForJs[0]['tracks']['track_0']['url'] = newFile;
         } else {
             pageVarsForJs[0]['tracks']['track_0']['url'] = file;
@@ -652,77 +627,59 @@ import { fromHTML} from "./fromHTML";
      * 
      * @param {string} fileContent - The content of the GPX file as a string.
      * @param {string|null} [fileName=null] - The name of the file, used if metadata name is missing.
-     * @returns {string|null} The filtered GPX file content as a string, or the original content on error.
      * 
-     * @global {number[]} elevs - Array to store filtered elevation values.
-     * @global {number[]} dists - Array to store filtered distances.
-     * @global {number[]} lats - Array to store filtered latitude values.
-     * @global {number[]} lons - Array to store filtered longitude values.
-     * @global {number[]} origelevs - Array to store original elevation values.
-     * @global {number[]} origdists - Array to store original distances.
-     * @global {number[]} origlats - Array to store original latitude values.
-     * @global {number[]} origlons - Array to store original longitude values.
-     * // @global {number[]} origtdelta - Array to store original time deltas.
-     * @global {number[]} origSpeedH - Array to store original horizontal speeds.
-     * @global {number[]} origSpeed3D - Array to store original 3D speeds.
+     * @returns {[string, string]} The filtered GPX file content as a string, or the original content on error AND the innerHTML to show in text1.
+     * 
+     * ---------- The following global variables are used but not changed by this function:
+     * @global {object} stats - Object to store data and statistics about the GPX file.
      * @global {number} fileSize - The length of the file in kilobytes.
+     * 
      * @global {boolean} gpx_reduce - Flag indicating whether to reduce GPX tracks.
      * @global {boolean} ignoreZeroElevs - Flag indicating whether to ignore points with zero elevation.
      * @global {number} filter - The filter value for speed and distance calculation.
-     * @global {HTMLDivElement} text1 - HTML element to display information about the GPX file.
-     * @global {boolean} filterenable - Flag indicating whether filtering is enabled.
+     * @global {boolean} filterenable.checked - Flag indicating whether filtering is enabled.
      * @global {number} esm - Elevation smoothing parameter.
      * @global {number} dsm - Distance smoothing parameter.
      * @global {number} simplTol - Tolerance for the simplification algorithm.
+     * 
+     * ---------- The following global functions are used by this function:
      * @global {function} getCurrentFilterSettings - Function to get current filter settings.
      * @global {function} parseGPX - Function to parse GPX content.
-     * @global {function} checkParsedFile - Function to check the parsed GPX file for errors.
-     * @global {function} calcdistance - Function to calculate distance between two points.
-     * @global {function} calc3DDistance - Function to calculate 3D distance between two points.
+     * @global {function} checkParsedFile - Function to check if the parsed file is valid.
+     * @global {function} getPointsFromTrack - Function to get points from a track.
+     * @global {function} filterTrack - Function to filter a track based on elevation and speed.
+     * @global {function} simplifyTrack - Function to simplify a track.
+     * @global {function} calcTrackStats - Function to calculate statistics for a track.
+     * @global {function} generateFileInfoHtml - Function to generate HTML for file information.
      * @global {function} createGpxFileAsString - Function to create a GPX file string from components.
-     * @global {function} simplify - Function to simplify the track points.
      */
     function filterGPXTrack(fileContent, fileName=null) {
         let info = '';
         let newFileContent = '';
-
-        //elevation
-        let lastConsideredElevation = 0;
-        let cumulativeElevationGain = 0;
-        let cumulativeElevationLoss = 0;
-        
-        // distance
-        let lastConsideredPoint = [0, 0];
-        let cumulativeDistance = 0;
+        let innerHTML = '';
 
         // speed
         let sumOrigSpeedH = 0;
         let sumOrigSpeed3D = 0;
 
-        // time
-        //let lastConsideredTime = 0;
-        //let tDelta = 0;
-
         // set all global arrays to empty
-        elevs.length = 0;
-        dists.length = 0;
-        lats.length = 0;
-        lons.length = 0;
-        origelevs.length = 0;
-        origdists.length = 0;
-        origlats.length = 0;
-        origlons.length = 0;
-        //origtdelta.length = 0;
-        origSpeedH.length = 0;
-        origSpeed3D.length = 0;
-
+        let elevs = [];
+        let dists = [];
+        let lats = [];
+        let lons = [];
+        let origelevs = [];
+        let origdists = [];
+        let origlats = [];
+        let origlons = [];
+        let origSpeedH = [];
+        let origSpeed3D = [];
+        
         getCurrentFilterSettings();
 
         // parse the GPX file as stored in global variable newfile
-        let lengthFileContent = fileContent.length;
         let parsedFile, error;
         
-        if (lengthFileContent === fileLength) {
+        if (fileContent.length === fileLength) {
             // file unchanged;
             parsedFile = stats.parsedFile;
             error = stats.error;
@@ -732,182 +689,63 @@ import { fromHTML} from "./fromHTML";
         if (!error) { error = checkParsedFile(parsedFile); }
 
         if (error) {
-            text1.innerHTML = "Error parsing loaded GPXFile as XML: " + error;
-            return null;
+            innerHTML = "Error parsing loaded GPXFile as XML: " + error;
+            return [fileContent, innerHTML];
 
         // parse and combine tracks and routes to one track if gpx_reduce is checked. Skip the Waypoints.
         } else if (gpx_reduce) {
-            // remove points with zero elevation and calc speed values
-            [origelevs, origlats, origlons, origdists, origSpeedH, origSpeed3D, sumOrigSpeedH, sumOrigSpeed3D, lastConsideredElevation, lastConsideredPoint] = processTracks(parsedFile.tracks, ignoreZeroElevs);
-                        
-            // skip the routes currently; TODO: implement. But how to do that? Append after track? Keep as different track?
-            /*
-            parsedFile.routes.forEach(element => {
-                element.points.forEach(point => {
-                    // ignore / skip points with zero elevation and go to next point
-                    if ( ignoreZeroElevs && (Math.abs(point.elevation) < 0.01) ) {
-                        return; // is practically the same as continue
-                    }
-                });
-            });
-            */
-           
-            // filter the data
-            // filter the originals. show the result of the first simplification
-            // statistics 
-            let meanSpeedH = filter * sumOrigSpeed3D / origSpeedH.length; //*mean(origSpeedH); 
-            let meanDist3D = filter * sumOrigSpeed3D / origSpeed3D.length; //*mean(origSpeed3D); // best is 3
-            let newSpdH = [];
-            let newDst3D = [];
-            let minlat = 180;
-            let maxlat = -180;
-            let minlon = 180;
-            let maxlon = -180;
-            let statfilter = filterenable.checked;
-            let newIndexI = 0;
-            let origLength = origSpeedH.length;
+            let sumEleLength = 0;
+            let gpxFileString = '';
+            let sumDist=0, sumAsc=0, sumDes = 0;
+            let sumBounds = [];
+            let newBounds = [];
 
-            // remove the elements in the arrays: newSpdH and newDst3D that are greater than meanSpeedH and meanDist3D if the filter is enabled
-            // write also to elevs, dists, lats, lons
-            outerLoop: for (let i = 0; i < origLength; i++) {
-                if ( statfilter && (origSpeedH[i] < meanSpeedH) && (origSpeed3D[i] < meanDist3D) ) {
-                    
-                    let lastRemovedPoint = removedPoints[removedPoints.length-1];
-                    if ( i-1 == lastRemovedPoint ) {
-                        
-                        for (let k= i; k < lastRemovedPoint+10; k++) { // TODO : number 10 should be a parameter?
-                            if ( origSpeedH[k] >= meanSpeedH || origSpeed3D[k] >= meanDist3D ) {
-                                newIndexI = k; // don't add +1 here because outerLoop for adds +1 as well at the beginning
-                                i = newIndexI;
-                                continue outerLoop;
-                            }
-                        }
-                    }
-                    
-                    newSpdH.push(origSpeedH[i]);
-                    newDst3D.push(origSpeed3D[i]);
-                    elevs.push( origelevs[i]);
-                    dists.push( origdists[i]);
-                    lats.push ( origlats[i]);
-                    lons.push ( origlons[i]);
-                    // calc the geo bounds of the filtered track
-                    if (origlats[i] > maxlat) {
-                        maxlat = origlats[i];
-                    }
-                    if (origlats[i] < minlat) {
-                        minlat = origlats[i];
-                    }
-                    if (origlons[i] > maxlon) {
-                        maxlon = origlons[i];
-                    }
-                    if (origlons[i] < minlon) {
-                        minlon = origlons[i];
-                    }
-                } else if ( !statfilter ) {
-                    newSpdH.push(origSpeedH[i]);
-                    newDst3D.push(origSpeed3D[i]);
-                    elevs.push( origelevs[i]);
-                    dists.push( origdists[i]);
-                    lats.push ( origlats[i]);
-                    lons.push ( origlons[i]);
-                    // calc the geo bounds of the filtered track
-                    if (origlats[i] > maxlat) {
-                        maxlat = origlats[i];
-                    }
-                    if (origlats[i] < minlat) {
-                        minlat = origlats[i];
-                    }
-                    if (origlons[i] > maxlon) {
-                        maxlon = origlons[i];
-                    }
-                    if (origlons[i] < minlon) {
-                        minlon = origlons[i];
-                    }
-                } else if ( statfilter ) {
-                    // store the removed points in an array
-                    removedPoints.push(i);
-                }
-            }
-
-            let bounds = {
-                minlat: minlat,
-                minlon: minlon,
-                maxlat: maxlat,
-                maxlon: maxlon
-            };
-
-            //showCurrentTrackStatistics(newDst3D);
-            //showGpxStatistics(origdists, newSpdH, newDst3D);
-
-            // apply simplify.js
-            if (simplTol > 0.0) {
-                const points = lats.map((lat, i) => ({ x: lat, y: lons[i], z: elevs[i] }));
-                const simplifiedPoints = simplify(points, simplTol / 100, true);
-                [lats, lons, elevs] = simplifiedPoints.reduce((acc, point) => {
-                  acc[0].push(point.x);
-                  acc[1].push(point.y);
-                  acc[2].push(point.z);
-                  return acc;
-                }, [[], [], []]);
-              }
-            /*
-            // calc new stats and info
-            let length = elevs.length;
-            lastConsideredElevation = elevs[0];
-            lastConsideredPoint = [lats[0], lons[0]];
-
-            for (let i = 0; i < length; i++) {
-                let elevationDelta = elevs[i] - lastConsideredElevation;
-                    if ( Math.abs(elevationDelta) > esm ) {
-                        elevationDelta>0 ? cumulativeElevationGain += elevationDelta : '';
-                        elevationDelta<0 ? cumulativeElevationLoss -= elevationDelta : '';
-                        lastConsideredElevation = elevs[i];
-                    }
+            parsedFile.tracks.forEach(track => {
                 
-                let curPoint = [lats[i], lons[i]];
-                let curDist = 1000 * calcdistance(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
-                    
-                if (Math.abs(curDist) > dsm) {
-                    cumulativeDistance += curDist;
-                    lastConsideredPoint = curPoint;
-                    
-                } else {
-                    // remove current element with index i from the arrays
-                    elevs.splice(i, 1); // 2nd parameter means remove one item only
-                    dists.splice(i, 1); // 2nd parameter means remove one item only
-                    lats.splice(i, 1); // 2nd parameter means remove one item only
-                    lons.splice(i, 1); // 2nd parameter means remove one item only
-                }
-            };
-            */
-            // generate the info string with the stats for the file
-            [info, elevs, dists, lats, lons] =calculateTrackStatistics(elevs, dists, lats, lons, esm, dsm, true);
-            //info = 'Dist: '+ (cumulativeDistance/1000).toFixed(1) +' km, Gain: '+ cumulativeElevationGain.toFixed(0) +' Hm, Loss: '+ cumulativeElevationLoss.toFixed(0) +' Hm';
+                // remove points with zero elevation and calc speed values
+                [origelevs, origdists, origlats, origlons, origSpeedH, origSpeed3D, sumOrigSpeedH, sumOrigSpeed3D ] = getPointsFromTrack(track, ignoreZeroElevs);
+                            
+                // filter the original data and  write also to elevs, dists, lats, lon
+                [elevs, dists, lats, lons, newBounds ] = filterTrack(origSpeedH, origSpeed3D, origelevs, origdists, origlats, origlons, filterenable.checked, filter, sumOrigSpeed3D);
+                
+                sumBounds = updateBounds(sumBounds, newBounds);
 
-            // show the updated statistics on the Admin Panel. It is faster to change the HTML here.
-            if (!parsedFile.metadata.name) { parsedFile.metadata.name = fileName; }
-            length = elevs.length;
-            text1.innerHTML = "<strong>File: " + parsedFile.metadata.name + "</strong>" + " / Size: " + ((509 + length*65)/1024).toFixed(1) + " kB"
-            + "<br>Stats in File: " + info 
-            + "<br>N Tracks: " + parsedFile.tracks.length + " / with N Points: " + length
-            + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: 0"
-            + "<br>N Waypoints: " + parsedFile.waypoints.length;
+                // apply simplify.js on the track points
+                [lats, lons, elevs] = simplifyTrack(lats, lons, elevs, simplTol);
+                
+                // calc new stats and info and generate the info string with the stats for the file
+                [elevs, dists, lats, lons, info] = calcTrackStats(elevs, dists, lats, lons, esm, dsm, true);
+                
+                let [a,b,c] = parseInfo(info);
+                sumDist += a;
+                sumAsc += b;
+                sumDes += c;
+                sumEleLength += elevs.length; 
 
-            // create new file content with the filtered points and info as XML string.
-            let type = '';
-            if (parsedFile.tracks[0].type) { type = parsedFile.tracks[0].type; }
-            newFileContent = createGpxFileAsString( parsedFile.metadata.name, info, type, parsedFile.metadata.time,  lats, lons, elevs, bounds, parsedFile.waypoints);
-            return newFileContent;
+                // create new file content with the filtered points and info as XML string.
+                let type = track.type ? track.type : '';
+                gpxFileString += createGpxTrack( track.name, type, lats, lons, elevs, info );
+                
+            });
+                        
+            // generate the updated statistics for the Admin Panel. Estimate the size from the number of points in the track, where 509 is the offset for the header and 65 is the size of a point.
+            if (!parsedFile.metadata.name && fileName) { parsedFile.metadata.name = fileName; }
+            innerHTML = generateFileInfoHtml(parsedFile, sumEleLength, 0, 0, parsedFile.metadata.name, (509 + sumEleLength*65)/1024 );
+            info =  `Dist: ${(sumDist).toFixed(1)} km, ` + `Gain: ${sumAsc.toFixed(0)} Hm, ` + `Loss: ${sumDes.toFixed(0)} Hm`;
+            newFileContent = createGpxHeader() + createGpxMeta( parsedFile.metadata.name, info, parsedFile.metadata.time, sumBounds, parsedFile.waypoints) + gpxFileString + createGpxFooter();
+    
+            return [newFileContent, innerHTML]; 
 
-        // else : return the original file
+        // else : return the original file with html for file info
         } else {
-            // TODO: provide correct name for leaflet layers control top right in ._info.name
-            text1.innerHTML = "<strong>File: " + parsedFile.metadata.name + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
-            + "<br>Stats in File: No Stats generated"; 
-            return fileContent;
+            // provide correct name for leaflet layers control top right in ._info.name is not solved here because it is wrong in Garmin GPX files. So, not a problem of this function.
+            //innerHTML = "<strong>File: " + parsedFile.metadata.name + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB" + "<br>Stats in File: No Stats generated"; 
+            innerHTML = generateFileInfoHtml(parsedFile, 0, 0, 0, parsedFile.metadata.name, fileSize );
+            return [fileContent, innerHTML];
         }
     }
 
+    /* ----------------- sub functions for filterGPXTrack ----------------- */
     /**
      * Processes an array of track objects and calculates various metrics for each track.
      *
@@ -930,10 +768,8 @@ import { fromHTML} from "./fromHTML";
      *  - {Array} origSpeed3D: 3D speed values calculated from distances between points.
      *  - {number} sumOrigSpeedH: Sum of horizontal speed values used for filtering.
      *  - {number} sumOrigSpeed3D: Sum of 3D speed values used for filtering.
-     *  - {number} lastConsideredElevation: Elevation of the last processed point.
-     *  - {Array} lastConsideredPoint: Coordinates of the last processed point.
      */
-    function processTracks(tracks, ignoreZeroElevs) {
+    function getPointsFromTrack(element, ignoreZeroElevs) {
         let origelevs = [];
         let origlats = [];
         let origlons = [];
@@ -944,8 +780,8 @@ import { fromHTML} from "./fromHTML";
         let sumOrigSpeed3D = 0;
         let lastConsideredElevation = 0;
         let lastConsideredPoint = [0, 0];
-    
-        tracks.forEach(element => {
+        
+        //tracks.forEach(element => {
             
             lastConsideredElevation = element.points[0].elevation;
             lastConsideredPoint = [element.points[0].latitude, element.points[0].longitude];
@@ -979,23 +815,65 @@ import { fromHTML} from "./fromHTML";
                 lastConsideredPoint = curPoint;
                 //lastConsideredTime = point.time;
             });
-        });
+        //});
     
         return [
             origelevs,
+            origdists,
             origlats,
             origlons,
-            origdists,
             origSpeedH,
             origSpeed3D,
             sumOrigSpeedH,
-            sumOrigSpeed3D,
-            lastConsideredElevation,
-            lastConsideredPoint
+            sumOrigSpeed3D
         ];
     }
 
-    function calculateTrackStatistics(elevs, dists, lats, lons, eleSmoothing = 1, distSmoothing = 1, reduceArrays = false) {
+    /**
+     * Simplify a track by removing points that are closer than a specified tolerance to the straight line between two adjacent points.
+     * 
+     * @param {number[]} lats - Array of latitude values of the track points.
+     * @param {number[]} lons - Array of longitude values of the track points.
+     * @param {number[]} elevs - Array of elevation values of the track points.
+     * @param {number} simplTol - The tolerance for simplification. Points closer than this to the line segment between two adjacent points will be removed.
+     * 
+     * @returns {[number[], number[], number[]]} lats, lons, elevs simplified array containing the simplified latitude, longitude, and elevation values, respectively.
+     */
+    function simplifyTrack(lats, lons, elevs, simplTol) {
+        if ( simplTol <= 0 ) {
+            return [lats, lons, elevs];
+        }
+
+        if (lats.length !== lons.length || lats.length !== elevs.length) {
+            return  [lats, lons, elevs];
+        }
+
+        const points = lats.map((lat, i) => ({ x: lat, y: lons[i], z: elevs[i] }));
+        const simplifiedPoints = simplify(points, simplTol / 100, true);
+        
+        return [lats, lons, elevs] = simplifiedPoints.reduce((acc, point) => {
+            acc[0].push(point.x);
+            acc[1].push(point.y);
+            acc[2].push(point.z);
+            return acc;
+        }, [[], [], []]);
+    }
+
+    /**
+     * Calculates track statistics, including cumulative distance, elevation gain, and elevation loss.
+     *
+     * @global
+     * @param {Array<number>} elevs - An array of elevation values.
+     * @param {Array<number>} dists - An array of distance values.
+     * @param {Array<number>} lats - An array of latitude values.
+     * @param {Array<number>} lons - An array of longitude values.
+     * @param {number} [eleSmoothing=1] - The smoothing factor for elevation values.
+     * @param {number} [distSmoothing=1] - The smoothing factor for distance values.
+     * @param {boolean} [reduceArrays=false] - Whether to reduce the input arrays by removing points with minimal elevation or distance changes.
+     * @returns {Array<string|Array<number>>} An array containing the track statistics as a string, and the filtered elevation, distance, latitude, and longitude arrays.
+     * @uses calcdistance - A global function to calculate the distance between two points.
+     */
+    function calcTrackStats(elevs, dists, lats, lons, eleSmoothing = 1, distSmoothing = 1, reduceArrays = false) {
     
         // Handle empty input
         if (elevs.length === 0 || lats.length === 0 || lons.length === 0 || elevs.length !== lats.length || elevs.length !== lons.length) {
@@ -1073,7 +951,199 @@ import { fromHTML} from "./fromHTML";
                     `Gain: ${cumulativeElevationGain.toFixed(0)} Hm, ` +
                     `Loss: ${cumulativeElevationLoss.toFixed(0)} Hm`;
     
-        return [info, points.elevs, points.dists, points.lats, points.lons];
+        return [points.elevs, points.dists, points.lats, points.lons, info];
+    }
+
+    /**
+     * Filters track points based on speed and distance criteria and returns the filtered data.
+     * If the `statfilter` is enabled, it removes points where both the horizontal speed and 3D speed
+     * are below their respective mean values calculated with the provided `filter` factor.
+     * 
+     * @param {Array<number>} origSpeedH - Array of original horizontal speed values.
+     * @param {Array<number>} origSpeed3D - Array of original 3D speed values.
+     * @param {Array<number>} origelevs - Array of original elevation values.
+     * @param {Array<number>} origdists - Array of original distances between points.
+     * @param {Array<number>} origlats - Array of original latitude values.
+     * @param {Array<number>} origlons - Array of original longitude values.
+     * @param {boolean} statfilter - Flag indicating whether to apply statistical filtering.
+     * @param {number} filter - Filter factor used for calculating mean speed values.
+     * @param {number} sumOrigSpeed3D - Sum of the original 3D speed values for filtering.
+     * 
+     * @returns {Array} An array containing:
+     *  - {Array<number>} elevs: Filtered elevation values.
+     *  - {Array<number>} dists: Filtered distance values.
+     *  - {Array<number>} lats: Filtered latitude values.
+     *  - {Array<number>} lons: Filtered longitude values.
+     *  - {Object} bounds: Geographic bounds of the filtered track with properties `minlat`, `minlon`, `maxlat`, `maxlon`.
+     */
+    function filterTrack(origSpeedH, origSpeed3D, origelevs, origdists, origlats, origlons, statfilter, filter, sumOrigSpeed3D) {
+        // remove the elements in the arrays: newSpdH and newDst3D that are greater than meanSpeedH and meanDist3D if the filter is enabled
+        let newSpdH = [];
+        let newDst3D = [];
+        let elevs = [];
+        let dists = [];
+        let lats = [];
+        let lons = [];
+        let removedPoints = [];
+        let minlat = 180;
+        let maxlat = -180;
+        let minlon = 180;
+        let maxlon = -180;
+        let origLength = origSpeedH.length;
+        let meanSpeedH = filter * sumOrigSpeed3D / origSpeedH.length; //*mean(origSpeedH); 
+        let meanDist3D = filter * sumOrigSpeed3D / origSpeed3D.length; //*mean(origSpeed3D); // best is 3
+    
+        outerLoop: for (let i = 0; i < origLength; i++) {
+            if (statfilter && (origSpeedH[i] < meanSpeedH) && (origSpeed3D[i] < meanDist3D)) {
+                
+                let lastRemovedPoint = removedPoints[removedPoints.length - 1];
+                if (i - 1 == lastRemovedPoint) {
+                    
+                    for (let k = i; k < lastRemovedPoint + 10; k++) {
+                        if (origSpeedH[k] >= meanSpeedH || origSpeed3D[k] >= meanDist3D) {
+                            i = k;
+                            continue outerLoop;
+                        }
+                    }
+                }
+
+                newSpdH.push(origSpeedH[i]);
+                newDst3D.push(origSpeed3D[i]);
+                elevs.push( origelevs[i]);
+                dists.push( origdists[i]);
+                lats.push ( origlats[i]);
+                lons.push ( origlons[i]);
+                // calc the geo bounds of the filtered track
+                if (origlats[i] > maxlat) {
+                    maxlat = origlats[i];
+                }
+                if (origlats[i] < minlat) {
+                    minlat = origlats[i];
+                }
+                if (origlons[i] > maxlon) {
+                    maxlon = origlons[i];
+                }
+                if (origlons[i] < minlon) {
+                    minlon = origlons[i];
+                }
+
+            } else if ( !statfilter ) {
+                newSpdH.push(origSpeedH[i]);
+                newDst3D.push(origSpeed3D[i]);
+                elevs.push( origelevs[i]);
+                dists.push( origdists[i]);
+                lats.push ( origlats[i]);
+                lons.push ( origlons[i]);
+                // calc the geo bounds of the filtered track
+                if (origlats[i] > maxlat) {
+                    maxlat = origlats[i];
+                }
+                if (origlats[i] < minlat) {
+                    minlat = origlats[i];
+                }
+                if (origlons[i] > maxlon) {
+                    maxlon = origlons[i];
+                }
+                if (origlons[i] < minlon) {
+                    minlon = origlons[i];
+                }
+            } else if ( statfilter ) {
+                // store the removed points in an array
+                removedPoints.push(i);
+            }
+        }
+
+        let bounds = {
+            minlat: minlat,
+            minlon: minlon,
+            maxlat: maxlat,
+            maxlon: maxlon
+        };
+    
+        return [ elevs, dists, lats, lons, bounds ];
+    }
+
+    /**
+     * Updates the old bounds object with the new bounds information.
+     * 
+     * This function takes two bounds objects and updates the old bounds object with the new bounds information.
+     * If the old bounds object is empty, it is replaced by the new bounds object.
+     * 
+     * @param {Array} oldBounds - The old bounds object with properties minlat, minlon, maxlat, maxlon.
+     * @param {Array} newBounds - The new bounds object with properties minlat, minlon, maxlat, maxlon.
+     * 
+     * @returns {Array} The updated old bounds object.
+     */
+    function updateBounds(oldBounds, newBounds) {
+        if (!oldBounds || oldBounds.length === 0) {
+            return newBounds;
+        }
+
+        if (newBounds.minlat < oldBounds.minlat) {
+            oldBounds.minlat = newBounds.minlat;
+        }
+        if (newBounds.minlon < oldBounds.minlon) {
+            oldBounds.minlon = newBounds.minlon;
+        }
+        if (newBounds.maxlat > oldBounds.maxlat) {
+            oldBounds.maxlat = newBounds.maxlat;
+        }
+        if (newBounds.maxlon > oldBounds.maxlon) {
+            oldBounds.maxlon = newBounds.maxlon;
+        }
+        return oldBounds;
+    }
+
+    /**
+     * Parses a string containing only numbers and returns an array of floats.
+     * 
+     * @param {string} str - The string to parse.
+     * 
+     * @returns {Array<number>} An array of floats parsed from the string.
+     */
+    function parseInfo(str) {
+        const numbers = str.match(/\d+\.?\d*/g);
+        return numbers.map(num => parseFloat(num));
+    }
+    
+    /**
+     * Generate a string with information about the GPX file.
+     * 
+     * @param {Object} parsedFile - The parsed GPX file object.
+     * @param {number} NTrkPts - The number of track points.
+     * @param {number} NRtePts - The number of route points.
+     * @param {number} NWayPts - The number of waypoint points.
+     * @param {string} fileName - The name of the file.
+     * @param {number} fileSize - The size of the file in bytes.
+     * 
+     * @returns {string} The information string.
+     */
+    function generateFileInfoHtml(parsedFile, NTrkPts, NRtePts, NWayPts, fileName, fileSize) {
+        let html = "";
+
+        if (NTrkPts == 0) {
+            parsedFile.tracks.forEach(element => {
+                NTrkPts += element.points.length;
+            });
+        }
+
+        if (NRtePts == 0) {
+            parsedFile.routes.forEach(element => {
+                NRtePts += element.points.length;
+            });
+        }
+
+        if (NWayPts == 0) {
+            NWayPts += parsedFile.waypoints.length;
+        }
+
+        html = "<strong>File: " + fileName + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
+            + "<br>Stats in File: " + parsedFile.metadata.description
+            + "<br>N Tracks: " + parsedFile.tracks.length + " / with N Points: " + NTrkPts
+            + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: " + NRtePts
+            + "<br>N Waypoints: " + NWayPts;
+
+        return html;
     }
 
     /**
