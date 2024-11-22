@@ -7,14 +7,14 @@
  * @returns {number} - The distance between the two coordinates in km.
  */
 export function calcdistance(lat1, lon1, lat2, lon2) {
-    const r = 12742; // 6371 * 2
+    const r = 12742; // 6371 * 2 earth diameter in km
     const toRadians = (degrees) => degrees * (Math.PI / 180);
 
     const dLat = Math.sin((toRadians(lat2) - toRadians(lat1)) / 2);
     const dLon = Math.sin((toRadians(lon2) - toRadians(lon1)) / 2);
 
     const a = dLat * dLat + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * dLon * dLon;
-    const d = r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // in km
 
     return d;
 }
@@ -32,16 +32,16 @@ export function calcdistance(lat1, lon1, lat2, lon2) {
  * @returns {number} - The distance between the two coordinates in km.
  */
 export function calc3DDistance(lat1, lon1, alt1=0, lat2, lon2, alt2=0) {
-    const r = 12742000; // 6371 * 2
+    const r = 12742; // 6371 * 2
     const toRadians = (degrees) => degrees * (Math.PI / 180);
 
     const dLat = Math.sin((toRadians(lat2) - toRadians(lat1)) / 2);
     const dLon = Math.sin((toRadians(lon2) - toRadians(lon1)) / 2);
 
     const a = dLat * dLat + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * dLon * dLon;
-    const d = r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // m
+    const d = r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // in km
         
-    const distance = Math.sqrt( Math.pow(d, 2) + Math.pow(alt2 - alt1, 2) );
+    const distance = Math.sqrt( Math.pow(d, 2) + Math.pow( (alt2 - alt1)/1000, 2) ); // calc with identical units!
     
-    return distance / 1000.0;
+    return distance;
 }

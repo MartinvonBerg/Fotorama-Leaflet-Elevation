@@ -268,6 +268,7 @@ import { fromHTML} from "./fromHTML";
     })
 
     // ---------- listeners for filter Value inputs
+    /*
     esmsel.addEventListener("input", () => { // update the selected file. Use the preloaded content from the fakepath as xml-string
         esm = esmsel.value;
         esmStore = esm;
@@ -324,6 +325,33 @@ import { fromHTML} from "./fromHTML";
         // filter the file and return as xml-string to global variable newFile
         filterEventListener();
     })
+    */
+    // Generic function to handle input events
+    function handleInputEvent(selector, valueMultiplier, defaultValue, valueElement, enableCheckbox, storeVariable, globalVariableName) {
+        selector.addEventListener("input", () => {
+            let value = selector.value;
+            if (valueMultiplier !== undefined) {
+                value = value / valueMultiplier;
+            }
+            window[storeVariable] = value;
+
+            if (enableCheckbox.checked) {
+                window[globalVariableName] = window[storeVariable];
+            } else {
+                window[globalVariableName] = defaultValue;
+            }
+            valueElement.innerHTML = (valueMultiplier ? window[globalVariableName] * valueMultiplier : window[globalVariableName]) + " m";
+
+            // filter the file and return as xml-string to global variable newFile
+            filterEventListener();
+        });
+    }
+
+    // Apply the generic function for each element
+    handleInputEvent(esmsel, undefined,   0.0, esmval, esmenable, "esmStore", "esm");
+    handleInputEvent(dsmsel, 1000,        0.0, dsmval, dsmenable, "dsmStore", "dsm");
+    handleInputEvent(filtsel, undefined,  100.0, filtval, filterenable, "filterStore", "filter");
+    handleInputEvent(simplsel, undefined, 0.0, simplval, simplenable, "simplTolStore", "simplTol");
     
     // ---------- listeners for esm, dsm, filter, simplTol enable inputs
     function handleEnableClick(storedValue, enableCheckbox, globalValue) {
@@ -371,6 +399,7 @@ import { fromHTML} from "./fromHTML";
     }
     // End: define all Event listeners --------------------
     
+    // add inline CSS to make the page scrollable and to stop scrolling when overlay is visible
     function updateCSS() {
         // add inline CSS 
 	
@@ -781,41 +810,38 @@ import { fromHTML} from "./fromHTML";
         let lastConsideredElevation = 0;
         let lastConsideredPoint = [0, 0];
         
-        //tracks.forEach(element => {
-            
-            lastConsideredElevation = element.points[0].elevation;
-            lastConsideredPoint = [element.points[0].latitude, element.points[0].longitude];
+        lastConsideredElevation = element.points[0].elevation;
+        lastConsideredPoint = [element.points[0].latitude, element.points[0].longitude];
 
-            element.points.forEach(point => {
-                // ignore / skip points with zero elevation and go to next point
-                if (!('elevation' in point) || (ignoreZeroElevs && (Math.abs(point.elevation) < 0.01))) {
-                    return; // is practically the same as continue
-                }
-    
-                let curPoint = [point.latitude, point.longitude];
-                let curDist = 1000 * calcdistance(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
-                let curDist3D = 1000 * calc3DDistance(lastConsideredPoint[0], lastConsideredPoint[1], lastConsideredElevation, curPoint[0], curPoint[1], point.elevation);
-    
-                // save the original values
-                origelevs.push(point.elevation);
-                origlats.push(point.latitude);
-                origlons.push(point.longitude);
-                origdists.push(curDist);
-                //origtdelta.push(tDelta);
-    
-                let SpeedH = Math.abs(point.elevation - lastConsideredElevation); // /tDelta ? Math.abs(point.elevation - lastConsideredEleStats)/tDelta : 0.0;
-                origSpeedH.push(SpeedH);
-                sumOrigSpeedH += SpeedH;
-    
-                let Speed3D = curDist3D; // /tDelta ? curDist3D/tDelta : 0.0;
-                origSpeed3D.push(Speed3D);
-                sumOrigSpeed3D += Speed3D;
-    
-                lastConsideredElevation = point.elevation;
-                lastConsideredPoint = curPoint;
-                //lastConsideredTime = point.time;
-            });
-        //});
+        element.points.forEach(point => {
+            // ignore / skip points with zero elevation and go to next point
+            if (!('elevation' in point) || (ignoreZeroElevs && (Math.abs(point.elevation) < 0.01))) {
+                return; // is practically the same as continue
+            }
+
+            let curPoint = [point.latitude, point.longitude];
+            let curDist = 1000 * calcdistance(lastConsideredPoint[0], lastConsideredPoint[1], curPoint[0], curPoint[1]);
+            let curDist3D = 1000 * calc3DDistance(lastConsideredPoint[0], lastConsideredPoint[1], lastConsideredElevation, curPoint[0], curPoint[1], point.elevation);
+
+            // save the original values
+            origelevs.push(point.elevation);
+            origlats.push(point.latitude);
+            origlons.push(point.longitude);
+            origdists.push(curDist);
+            //origtdelta.push(tDelta);
+
+            let SpeedH = Math.abs(point.elevation - lastConsideredElevation); // /tDelta ? Math.abs(point.elevation - lastConsideredEleStats)/tDelta : 0.0;
+            origSpeedH.push(SpeedH);
+            sumOrigSpeedH += SpeedH;
+
+            let Speed3D = curDist3D; // /tDelta ? curDist3D/tDelta : 0.0;
+            origSpeed3D.push(Speed3D);
+            sumOrigSpeed3D += Speed3D;
+
+            lastConsideredElevation = point.elevation;
+            lastConsideredPoint = curPoint;
+            //lastConsideredTime = point.time;
+        });
     
         return [
             origelevs,
@@ -901,6 +927,24 @@ import { fromHTML} from "./fromHTML";
                 (point.meta?.ele ?? point.elevation) :
                 point;
     
+            // Calculate distance
+            const currentPoint = Array.isArray(points) ?
+                [point.lat ?? point.latitude, point.lng ?? point.longitude] :
+                [points.lats[idx], points.lons[idx]];
+    
+            const distance = 1000 * calc3DDistance(lastPoint[0], lastPoint[1], lastElevation, currentPoint[0], currentPoint[1], currentElevation);
+    
+            if (Math.abs(distance) > distSmoothing) {
+                cumulativeDistance += distance;
+                lastPoint = currentPoint;
+            } else if (reduceArrays) {
+                // If reducing arrays, remove the current point
+                points.elevs.splice(idx, 1);
+                points.dists.splice(idx, 1);
+                points.lats.splice(idx, 1);
+                points.lons.splice(idx, 1);
+            }
+
             // Calculate elevation changes
             if (typeof currentElevation === 'number') {
                 const elevationDelta = currentElevation - lastElevation;
@@ -913,27 +957,6 @@ import { fromHTML} from "./fromHTML";
                     }
                     lastElevation = currentElevation;
                 }
-            }
-    
-            // Calculate distance
-            const currentPoint = Array.isArray(points) ?
-                [point.lat ?? point.latitude, point.lng ?? point.longitude] :
-                [points.lats[idx], points.lons[idx]];
-    
-            const distance = 1000 * calcdistance(
-                lastPoint[0], lastPoint[1],
-                currentPoint[0], currentPoint[1]
-            );
-    
-            if (Math.abs(distance) > distSmoothing) {
-                cumulativeDistance += distance;
-                lastPoint = currentPoint;
-            } else if (reduceArrays) {
-                // If reducing arrays, remove the current point
-                points.elevs.splice(idx, 1);
-                points.dists.splice(idx, 1);
-                points.lats.splice(idx, 1);
-                points.lons.splice(idx, 1);
             }
         };
     
@@ -1119,7 +1142,6 @@ import { fromHTML} from "./fromHTML";
      * @returns {string} The information string.
      */
     function generateFileInfoHtml(parsedFile, NTrkPts, NRtePts, NWayPts, fileName, fileSize) {
-        let html = "";
 
         if (NTrkPts == 0) {
             parsedFile.tracks.forEach(element => {
@@ -1137,13 +1159,11 @@ import { fromHTML} from "./fromHTML";
             NWayPts += parsedFile.waypoints.length;
         }
 
-        html = "<strong>File: " + fileName + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
+        return "<strong>File: " + fileName + "</strong>" + " / Size: " + fileSize.toFixed(1) + " kB"
             + "<br>Stats in File: " + parsedFile.metadata.description
             + "<br>N Tracks: " + parsedFile.tracks.length + " / with N Points: " + NTrkPts
             + "<br>N Routes: " + parsedFile.routes.length + " / with N Points: " + NRtePts
             + "<br>N Waypoints: " + NWayPts;
-
-        return html;
     }
 
     /**
@@ -1151,6 +1171,20 @@ import { fromHTML} from "./fromHTML";
      * 
      * @global {object} pageVarsForJs[0]['tracks']['track_0']['info'] 
      * @global {object} pageVarsForJs[0]['sw_options']['gpx_distsmooth' / 'gpx_elesmooth']
+     * @global {boolean} gpx_reduce
+     * @global {boolean} ignoreZeroElevs
+     * @global {number} dsm
+     * @global {number} esm
+     * @global {number} filter
+     * @global {number} simplTol
+     * @global {object} dsmsel
+     * @global {object} dsmenable
+     * @global {object} esmsel
+     * @global {object} esmenable
+     * @global {object} filtsel
+     * @global {object} filterenable
+     * @global {object} simplsel
+     * @global {object} simplenable
      *
      * @return {void}
      */
