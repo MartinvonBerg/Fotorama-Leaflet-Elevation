@@ -11,10 +11,10 @@ Copy-Item ".\fotorama_multi.php" -Destination "$($path)\fotorama_multi.php"
 Copy-Item ".\uninstall.php" -Destination "$($path)\uninstall.php" 
 
 # first build the new gutenberg block build files
-npm run build
+npm run build # this uses the file ./webpack.config.js. So, it should be renamed and not be used for other purposes.
 
 # create all js files 
-npx webpack --config .\webpack.config.js
+npx webpack --config .\webpack.main.js
 npx webpack --config .\webpack.chartjs-config.js
 
 # change path to .\admin_rust_wasm\www

@@ -8,7 +8,7 @@ import { fromHTML} from "./fromHTML";
 (function (window, document, undefined) {
     "use strict";
 
-    let activeTab = document.getElementsByClassName("nav-tab-active")[0].innerHTML.includes("GPX") ? true : false;
+    const activeTab = document.querySelector(".nav-tab-active")?.innerHTML.includes("GPX") ?? false;
     if (!activeTab) {
         return;
     }

@@ -1,13 +1,13 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 2,
+	"apiVersion": 3,
 	"name": "fotoramamulti/fotorama-multi",
-	"version": "0.12.0",
+	"version": "0.31.0",
 	"title": "Fotorama Elevation",
 	"category": "media",
 	"icon": "embed-photo",
 	"description": "Provide settings for Fotorama-Elevation.",
-	"keywords": [ "fotorama", "elevatin", "map", "chart", "slider", "image" ],
+	"keywords": [ "fotorama", "elevation", "map", "chart", "slider", "image", "gallery", "track" ],
 	"supports": {
 		"html": false,
 		"customClassName": false
@@ -24,20 +24,27 @@
 			"label": "Image Path",
 			"help": "Path to your images in the uploads folder."
 		},
-		"showadress": {
-			"type": "boolean",
-			"default": true,
-			"section": "Slider",
-			"label": "Show Address",
-			"help": "Show start adress of the tour"
-		},
-		"adresstext": {
+		"gpxfile": {
 			"type": "string",
-			"default": "Startadresse",
-			"section": "Slider",
-			"label": "Start Address Text",
-			"help": "Text for header above start address"
+			"default": "test.gpx",
+			"section": "Select",
+			"label": "GPX-File",
+			"help": "The GPX-file in your GPX-directory (see Admin Settings)"
 		},
+
+		"slider": {
+			"type": "string",
+			"default": "swiper",
+			"section": "Slider",
+			"label": "Slider Type",
+			"help": "Select the Image Slider.",
+			"options": [
+				{ "value": null, "label": "Select the Image Slider", "disabled": true },
+				{ "value": "swiper", "label": "Swiper Slider"},
+				{ "value": "fotorama", "label": "Fotorama"}
+			]
+		},
+		
 		"requiregps": {
 			"type": "boolean",
 			"default": true,
@@ -51,6 +58,25 @@
 			"section": "Slider",
 			"label": "Ignore Custom Sort",
 			"help": "Ignore custom sort even if provided by Wordpress. Sort ascending by date taken if checked"
+		},
+		"sortorder": {
+			"type": "string",
+			"default": "asc",
+			"section": "Slider",
+			"label": "Sort Order",
+			"help": "Define the sort Order of Files",
+			"options": [
+				{ "value": null, "label": "Define the sort Order of Files", "disabled": true },
+				{ "value": "asc",  "label": "Ascending"},
+				{ "value": "desc", "label": "Descending"}	
+			]
+		},
+		"filefilter": {
+			"type": "string",
+			"default": "",
+			"section": "Slider",
+			"label": "File Filter",
+			"help": "Define a simple Filter for Files given by imgpath"
 		},
 		"showcaption": {
 			"type": "boolean",
@@ -159,49 +185,6 @@
 			"help": "Autoplay the slider. On with true or any numeric interval in milliseconds. Of with false"
 		},
 	
-		"gpxfile": {
-			"type": "string",
-			"default": "test.gpx",
-			"section": "Select",
-			"label": "GPX-File",
-			"help": "The GPX-file in your GPX-directory (see Admin Settings)"
-		},
-		"gpxpath": {
-			"type": "string",
-			"default": "gpx",
-			"section": "Map",
-			"label": "GPX-Path",
-			"help": "Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder"
-		},
-		"alttext": {
-			"type": "string",
-			"default": "",
-			"section": "Slider",
-			"label": "Alt-Text",
-			"help": "Alltext for the whole fotorama slider for SEO"
-		},
-
-		"dload": {
-			"type": "boolean",
-			"default": true,
-			"section": "Map",
-			"label": "Allow Download GPX-File",
-			"help": "Provide download link for the GPX-Track(s)"
-		},
-		"mapheight": {
-			"type": "string",
-			"default": 1000,
-			"section": "Map",
-			"label": "Maximum Height of Map",
-			"help": "Max. Height of the leaflet elevation map in px. Mind the relation to Aspect Ratio of Map."
-		},
-		"mapaspect": {
-			"type": "string",
-			"default": 1.5,
-			"section": "Map",
-			"label": "Width / Height (Aspect) Ratio",
-			"help": "Define the width / height ratio of the Map"
-		},
 		"showmap": {
 			"type": "boolean",
 			"default": true,
@@ -223,7 +206,89 @@
 				{ "value": "Satellit", "label": "Satellit"}
 			]
 		},
-
+		"mapheight": {
+			"type": "string",
+			"default": 1000,
+			"section": "Map",
+			"label": "Maximum Height of Map",
+			"help": "Max. Height of the leaflet elevation map in px. Mind the relation to Aspect Ratio of Map."
+		},
+		"mapaspect": {
+			"type": "string",
+			"default": 1.5,
+			"section": "Map",
+			"label": "Width / Height (Aspect) Ratio",
+			"help": "Define the width / height ratio of the Map"
+		},
+		"showadress": {
+			"type": "boolean",
+			"default": true,
+			"section": "Map",
+			"label": "Show Address",
+			"help": "Show start adress of the tour"
+		},
+		"adresstext": {
+			"type": "string",
+			"default": "Startadresse",
+			"section": "Map",
+			"label": "Start Address Text",
+			"help": "Text for header above start address"
+		},
+		"dload": {
+			"type": "boolean",
+			"default": true,
+			"section": "Map",
+			"label": "Allow Download GPX-File",
+			"help": "Provide download link for the GPX-Track(s)"
+		},
+		"trackwidth": {
+			"type": "string",
+			"default": 3,
+			"section": "Map",
+			"label": "Track Width",
+			"help": "Width of the GPX track line."
+		},
+		"trackcolour": {
+			"type": "string",
+			"default": "#ea0000",
+			"section": "Map",
+			"label": "Track Colour",
+			"help": "Color of the GPX track line."
+		},
+		"showalltracks": {
+			"type": "boolean",
+			"default": false,
+			"section": "Map",
+			"label": "Show All Tracks",
+			"help": "Display all GPX tracks on the map."
+		},
+		"gpxpath": {
+			"type": "string",
+			"default": "gpx",
+			"section": "Map",
+			"label": "GPX-Path",
+			"help": "Path to file(s) with GPX-Track(s) relative to the Wordpress uploads folder"
+		},
+		
+		"showchart": {
+			"type": "boolean",
+			"default": true,
+			"section": "Chart",
+			"label": "Show Elevation Chart",
+			"help": "Show the elevation Chart or not."
+		},
+		"charttype": {
+			"type": "string",
+			"default": "Ele",
+			"section": "Chart",
+			"label": "Chart Type",
+			"help": "The type of elevation chart to display.",
+			"options": [
+				{ "value": null, "label": "Select Elevation Chart Type", "disabled": true },
+				{ "value": "ele", "label": "Leaflet-Elevation"},
+				{ "value": "chartjs", "label": "Chart-JS"}
+			]
+		},
 		"eletheme": {
 			"type": "string",
 			"default": "martin-theme",
@@ -239,7 +304,8 @@
 				{ "value": "purple-theme", "label": "purple-theme"},
 				{ "value": "red-theme", "label": "red-theme"},
 				{ "value": "steelblue-theme", "label": "steelblue-theme"},
-				{ "value": "yellow-theme", "label": "yellow-theme"}
+				{ "value": "yellow-theme", "label": "yellow-theme"},
+				{ "value": "custom-theme", "label": "custom-theme"}
 			]
 		},
 		"chartheight": {
@@ -249,7 +315,41 @@
 			"label": "Height of Chart",
 			"help": "Height of the leaflet elevation chart in px (is recalculated in Browser. Might show no effect if too big.)"
 		},
+		"chartjspadding": {
+			"type": "string",
+			"default": 22,
+			"section": "Chart",
+			"label": "Chart Padding",
+			"help": "Padding for the elevation chart."
+		},
+		"chart_fill_color": {
+			"type": "string",
+			"default": "#ea0000",
+			"section": "Chart",
+			"label": "Chart Fill Colour",
+			"help": "Fill color for the elevation chart. NEW from here!"
+		},
+		"chart_background_color": {
+			"type": "string",
+			"default": "#ea0000",
+			"section": "Chart",
+			"label": "Chart Background Colour",
+			"help": "Background color for the elevation chart."
+		},
 
+		"sw_thumbbartype": {
+			"type": "string",
+			"default": "special",
+			"section": "Thumbs",
+			"label": "Thumbnailbar Type",
+			"help": "Select Swiper native Thumbbar or special Thumbbar.",
+			"options": [
+				{ "value": null, "label": "Select Thumbs Bar Type", "disabled": true },
+				{ "value": "integrated", "label": "Swiper"},
+				{ "value": "special", "label": "Special"},
+				{ "value": "none", "label": "None"}
+			]
+		},
 		"navposition": {
 			"type": "string",
 			"default": "bottom",
@@ -304,6 +404,90 @@
 			"section": "Thumbs",
 			"label": "Thumbs Border Colour",
 			"help": "Colour of Thumbnails Border as CSS Hex Color"
+		},
+		"sw_bar_margin_top": {
+			"type": "string",
+			"default": 5,
+			"section": "Thumbs",
+			"label": "Margin above Special Thumbbar in px",
+			"help": "Margin above Special Thumbbar in px."
+		},
+		"sw_activetype": {
+			"type": "string",
+			"default": "active_border",
+			"section": "Thumbs",
+			"label": "Effect for Special Thumbbar",
+			"help": "Effect for Special Thumbbar.",
+			"options": [
+			{ "value": null, "label": "Select Effect for Special Thumbbar", "disabled": true },
+			{ "value": "active_border", "label": "Border"},
+			{ "value": "active", "label": "Brightness"},
+			{ "value": "active_animation", "label": "Shake"}
+			]
+		},
+		
+		"sw_button_color": {
+			"type": "string",
+			"default": "#FF0000",
+			"section": "Slider",
+			"label": "Arrow Colour",
+			"help": "Color of the Arrow on Slider to change Slide."
+		},
+		"sw_effect": {
+			"type": "string",
+			"default": "slide",
+			"section": "Slider",
+			"label": "Swiper Slide Change Effect",
+			"help": "Swiper Slide Change Effect.",
+			"options": [
+				{ "value": null, "label": "Select Slider Effect", "disabled": true },
+				{ "value": "slide", "label": "slide"},
+				{ "value": "fade", "label": "fade"},
+				{ "value": "flip", "label": "flip"},
+				{ "value": "coverflow", "label": "coverflow"}
+			]
+		},
+		"sw_zoom": {
+			"type": "boolean",
+			"default": true,
+			"section": "Slider",
+			"label": "Activate Zoom on Slider",
+			"help": "Activates the Zoom Function within the Swiper Slider."
+		},
+		"sw_fslightbox": {
+			"type": "boolean",
+			"default": true,
+			"section": "Slider",
+			"label": "Use fslightbox for Fullscreen",
+			"help": "Use fslightbox for Fullscreen."
+		},
+		"sw_mousewheel": {
+			"type": "boolean",
+			"default": true,
+			"section": "Slider",
+			"label": "Use Mousewheel for Slide Change",
+			"help": "Enable navigation via mouse wheel."
+		},
+		"sw_hashnavigation": {
+			"type": "boolean",
+			"default": false,
+			"section": "Slider",
+			"label": "Activate Hash Navigation for Swiper",
+			"help": "Enables the option to use a page-link to a dedicated image."
+		},
+		"sw_max_zoom_ratio": {
+			"type": "string",
+			"default": 3,
+			"section": "Slider",
+			"label": "Set the Zoom Ratio for Swiper Zoom",
+			"help": "Defines the Zoom ratio for the Swiper Zoom Effect."
+		},
+		"alttext": {
+			"type": "string",
+			"default": "",
+			"section": "Slider",
+			"label": "Alt-Text",
+			"help": "Alltext for the whole slider for SEO"
 		}
 	}
 }

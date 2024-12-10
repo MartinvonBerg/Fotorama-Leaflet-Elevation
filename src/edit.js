@@ -45,10 +45,17 @@ import './editor.scss';
  */
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
-	const { imgpath, gpxfile, eletheme, chartheight, mapheight, showmap, showadress, adresstext, 
-			requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio, gpxpath, alttext,
-			background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort, mapselector,
-			navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor, mapaspect} = attributes;
+	const { 
+		imgpath, gpxfile, eletheme, chartheight, mapheight, showmap, showadress, adresstext, 
+		requiregps, showcaption, shortcaption, dload, maxwidth, minrowwidth, fit, ratio, gpxpath, alttext,
+		background, arrows, shadows, transition, transitionduration, loop, autoplay, ignoresort, mapselector,
+		navposition, navwidth, f_thumbwidth, f_thumbheight, thumbmargin, thumbborderwidth, thumbbordercolor, mapaspect,
+		// Hinzugefügte fehlende Parameter
+		showchart, chart_fill_color, chart_background_color, charttype, chartjspadding, trackwidth, trackcolour,
+		showalltracks, sw_button_color, sw_effect, sw_zoom, sw_fslightbox, 
+		sw_mousewheel, sw_hashnavigation, sw_max_zoom_ratio,
+		sw_thumbbartype, sw_bar_margin_top, sw_activetype, slider, sortorder, filefilter, 
+	} = attributes;
 	const aff =  require('./block.json')['attributes']; // aff: attributes from File loaded.
 	let entries = Object.entries(aff);
 	const ns = 'fotoramamulti'; // the namespace for i18n
