@@ -350,6 +350,8 @@ function gpxview_getGPS( array $exifCoord, string $hemi)
 function gpxview_setpostgps($pid, $lat, $lon)
 {
 	// es wurde vorab schon geprüft, dass die Werte $lat und $lon existieren. Stimmt nur für setzen aus Foto
+	if (empty($lat) || empty($lon) || $pid == 0 || $pid == null)
+		return;
 	// Wenn Struktur GPS-XML abweicht, dann liefert simplexml leere Strings
 	$oldlat = get_post_meta($pid,'lat');
 	$oldlon = get_post_meta($pid,'lon');

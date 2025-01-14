@@ -1,16 +1,5 @@
-/**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
- */
 import { __ } from '@wordpress/i18n';
 
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
- */
 import { 
 	useBlockProps,
 	InspectorControls,
@@ -25,24 +14,13 @@ import {
 	ColorPicker,
 	BaseControl
 } from '@wordpress/components';
+
 //import ServerSideRender from '@wordpress/server-side-render';
+//import { useEffect } from '@wordpress/element';
 
-/**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
 import './editor.scss';
+//import { mainLogic } from '../js/fm_main_func.js';
 
-/**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
- *
- * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#edit
- *
- * @return {WPElement} Element to render.
- */
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
 	const { 
@@ -59,7 +37,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const aff =  require('./block.json')['attributes']; // aff: attributes from File loaded.
 	let entries = Object.entries(aff);
 	const ns = 'fotoramamulti'; // the namespace for i18n
-	let mykey = '';
 	let attsPart = '';
 		
 	const onChangeHandler = (newContent, source) => {
@@ -80,68 +57,154 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 		
 	const ControlList = () => (
-		<>	
-		<PanelBody {...entries}
-			title={ __( attsPart, ns )}
-			initialOpen={attsPart === 'Select' ? true : false}
-		>
-			{entries.map((attr, index) => (
-				<>
-				  {attr[1].section === attsPart && attr[1].type !== 'boolean' && attr[1]['options'] === undefined && ! attr[1].label.includes('Colour')  &&
-					<PanelRow key={index.toString()}>
-						<fieldset>
-							<TextControl {...mykey=attr[0]}
-								key={mykey}
-								label={__(aff[mykey]['label'], ns) }
-								value = { eval(mykey) } 
-								onChange={(newContent) => onChangeHandler(newContent, attr[0])}
-								help={__(aff[mykey]['help'], ns)}
-							/>
-						</fieldset>	
-					</PanelRow>
-				  }
-				  {attr[1].section === attsPart && attr[1].type !== 'boolean' && attr[1]['options'] === undefined && attr[1].label.includes('Colour')  &&
-				    <PanelRow key={index.toString()}>	
-						<BaseControl 
-							{...mykey=attr[0]}
-							label={__(aff[mykey]['label'], ns) }>		
-							<ColorPicker 
-								color={ eval(mykey) }
-								onChange={(newContent) => onChangeHandler(newContent, attr[0])}
-								enableAlpha={false}
-								defaultValue="#000"
-								copyFormat="hex"
-							/>
-						</BaseControl>
-					</PanelRow>		
-				  }
-				  {attr[1].section == attsPart && attr[1]['options'] !== undefined &&	
-					<SelectControl {...mykey=attr[0]}
-						key={mykey}
-						label={__(aff[mykey]['label'], ns) }
-						value = { eval(mykey) } 
-						onChange={(event) => onChangeHandler(event, attr[0])}
-						options={ attr[1]['options'] }
-					/>
-				  }
-				  {attr[1].section === attsPart && attr[1].type === 'boolean' &&
-					<PanelRow key={index.toString()}>
-						<fieldset>
-							<ToggleControl {...mykey=attr[0]}
-								key={mykey}
-								label={__(aff[mykey]['label'], ns) }
-								checked={ eval(mykey) }
+		<>  
+			<PanelBody 
+				title={ __( attsPart, ns )} 
+				initialOpen={attsPart === 'Select' ? true : false}
+			>
+				{entries.map((attr, index) => (
+					<React.Fragment key={`fragment-${index}`}>
+						{attr[1].section === attsPart && attr[1].type !== 'boolean' && attr[1]['options'] === undefined && !attr[1].label.includes('Colour') && (
+							<PanelRow key={`panelrow-${index}`}>
+								<fieldset key={`fieldset-${index}`}>
+									<TextControl
+										label={__(aff[attr[0]]['label'], ns)}
+										value={eval(attr[0])}
+										onChange={(newContent) => onChangeHandler(newContent, attr[0])}
+										help={__(aff[attr[0]]['help'], ns)}
+									/>
+								</fieldset>
+							</PanelRow>
+						)}
+						{attr[1].section === attsPart && attr[1].type !== 'boolean' && attr[1]['options'] === undefined && attr[1].label.includes('Colour') && (
+							<PanelRow key={`panelrow-color-${index}`}>
+								<BaseControl 
+									label={__(aff[attr[0]]['label'], ns)}
+								>
+									<ColorPicker
+										color={eval(attr[0])}
+										onChange={(newContent) => onChangeHandler(newContent, attr[0])}
+										enableAlpha={false}
+										defaultValue="#000"
+										copyFormat="hex"
+									/>
+								</BaseControl>
+							</PanelRow>
+						)}
+						{attr[1].section === attsPart && attr[1]['options'] !== undefined && (
+							<SelectControl
+								key={`selectcontrol-${index}`}
+								label={__(aff[attr[0]]['label'], ns)}
+								value={eval(attr[0])}
 								onChange={(event) => onChangeHandler(event, attr[0])}
+								options={attr[1]['options']}
 							/>
-						</fieldset>
-					</PanelRow>
-			 	  }
-				</>
-			)
-			)}
-		</PanelBody> 
+						)}
+						{attr[1].section === attsPart && attr[1].type === 'boolean' && (
+							<PanelRow key={`panelrow-toggle-${index}`}>
+								<fieldset key={`fieldset-toggle-${index}`}>
+									<ToggleControl
+										label={__(aff[attr[0]]['label'], ns)}
+										checked={eval(attr[0])}
+										onChange={(event) => onChangeHandler(event, attr[0])}
+									/>
+								</fieldset>
+							</PanelRow>
+						)}
+					</React.Fragment>
+				))}
+			</PanelBody> 
 		</>
-	)
+	);
+	/*
+	function updateAttr(attr) {
+		for (const [key, value] of Object.entries(attr)) {
+			if (typeof value === "number") {
+				attr[key] = String(value); // Zahlen in Strings umwandeln
+			} else {
+				attr[key] = value; // Andere Werte unverändert lassen
+			}
+		}
+		return attr;
+	}
+	
+	const onLoad = (doc, win, vars) => {
+		let numberOfBoxes = doc.querySelectorAll('[id^=multifotobox]').length;
+        console.log('SSR onLoad: Anzahl der Boxen:', numberOfBoxes);
+
+        if (numberOfBoxes > 0) {
+            console.log('Boxes gefunden!');
+            // Hier kannst du weitere Logik ausführen
+			if (typeof mainLogic == 'function') {
+				console.log('mainLogic wird ausgeführt.');
+				mainLogic(window, document, doc, win, vars); // iframe-Dokument übergeben
+			}
+        } else {
+            console.log('Keine Boxen gefunden.');
+        }
+    };
+
+	// Überwache Änderungen im DOM bei Iframe
+	/*
+	useEffect(() => {
+		const observer = new MutationObserver(() => {
+			const numberOfBoxes = document.querySelectorAll('[id^=multifotobox]').length;
+	
+			if (numberOfBoxes > 0) {
+				console.log('Boxen gefunden nach Mutation:', numberOfBoxes);
+				onLoad();
+			}
+		});
+	
+		const targetNode = document.querySelector('.wp-block'); // Container von ServerSideRender
+		if (targetNode) {
+			observer.observe(targetNode, { childList: true, subtree: true });
+		}
+	
+		return () => observer.disconnect(); // Cleanup
+	}, []);
+	
+	useEffect(() => {
+		// Finde das iframe im Hauptdokument (only for curren themes)
+		const iframe = document.querySelector('iframe[name="editor-canvas"]'); // Passe den Selektor ggf. an
+		if (!iframe) {
+			console.log('Iframe nicht gefunden!');
+			return;
+		} else {
+			console.log('Iframe gefunden!');
+		}
+	
+		// Greife auf das Dokument innerhalb des iframe zu
+		const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+		const iframeWin = iframe.contentWindow;
+		let mainPageVars = pageVarsForJs;
+
+		if (!iframeDoc) {
+			console.error('Inhalt des iframe-Dokuments konnte nicht geladen werden!');
+			return;
+		}
+	
+		// MutationObserver für den iframe-Inhalt
+		const observer = new MutationObserver(() => {
+			const numberOfBoxes = iframeDoc.querySelectorAll('[id^=multifotobox]').length;
+	
+			if (numberOfBoxes > 0) {
+				console.log('Boxen gefunden im iframe:', numberOfBoxes);
+				//onLoad(iframeDoc, iframeWin, mainPageVars);
+			}
+		});
+	
+		// Zielknoten im iframe-Dokument überwachen
+		const targetNode = iframeDoc.body;
+		if (targetNode) {
+			observer.observe(targetNode, { childList: true, subtree: true });
+		}
+	
+		return () => {
+			observer.disconnect(); // Cleanup des Observers
+		};
+	}, []);
+	*/
 
 	return (
 		<>
@@ -152,8 +215,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ControlList (aff, attributes, attsPart='Map' )}
 				{ControlList (aff, attributes, attsPart='Chart' )}
 			</InspectorControls>
+
 			<div {...blockProps}>
-				<p><strong>Fotorama Settings on the right side.</strong></p>
+				<p>Slider-Map-Chart Settings on the right side.</p>
+				
+				{/*<ServerSideRender
+						block="fotoramamulti/fotorama-multi"
+						attributes = {updateAttr(attributes)}
+					/>*/}
+				
 				{/*<TextList aff={aff} values={attributes} />*/}
 			</div>
 		</>
@@ -172,4 +242,3 @@ function TextList(props) {
 	  </ul>
 	);
 }
- 

@@ -1,8 +1,8 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
+	"apiVersion": 2,
 	"name": "fotoramamulti/fotorama-multi",
-	"version": "0.31.0",
+	"version": "0.32.0",
 	"title": "Fotorama Elevation",
 	"category": "media",
 	"icon": "embed-photo",

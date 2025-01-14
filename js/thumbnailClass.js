@@ -1,5 +1,5 @@
 /*!
-	ThumbnailClass V 0.31.0
+	ThumbnailClass V 0.32.0
 	license: GPL 2.0
 	Martin von Berg
 */
@@ -53,9 +53,11 @@ class ThumbnailSlider {
   }; 
 
   /**
-   * Constructor Function
+   * Constructor Function for ThumbnailSlider
    * @param {int} number current number of the slider on the page
    * @param {object} options options to pass to the constructor. not all are required. pass only the ones you wish to change.
+   * @global {object} document
+   * @global {object} navigator
    */
   constructor(number, options={} ) {
     // merge option objects

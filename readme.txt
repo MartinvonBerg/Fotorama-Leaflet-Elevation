@@ -5,7 +5,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: slider, leaflet map, height chart, responsive, tile server
 Requires at least: 6.4
 Tested up to: 6.7
-Stable tag: 0.30.0
+Stable tag: 0.32.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -82,9 +82,12 @@ The Plugin runs from WordPress 5.9.x - 6.7 and PHP 7.4.3 - 8.2.0.
 5. Back end IT 
 
 == Upgrade Notice ==
-No Upgrade to 0.30.0 required. Only if you want the new GPX-Track filtering and / or AVIF.
+No Upgrade to 0.32.0 required. Only if you want the new GPX-Track filtering and / or AVIF or install for the first time or want to use the Gutenberg-Block.
 
 == Changelog ==
+
+= 0.32.0 = 14.01.2025
+PHP-Bugfixes for initial installation. Update Gutenberg-Block.
 
 = 0.31.0 = 18.11.2024
 Refactor JS for Admin-GPX-Panel, Filter Multi-Sport-Tracks instead of reducing to one Track

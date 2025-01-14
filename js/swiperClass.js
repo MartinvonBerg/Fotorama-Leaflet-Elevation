@@ -1,5 +1,5 @@
 // import Swiper JS
-//import Swiper from 'swiper/bundle'; // imports the complete bundle.
+// import Swiper from 'swiper/bundle'; // imports the complete bundle.
 // The following module loading reduces bundle size from 47.8 kB to 38.0 kBytes.
 // old: import Swiper, {Navigation, Mousewheel, Zoom, A11y, HashNavigation, EffectFlip, EffectCoverflow, EffectFade, EffectCube, Thumbs, Keyboard} from 'swiper';
 import Swiper  from 'swiper';
@@ -12,10 +12,14 @@ import {ThumbnailSlider} from "./thumbnailClass";
 
 export {SliderSwiper};
 
+/**
+ * Class SliderSwiper to create a slider with thumbnails in a div on the page.
+ * @class SliderSwiper
+ */
 class SliderSwiper {
         
     // private attributes (fields)
-    #pageVariables = []; // values passed form php via html
+    #pageVariables = []; // global values passed form php via html
 
     // public attributes (fields). These can be set / get by dot-notation.
     number = 0;
@@ -29,14 +33,19 @@ class SliderSwiper {
     space = 2;
 
     /**
-     * Constructor Function
+     * Constructor Function for SliderSwiper
      * @param {int} number current number of slider on page
      * @param {string} elementOnPage id of the div on the page that shall contain the slider
+     * @global {object} pageVariables global values passed form php via html
+     * @global {object} document
+     * @global {object} window
+     * @global {object} navigator
+     * @global {object} fsLightboxInstances
      */
-     constructor(number, elementOnPage) {
+     constructor(number, elementOnPage, constructoPageVarsForJs=null) {
         this.number = number; 
-        this.elementOnPage = elementOnPage; 
-        this.#pageVariables = pageVarsForJs[number];
+        this.elementOnPage = elementOnPage; // global: will use global document object to find HTMLelement.
+        this.#pageVariables = constructoPageVarsForJs || pageVarsForJs[number]; // global
         this.zoom = this.#pageVariables.sw_options.sw_zoom === 'true';
 
         // change swiper settings for certain cases 
@@ -116,7 +125,8 @@ class SliderSwiper {
         this.#displaySlides();
                 
         // generate the swiper slider on the new html 
-        this.swiper = new Swiper('#'+this.elementOnPage, this.sw_options);
+        this.swiper = new Swiper(this.elementOnPage, this.sw_options);
+        //console.log('Swiper mit '+this.swiper.slides.length+' Slides initialisiert');
         this.updateCSS();
         this.scrollToHash();
         this.#listenEventSliderShowend();

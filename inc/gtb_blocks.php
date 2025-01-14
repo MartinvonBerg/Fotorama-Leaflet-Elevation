@@ -45,5 +45,37 @@ function shortcodewrapper ( $attr ) {
 		}
 	}
 
+	// We need to use special settings for the editor to just show image 1 and the gpx file link to check if they are correct.
+	if (is_array($_GET) && array_key_exists('context', $_GET) && $_GET['context'] == 'edit') {
+		$attr['showmap'] = false;
+		$attr['showchart'] = false;
+		$attr['sw_thumbbartype'] = 'none';
+	}
+
 	return \mvbplugins\fotoramamulti\showmulti($attr);
 }
+
+function site_editor_styles() {
+	// source: https://wordpress.stackexchange.com/questions/419449/how-can-i-add-classes-to-the-gutenberg-iframe-editor-canvas-body-tag-added-in
+    if ( is_admin() ) {
+
+		$path = \plugin_dir_url(__DIR__);
+
+        // Enqueue or Javascript
+        wp_enqueue_script(
+            'fotorama_main_bundle',
+            $path . 'build/fm_bundle/fm_main_func.js',
+            array('wp-blocks', 'wp-dom'),
+            //filemtime( get_stylesheet_directory() . '/assets/js/editor.js' ),
+            '0.32.0',
+        );
+
+        // Pass the class names to the script
+        //wp_localize_script('fotorama_main_bundle', 'iframeBodyData', [
+        //    'classes' => $classes,
+        //]);
+
+
+    }
+} 
+//add_action( 'enqueue_block_assets', '\mvbplugins\fotoramamulti\site_editor_styles' );

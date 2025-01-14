@@ -315,6 +315,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.32.0 = 14.01.2025
+PHP-Bugfixes for initial installation. Update Gutenberg-Block.
+
 = 0.31.0 = 18.11.2024
 Refactor JS for Admin-GPX-Panel, Filter Multi-Sport-Tracks instead of reducing to one Track
 

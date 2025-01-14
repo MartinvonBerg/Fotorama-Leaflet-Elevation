@@ -51,6 +51,7 @@ class chartJsClass {
    * @param {number} options.aspRatio
    * @param {boolean} options.chartAnimation animate the elevation chart, or not.
    * @param {boolean} options.showChartHeader
+   * @global {object} document
    * @return {void|undefined} return undefined if init fails.
    */
   constructor(linedata, options) {
@@ -119,6 +120,7 @@ class chartJsClass {
 
   /**
    * set the chart data to show in elevation profile
+   * @note globals are related to this function not to the class.
    * 
    * @global {object} this.elevationData.labels
    * @global {object} this.elevationData.data

@@ -6,23 +6,16 @@ let _mode = 'production';
 module.exports = [
 {
   target: ['web','es2017'],
-  entry: ['./js/fm_main.js'],
+  //entry: ['./js/fm_main.js'],
+  entry: {
+    main: './js/fm_main.js',
+    main_func: './js/fm_main_func.js'
+  },
   output: {
     filename: 'fm_[name].js',
     chunkFilename: 'fm_[name].js',
     path: path.resolve(__dirname, 'build/fm_bundle'),
   },
-  //switch-map: active: L in local var, ele not working completely: aktiviere, um L in der lokalen Variable OHNE leaflet-elevation zu laden.
-  // wenn das aktiv ist muss im file 'LeafletMapClass.js' die Zeile 'import "leaflet"' deaktiviert werden!; Achtung: Leaflet Elevation funktioniert dann nicht!
-  // wenn das Plugin DE-aktiviert ist (mit import leaflet aktiv), dann geht zwar leaflet, aber L ist nicht lokal und es gibt Probleme mit anderen Plugins!
-  /*
-  plugins: [new webpack.ProvidePlugin({ 
-    L: 'leaflet', 
-    'window.L': 'leaflet',
-    'root.L' : 'leaflet' }),
-  ],
-  */
-  // ---------- bis hierher -----------------
   mode: _mode, 
   module: {
     rules: [

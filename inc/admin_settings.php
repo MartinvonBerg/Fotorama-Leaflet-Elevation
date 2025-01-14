@@ -1230,7 +1230,8 @@ final class FotoramaElevationAdmin
 		// append $no_admin_settings to show in info page
 		$this->translateSettingsArray('no_admin_settings');
 		$this->allSettings[ $i ] = $this->no_admin_settings;
-		$this->leaflet_settings = \array_merge( get_option('fm_leaflet_options') );
+		$fm_leaflet_options = get_option('fm_leaflet_options');
+		$this->leaflet_settings = \array_merge(is_array($fm_leaflet_options) ? $fm_leaflet_options : []);
 	
 
 		// enque the javascript for the admin page.
@@ -1245,14 +1246,14 @@ final class FotoramaElevationAdmin
 	public function fm_admin_scripts_enqueue() {
 		// enque the javascript for the admin page.
 		$plugin_path = plugins_url('/', __DIR__);
-		wp_enqueue_script('fotorama_admin',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.31.0', true);
-		wp_enqueue_style('fm-admin-gpx', $plugin_path . 'css/fm_admin_gpx.css',[] ,'0.31.0' ,'all');
+		wp_enqueue_script('fotorama_admin',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.32.0', true);
+		wp_enqueue_style('fm-admin-gpx', $plugin_path . 'css/fm_admin_gpx.css',[] ,'0.32.0' ,'all');
 
 		/* enque the javascript for the standard page too.
 		if ( isset($charttype) && $charttype === 'chartjs') {
-			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.31.0', true);
+			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.32.0', true);
 		} else {
-			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.31.0', true);
+			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.32.0', true);
 		}
 		*/
 		$tracks['track_0']['url'] = ''; // $gpx_url . $f;
@@ -1261,18 +1262,18 @@ final class FotoramaElevationAdmin
 		$pageVarsForJs[0] = [
 			'ngpxfiles'  => 1,
 			'tracks' => $tracks,
-			'eletheme' => $this->leaflet_settings["colour_theme_for_leaflet_elevation_1"], //'custom-theme',
-			'charttype' => $this->leaflet_settings["charttype"],
-			'chartheight' => intval( $this->leaflet_settings["height_of_chart_11"] ), // 300,
-			'mapheight' => intval( $this->leaflet_settings["height_of_map_10"] ), // 400,
-			'mapaspect' => floatval( $this->leaflet_settings["aspect_ratio_of_map"] ), // 2,
+			'eletheme' => isset($this->leaflet_settings["colour_theme_for_leaflet_elevation_1"]) ? $this->leaflet_settings["colour_theme_for_leaflet_elevation_1"] : 'martin-theme', // Standardwert festlegen
+			'charttype' => $this->leaflet_settings["charttype"] ?? 'chartjs', // Standardwert
+			'chartheight' => isset($this->leaflet_settings["height_of_chart_11"]) ? intval($this->leaflet_settings["height_of_chart_11"]) : 200, // Standardwert
+			'mapheight' => isset($this->leaflet_settings["height_of_map_10"])     ? intval($this->leaflet_settings["height_of_map_10"])   : 400, // Standardwert
+			'mapaspect' => isset($this->leaflet_settings["aspect_ratio_of_map"])  ? floatval($this->leaflet_settings["aspect_ratio_of_map"]) : 1.50, // Standardwert
 			'sw_options' => [
-				'trackwidth' => intval( $this->leaflet_settings["trackwidth"] ), // 2,
-				'trackcolour' => $this->leaflet_settings["trackcolour"],
-				'gpx_distsmooth' => $this->gpxSettings["param3"]['values'],
-				'gpx_elesmooth' => $this->gpxSettings["param4"]['values'],
-				'chart_animation' => false,
-				'chartjspadding' => $this->leaflet_settings['chartjspadding'],
+				'trackwidth' => isset($this->leaflet_settings["trackwidth"]) ? intval($this->leaflet_settings["trackwidth"]) : 3, // Standardwert
+				'trackcolour' => $this->leaflet_settings["trackcolour"] ?? '#ff0000', // Standardwert
+				'gpx_distsmooth' => $this->gpxSettings["param3"]['values'] ?? 25, // Standardwert
+				'gpx_elesmooth' => $this->gpxSettings["param4"]['values'] ?? 4, // Standardwert
+				'chart_animation' => false, // Keine Änderung
+				'chartjspadding' => $this->leaflet_settings['chartjspadding'] ?? 22, // Standardwert
 			],
 			'imagepath' => $plugin_path . 'images/', 
 		];

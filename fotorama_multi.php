@@ -11,7 +11,7 @@ namespace mvbplugins\fotoramamulti;
  * Plugin Name:       Slider + Leaflet-Map + Chart
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Image and Video Slider, Leaflet Map and Elevation Chart Integration. Shows images from any directory in your upload folder. Uses Fotorama or Swiper for the Slider.
- * Version:           0.31.0
+ * Version:           0.32.0
  * Requires at least: 6.2
  * Tested up to:      6.7
  * Requires PHP:      7.4
@@ -45,8 +45,8 @@ require_once __DIR__ . '/inc/gtb_blocks.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin_settings.php';
 	$fotorama_elevation = new FotoramaElevationAdmin();
-	$fotorama_elevation_options = get_option( 'fm_leaflet_options' );
-	$fotorama_elevation->checkHtaccess() ? $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'true' : $fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = 'false';
+	$fotorama_elevation_options = is_array(get_option('fm_leaflet_options')) ? get_option('fm_leaflet_options') : [];
+	$fotorama_elevation_options['htaccess_Tile_Server_Is_OK'] = $fotorama_elevation->checkHtaccess() ? 'true' : 'false';
 	update_option( 'fm_leaflet_options', $fotorama_elevation_options );
 }
 
@@ -59,8 +59,8 @@ function showmulti($attr, $content = null)
 {
 	//require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
 	$plugin_path = plugins_url('/', __FILE__);
-	\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.31.0','all');
-	\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.31.0','all');
+	\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.32.0','all');
+	\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.32.0','all');
 
 	// Define global Values and Variables. We need the globals for the state-transition of the post.
 	global $post_state_pub_2_draft;
@@ -488,9 +488,9 @@ EOF;
  	);
 
 	if ( isset($charttype) && $charttype === 'chartjs') {
-		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.31.0', true);
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.32.0', true);
 	} else {
-		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.31.0', true);
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.32.0', true);
 	}
 
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
