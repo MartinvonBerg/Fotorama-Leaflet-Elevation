@@ -6,6 +6,11 @@
         "description": "Zeige das Höhendiagramm",
         "info": "Zeige das Höhendiagramm"
     },
+    "param21": {
+        "text": "Benutze imperiale or metrische Einheiten",
+        "description": "Benutze imperiale (checked) oder metrische Einheiten (unchecked)",
+        "info": "Benutze imperiale (checked) oder metrische Einheiten (unchecked)"
+    },
     "param14": {
         "text": "Typ Höhendiagramm",
         "description": "Auswahl des Diagrammtyps aus Leaflet-Elevation oder Chart.js",
@@ -51,6 +56,11 @@
         "text": "Breite GPX-Track in px*",
         "description": "Breite des GPX-Track in px",
         "info": "Breite des GPX-Track in px"
+    },
+    "param20": {
+        "text": "Zeige GPX-Track als Hotline",
+        "description": "Zeige den GPX-Track als Hotline (mehrfarbig) oder mit einer Farbe. Die Trackfarbe wird bei Hotline:aktiv ignoriert.",
+        "info": "Zeige den GPX-Track als Hotline (mehrfarbig) oder mit einer Farbe. Die Trackfarbe wird bei Hotline:aktiv ignoriert."
     },
     "param17": {
         "text": "Farbe (erster) GPX-Track*",

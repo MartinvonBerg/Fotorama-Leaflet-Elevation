@@ -222,6 +222,9 @@ So, the current recommendation is to use the 'webp format.
 
 3. Usage
     - see above.
+    - NEW Options: 
+        - It is now possible to use imperial Units with leaflet-elevation.js, only (So, not for chart.js) The default is metric units.
+        - Furthermore it is possible to deselect the 'hotline' in the leaflet-elevation.js. Hotline: coloured line on the map which indicates the elevation of the track.
 
 4. TODO & Bugs w.r.t to Leaflet Elevation
     - The track statistics is not updated if more than one track is shown in one map and the statistics is calculated by leaflet-elevation.js. The event.track_info is working for the first track but empty for the other tracks. Workaround: Upload the tracks (gpx-files) via the admin-panel and activate the setting 'Reduce GPX-File'. This will add statistics to the reduced GPX-file which is used on the page / post.
@@ -314,6 +317,10 @@ This plugin uses the great work from:
 - Lust but not least: Many thanks to Norbert S. for testing!
 
 # Changelog
+
+= 0.33.0 = 21.01.2025
+Update swiper.js, chart.js. leaflet-elevation and dependant libraries. Clean-up in JS Folders.
+Add options to select units and to (de-)select the hotline in leaflet-elevation.
 
 = 0.32.0 = 14.01.2025
 PHP-Bugfixes for initial installation. Update Gutenberg-Block.
