@@ -268,7 +268,7 @@ export const LegendSmall = ({
 			// 	.merge(label.data([{ idx: id }]))
 			// 	.text(d => items.length ? (items[idx][0].toUpperCase() + items[idx].slice(1)) : '')
 			// 	.on("mousedown", (e, d) => setIdx(L.Util.wrapNum((idx + 1), [0, items.length])));
-			label.text(items.length ? (items[idx][0].toUpperCase() + items[idx].slice(1)) : '');
+			label.text(items.length ? L._((items[idx][0].toUpperCase() + items[idx].slice(1))) : '');
 			onClick(items[idx]);
 		};
 		setIdx(0);
@@ -549,6 +549,8 @@ export const Chart = ({
 	// SVG Container
 	const svg   = d3.create("svg:svg").attr("class", "background");
 
+	const defs = svg.append("svg:defs");
+
 	// SVG Groups
 	const g     = svg.append("g");
 	const panes = {
@@ -581,6 +583,7 @@ export const Chart = ({
 	const scale = (opts) => ({ x: Scale(opts.x), y: Scale(opts.y)});
 
 	let utils = {
+		defs,
 		mask,
 		canvas,
 		context,
@@ -609,8 +612,13 @@ export const Chart = ({
 		svg          .attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
 		g            .attr("transform", "translate(" + margins.left + "," + margins.top + ")");
 
-		// Partially fix: https://github.com/Raruto/leaflet-elevation/issues/123
-		if(/Mac|iPod|iPhone|iPad/.test(navigator.platform) && /AppleWebkit/i.test(navigator.userAgent)) {
+		// Fix: https://github.com/Raruto/leaflet-elevation/issues/123
+		// Fix: https://github.com/Raruto/leaflet-elevation/issues/232
+		if (
+			/Mac|iPod|iPhone|iPad/.test(navigator.platform) &&
+			/AppleWebkit/i.test(navigator.userAgent) &&
+			!/Chrome/.test(navigator.userAgent)
+		) {
 			canvas   .style("transform", "translate(" + margins.left + "px," + margins.top + "px)");
 		}
 

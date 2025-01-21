@@ -1,5 +1,5 @@
 // Version 1.0.1 from: https://unpkg.com/leaflet-almostover@1.0.1/src/leaflet.almostover.js, 
-//current as of 20.08.2022
+//current as of 21.01.2025
 
 L.Map.mergeOptions({
     // @option almostOver: Boolean = true

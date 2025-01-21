@@ -14,6 +14,7 @@ export var Options = {
 	dragging: !L.Browser.mobile,
 	downloadLink: 'link',
 	elevationDiv: "#elevation-div",
+	edgeScale: { bar: true, icon: false, coords: false },
 	followMarker: true,
 	imperial: false,
 	legend: true,
@@ -79,7 +80,9 @@ export var Options = {
 	decimalsY: 0,
 	forceAxisBounds: false,
 	interpolation: "curveLinear",
-	skipNullZCoords: false,
 	yAxisMax: undefined,
 	yAxisMin: undefined,
+
+	// Prevent CORS issues for relative locations (dynamic import)
+	srcFolder: ((document.currentScript && document.currentScript.src) || (import.meta && import.meta.url)).split("/").slice(0,-1).join("/") + '/',
 };

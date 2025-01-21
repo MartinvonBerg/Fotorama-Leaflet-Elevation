@@ -1,5 +1,5 @@
 export function Distance() {
-	
+
 	const _ = L.Control.Elevation.Utils;
 
 	let opts     = this.options;

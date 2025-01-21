@@ -397,7 +397,7 @@ class LeafletMap {
                 img.style.height = '32px';
                 img.style.cursor = 'pointer';
                 img.title = classThis.i18n('Show all');
-                img.id = this.number;
+                img.id = 'leaflet-home-' + classThis.number;
                 img.onclick = function () {
                     //classThis.map.fitBounds(classThis.bounds, { padding: classThis.zpadding, maxZoom: 13 });
                     classThis.map.fitBounds(classThis.bounds);

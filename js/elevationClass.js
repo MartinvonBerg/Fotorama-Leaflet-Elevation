@@ -1,12 +1,16 @@
 /*!
-	ElevationClass 0.14.1
+	ElevationClass 0.33.0
 	license: GPL 2.0
 	Martin von Berg
 */
 
 import {LeafletMap} from './leafletMapClass';
-// local Styles for LEAFLET-ELEVATION 
-import './elevation/dist/leaflet-elevation.css';
+
+// my Styles for LEAFLET-ELEVATION 
+import '@raruto/leaflet-elevation/dist/leaflet-elevation.css'; // load from node_modules
+import './elevationClass.css'; // my local styles for the elevation chart
+
+import './elevation/dist/leaflet-elevation.js';
 
 export {LeafletElevation};
 
@@ -21,76 +25,68 @@ class LeafletElevation extends LeafletMap {
 
     constructor(number, elementOnPage, center=null, zoom=null) {
         super(number, elementOnPage, center=null, zoom=null);
-        
         this.createElevationChart();
     }
 
     createElevationChart() {
     
-        import(/* webpackChunkName: "leaflet-elevation" */'./elevation/dist/leaflet-elevation.js').then( () => {
-            // set options for elevation chart
-            //leafele.leafele(L);
-            // Das folgende zu aktivieren bringt nichts, da leaflet-elevation damit nicht korrekt funktioniert
-            //L = globalThis.L; // switch-map: active: L in local var, ele not working completely
-            this.setChartOptions(this.number);
+        // set options for elevation chart
+        this.setChartOptions(this.number);
 
-            // create tracks
-            if (parseInt( this.pageVariables.ngpxfiles) === 1) {
-                this.createOneTrack();
-            } else if ( parseInt( this.pageVariables.ngpxfiles) > 1 ) {
-                // part to show multiple tracks in one map.            
-                let routes = {};
-                            
-                // put all tracks in one js array and set local variable for the window closure.
-                for (let key in this.pageVariables.tracks) {
-                    this.tracks.push(this.pageVariables.tracks[key].url)
-                }
+        // create tracks
+        if (parseInt( this.pageVariables.ngpxfiles) === 1) {
+            this.createOneTrack();
 
-                // set the bounds only after the second move. The first move is fired after the movement to the given center.
-                let classThis = this;
+        } else if ( parseInt( this.pageVariables.ngpxfiles) > 1 ) {
+            // part to show multiple tracks in one map.            
+            let routes = {};
+                        
+            // put all tracks in one js array and set local variable for the window closure.
+            for (let key in this.pageVariables.tracks) {
+                this.tracks.push(this.pageVariables.tracks[key].url)
+            }
 
-                this.map.on('moveend', function(e) {
-                    classThis.timesMoveendCalled++;
-                    let m = e.sourceTarget._container.id;
-                    
-                    //load the tracks on the map: kein Event gefunden map.on('load') geht nicht.
-                    if (classThis.timesMoveendCalled === 1) {
-                        import(/* webpackChunkName: "leaflet-gpxgroup" */'./elevation/libs/leaflet-gpxgroup.js').then( () => {
-                            routes = L.gpxGroup(classThis.tracks, {
-                                elevation: true,
-                                elevation_options: classThis.eleopts.elevationControl.options, //
-                                legend: true,
-                                legend_options: {
-                                    position: "bottomright",
-                                    collapsed: true,
-                                },
-                                distanceMarkers: false,
-                            });
-                            routes.addTo(classThis.map);
-                        });
-                    }
-
-                    if (classThis.timesMoveendCalled === 2) {   
-                        // write track statistics values to the summmary.
-                        classThis.map.on('legend_selected', function(e){
-                        classThis.setTrackStatistics(e);
-                        });
-                        // activate the first track.
-                        let q = document.querySelector('#'+m+' > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div.leaflet-control-layers.leaflet-control > section > div.leaflet-control-layers-base > label:nth-child(1)');
-                        if (q !== null) {
-                            q.click();
-                        }
-                    } 
-
-                    // change the bounds to all tracks
-                    if (classThis.timesMoveendCalled === 3) {
-                        classThis.setBounds(routes.getBounds() );
-                        classThis.map.fitBounds(classThis.bounds);
-                    }
-
+            // set the bounds only after the second move. The first move is fired after the movement to the given center.
+            let classThis = this;
+            import(/* webpackChunkName: "leaflet-gpxgroup" */'./elevation/libs/leaflet-gpxgroup.js') // kann nicht als npm genutzt werden, da die import-funktion für geomutils genutzt wird.
+            .then( () => {
+                routes = L.gpxGroup(classThis.tracks, {
+                    elevation: true,
+                    elevation_options: classThis.eleopts.elevationControl.options, //
+                    legend: true,
+                    legend_options: {
+                        position: "bottomright",
+                        collapsed: true,
+                    },
+                    distanceMarkers: false,
                 });
-            } // no else here: This would be the part for no tracks at all. What is not useful here.
-        });
+                routes.addTo(classThis.map);
+            });
+
+            this.map.on('moveend', function(e) {
+                classThis.timesMoveendCalled++;
+                let m = e.sourceTarget._container.id;
+                
+                //load the tracks on the map: kein anderes Event gefunden map.on('load') geht nicht.
+                if (classThis.timesMoveendCalled === 1) {   
+                    // write track statistics values to the summmary.
+                    classThis.map.on('legend_selected', function(e){
+                    classThis.setTrackStatistics(e);
+                    });
+                    // activate the first track.
+                    let q = document.querySelector('#'+m+' > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div.leaflet-control-layers.leaflet-control > section > div.leaflet-control-layers-base > label:nth-child(1)');
+                    if (q !== null) {
+                        q.click();
+                    }
+                } 
+
+                // change the bounds to all tracks
+                if (classThis.timesMoveendCalled === 1) {
+                    classThis.setBounds(routes.getBounds() );
+                    classThis.map.fitBounds(classThis.bounds);
+                }
+            });
+        } // no else here: This would be the part for no tracks at all. What is not useful here.
     }
 
     /**
@@ -128,9 +124,12 @@ class LeafletElevation extends LeafletMap {
                     downloadLink:false,
                     closeBtn: false,
                     distanceMarkers: { lazy: true, distance: false, direction: false }, // direction creates the black arrows
-                    hotline: true, // the coloured line. One color only if false
+                    hotline: false, // the coloured line. One color only if false // TODO : option
+                    imperial: false, // TODO : option
+                    edgeScale: { bar: false, icon: false, coords: false }, // only useful if imperial is false. Unused.
                     polyline: {
                         weight: 0.9*parseInt(this.pageVariables.sw_options.trackwidth), // This changes the lineWidth. Mind that the original leaflet-elevation.js was changed for that.
+                        color: this.pageVariables.sw_options.trackcolour, // used only if hotline is false
                     },
                     waypoints: false,
                     wptLabels: false,
@@ -170,8 +169,14 @@ class LeafletElevation extends LeafletMap {
                     return true;
                 }
             });
-            track = Object.values(this.pageVariables.tracks)[index].url;
-            info = Object.values(this.pageVariables.tracks)[index].info;
+            try {
+                track = Object.values(this.pageVariables.tracks)[index].url;
+                info = Object.values(this.pageVariables.tracks)[index].info;
+            } catch (error) {
+                track = this.pageVariables.tracks.track_0.url;
+                info = this.pageVariables.tracks.track_0.info;
+            }
+            
 
         } else {
             track = this.pageVariables.tracks.track_0.url;

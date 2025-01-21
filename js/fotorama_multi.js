@@ -43,7 +43,7 @@
                     zoom: 5,
                     markerZoomAnimation: false,
                     zoomControl: false,
-                    gestureHandling: true,
+                    //gestureHandling: true,
                 },
                 zoomControl: {
                     position: 'topleft',

@@ -1,5 +1,5 @@
 /*!
-	gpxTrackClass 0.30.0
+	gpxTrackClass 0.32.0
 	license: GPL 2.0
 	Martin von Berg
 */

@@ -70,12 +70,3 @@ function uniqueltems(list, keyOrFn) {
     return resultSet.size;
 
 };
-    
-//const uniqueltems = (list, keyOrFn) => list.reduce((resultSet, item) => resultSet.add(typeof keyOrFn === 'string'? item[keyOrFn]: keyOrFn(item)), new Set) size;
-    
-//Example List:
-const organisations = [ 
-    {"id": 1, "name": "nameOne"}, 
-    {"id": 2, "name": "narne Two"}, 
-    {"id": 3, "name": "nameOne"},
-];

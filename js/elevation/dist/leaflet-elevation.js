@@ -2,9 +2,7 @@
 	typeof define === 'function' && define.amd ? define(factory) :
 	factory();
 })((function () { 'use strict';
-	// Das hier zu aktivieren bringt nichts, da leaflet-elevation damit nicht korrekt funktioniert
-	//globalThis.L = L; // switch-map: active: L in local var, ele not working completely
-	
+
 	/**
 	 * TODO: exget computed styles of theese values from actual "CSS vars"
 	 **/
@@ -23,6 +21,9 @@
 	const HOUR = MIN * 60;
 	const DAY  = HOUR * 24;
 
+	function resolveURL(src, baseUrl) {
+		return (new URL(src, (src.startsWith('../') || src.startsWith('./')) ? baseUrl : undefined)).toString()
+	}
 	/**
 	 * Convert a time (millis) to a human readable duration string (%Dd %H:%M'%S")
 	 */
@@ -73,8 +74,8 @@
 		ctx.moveTo(0, 0);
 		let p = new Path2D(path.attr('d'));
 
-		ctx.strokeStyle = path.attr('stroke');
-		ctx.fillStyle   = path.attr('fill');
+		ctx.strokeStyle = path.__strokeStyle || path.attr('stroke');
+		ctx.fillStyle   = path.__fillStyle   || path.attr('fill');
 		ctx.lineWidth   = 1.25;
 		ctx.globalCompositeOperation = 'source-over';
 
@@ -165,43 +166,85 @@
 	 */
 	const wrapDelta = (curr, prev, deltaMax) => Math.abs(curr - prev) > deltaMax ? prev + deltaMax * Math.sign(curr - prev) : curr;
 
-	var _ = /*#__PURE__*/Object.freeze({
+	/**
+	 * A deep copy implementation that takes care of correct prototype chain and cycles, references
+	 * 
+	 * @see https://web.dev/structured-clone/#features-and-limitations
+	 */
+	function cloneDeep(o, skipProps = [], cache = []) {
+		switch(!o || typeof o) {
+			case 'object':
+				const hit = cache.filter(c => o === c.original)[0];
+				if (hit) return hit.copy;                             // handle circular structures
+				const copy = Array.isArray(o) ? [] : Object.create(Object.getPrototypeOf(o));
+				cache.push({ original: o, copy });
+				Object
+					.getOwnPropertyNames(o)
+					.forEach(function (prop) {
+						const propdesc = Object.getOwnPropertyDescriptor(o, prop);
+						Object.defineProperty(
+							copy,
+							prop,
+							propdesc.get || propdesc.set
+								? propdesc                                    // just copy accessor properties
+								: {                                           // deep copy data properties
+									writable:     propdesc.writable,
+									configurable: propdesc.configurable,
+									enumerable:   propdesc.enumerable,
+									value:        skipProps.includes(prop) ? propdesc.value : cloneDeep(propdesc.value, skipProps, cache),
+								}
+						);
+					});
+				return copy;
+			case 'function':
+			case 'symbol':
+				console.warn('cloneDeep: ' + typeof o + 's not fully supported:', o);
+			case true:
+				// null, undefined or falsy primitive
+			default:
+				return o;
+		}
+	}
+
+	var _ = {
 		__proto__: null,
 		Colors: Colors,
-		formatTime: formatTime,
-		formatDate: formatDate,
-		saveFile: saveFile,
-		drawCanvas: drawCanvas,
-		coordPropsToMeta: coordPropsToMeta,
-		parseNumeric: parseNumeric,
-		parseDate: parseDate,
 		addClass: addClass,
-		removeClass: removeClass,
-		toggleClass: toggleClass,
-		replaceClass: replaceClass,
-		style: style,
-		toggleStyle: toggleStyle,
-		setAttributes: setAttributes,
-		toggleEvent: toggleEvent,
-		create: create,
 		append: append,
-		insert: insert,
-		select: select,
+		clamp: clamp,
+		cloneDeep: cloneDeep,
+		coordPropsToMeta: coordPropsToMeta,
+		create: create,
+		drawCanvas: drawCanvas,
 		each: each,
-		randomId: randomId,
+		formatDate: formatDate,
+		formatTime: formatTime,
+		hasClass: hasClass,
+		iAvg: iAvg,
 		iMax: iMax,
 		iMin: iMin,
-		iAvg: iAvg,
 		iSum: iSum,
-		on: on,
+		insert: insert,
 		off: off,
-		throttle: throttle,
-		wrapNum: wrapNum,
-		hasClass: hasClass,
+		on: on,
+		parseDate: parseDate,
+		parseNumeric: parseNumeric,
+		randomId: randomId,
+		removeClass: removeClass,
+		replaceClass: replaceClass,
+		resolveURL: resolveURL,
 		round: round,
-		clamp: clamp,
-		wrapDelta: wrapDelta
-	});
+		saveFile: saveFile,
+		select: select,
+		setAttributes: setAttributes,
+		style: style,
+		throttle: throttle,
+		toggleClass: toggleClass,
+		toggleEvent: toggleEvent,
+		toggleStyle: toggleStyle,
+		wrapDelta: wrapDelta,
+		wrapNum: wrapNum
+	};
 
 	var Options = {
 		autofitBounds: true,
@@ -217,6 +260,7 @@
 		dragging: !L.Browser.mobile,
 		downloadLink: 'link',
 		elevationDiv: "#elevation-div",
+		edgeScale: { bar: true, icon: false, coords: false },
 		followMarker: true,
 		imperial: false,
 		legend: true,
@@ -282,9 +326,11 @@
 		decimalsY: 0,
 		forceAxisBounds: false,
 		interpolation: "curveLinear",
-		skipNullZCoords: false,
 		yAxisMax: undefined,
 		yAxisMin: undefined,
+
+		// Prevent CORS issues for relative locations (dynamic import)
+		srcFolder: ((document.currentScript && document.currentScript.src) || (({ url: (typeof document === 'undefined' && typeof location === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : typeof document === 'undefined' ? location.href : (document.currentScript && document.currentScript.src || new URL('leaflet-elevation.js', document.baseURI).href)) }) && (typeof document === 'undefined' && typeof location === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : typeof document === 'undefined' ? location.href : (document.currentScript && document.currentScript.src || new URL('leaflet-elevation.js', document.baseURI).href)))).split("/").slice(0,-1).join("/") + '/',
 	};
 
 	// "leaflet-i18n" fallback
@@ -302,12 +348,13 @@
 		options: Options,
 		__mileFactor:     0.621371, // 1 km = (0.621371 mi)
 		__footFactor:     3.28084,  // 1 m  = (3.28084 ft)
-		__D3:            'https://unpkg.com/d3@6.5.0/dist/d3.min.js',
-		__TOGEOJSON:     'https://unpkg.com/@tmcw/togeojson@4.6.0/dist/togeojson.umd.js',
-		__LGEOMUTIL:     'https://unpkg.com/leaflet-geometryutil@0.9.3/src/leaflet.geometryutil.js',
+		__D3:            'https://unpkg.com/d3@7.8.4/dist/d3.min.js',
+		__TOGEOJSON:     'https://unpkg.com/@tmcw/togeojson@5.6.2/dist/togeojson.umd.js',
+		__LGEOMUTIL:     'https://unpkg.com/leaflet-geometryutil@0.10.1/src/leaflet.geometryutil.js',
 		__LALMOSTOVER:   'https://unpkg.com/leaflet-almostover@1.0.1/src/leaflet.almostover.js',
 		__LHOTLINE:      '../libs/leaflet-hotline.min.js',
 		__LDISTANCEM:    '../libs/leaflet-distance-marker.min.js',
+		__LEDGESCALE:    '../libs/leaflet-edgescale.min.js',
 		__LCHART:        '../src/components/chart.js',
 		__LMARKER:       '../src/components/marker.js',
 		__LSUMMARY:      '../src/components/summary.js',
@@ -318,7 +365,7 @@
 		 * Add data to the diagram either from GPX or GeoJSON and update the axis domain and data
 		 */
 		addData: function(d, layer) {
-			import('./d3.min.js')
+			import('../libs/d3.min.js')
 				.then(() => {
 					if (this._modulesLoaded) {
 						layer = layer ?? (d.on && d);
@@ -354,6 +401,7 @@
 			if (this._layers)        this._clearLayers(this._layers);
 			if (this._markers)       this._clearLayers(this._markers);
 			if (this._circleMarkers) this._circleMarkers.remove();
+			if (this._hotline)       this._hotline.eachLayer(l => l.options.renderer.remove()); // hotfix for: https://github.com/Raruto/leaflet-elevation/issues/233
 			if (this._hotline)       this._clearLayers(this._hotline);
 
 			this._data      = [];
@@ -459,7 +507,10 @@
 		 */
 		initialize: function(opts) {
 
-			opts = L.setOptions(this, opts);
+			// opts = L.setOptions(this, opts);
+
+			// Fixes: https://github.com/Raruto/leaflet-elevation/pull/240
+			opts = L.setOptions(this, L.extend({}, cloneDeep(Options), opts)); // "deep copy" nested objects (multiple charts)
 
 			this._data           = [];
 			this._layers         = L.featureGroup();
@@ -687,9 +738,9 @@
 		_initAlmostOverHandler: function(map, layer) {
 			return (map && this.options.almostOver && !L.Browser.mobile) ? Promise.all([
 				//this.import(this.__LGEOMUTIL),
-				import('./leaflet.geometryutil.js'),
+				import('../libs/leaflet.geometryutil.js'),
 				//this.import(this.__LALMOSTOVER)
-				import('./leaflet.almostover.js')
+				import('../libs/leaflet.almostover.js')
 			]).then(() => {
 				map.addHandler('almostOver', L.Handler.AlmostOver);
 				if (L.GeometryUtil && map.almostOver && map.almostOver.enabled()) {
@@ -705,7 +756,17 @@
 		 * Initialize "L.DistanceMarkers" integration
 		 */
 		_initDistanceMarkers: function() {
-			return this.options.distanceMarkers ? Promise.all([import('./leaflet.geometryutil.js'), import('../libs/leaflet-distance-marker.js')]) : Promise.resolve();
+			return this.options.distanceMarkers ? Promise.all([import('../libs/leaflet.geometryutil.js'), import('../libs/leaflet-distance-marker.js')]) : Promise.resolve();
+		},
+
+		/**
+		 * Initialize "L.Control.EdgeScale" integration
+		 */
+		_initEdgeScale(map) {
+			return this.options.edgeScale ? import('../libs/leaflet-edgescale.min.js') //this.import(this.__LEDGESCALE)
+				.then(() => {
+					map.edgeScaleControl = map.edgeScaleControl || L.control.edgeScale('boolean' !== typeof this.options.edgeScale ? this.options.edgeScale : {}).addTo(map);
+				}) : Promise.resolve();
 		},
 
 		_initHotLine: function(layer) {
@@ -753,9 +814,10 @@
 					this._initHotLine(layer),
 					this._initAlmostOverHandler(map, layer),
 					this._initDistanceMarkers(),
+					this._initEdgeScale(map),
 				]).then(() => {
-					if	(this.options.polyline) {
-						layer.addTo(map);
+					if (this.options.polyline) {
+						this._layers.addLayer(layer.addTo(map)); // hotfix for: https://github.com/Raruto/leaflet-elevation/issues/233
 						this._circleMarkers.addTo(map);
 					}
 					if (this.options.autofitBounds) {
@@ -888,7 +950,7 @@
 			}
 
 			Promise.all([
-				import('./d3.min.js'),
+				import('../libs/d3.min.js'),
 				import('../src/components/chart.js')
 			]).then((m) => {
 
@@ -959,7 +1021,7 @@
 			this._renderer               = L.svg({ pane: "elevationPane" }).addTo(this._map); // default leaflet svg renderer
 
 			Promise.all([
-				import('./d3.min.js'),
+				import('../libs/d3.min.js'),
 				import('../src/components/marker.js')
 			]).then((m) => {
 				this._marker             = new (m[1] || Elevation).Marker(this.options, this);
@@ -1087,9 +1149,14 @@
 				onEachFeature: (feature, layer) => feature.geometry && feature.geometry.type != 'Point' && this.addData(feature, layer),
 			});
 
-			import('./d3.min.js').then(() => {
+			import('../libs/d3.min.js').then(() => {
 				this._initMapIntegrations(layer);
-				this._fireEvt("eledata_loaded", { data: geojson, layer: layer, name: this.track_info.name, track_info: this.track_info });
+				const event_data = { data: geojson, layer: layer, name: this.track_info.name, track_info: this.track_info };
+				if (this._modulesLoaded) {
+					this._fireEvt("eledata_loaded", event_data);
+				} else {
+					this.once('modules_loaded', () => this._fireEvt("eledata_loaded", event_data));
+				}
 			});
 
 			return layer;
@@ -1212,7 +1279,7 @@
 		_parseFromString: function(data) {
 			return new Promise(resolve =>
 				//this.import(this.__TOGEOJSON).then(() => {
-				import('./togeojson.umd.js').then(() => {
+				import('../libs/togeojson.umd.js').then(() => {
 					let geojson;
 					try {
 						geojson = this._parseFromXMLString(data.trim());
@@ -1273,9 +1340,11 @@
 		 * Add a point of interest over the diagram
 		 */
 		_registerCheckPoint: function(props) {
-			this.on("elechart_updated", () => this._chart._registerCheckPoint(props));
+			const cb = () => this._chart._registerCheckPoint(props);
+			this
+				.on("elechart_updated", cb)
+				.once("eledata_clear", () => this.off("elechart_updated", cb));
 		},
-
 
 		/**
 		 * Base handler for iterative track statistics (dist, time, z, slope, speed, acceleration, ...)
@@ -1288,10 +1357,10 @@
 			}
 
 			// prevent excessive variabile instanstations
-			let i, curr, prev, attr;
+			let i, curr, prev, attr = props.attr || props.name;
 
 			// save here a reference to last used point
-			let lastValid = null; 
+			let lastValid = {};
 
 			// iteration
 			this.on("elepoint_added", ({index, point}) => {
@@ -1299,41 +1368,32 @@
 
 				prev = curr ?? this._data[i]; // same as: this._data[i > 0 ? i - 1 : i]
 				curr = this._data[i];
-				attr = props.attr || props.name;
-
-				// check and fix missing data on last added point
-				if (props.skipNull === false) {
-					let curr = this._data[i][attr];
-					if(i > 0) {
-						let prev = this._data[i - 1][attr];
-						if (isNaN(prev)) {
-							if (!isNaN(lastValid) && !isNaN(curr)) {
-								prev   = (lastValid + curr) / 2;
-							} else if (!isNaN(lastValid)) {
-								prev   = lastValid;
-							} else if (!isNaN(curr)) {
-								prev   = curr;
-							}
-							if (!isNaN(prev)) return this._data.splice(i - 1, 1);
-							this._data[i - 1][attr] = prev;
-						}
-					}
-					// update reference to last used point (ie. if it has data)
-					if (!isNaN(curr)) {
-						lastValid = curr;
-					}
-				}
 
 				// retrieve point value
 				curr[attr] = props.pointToAttr.call(this, point, i);
 
-				// update "track_info" stats (min, max, avg, ...)
-				if (props.stats) {
-					for (const key in props.stats) {
-						let sname = (props.statsName || attr) + (key != '' ? '_' : '');
-						this.track_info[sname + key] = props.stats[key].call(this, curr[attr], this.track_info[sname + key], this._data.length);
+				// check and fix missing data on last added point
+				if (i > 0 && isNaN(prev[attr])) {
+					if (!isNaN(lastValid[attr]) && !isNaN(curr[attr])) {
+						prev[attr]   = (lastValid[attr] + curr[attr]) / 2;
+					} else if (!isNaN(lastValid[attr])) {
+						prev[attr]   = lastValid[attr];
+					} else if (!isNaN(curr[attr])) {
+						prev[attr]   = curr[attr];
+					}
+					// update "yAttr" and "xAttr"
+					if (props.meta) {
+						prev[props.meta] = prev[attr];
 					}
 				}
+
+				// skip to next iteration for invalid or missing data (eg. i == 0)
+				if (isNaN(curr[attr])) {
+					return;
+				}
+
+				// update reference to last used point
+				lastValid[attr] = curr[attr];
 
 				// Limit "crazy" delta values.
 				if (props.deltaMax) {
@@ -1350,8 +1410,16 @@
 					curr[attr] = round(curr[attr], props.decimals);
 				}
 
+				// update "track_info" stats (min, max, avg, ...)
+				if (props.stats) {
+					for (const key in props.stats) {
+						let sname = (props.statsName || attr) + (key != '' ? '_' : '');
+						this.track_info[sname + key] = props.stats[key].call(this, curr[attr], this.track_info[sname + key], this._data.length);
+					}
+				}
+
 				// update here some mixins (eg. complex "track_info" stuff)
-				if(props.onPointAdded) props.onPointAdded.call(this, curr[attr], i, point);
+				if (props.onPointAdded) props.onPointAdded.call(this, curr[attr], i, point);
 			});
 		},
 
@@ -1369,7 +1437,6 @@
 				name,
 				attr,
 				required,
-				skipNull,
 				deltaMax,
 				clampRange,
 				decimals,
@@ -1394,7 +1461,7 @@
 				this._registerDataAttribute({
 					name,
 					attr,
-					skipNull,
+					meta,
 					deltaMax,
 					clampRange,
 					decimals,
