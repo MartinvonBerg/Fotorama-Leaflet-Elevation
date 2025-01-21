@@ -747,6 +747,18 @@ final class FotoramaElevationAdmin
 			'shortcode' => 'showchart',
 			'info' => 'Show the elevation Chart. Or not.',
 		],
+		'param21' => [
+			'label' => 'chartunits',
+			'text' => 'Use Imperial or Metric Units',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom21',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'false',
+			'description' => 'Use Imperial (checked) or Metric Units (unchecked)',
+			'shortcode' => 'chartunits',
+			'info' => 'Use Imperial (checked) or Metric Units (upchecked)',
+		],
 		'param14' => [
 			'label' => 'charttype',
 			'text' => 'Elevation Chart Type',
@@ -849,6 +861,18 @@ final class FotoramaElevationAdmin
 			"description" => "",
 			"shortcode" => "trackwidth",
 			"info" => "Width of GPX-Track in px"
+		],
+		'param20' => [
+			'label' => 'hotline',
+			'text' => 'Show GPX-Track as Hotline',
+			'class' => 'leaflet_row',
+			'custom_data' => 'custom20',
+			'type' => 'checkbox',
+			'values' => '',
+			'default' => 'true',
+			'description' => 'Show GPX-Track as Hotline (multicoloured) or with one Colour. Trackcolour is not used if Hotline is selected.',
+			'shortcode' => 'hotline',
+			'info' => 'Show GPX-Track as Hotline (multicoloured) or with one Colour. Trackcolour is not used if Hotline is selected.',
 		],
 		'param17' => [
 			'label' => 'trackcolour',

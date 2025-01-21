@@ -159,7 +159,11 @@ function showmulti($attr, $content = null)
 		'mm_minify'			=> $fotorama_elevation_options['mm_minify'] ?? 'false',
 		'mm_surrGutter'		=> $fotorama_elevation_options['mm_surrGutter'] ?? 'false',
 		'mm_ultiGutter'		=> $fotorama_elevation_options['mm_ultiGutter'] ?? 5,
-		'mm_dialogHeader'	=> $fotorama_elevation_options['mm_dialogHeader'] ?? 'h5'
+		'mm_dialogHeader'	=> $fotorama_elevation_options['mm_dialogHeader'] ?? 'h5',
+		// new options for leaflet-elevation
+		'chartunits'        => $fotorama_elevation_options['chartunits'] ?? 'false',
+		'hotline'           => $fotorama_elevation_options['hotline'] ?? 'true',
+
 	), $attr));
 
 	$mapcenter = explode(',',$mapcenter);
@@ -284,6 +288,8 @@ function showmulti($attr, $content = null)
 		'chartjspadding'		=> $chartjspadding,
 		'trackwidth'			=> $trackwidth,
 		'trackcolour'			=> $trackcolour,
+		'chartunits'			=> $chartunits,
+		'hotline'				=> $hotline,
 		// for masonry
 		// special parameters for masonry
 		'mm_fslightbox'			=> $mm_fslightbox,

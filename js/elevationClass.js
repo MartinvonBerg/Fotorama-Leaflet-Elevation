@@ -124,8 +124,8 @@ class LeafletElevation extends LeafletMap {
                     downloadLink:false,
                     closeBtn: false,
                     distanceMarkers: { lazy: true, distance: false, direction: false }, // direction creates the black arrows
-                    hotline: false, // the coloured line. One color only if false // TODO : option
-                    imperial: false, // TODO : option
+                    hotline: this.pageVariables.sw_options.hotline === 'true', // the coloured line. One color only if false 
+                    imperial: this.pageVariables.sw_options.chartunits === 'true', 
                     edgeScale: { bar: false, icon: false, coords: false }, // only useful if imperial is false. Unused.
                     polyline: {
                         weight: 0.9*parseInt(this.pageVariables.sw_options.trackwidth), // This changes the lineWidth. Mind that the original leaflet-elevation.js was changed for that.
@@ -162,6 +162,10 @@ class LeafletElevation extends LeafletMap {
         // get the trace info from the gpx-file
         let track = '';
         let info = '';
+        let distunit= ' km';
+        let heightunit = ' m';
+        let distfactor = 1;
+        let heightfactor = 1;
 
         if (event.type === 'legend_selected') {
             let index = this.tracks.findIndex(element => { 
@@ -191,25 +195,33 @@ class LeafletElevation extends LeafletMap {
         let q = document.querySelector.bind(document);
         let m = this.number;
 
+        // set the units of the track statistics and the string for length and height
+        if (this.pageVariables.sw_options.chartunits === 'true') {
+            distunit = ' mi';
+            heightunit = ' ft';
+            distfactor = 0.621371;
+            heightfactor = 3.28084;
+        } 
+
         if (info[0]=='Dist:' && info[1] && info[4] && info[7]) { 
             q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
-            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = parseFloat(info[1].replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
+            q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = (parseFloat(info[1].replace(',','.'))*distfactor).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + distunit;
     
             q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
-            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = parseFloat(info[4].replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+            q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = (parseFloat(info[4].replace(',','.'))*heightfactor).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + heightunit;
     
             q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';
-            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = parseFloat(info[7].replace(',','.')).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+            q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = (parseFloat(info[7].replace(',','.'))*heightfactor).toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + heightunit ;
           
         } else {
             q('#data-summary'+m+' .totlen .summarylabel').innerHTML = L._('Distance') + ': ';
             q('#data-summary'+m+' .gain .summarylabel').innerHTML   = L._('Ascent') + ': ' ;
             q('#data-summary'+m+' .loss .summarylabel').innerHTML   = L._('Descent') + ': ';
             try {
-                // the event.track_info is working for one track but empty for multiple tracks. Track_info is provided by leaflet-elevation.js.
-                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = event.track_info.distance.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + " km";
-                q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
-                q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + " m";
+                // the event.track_info is working for one track but empty for multiple tracks. Track_info is provided by leaflet-elevation.js in corect units.
+                q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = event.track_info.distance.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 1 }) + distunit;
+                q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + heightunit;
+                q('#data-summary'+m+' .loss .summaryvalue').innerHTML   = event.track_info.elevation_avg.toLocaleString(navigator.languages[0], { useGrouping: false, maximumFractionDigits: 0 }) + heightunit;
             } catch {
                 q('#data-summary'+m+' .totlen .summaryvalue').innerHTML = '0.0';
                 q('#data-summary'+m+' .gain .summaryvalue').innerHTML   = '0.0';
