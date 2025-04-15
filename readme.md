@@ -37,7 +37,7 @@ The Admin panel gives an overview of all shortcode parameters and allow to set t
 
 **NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
 
-**The Plugin runs from WordPress 5.9 - 6.7.x and PHP 7.4.2 - 8.2.0**
+**The Plugin runs from WordPress 5.9 - 6.8.x and PHP 7.4.2 - 8.2.0**
 
 </br>
 
@@ -72,7 +72,7 @@ It is possible to reach a Google lighthouse Performance of 100 for the all value
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.9 - 6.7 and PHP 7.4.2 - 8.2.0
+- The plugin was tested with wordpress versions 5.9 - 6.8 and PHP 7.4.2 - 8.2.0
 
 # Installation
 
@@ -95,7 +95,7 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 
 # Upgrade Notice 
 
-Upgrade to WordPress 6.7 and PHP 8.1+ is highly recommended! PHP 8.2.x is even better!
+Upgrade to WordPress 6.8 and PHP 8.1+ is highly recommended! PHP 8.2.x is even better!
 No Upgrade required. Only if you want the new GPX-Track filtering. 
 
 </br>
@@ -317,6 +317,9 @@ This plugin uses the great work from:
 - Lust but not least: Many thanks to Norbert S. for testing!
 
 # Changelog
+
+= 0.33.0 = 15.04.2025
+Test with WP 6.8. No changes.
 
 = 0.33.0 = 21.01.2025
 Update swiper.js, chart.js. leaflet-elevation and dependant libraries. Clean-up in JS Folders.

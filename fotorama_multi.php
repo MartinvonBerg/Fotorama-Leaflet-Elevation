@@ -13,7 +13,7 @@ namespace mvbplugins\fotoramamulti;
  * Description:       Image and Video Slider, Leaflet Map and Elevation Chart Integration. Shows images from any directory in your upload folder. Uses Fotorama or Swiper for the Slider.
  * Version:           0.33.0
  * Requires at least: 6.2
- * Tested up to:      6.7
+ * Tested up to:      6.8
  * Requires PHP:      7.4
  * Author:            Martin von Berg
  * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/

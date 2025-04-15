@@ -4,7 +4,7 @@ Contributors: martinvonberg
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CQA6XZ7LUMBJQ
 Tags: slider, leaflet map, height chart, responsive, tile server
 Requires at least: 6.4
-Tested up to: 6.7
+Tested up to: 6.8
 Stable tag: 0.33.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -72,7 +72,7 @@ Yes, here it is:
 - Enjoy.
 
 = Which WordPress and PHP versions are supported?
-The Plugin runs from WordPress 5.9.x - 6.7.x and PHP 7.4.3 - 8.2.0.
+The Plugin runs from WordPress 5.9.x - 6.8.x and PHP 7.4.3 - 8.2.0.
 
 == Screenshots ==
 1. Example Front End Output
@@ -85,6 +85,9 @@ The Plugin runs from WordPress 5.9.x - 6.7.x and PHP 7.4.3 - 8.2.0.
 No Upgrade to 0.32.0 required. Only if you want the new GPX-Track filtering and / or AVIF or install for the first time or want to use the Gutenberg-Block.
 
 == Changelog ==
+
+= 0.33.0 = 15.04.2025
+Test with WP 6.8. No changes.
 
 = 0.33.0 = 21.01.2025
 Update swiper.js, chart.js. leaflet-elevation and dependant libraries. Clean-up in JS Folders.
