@@ -1,0 +1,8 @@
+{
+    "require-dev": {
+        "brain/monkey": "^2.6",
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0"
+    }
+}

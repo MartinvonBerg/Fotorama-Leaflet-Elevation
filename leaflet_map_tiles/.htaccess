@@ -1,7 +1,35 @@
-<LimitExcept GET HEAD>
-    Order Allow,Deny
-    Deny from all
-</LimitExcept>
+# ----------------------------------------
+# Zugriffsschutz für alle außer GET/HEAD
+# ----------------------------------------
+
+<IfModule mod_version.c>
+    <IfVersion >= 2.4>
+        <LimitExcept GET HEAD>
+            Require all denied
+        </LimitExcept>
+    </IfVersion>
+    <IfVersion < 2.4>
+        <LimitExcept GET HEAD>
+            Order deny,allow
+            Deny from all
+        </LimitExcept>
+    </IfVersion>
+</IfModule>
+
+# Fallback für Server ohne mod_version
+<IfModule !mod_version.c>
+    <IfModule mod_authz_core.c>
+        <LimitExcept GET HEAD>
+            Require all denied
+        </LimitExcept>
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        <LimitExcept GET HEAD>
+            Order deny,allow
+            Deny from all
+        </LimitExcept>
+    </IfModule>
+</IfModule>
 
 <IfModule mod_rewrite.c>
     RewriteEngine On

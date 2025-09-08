@@ -27,7 +27,8 @@ final class adminSettingsTest extends TestCase {
         expect( 'plugin_dir_path')
             //->twice()
             ->andReturn( $path );
-        include_once 'C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\admin_settings.php';
+        //include_once 'C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\admin_settings.php';
+        include_once 'C:\wamp64\www\wordpress\wp-content\plugins\fotorama_multi-2023-08-30\inc\admin_settings.php';
 	}
 
 	public function tearDown(): void 

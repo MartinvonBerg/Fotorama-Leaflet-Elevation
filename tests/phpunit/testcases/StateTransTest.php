@@ -19,15 +19,16 @@ final class StateTransWithBrainMonkeyTest extends TestCase {
 	}
 
     public function testAddHooks() {
-		include_once 'C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\tests\src\WrapStateTransition.php';
+		//include_once 'C:\wamp64\tests\src\ \wp-content\plugins\fotorama_multi\tests\src\WrapStateTransition.php';
+		include_once PLUGIN_DIR . '\tests\src\WrapStateTransition.php';
 		
 		$tested = new mvbplugins\fotoramamulti\WrapStateTrans();
 		
-		$status = $tested::do('draft', 'publish');
+		$status = $tested->do('draft', 'publish');
         self::assertTrue( $status[1]);
 		self::assertFalse( $status[0]);
 
-		$status = $tested::do('publish', 'draft');
+		$status = $tested->do('publish', 'draft');
 		self::assertTrue( $status[0]);
 		self::assertFalse( $status[1]);
     }

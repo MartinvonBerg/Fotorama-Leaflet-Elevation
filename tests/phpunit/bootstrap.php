@@ -13,11 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 // define fake PLUGIN_ABSPATH
 if ( ! defined( 'PLUGIN_ABSPATH' ) ) {
-	define( 'PLUGIN_ABSPATH', sys_get_temp_dir() . '/wp-content/plugins/fotorama_multi/' );
+	define( 'PLUGIN_ABSPATH', sys_get_temp_dir() . '/wp-content/plugins/fotorama_multi-2023-08-30/' );
 }
 
 define( 'THUMBSDIR', 'thumbs' );
 
-$comp_path = "C:/Users/Martin von Berg/AppData/Roaming/Composer"; // TODO: get the global path
+// load the local autoloader from composer
+require_once './vendor/autoload.php';
 
-require_once $comp_path . '/vendor/autoload.php';
+// change this if the plugin was moved to a different folder
+define ( 'PLUGIN_DIR', 'C:\wamp64\www\wordpress\wp-content\plugins\fotorama_multi-2023-08-30');

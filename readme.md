@@ -318,6 +318,11 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.34.0 = 08.09.2025
+Update for Compatibility with Apache Versions > 2.3 (.htacces for Tileserver) and Compatibility with PHP 8.3+ (readImageFolder.php)
+Start with Updating PHPUnit-Tests (not complete yet)
+Test with WP 6.8.2.
+
 = 0.33.0 = 15.04.2025
 Test with WP 6.8. No changes.
 

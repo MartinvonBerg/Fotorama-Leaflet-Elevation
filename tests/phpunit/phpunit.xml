@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd" 
-	bootstrap="./tests/phpunit/bootstrap.php" 
+	bootstrap="bootstrap.php" 
 	backupGlobals="true" 
 	colors="true" 
 	convertErrorsToExceptions="true" 
@@ -12,17 +12,17 @@
 	<coverage pathCoverage='false'>
 		<include>
 			<directory suffix=".php">./tests/src/</directory>
-			<file>C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\readImageFolder.php</file>
-			<file>C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\extractMetadata.php</file>
-			<file>C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\admin_settings.php</file>
-			<file>C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\stateTransitions.php</file>
-			<file>C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\fm_functions.php</file>
+			<file>./inc/readImageFolder.php</file>
+			<file>./inc/extractMetadata.php</file>
+			<file>./inc/admin_settings.php</file>
+			<file>./inc/stateTransitions.php</file>
+			<file>./inc/fm_functions.php</file>
 		
 		</include>
 	</coverage>
 	<testsuites>
 		<testsuite name="My Unit-Test 1">
-			<directory suffix=".php">./tests/phpunit/testcases</directory>
+			<directory suffix=".php">./testcases</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>

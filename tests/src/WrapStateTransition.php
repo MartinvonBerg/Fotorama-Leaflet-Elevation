@@ -1,7 +1,8 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
-include_once 'C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\stateTransitions.php';
+// include_once '\inc\stateTransitions.php';
+include_once PLUGIN_DIR . '\inc\stateTransitions.php';
 
 /**
  * wrapper class

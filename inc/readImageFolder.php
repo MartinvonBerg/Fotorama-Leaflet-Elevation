@@ -162,6 +162,16 @@ final class ReadImageFolder
 
         if ($this->imageNumber > 0) {
             $csort = array_column($imgdata, 'sort'); // $customsort according to custom field 'gallery_sort'
+
+            # handle case that gallery_sort is not a correct list of numbers that are INTs in Strings, otherwise set $arraysum to 0
+            foreach ($csort as $key => $value) {
+                if ( ! \is_numeric( $value) || ( \intval( $value) != \floatval( $value) ) ) {
+                    $csort[$key] = 0;
+                } else {
+                    $csort[$key] = \intval( $value);
+                }
+            }
+            // calculate the sum of the array
             $arraysum = array_sum($csort);
 
             // sort_types: are 
@@ -376,7 +386,6 @@ final class ReadImageFolder
                     $thumbs = $thumbcheck;
                     //do_action( 'qm/debug', 'thumbs: ' . $thumbs );
                     return [$thumbInPath, $thumbs];
-                    break;
 
                 } elseif ($found !== false && count( $found) > 1) {
                     // get the image ratio

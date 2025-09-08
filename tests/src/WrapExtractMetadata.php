@@ -1,7 +1,8 @@
 <?php
 namespace mvbplugins\fotoramamulti;
 
-include_once 'C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\extractMetadata.php';
+// include_once 'C:\Bitnami\wordpress-5.2.2-0\apps\wordpress\htdocs\wp-content\plugins\fotorama_multi\inc\extractMetadata.php';
+include_once 'C:\wamp64\www\wordpress\wp-content\plugins\fotorama_multi-2023-08-30\inc\extractMetadata.php';
 
 /**
  * wrapper class for decodeExtendedChunkHeader in file ../fotorama_multi\inc\extractMetadata.php
