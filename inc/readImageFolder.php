@@ -87,19 +87,19 @@ final class ReadImageFolder
         } else {
             $sorted = preg_grep('/\.(jpe?g|webp)$/i', $files);
         }
-        // filter the files according to the given filter-list, seperated by ',' and ANDed.
+        // filter the files according to the given filter-list, seperated by ',' and combined by logical AND.
         if ( $filefilter !== '') {
             $filters = explode( $this->fileFilterSeparator, $filefilter);
 
             foreach ($filters as $currentfilter) {
                 $files = $sorted;
-                $filefilter = '/('.$currentfilter.')/i';
-                // switch off PHP error reporting and filter the array.
-                $ere = \error_reporting();
-                \error_reporting(0);
-                $sorted = preg_grep($filefilter, $files);
-                \error_reporting($ere);
-                if ( $sorted === false) $sorted = $files;
+
+                // remove * and whitespaces from the filter string.
+                $search = trim($currentfilter, ' *');
+
+                $sorted = array_filter($files, function ($file) use ($search) {
+                    return stripos($file, $search) !== false;
+                });
             }
         }
 

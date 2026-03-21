@@ -229,13 +229,13 @@ function getAvifMetadata( string $filename )
 				$title = '';
 
 				if ( isset( $index["DC:TITLE"] ) ) {
-					$nr = (int) ($index["DC:TITLE"][1] + $index["DC:TITLE"][0]) / 2;
+					$nr = (int) (($index["DC:TITLE"][1] ?? 0) + ($index["DC:TITLE"][0] ?? 0)) / \count($index["DC:TITLE"]);
 					$title = $vals[ $nr ]["value"];
 				}
 				$title != '' ? $meta[ 'title' ] = $title : $meta[ 'title' ] = 'notitle';
 
 				if ( isset( $index["DC:DESCRIPTION"] ) ) {
-					$nr = (int) ($index["DC:DESCRIPTION"][1] + $index["DC:DESCRIPTION"][0]) / 2;
+					$nr = (int) (($index["DC:DESCRIPTION"][1] ?? 0) + ($index["DC:DESCRIPTION"][0] ?? 0)) / \count($index["DC:DESCRIPTION"]);
 					$caption = $vals[ $nr ]["value"];
 					$meta[ 'caption' ] = $caption;
 				}
@@ -254,9 +254,12 @@ function getAvifMetadata( string $filename )
 					$tagstart = $index["RDF:BAG"][0] +1;
 					$tagend   = $index["RDF:BAG"][1] -1;
 					while ( $tagstart <= $tagend ) {
-						$tag = $vals[ $tagstart ]["value"];
+						// check if value is set and not empty
+						if ( isset( $vals[ $tagstart ]["value"] ) && $vals[ $tagstart ]["value"] != '' ) {
+							$tag = $vals[ $tagstart ]["value"];
+							$tags[] = $tag;
+						}
 						$tagstart += 1;
-						$tags[] = $tag;
 					}
 				}
 
@@ -367,9 +370,12 @@ function extractMetadataFromChunks( array $chunks, string $filename ) :array
 					$tagstart = $index["RDF:BAG"][0] +1;
 					$tagend   = $index["RDF:BAG"][1] -1;
 					while ( $tagstart <= $tagend ) {
-						$tag = $vals[ $tagstart ]["value"];
+						// check if value is set and not empty
+						if ( isset( $vals[ $tagstart ]["value"] ) && $vals[ $tagstart ]["value"] != '' ) {
+							$tag = $vals[ $tagstart ]["value"];
+							$tags[] = $tag;
+						}
 						$tagstart += 1;
-						$tags[] = $tag;
 					}
 				}
 

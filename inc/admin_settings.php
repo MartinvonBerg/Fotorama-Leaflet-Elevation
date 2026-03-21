@@ -1052,7 +1052,7 @@ final class FotoramaElevationAdmin
 			'values' => 'Filter Filenames',
 			'default' => '',
 			'info' => 'Define a simple Filter for Files given by *imgpath*, e.g. if using a WordPress Standard-Folder like ../uploads/2023/01 
-			and taking only pictures containing *filefilter* in filenames. Default empty, so no filtering. Seperate filters by ",". Mind that filters are combined by logical AND!'
+			and taking only pictures containing *filefilter* in filenames. Default empty, so no filtering. Separate filters by ",". Mind that filters are combined by logical AND!'
 		]
 	];
 
