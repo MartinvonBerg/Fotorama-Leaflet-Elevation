@@ -1,21 +1,26 @@
 # Contents
 
-- [Description](#Description)
+- [Contents](#contents)
+- [Description](#description)
 - [Usage for those in a hurry](#usage-for-those-in-a-hurry)
 - [Donate](#donate)
 - [Live Example or Demo](#live-example-or-demo)
+  - [Screenshot](#screenshot)
+- [Performance](#performance)
 - [Note prior to installation](#note-prior-to-installation)
 - [Installation](#installation)
 - [Update or De-Installation](#update-or-de-installation)
 - [Upgrade Notice](#upgrade-notice)
-- [Usage](#usage-hints)
-- [Image Preparation and Usage of the Fotorama-Slider](#image-preparation)
-- [Usage of Leaflet Elevation and Chart.js](#usage-of-leaflet-elevation-or-chartjs)
+- [Usage Hints](#usage-hints)
+  - [Usage of the admin section 'GPX-File'](#usage-of-the-admin-section-gpx-file)
+    - [Explanation in the order of appearance:](#explanation-in-the-order-of-appearance)
+- [Image Preparation](#image-preparation)
+- [Usage of Leaflet Elevation or Chart.js](#usage-of-leaflet-elevation-or-chartjs)
 - [Tile Server for Leaflet Map Tiles](#tile-server-for-leaflet-map-tiles)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Translation](#translation)
-  * [Frontend](#frontend)
-  * [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Backend](#backend)
 - [Credits](#credits)
 - [Changelog](#changelog)
 
@@ -317,6 +322,9 @@ This plugin uses the great work from:
 - Lust but not least: Many thanks to Norbert S. for testing!
 
 # Changelog
+
+= 0.34.1 = 21.02.2026
+Bugfix in filefilter and extract metadata, Test with WP 6.9.4.
 
 = 0.34.0 = 11.12.2025
 Test with WP 6.9.0. No changes
