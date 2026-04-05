@@ -86,6 +86,9 @@ No Upgrade to 0.32.0 required. Only if you want the new GPX-Track filtering and 
 
 == Changelog ==
 
+= 0.34.1 = 05.04.2026
+Update Readme, Test with WP 7.0 RC2.
+
 = 0.34.1 = 21.02.2026
 Bugfix in filefilter and extract metadata, Test with WP 6.9.4.
 

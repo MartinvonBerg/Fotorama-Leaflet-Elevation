@@ -1,8 +1,35 @@
-# Contents
+# Description 
 
-- [Contents](#contents)
+WordPress-Plugin to show a responsive Image Slider with images located in a separate FOLDER on your server or even in the WordPress Media Library. A thumbnail bar could be shown together with the image slider. Fotorama or Swiper is used for the slider. The Fotorama slider only works with JPG- or WEBP-Files an not with videos. Swiper works with Videos, too.
+
+Optionally a Leaflet map is shown. This map shows the GPS-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation or chart.js is used for that). The map moves synchronously to the slider, e.g. it is centred to the GPS-Position of the currently shown image. Under the map a height-chart of the GPX-track with its statistics is shown. The image slider may be used more than once per page. 
+
+The Plugin is fully responsive (lazy loading, srcset if images are in WP-MediaLibrary) and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap (Currently not tested!) and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode for Fotorama (desktop only) and in the slider for Swiper. With Swiper Slider the images may be shown in fullscreen mode with **Simple Lightbox with fslight** (another plugin from me, available as WP-Plugin: https://de.wordpress.org/plugins/simple-lightbox-fslight/)
+
+If resized images and thumbnails are available in the folder, the responsive image srcset is used. If the images were added to WP-Media-Library the WordPress-information of the Media-Library is used for the title and the alt-tag.  
+
+The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where the slider is used. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point. Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work.
+
+The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation. 
+
+**NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
+
+**The Plugin runs from WordPress 5.9 - 7.0.x and PHP 7.4.2 - 8.4.0**
+
+</br>
+
+# Usage for those in a hurry
+- Install current **Release** of the Plugin and activate.
+- Do all global, common settings for the plugin: Wordpress > Login to Admin > Settings > Slider-Map-Chart
+- Upload photos to e.g. "usr/www/html/wordpress/wp-content/uploads/holiday2021/"
+- Add this shortcode to post: [gpxview imgpath="holiday2021"] if photos **do have GPS-Data**.
+- Add this shortcode to post: [gpxview imgpath="holiday2021" requiregps="false" showmap="false"] if photos **don't have GPS-Data**.
+- Done!
+
+# Contents
 - [Description](#description)
 - [Usage for those in a hurry](#usage-for-those-in-a-hurry)
+- [Contents](#contents)
 - [Donate](#donate)
 - [Live Example or Demo](#live-example-or-demo)
   - [Screenshot](#screenshot)
@@ -24,35 +51,6 @@
 - [Credits](#credits)
 - [Changelog](#changelog)
 
-# Description 
-
-**STATUS** The upload to the WordPress Plugin directory is still pending.
-
-WordPress-Plugin to show a responsive Image Slider with images located in a separate FOLDER on your server or even in the WordPress Media Library. A thumbnail bar could be shown together with the image slider. Fotorama or Swiper is used for the slider. The Fotorama slider only works with JPG- or WEBP-Files an not with videos. Swiper works with Videos, too.
-
-Optionally a Leaflet map is shown. This map shows the GPS-position of the images and additionally a GPX-Track that was recorded during the excursion (leaflet elevation or chart.js is used for that). The map moves synchronously to the slider, e.g. it is centred to the GPS-Position of the currently shown image. Under the map a height-chart of the GPX-track with its statistics is shown. The image slider may be used more than once per page. 
-
-The Plugin is fully responsive (lazy loading, srcset if images are in WP-MediaLibrary) and SEO-friendly. It adds the images optionally to the Yoast-XML-Sitemap (Currently not tested!) and sets the alt-tag of the images. It is possible to use either the image-slider or the map with height-chart alone. Or the map alone with a simple marker. An Image zoom is provided in fullscreen mode for Fotorama (desktop only) and in the slider for Swiper. With Swiper Slider the images may be shown in fullscreen mode with **Simple Lightbox with fslight** (another plugin from me, available as WP-Plugin: https://de.wordpress.org/plugins/simple-lightbox-fslight/)
-
-If resized images and thumbnails are available in the folder, the responsive image srcset is used. If the images were added to WP-Media-Library the WordPress-information of the Media-Library is used for the title and the alt-tag.  
-
-The Plugin sets additionally the custom-fields 'lon' and 'lat' of the post where the slider is used. This are the longitude and latitude of the first image or track-point. This coordinates are used by another plugin from me to show all posts in a map. See here: https://github.com/MartinvonBerg/wp_post_map_view_simple. Additionally it sets the start address of the excursion in a custom field an shows under the map with a link to google-maps to retrieve the route to the starting point. Attention: The server-setting 'allow_url_fopen' has to be 'ON' for this to work.
-
-The Admin panel gives an overview of all shortcode parameters and allow to set them globally. Settings that have to be set individually for each slider are not provided in the Admin panel. The admin panel provides also an upload section for gpx-files with additionally size and point reduction and statistics calculation. 
-
-**NEW:Settings may be done with a Gutenberg Block. But Version 0.16.+ not updated yet!!!** also (except: "showalltracks", "mapcenter", "zoom", "markertext"). But there is NO preview in Editor, it is still necessary to refresh the page on the frontend. Attention: Gutenberg is currently not up to date.
-
-**The Plugin runs from WordPress 5.9 - 6.9.x and PHP 7.4.2 - 8.3.0**
-
-</br>
-
-# Usage for those in a hurry
-- Install current **Release** of the Plugin and activate.
-- Do all global, common settings for the plugin: Wordpress > Login to Admin > Settings > Slider-Map-Chart
-- Upload photos to e.g. "usr/www/html/wordpress/wp-content/uploads/holiday2021/"
-- Add this shortcode to post: [gpxview imgpath="holiday2021"] if photos **do have GPS-Data**.
-- Add this shortcode to post: [gpxview imgpath="holiday2021" requiregps="false" showmap="false"] if photos **don't have GPS-Data**.
-- Done!
 
 # Donate
 If you like this plugin buy me a coffee or a beer:
@@ -322,6 +320,9 @@ This plugin uses the great work from:
 - Lust but not least: Many thanks to Norbert S. for testing!
 
 # Changelog
+
+= 0.34.1 = 05.04.2026
+Update Readme, Test with WP 7.0 RC2.
 
 = 0.34.1 = 21.02.2026
 Bugfix in filefilter and extract metadata, Test with WP 6.9.4.
