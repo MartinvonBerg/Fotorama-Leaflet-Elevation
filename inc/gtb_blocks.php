@@ -67,7 +67,7 @@ function site_editor_styles() {
             $path . 'build/fm_bundle/fm_main_func.js',
             array('wp-blocks', 'wp-dom'),
             //filemtime( get_stylesheet_directory() . '/assets/js/editor.js' ),
-            '0.34.1',
+            '0.34.2',
         );
 
         // Pass the class names to the script

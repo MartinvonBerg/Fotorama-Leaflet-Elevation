@@ -4,8 +4,8 @@ Contributors: martinvonberg
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CQA6XZ7LUMBJQ
 Tags: slider, leaflet map, height chart, responsive, tile server
 Requires at least: 6.4
-Tested up to: 6.9
-Stable tag: 0.34.1
+Tested up to: 7.0
+Stable tag: 0.34.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -72,7 +72,7 @@ Yes, here it is:
 - Enjoy.
 
 = Which WordPress and PHP versions are supported?
-The Plugin runs from WordPress 5.9.x - 6.9 and PHP 7.4.3 - 8.3
+The Plugin runs from WordPress 5.9.x - 7.0 and PHP 7.4.3 - 8.3
 
 == Screenshots ==
 1. Example Front End Output
@@ -85,6 +85,10 @@ The Plugin runs from WordPress 5.9.x - 6.9 and PHP 7.4.3 - 8.3
 No Upgrade to 0.32.0 required. Only if you want the new GPX-Track filtering and / or AVIF or install for the first time or want to use the Gutenberg-Block.
 
 == Changelog ==
+
+= 0.34.2 = 12.06.2026
+Bugfix in readImageFolder.php for PHP 8.3.
+Update Readme, Test with WP 7.0
 
 = 0.34.1 = 05.04.2026
 Update Readme, Test with WP 7.0 RC2.

@@ -75,7 +75,7 @@ It is possible to reach a Google lighthouse Performance of 100 for the all value
 # Note prior to installation
 The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/wp-asset-clean-up/ ). 
 - I did not test other Plugins for Code-Optimization like Autooptimize or anything else. 
-- The plugin was tested with wordpress versions 5.9 - 6.9 and PHP 7.4.2 - 8.3
+- The plugin was tested with wordpress versions 5.9 - 7.0 and PHP 7.4.2 - 8.3
 
 # Installation
 
@@ -98,7 +98,7 @@ The Plugin works together with "Asset Clean up" (https://wordpress.org/plugins/w
 
 # Upgrade Notice 
 
-Upgrade to WordPress 6.9 and PHP 8.1+ is highly recommended! PHP 8.2.x is even better!
+Upgrade to WordPress 7.0 and PHP 8.3+ is highly recommended!
 No Upgrade required. Only if you want the new GPX-Track filtering. 
 
 </br>
@@ -320,6 +320,10 @@ This plugin uses the great work from:
 - Lust but not least: Many thanks to Norbert S. for testing!
 
 # Changelog
+
+= 0.34.2 = 12.06.2026
+Bugfix in readImageFolder.php for PHP 8.3.
+Update Readme, Test with WP 7.0
 
 = 0.34.1 = 05.04.2026
 Update Readme, Test with WP 7.0 RC2.

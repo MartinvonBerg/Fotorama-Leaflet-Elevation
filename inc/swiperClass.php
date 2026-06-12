@@ -13,7 +13,7 @@ namespace mvbplugins\fotoramamulti;
  * @license    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link       https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * @since      0.12.0
- * @version    0.34.1
+ * @version    0.34.2
  */
 
 
@@ -321,7 +321,7 @@ final class SwiperClass
 			} if ( $data['title'] === 'notitle' && $data['type'] === 'video' ) {
                 $data['title'] = __('Video') . ' '. \strval( $this->imgnr );
             }
-			$alttext = $data['alt'] !== '' ? $data['alt'] : $data['title'];
+			$alttext = $data['alt'] !== '' ? $data['alt'] : $data['title']; // TODO: maybe we should use the title instead of alt if both are defined.
 
 			// get the image srcset if the image is in WP-Media-Catalog, otherwise not. in: $data, 
 			// Code-Example with thumbs with image srcset (https://github.com/artpolikarpov/fotorama/pull/337)
@@ -329,7 +329,7 @@ final class SwiperClass
             // Mind: the srcset for video is wrong. It contains the video as image with big-image-size. But is not used for Video.
 			$phpimgdata[] = getSrcset( $data, $up_url, $up_dir, $this->options['imgpath'], $thumbsdir );
 			$phpimgdata[$this->imgnr-1]['id'] = $this->imgnr;
-			$phpimgdata[$this->imgnr-1]['title'] = $alttext; 
+			$phpimgdata[$this->imgnr-1]['title'] = $alttext; // TODO: check if this is ok for the map markers. Maybe we should use the title instead of alttext for the map markers. But title can be empty, alttext is not empty because of the fallback to title if alt is empty.
 			$phpimgdata[$this->imgnr-1]['coord'][0] = $data['lat'] ? round( $data['lat'], 6 ) : null;
 			$phpimgdata[$this->imgnr-1]['coord'][1] = $data['lon'] ? round( $data['lon'], 6 ) : null;
 			$phpimgdata[$this->imgnr-1]['permalink'] = $data['permalink'] ?? '';
@@ -392,7 +392,7 @@ final class SwiperClass
                     $lightbox=$slide->appendElement('a');
                     $lightbox->setAttribute('data-fslightbox', 'swiper' . $this->shortcodecounter);
                     $lightbox->setAttribute('data-type','image');
-                    $lightbox->setAttribute('data-caption', $alttext);
+                    $lightbox->setAttribute('data-caption', $alttext); // TODO : use the title here instead?
                     $lightbox->setAttribute('href',"{$up_url}/{$this->options['imgpath']}/{$data['file']}{$data['extension']}");
                     $lightbox->setAttribute('aria-label','Open fullscreen lightbox with current image');
                     $lbdiv=$lightbox->appendElement('div');

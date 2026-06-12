@@ -22,47 +22,24 @@ namespace mvbplugins\fotoramamulti;
  */
 final class ReadImageFolder
 {
-    // PHP 7.3 version :: damit ist PHPstan und PHPInsights nicht erfolgreich, bzw. zu viele Fehlermeldungen
-    protected $imageNumber; // int Hint: type declaration only since PHP 7.4.0 allowed
-    protected $result = []; // array
-    protected $allImageFiles; // array
-    protected $imagepath; // string
-    protected $thumbheight; // string
-    protected $thumbwidth; // string
-    protected $thumbsdir  = ''; // string
-    protected $imageurl   = ''; // string
-    protected $requiregps = ''; // string
-    protected $ignoresort = ''; // string
-    protected $hasThumbsDir = false; // bool
-    protected $allThumbFiles; // array
-    protected $allImgInWPLibrary = true; // bool
-    public    $CssThumbHeight = 0;
-    public    $CssThumbWidth = 0;
-    public    $CssThumbRatio = 0;
-    public    $sizes = [];
-    protected $fileFilterSeparator = ',';
-
-    // PHP 7.4 version
-    /*
-    protected int $imageNumber; // int Hint: type declaration only since PHP 7.4.0 allowed
-    protected array $result = []; // array
-    protected array $allImageFiles; // array
-    protected string $imagepath; // string
-    protected string $thumbheight; // string
-    protected string $thumbwidth; // string
-    protected string $thumbsdir  = ''; // string
-    protected string $imageurl   = ''; // string
-    protected string $requiregps = ''; // string
-    protected string $ignoresort = ''; // string
+    protected int $imageNumber;
+    protected array $result = [];
+    protected array $allImageFiles;
+    protected string $imagepath;
+    protected string $thumbheight;
+    protected string $thumbwidth;
+    protected string $thumbsdir  = '';
+    protected string $imageurl   = '';
+    protected string $requiregps = '';
+    protected string $ignoresort = '';
     protected bool $hasThumbsDir = false;
-    protected array $allThumbFiles; // array
-    protected bool $allImgInWPLibrary = true; // boo
+    protected array $allThumbFiles;
+    protected bool $allImgInWPLibrary = true;
     public    int $CssThumbHeight = 0;
     public    int $CssThumbWidth = 0;
-    public    int $CssThumbRatio = 0;
+    public    float $CssThumbRatio = 0;
     public    array $sizes = [];
     protected string $fileFilterSeparator = ',';
-    */
 
     /**
      * constructor function for the class to do the initialization settings.
@@ -165,10 +142,10 @@ final class ReadImageFolder
 
             # handle case that gallery_sort is not a correct list of numbers that are INTs in Strings, otherwise set $arraysum to 0
             foreach ($csort as $key => $value) {
-                if ( ! \is_numeric( $value) || ( \intval( $value) != \floatval( $value) ) ) {
+                if (! \is_scalar($value) || !is_numeric($value) || (\intval($value) != \floatval($value))) {
                     $csort[$key] = 0;
                 } else {
-                    $csort[$key] = \intval( $value);
+                    $csort[$key] = \intval($value);
                 }
             }
             // calculate the sum of the array
