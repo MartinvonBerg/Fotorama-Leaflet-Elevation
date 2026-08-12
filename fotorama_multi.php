@@ -40,6 +40,7 @@ require_once __DIR__ . '/inc/fm_functions.php';
 require_once __DIR__ . '/languages/locales_i18n.php';
 require_once __DIR__ . '/inc/yoastXmlSitemap.php';
 require_once __DIR__ . '/inc/gtb_blocks.php';
+define('FOTORAMA_MULTI_URL', plugin_dir_url(__FILE__));
 
 // -------- show admin page if request is for admin page
 if ( is_admin() ) {

@@ -35,7 +35,7 @@ function fotoramamulti_fotorama_multi_block_init() {
 }
 add_action( 'init', '\mvbplugins\fotoramamulti\fotoramamulti_fotorama_multi_block_init', 10, 1 );
 
-function shortcodewrapper ( $attr ) {
+function shortcodewrapper ( array $attr ) {
 	
 	foreach ( $attr as $key=>$val) {
 		if (gettype($val) != 'string') {
