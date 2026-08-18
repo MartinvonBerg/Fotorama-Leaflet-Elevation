@@ -19,6 +19,8 @@ build/*
 
 # Dependency directories
 node_modules/
+node_modules_old/
+node_modules_updated_wrongly/
 
 # Optional npm cache directory
 .npm

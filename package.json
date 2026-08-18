@@ -32,20 +32,13 @@
 		"webpack-cli": "^6.0.1"
 	},
 	"dependencies": {
-		"@raruto/leaflet-elevation": "^2.x",
-		"@tmcw/togeojson": "^5.6.2",
 		"@we-gold/gpxjs": "^1.1.0",
 		"chart.js": "^4.4.x",
 		"d3": "^7.9.0",
-		"jdbscan": "^1.0.0",
-		"kalman-filter": "^2.3.0",
 		"leaflet": "^1.9.x",
-		"leaflet-almostover": "^1.0.1",
 		"leaflet-geometryutil": "^0.10.3",
 		"leaflet.locatecontrol": "^0.79.0",
-		"mathjs": "^14.0.1",
 		"minimasonry": "^1.3.2",
-		"plotly.js-dist": "^2.35.3",
 		"screenfull": "^6.0.2",
 		"simplify-js": "^1.x",
 		"swiper": "^11.x"

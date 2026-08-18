@@ -7,7 +7,8 @@
 import {LeafletMap} from './leafletMapClass';
 
 // my Styles for LEAFLET-ELEVATION 
-import '@raruto/leaflet-elevation/dist/leaflet-elevation.css'; // load from node_modules
+// load from C:\wamp64\www\wordpress\wp-content\plugins\fotorama_multi-2023-08-30\js\elevation\dist\leaflet-elevation.css
+import './elevation/dist/leaflet-elevation.css'; // load from local copy of node_modules/@raruto/leaflet-elevation/dist/leaflet-elevation.css.
 import './elevationClass.css'; // my local styles for the elevation chart
 
 import './elevation/dist/leaflet-elevation.js';
