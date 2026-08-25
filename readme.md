@@ -321,6 +321,9 @@ This plugin uses the great work from:
 
 # Changelog
 
+= 0.35.0 = 25.08.2025
+Bugfix in function get_gps_data for wrong GPS Tags
+
 = 0.34.2 = 12.06.2026
 Bugfix in readImageFolder.php for PHP 8.3.
 Update Readme, Test with WP 7.0

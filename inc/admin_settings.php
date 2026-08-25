@@ -1270,14 +1270,14 @@ final class FotoramaElevationAdmin
 	public function fm_admin_scripts_enqueue() {
 		// enque the javascript for the admin page.
 		$plugin_path = plugins_url('/', __DIR__);
-		wp_enqueue_script('fotorama_admin',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.34.2', true);
-		wp_enqueue_style('fm-admin-gpx', $plugin_path . 'css/fm_admin_gpx.css',[] ,'0.34.2' ,'all');
+		wp_enqueue_script('fotorama_admin',  $plugin_path . 'build/fm_admin/fm_admin.js', ['jquery'], '0.35.0', true);
+		wp_enqueue_style('fm-admin-gpx', $plugin_path . 'css/fm_admin_gpx.css',[] ,'0.35.0' ,'all');
 
 		/* enque the javascript for the standard page too.
 		if ( isset($charttype) && $charttype === 'chartjs') {
-			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.34.2', true);
+			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.35.0', true);
 		} else {
-			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.34.2', true);
+			wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.35.0', true);
 		}
 		*/
 		$tracks['track_0']['url'] = ''; // $gpx_url . $f;

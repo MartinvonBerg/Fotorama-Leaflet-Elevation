@@ -8,7 +8,7 @@
  * Requires PHP: 8.0
  * Requires at least: 6.2
  * Tested up to: 7.0
- * Version: 0.34.2
+ * Version: 0.35.0
  * Author: Martin von Berg
  * Author URI: https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
  * License: GPL-2.0
@@ -482,7 +482,7 @@ function findChunksFromFile( string $filename, int $maxChunks = -1 )
 /**
  * findchunks (EXIF-Data) in a given file
  *
- * @param resource|string $filename the file to analyse
+ * @param resource|string $file the file to analyse
  * @param integer $maxChunks max number of chunks
  * @return false|array fals on failure or array with extracted chunks
  */
@@ -744,8 +744,6 @@ function get_exif_meta( string $buffer )
  * @param  boolean $isIntel is the buffer input a intel 'II' representation. Actually the defines the Endianess.
  * @param  string  $buffer the buffer with metadata that will be used for extraction
  * @param  integer $bufoffs the offset where to start the extraction in $buffer
- * @param  [type]  $piece unused parameter
- * @param  [type]  $tags unused parameter
  * @return mixed the extracted metadata in different types
  */
 function get_meta_from_piece( bool $isIntel, string $buffer, int $bufoffs, $piece, $tags ) 
@@ -786,127 +784,306 @@ function get_meta_from_piece( bool $isIntel, string $buffer, int $bufoffs, $piec
 }
 
 /**
- * Extract GPS-Data from the EXIF-Header
+ * Extract GPS-Data from the EXIF-Header.
  *
- * @param  string  $gpsbuffer the binary string buffer with gpsdata taken from the EXIF-header
- * @param  string  $buffer the complete EXIF-header as binary string
- * @param  boolean $isIntel is the buffer input a intel 'II' representation. Actually the defines the Endianess.
- * @return false|array the GPS-Data as associative array or false if no GPS-Data found
+ * @param string  $gpsbuffer Binary string buffer beginning with the GPS IFD.
+ * @param string  $buffer    Complete EXIF header as binary string.
+ * @param boolean $isIntel   True for little endian ("II"), false for big endian ("MM").
+ *
+ * @return array<string, mixed>|false GPS data as associative array
+ *                                    or false if no valid GPS IFD was found.
  */
-function get_gps_data( string $gpsbuffer, string $buffer, bool $isIntel ) 
-{ // @codeCoverageIgnore
+function get_gps_data( string $gpsbuffer, string $buffer, bool $isIntel )
+{
 	$meta = [];
 
-	// define the gps-tags to search for
-	$tags = array( 
-		'0x0000' => array(
+	/*
+	* GPS tags supported by this extractor.
+	*
+	* Important:
+	* Every TIFF/EXIF IFD entry is always exactly 12 bytes:
+	*
+	*   2 bytes  Tag
+	*   2 bytes  Type
+	*   4 bytes  Count
+	*   4 bytes  Value or offset
+	*/
+	$tags = [
+		'0x0000' => [
 			'text' => 'GPSVersionID',
-			'type' => 1, // n int8 values, number n is taken from $count, usually 4
-			'nBytes' => 1, // Bytes per component: taken from data field
-		), 
-		'0x0001' => array(
+			'type' => 1, // BYTE
+		],
+		'0x0001' => [
 			'text' => 'GPSLatitudeRef',
-			'type' => 2, // ascii string
-			'nBytes' => 2, // Bytes per string value, so two asciis each 2 Bytes long
-		), 
-		'0x0002' => array(
+			'type' => 2, // ASCII
+		],
+		'0x0002' => [
 			'text' => 'GPSLatitude',
-			'type' => 5, // rational uint64, number n is taken from $count, usually 3
-			'nBytes' => 4, // relative address pointer to the data, 4 Bytes long
-		), 
-		'0x0003' => array(
+			'type' => 5, // RATIONAL
+		],
+		'0x0003' => [
 			'text' => 'GPSLongitudeRef',
-			'type' => 2, // ascii string, 
-			'nBytes' => 2, // Bytes per string value, so two asciis each 2 Bytes long
-		), 
-		'0x0004' => array(
+			'type' => 2, // ASCII
+		],
+		'0x0004' => [
 			'text' => 'GPSLongitude',
-			'type' => 5,  // rational uint64, number n is taken from $count, usually 3
-			'nBytes' => 4, // relative address pointer to the data, 4 Bytes long
-		), 
-		'0x0005' => array(
+			'type' => 5, // RATIONAL
+		],
+		'0x0005' => [
 			'text' => 'GPSAltitudeRef',
-			'type' => 1, // n int8 values, number n is taken from $count, usually 4
-			'nBytes' => 1, // Bytes per component: taken from data field
-		), 
-		'0x0006' => array(
+			'type' => 1, // BYTE
+		],
+		'0x0006' => [
 			'text' => 'GPSAltitude',
-			'type' => 5, // rational uint64, number n is taken from $count, usually 3
-			'nBytes' => 4, // relative address pointer to the data, 4 Bytes long
-		), 
-	);
-	// get the total number of tags
-	$nGpsTags = hexdec( frombuffer( $gpsbuffer, 0, 2, $isIntel) );
-	
-	if ( ( $nGpsTags < 1 ) || ( $nGpsTags > 31) ) { 
-		// no GPS data or wrong buffer selected
-		return false; 
-	}
+			'type' => 5, // RATIONAL
+		],
+	];
 
-	$bufflen = strlen( $gpsbuffer );
-	$bufoffs = 2;
+	$bufflen = \strlen( $gpsbuffer );
 
-	while ( $bufoffs <= $bufflen) {
-		$piece = frombuffer( $gpsbuffer, $bufoffs, 2, $isIntel) ;
-		$bufoffs += 2;
+	/* The GPS IFD starts with a 2 byte entry count. Plausibility check. */
+	if ( $bufflen < 2 ) { return false; }
 
-		if ( array_key_exists( $piece, $tags ) ) {
-			// init data array 
+	$nGpsTags = (int) \hexdec(  frombuffer( $gpsbuffer, 0, 2, $isIntel ) );
+	if ( $nGpsTags < 1 || $nGpsTags > 31 ) { return false; }
+
+	/*
+	* We need at least:
+	*  2 bytes entry count + n * 12 bytes IFD entries
+	*  The following 4 byte "next IFD" pointer is not required for extracting the GPS tags themselves.
+	*/
+	$requiredLength = 2 + ( $nGpsTags * 12 );
+
+	if ( $bufflen < $requiredLength ) { return false; }
+
+	// Process exactly the number of entries specified by the GPS IFD.
+	for ( $i = 0; $i < $nGpsTags; $i++ ) {
+
+		$entryOffset = 2 + ( $i * 12 );
+
+		/*
+		* Structure of one IFD entry:
+		*
+		* +0  Tag          2 bytes
+		* +2  Type         2 bytes
+		* +4  Count        4 bytes
+		* +8  Value/Offset 4 bytes
+		*/
+		$piece =  frombuffer(
+			$gpsbuffer,
+			$entryOffset,
+			2,
+			$isIntel
+		);
+
+		/*
+		* Unknown GPS tags are completely valid.
+		*
+		* Simply skip them. The next entry is still found at
+		* entryOffset + 12.
+		*/
+		if ( ! \array_key_exists( $piece, $tags ) ) {
+			continue;
+		}
+
+		$type = (int) \hexdec(
+			 frombuffer(
+				$gpsbuffer,
+				$entryOffset + 2,
+				2,
+				$isIntel
+			)
+		);
+
+		$expectedType = $tags[ $piece ]['type'];
+
+		/*
+		* Ignore an entry with an unexpected TIFF type.
+		*
+		* Most importantly: this does not affect the offset of
+		* the next IFD entry.
+		*/
+		if ( $type !== $expectedType ) {
+			continue;
+		}
+
+		$count = (int) \hexdec(
+			 frombuffer(
+				$gpsbuffer,
+				$entryOffset + 4,
+				4,
+				$isIntel
+			)
+		);
+
+		if ( $count < 1 ) {
+			continue;
+		}
+
+		$valueOffset = $entryOffset + 8;
+
+		/*
+		* TYPE 1: BYTE
+		*
+		* Used here for:
+		*   GPSVersionID
+		*   GPSAltitudeRef
+		*
+		* If the complete value occupies <= 4 bytes, TIFF stores it
+		* directly in the 4 byte Value field.
+		*
+		* Both GPSVersionID and GPSAltitudeRef fall into this category.
+		*/
+		if ( 1 === $type ) {
+
+			if ( $count > 4 ) {
+				continue;
+			}
+
+			$raw = \substr(
+				$gpsbuffer,
+				$valueOffset,
+				$count
+			);
+
+			if ( \strlen( $raw ) !== $count ) {
+				continue;
+			}
+
 			$data = [];
 
-			// get the type of the tag first
-			$type = hexdec( frombuffer( $gpsbuffer, $bufoffs, 2, $isIntel) );
-			$expectedType = $tags[ $piece ]['type']; 
-			$bufoffs += 2;
-
-			// do only if the type is correct
-			if ( $type === $expectedType){
-				// get the number of values
-				$count = hexdec( frombuffer( $gpsbuffer, $bufoffs, 4, $isIntel) );
-				if ($count > $bufflen) break;
-				$nvalues = $count;
-				$bufoffs += 4;
-
-				if ( 5 == $type ) { // correct number of values for pointers, it's only one pointer
-					//$nvalues = $count;
-					$count = 1;
-				}
-
-				// get the data or relative pointer
-				$lendata = $tags[ $piece ]['nBytes'];
-				for ($i=1; $i <= $count ; $i++) { 
-					$data[] = frombuffer( $gpsbuffer, $bufoffs, $lendata, $isIntel);
-					$bufoffs += $lendata;
-				}
-
-				// special treatment of the Lat/Long-Ref
-				if ( 2 == $type ) {
-					$data = \strtoupper($data[0]);
-					$data = \str_replace('0','', $data);
-					$data = \str_replace('X','', $data);
-					$data = chr (hexdec ( $data ));
-					$found = strpos( ' NSEW', $data);
-					if ( $found === false ) $data = false;
-				}
-
-				// special treatment of the Lat- / Long- / Alt-itude
-				if ( 5 == $type ) {
-					$rational = [];
-					for ($i=0; $i < $nvalues ; $i++) { 
-						$rational[] = getrationale( $buffer, $data[0], $i, $isIntel, 'gps');
-					}
-					$data = $rational;
-				}
-				
-				// store the new data in array
-				$value_of_tag = $data; 
-				$meta_key = $tags[ $piece ]['text'];
-				$meta[ $meta_key ] = $value_of_tag;
+			/*
+			* BYTE values themselves are not endian dependent.
+			* Therefore they must not be passed through binrevert().
+			*/
+			for ( $j = 0; $j < $count; $j++ ) {
+				$data[] = '0x' . \strtoupper(
+					\bin2hex( $raw[ $j ] )
+				);
 			}
+
+			$meta_key = $tags[ $piece ]['text'];
+			$meta[ $meta_key ] = $data;
+
+			continue;
 		}
-		
-		if ( sizeof ( $meta ) === $nGpsTags ) { break; }
+
+		/*
+		* TYPE 2: ASCII
+		*
+		* Used here only for:
+		*   GPSLatitudeRef
+		*   GPSLongitudeRef
+		*
+		* Normally Count = 2:
+		*
+		*   "N\0"
+		*   "S\0"
+		*   "E\0"
+		*   "W\0"
+		*
+		* This fits directly into the 4 byte Value field.
+		*/
+		if ( 2 === $type ) {
+
+			if ( $count > 4 ) {
+				continue;
+			}
+
+			$raw = \substr(
+				$gpsbuffer,
+				$valueOffset,
+				$count
+			);
+
+			if ( \strlen( $raw ) !== $count ) {
+				continue;
+			}
+
+			$data = \strtoupper(
+				\rtrim( $raw, "\0" )
+			);
+
+			/*
+			* Only these values make sense for the two reference tags
+			* supported by this extractor.
+			*/
+			if ( ! \in_array( $data, [ 'N', 'S', 'E', 'W' ], true ) ) {
+				continue;
+			}
+
+			$meta_key = $tags[ $piece ]['text'];
+			$meta[ $meta_key ] = $data;
+
+			continue;
+		}
+
+		/*
+		* TYPE 5: RATIONAL
+		*
+		* A RATIONAL consists of:
+		*
+		*   4 bytes numerator
+		*   4 bytes denominator
+		*
+		* Therefore even one RATIONAL requires 8 bytes and cannot fit
+		* into the 4 byte IFD Value field.
+		*
+		* The Value field therefore contains a pointer relative to
+		* the TIFF header.
+		*/
+		if ( 5 === $type ) {
+
+			$pointer =  frombuffer(
+				$gpsbuffer,
+				$valueOffset,
+				4,
+				$isIntel
+			);
+
+			$pointerValue = (int) \hexdec( $pointer );
+
+			/*
+			* getrationale() uses the same EXIF_OFFSET convention:
+			*
+			*     EXIF_OFFSET + pointer
+			*
+			* Check the referenced area here before calling it.
+			*/
+			$dataStart = EXIF_OFFSET + $pointerValue;
+
+			if ( $dataStart < 0 || $dataStart > \strlen( $buffer ) ) {
+				continue;
+			}
+
+			/*
+			* Check whether all requested RATIONAL values are actually
+			* contained in the complete EXIF buffer.
+			*/
+			$bytesAvailable = \strlen( $buffer ) - $dataStart;
+			$valuesAvailable = \intdiv( $bytesAvailable, 8 );
+
+			if ( $count > $valuesAvailable ) {
+				continue;
+			}
+
+			$rational = [];
+
+			for ( $j = 0; $j < $count; $j++ ) {
+				$rational[] =  getrationale(
+					$buffer,
+					$pointer,
+					$j,
+					$isIntel,
+					'gps'
+				);
+			}
+
+			$meta_key = $tags[ $piece ]['text'];
+			$meta[ $meta_key ] = $rational;
+		}
 	}
+
 	return $meta;
 }
 

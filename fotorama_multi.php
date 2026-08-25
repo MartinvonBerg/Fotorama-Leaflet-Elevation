@@ -11,9 +11,9 @@ namespace mvbplugins\fotoramamulti;
  * Plugin Name:       Slider + Leaflet-Map + Chart
  * Plugin URI:        https://github.com/MartinvonBerg/Fotorama-Leaflet-Elevation
  * Description:       Image and Video Slider, Leaflet Map and Elevation Chart Integration. Shows images from any directory in your upload folder. Uses Fotorama or Swiper for the Slider.
- * Version:           0.34.2
+ * Version:           0.35.0
  * Requires at least: 6.2
- * Tested up to:      7.0
+ * Tested up to:      7.1
  * Requires PHP:      7.4
  * Author:            Martin von Berg
  * Author URI:        https://www.berg-reise-foto.de/software-wordpress-lightroom-plugins/wordpress-plugins-fotos-und-gpx/
@@ -60,8 +60,8 @@ function showmulti($attr, $content = null)
 {
 	//require_once __DIR__ . '/fotorama_multi_enq_scripts.php';
 	$plugin_path = plugins_url('/', __FILE__);
-	\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.34.2','all');
-	\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.34.2','all');
+	\wp_enqueue_style('swiperCss', $plugin_path . 'js/swiperClass.min.css',[],'0.35.0','all');
+	\wp_enqueue_style('swiperThumbsCss', $plugin_path . 'js/thumbnailClass.min.css',[],'0.35.0','all');
 
 	// Define global Values and Variables. We need the globals for the state-transition of the post.
 	global $post_state_pub_2_draft;
@@ -495,9 +495,9 @@ EOF;
  	);
 
 	if ( isset($charttype) && $charttype === 'chartjs') {
-		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.34.2', true);
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_chartjs/fm_main.js', ['jquery'], '0.35.0', true);
 	} else {
-		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.34.2', true);
+		wp_enqueue_script('fotorama_main_bundle',  $plugin_path . 'build/fm_bundle/fm_main.js', ['jquery'], '0.35.0', true);
 	}
 
 	wp_localize_script('fotorama_main_bundle', 'pageVarsForJs', $pageVarsForJs);
